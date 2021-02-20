@@ -1,7 +1,4 @@
-// =============================================================================
-// Entrypoints
-// =============================================================================
-
+(* Entrypoints *)
 type add_liquidity =
   [@layout:comb]
   { owner : address ;
@@ -12,11 +9,11 @@ type add_liquidity =
 
 type remove_liquidity =
   [@layout:comb]
-  { [@annot:to] to_ : address ; // recipient of the liquidity redemption
-    lqtBurned : nat ;  // amount of lqt owned by sender to burn
-    minXtzWithdrawn : tez ; // minimum amount of tez to withdraw
-    minTokensWithdrawn : nat ; // minimum amount of tokens to whitdw
-    deadline : timestamp ; // the time before which the request must be completed
+  { [@annot:to] to_ : address ; (* recipient of the liquidity redemption *)
+    lqtBurned : nat ;  (* amount of lqt owned by sender to burn *)
+    minXtzWithdrawn : tez ; (* minimum amount of tez to withdraw *)
+    minTokensWithdrawn : nat ; (* minimum amount of tokens to whitdw *)
+    deadline : timestamp ; (* the time before which the request must be completed *)
   }
 
 type xtz_to_token =
@@ -32,12 +29,6 @@ type token_to_xtz =
     tokensSold : nat ;
     minXtzBought : tez ;
     deadline : timestamp ;
-  }
-
-type set_baker =
-  [@layout:comb]
-  { baker : key_hash option ;
-    freezeBaker : bool ;
   }
 
 type token_to_token =
@@ -60,17 +51,15 @@ type entrypoint =
 | RemoveLiquidity of remove_liquidity
 | XtzToToken      of xtz_to_token
 | TokenToXtz      of token_to_xtz
-| SetBaker        of set_baker
-| SetManager      of address
 | SetLqtAddress   of address
 | Default         of unit
 | UpdateTokenPool of unit
 | UpdateTokenPoolInternal of update_token_pool_internal
 | TokenToToken    of token_to_token
 
-// =============================================================================
-// Storage
-// =============================================================================
+
+(* Storage *)
+
 
 type storage =
   [@layout:comb]
@@ -78,7 +67,6 @@ type storage =
     xtzPool : tez ;
     lqtTotal : nat ; 
     selfIsUpdatingTokenPool : bool ;
-    freezeBaker : bool ;
     manager : address ;
     tokenAddress : address ;
 #if FA2
@@ -90,32 +78,30 @@ type storage =
 #endif
   }
 
-// =============================================================================
-// Type Synonyms
-// =============================================================================
+
+(*  Type Synonyms *)
+
 
 type result = operation list * storage
 
 #if FA2
-// FA2
+(* FA2 *)
 type token_id = nat
 type token_contract_transfer = (address * (address * (token_id * nat)) list) list
 type balance_of = ((address * token_id) list * ((((address * nat) * nat) list) contract))
 #else
-// FA1.2
+(* FA1.2 *)
 type token_contract_transfer = address * (address * nat)
 type get_balance = address * (nat contract)
 #endif
 
-// custom entrypoint for LQT FA1.2
+(* custom entrypoint for LQT FA1.2 *)
 type mintOrBurn =
   [@layout:comb]
   { quantity : int ;
     target : address }
 
-// =============================================================================
-// Error codes
-// =============================================================================
+(* Error codes *) 
 
 [@inline] let error_TOKEN_CONTRACT_MUST_HAVE_A_TRANSFER_ENTRYPOINT  = 0n
 [@inline] let error_LQT_CONTRACT_MUST_HAVE_MINT_OR_BURN_ENTRYPOINT  = 1n
@@ -160,9 +146,8 @@ type mintOrBurn =
 #include "_build/oracle_constant.mligo" 
 #endif
 
-// =============================================================================
-// Functions
-// =============================================================================
+
+(* Functions *)
 
 (* this is slightly inefficient to inline, but, nice to have a clean stack for 
    the entrypoints for the Coq verification *)
@@ -189,9 +174,8 @@ let token_transfer (tokenAddress : address) (from : address) (to_ : address) (to
     Tezos.transaction (from, (to_, token_amount)) 0mutez token_contract
 #endif
 
-// =============================================================================
-// Entrypoint Functions
-// =============================================================================
+
+(* Entrypoint Functions *)
 
 let add_liquidity (param : add_liquidity) (storage: storage) : result =
     let { owner = owner ;
@@ -199,7 +183,7 @@ let add_liquidity (param : add_liquidity) (storage: storage) : result =
           maxTokensDeposited = maxTokensDeposited ;
           deadline = deadline } = param in
 
-    // Get the lqt admin entrypoint
+    (* Get the lqt admin entrypoint *)
     let lqt_admin : mintOrBurn contract =
     match (Tezos.get_entrypoint_opt "%mintOrBurn" storage.lqtAddress :  mintOrBurn contract option) with
     | None -> (failwith error_LQT_CONTRACT_MUST_HAVE_MINT_OR_BURN_ENTRYPOINT : mintOrBurn contract)
@@ -209,10 +193,9 @@ let add_liquidity (param : add_liquidity) (storage: storage) : result =
         (failwith error_SELF_IS_UPDATING_TOKEN_POOL_MUST_BE_FALSE : result)
     else if Tezos.now >= deadline then
         (failwith error_THE_CURRENT_TIME_MUST_BE_LESS_THAN_THE_DEADLINE : result)    
-    else    
-        
-        // the contract is initialized, use the existing exchange rate
-        // mints nothing if the contract has been emptied, but that's OK
+    else            
+        (* the contract is initialized, use the existing exchange rate
+           mints nothing if the contract has been emptied, but that's OK *)
         let xtzPool   : nat = mutez_to_natural storage.xtzPool in
         let nat_amount : nat = mutez_to_natural Tezos.amount  in
         let lqt_minted : nat = nat_amount * storage.lqtTotal  / xtzPool in
@@ -228,9 +211,9 @@ let add_liquidity (param : add_liquidity) (storage: storage) : result =
                 tokenPool = storage.tokenPool + tokens_deposited ;
                 xtzPool   = storage.xtzPool + Tezos.amount} in
 
-            // send tokens from sender to exchange
+            (* send tokens from sender to exchange *)
             let op_token = token_transfer storage.tokenAddress Tezos.sender Tezos.self_address tokens_deposited in
-            // mint lqt tokens for them
+            (* mint lqt tokens for them *)
             let op_lqt = Tezos.transaction {quantity = int(lqt_minted) ; target = owner} 0mutez lqt_admin in            
             ([op_token; op_lqt], storage)
         
@@ -242,12 +225,12 @@ let remove_liquidity (param : remove_liquidity) (storage : storage) : result =
           minTokensWithdrawn = minTokensWithdrawn ;
           deadline = deadline } = param in
 
-    // Get the to contract
+    (* Get the to contract *)
     let to_contract : unit contract = (match (Tezos.get_contract_opt to_ : unit contract option) with
         | None -> (failwith error_INVALID_TO_ADDRESS : unit contract)
         | Some c -> c) in 
 
-    // Get the lqt admin entrypoint
+    (* Get the lqt admin entrypoint *)
     let lqt_admin : mintOrBurn contract =
     match (Tezos.get_entrypoint_opt "%mintOrBurn" storage.lqtAddress :  mintOrBurn contract option) with
     | None -> (failwith error_LQT_CONTRACT_MUST_HAVE_A_MINT_OR_BURN_ENTRYPOINT : mintOrBurn contract)
@@ -257,35 +240,34 @@ let remove_liquidity (param : remove_liquidity) (storage : storage) : result =
       (failwith error_SELF_IS_UPDATING_TOKEN_POOL_MUST_BE_FALSE : result)
     else if Tezos.now >= deadline then
       (failwith error_THE_CURRENT_TIME_MUST_BE_LESS_THAN_THE_DEADLINE : result)    
-    // Useful ?
-    // else if Tezos.amount <> 0mutez then
-    //   (failwith error_AMOUNT_MUST_BE_ZERO : result)    
+    else if Tezos.amount <> 0mutez then
+      (failwith error_AMOUNT_MUST_BE_ZERO : result)    
     else begin       
         let xtz_withdrawn    : tez = natural_to_mutez ((lqtBurned * (mutez_to_natural storage.xtzPool)) / storage.lqtTotal) in
         let tokens_withdrawn : nat = lqtBurned * storage.tokenPool /  storage.lqtTotal in
 
-        // Check that minimum withdrawal conditions are met
+        (* Check that minimum withdrawal conditions are met *)
         if xtz_withdrawn < minXtzWithdrawn then
             (failwith error_THE_AMOUNT_OF_XTZ_WITHDRAWN_MUST_BE_GREATER_THAN_OR_EQUAL_TO_MIN_XTZ_WITHDRAWN : result)
         else if tokens_withdrawn < minTokensWithdrawn  then
             (failwith error_THE_AMOUNT_OF_TOKENS_WITHDRAWN_MUST_BE_GREATER_THAN_OR_EQUAL_TO_MIN_TOKENS_WITHDRAWN : result)
-        // Proceed to form the operations and update the storage
+        (* Proceed to form the operations and update the storage *)
         else begin                                                                
-            // calculate lqtTotal, convert int to nat
+           (* calculate lqtTotal, convert int to nat *)
             let new_lqtTotal = match (is_a_nat ( storage.lqtTotal - lqtBurned)) with
-                // This check should be unecessary, the fa12 logic normally takes care of it
+                (* This check should be unecessary, the fa12 logic normally takes care of it *)
                 | None -> (failwith error_CANNOT_BURN_MORE_THAN_THE_TOTAL_AMOUNT_OF_LQT : nat)
                 | Some n -> n in
-            // Calculate tokenPool, convert int to nat
+            (* Calculate tokenPool, convert int to nat *)
             let new_tokenPool = match is_a_nat (storage.tokenPool - tokens_withdrawn) with
                 | None -> (failwith error_TOKEN_POOL_MINUS_TOKENS_WITHDRAWN_IS_NEGATIVE : nat)
                 | Some n -> n in
                                 
-            // send burn operation to burn the lqt tokens
+            (* send burn operation to burn the lqt tokens *)
             let op_lqt =  Tezos.transaction {quantity = 0 - lqtBurned ; target = Tezos.sender} 0mutez lqt_admin in
-            // send tokens_withdrawn to to address, if tokens_withdrawn if greater than storage.tokenPool, this will fail
+            (* send tokens_withdrawn to to address, if tokens_withdrawn if greater than storage.tokenPool, this will fail *)
             let op_token = token_transfer storage.tokenAddress Tezos.self_address to_ tokens_withdrawn in
-            // send xtz_withdrawn to to_ address
+            (* send xtz_withdrawn to to_ address *)
             let op_xtz : operation = Tezos.transaction unit xtz_withdrawn to_contract in
 
             let storage = {storage with xtzPool = storage.xtzPool - xtz_withdrawn ; lqtTotal = new_lqtTotal ; tokenPool = new_tokenPool} in
@@ -303,11 +285,6 @@ let xtz_to_token (param : xtz_to_token) (storage : storage) =
         (failwith error_SELF_IS_UPDATING_TOKEN_POOL_MUST_BE_FALSE : result)
     else if Tezos.now >= deadline then
         (failwith error_THE_CURRENT_TIME_MUST_BE_LESS_THAN_THE_DEADLINE : result)    
-    // These tests do not seem useful
-    // else if (storage.xtzPool = 0mutez) then
-    //     (failwith error_XTZ_POOL_MUST_BE_GREATER_THAN_ZERO : result)
-    // else if (storage.tokenPool = 0n) then
-    //     (failwith error_TOKEN_POOL_MUST_BE_GREATER_THAN_ZERO : result)
     else begin
 
         let xtzPool = mutez_to_natural storage.xtzPool in
@@ -323,10 +300,10 @@ let xtz_to_token (param : xtz_to_token) (storage : storage) =
             | None -> (failwith error_TOKEN_POOL_MINUS_TOKENS_BOUGHT_IS_NEGATIVE : nat)
             | Some difference -> difference) in
 
-        // update xtzPool
+        (* update xtzPool *)
         let storage = { storage with xtzPool = storage.xtzPool + Tezos.amount ; tokenPool = new_tokenPool } in
-        // send tokens_withdrawn to to address
-        // if tokens_bought is greater than storage.tokenPool, this will fail
+        (* send tokens_withdrawn to to address
+           if tokens_bought is greater than storage.tokenPool, this will fail *)
         let op = token_transfer storage.tokenAddress Tezos.self_address to_ tokens_bought in
         ([ op ], storage)
     end
@@ -338,7 +315,7 @@ let token_to_xtz (param : token_to_xtz) (storage : storage) =
           minXtzBought = minXtzBought ;
           deadline = deadline } = param in
 
-    // Sanitize the input
+    (* Sanitize the input *)
     let to_contract : unit contract = (match (Tezos.get_contract_opt to_ : unit contract option) with
         | None -> (failwith error_INVALID_TO_ADDRESS : unit contract)
         | Some c -> c) in 
@@ -346,15 +323,9 @@ let token_to_xtz (param : token_to_xtz) (storage : storage) =
     if storage.selfIsUpdatingTokenPool then
         (failwith error_SELF_IS_UPDATING_TOKEN_POOL_MUST_BE_FALSE : result)
     else if Tezos.now >= deadline then
-        (failwith error_THE_CURRENT_TIME_MUST_BE_LESS_THAN_THE_DEADLINE : result)    
-    
-    // These tests do not seem useful
-    // else if Tezos.amount > 0mutez then 
-    //     (failwith error_AMOUNT_MUST_BE_ZERO : result)
-    // else if storage.xtzPool = 0mutez then
-    //     (failwith error_XTZ_POOL_MUST_BE_GREATER_THAN_ZERO : result)
-    // else if storage.tokenPool = 0n then
-    //     (failwith error_TOKEN_POOL_MUST_BE_GREATER_THAN_ZERO : result)
+        (failwith error_THE_CURRENT_TIME_MUST_BE_LESS_THAN_THE_DEADLINE : result)        
+    else if Tezos.amount > 0mutez then 
+      (failwith error_AMOUNT_MUST_BE_ZERO : result)
     else begin
         let xtz_bought = 
             let bought = natural_to_mutez (((tokensSold * 997n * (mutez_to_natural storage.xtzPool)) / (storage.tokenPool * 1000n + (tokensSold * 997n)))) in
@@ -362,59 +333,29 @@ let token_to_xtz (param : token_to_xtz) (storage : storage) =
 
         let storage = {storage with tokenPool = storage.tokenPool + tokensSold ; xtzPool = storage.xtzPool - xtz_bought} in
         
-        // send tokensSold to the exchange address
+        (* send tokensSold to the exchange address *)
         let  op_token = token_transfer storage.tokenAddress Tezos.sender Tezos.self_address tokensSold in
-        // send xtz_bought to to_ address        
+        (* send xtz_bought to to_ address *)
         let  op_tez: operation = Tezos.transaction unit xtz_bought to_contract in
         ([op_tez ; op_token], storage)
     end
 
 
-// entrypoint to allow depositing funds
+(* entrypoint to allow depositing funds *)
 let default_ (storage : storage) : result = 
-    // update xtzPool
+    (* update xtzPool *)
     if (storage.selfIsUpdatingTokenPool) then
         (failwith error_SELF_IS_UPDATING_TOKEN_POOL_MUST_BE_FALSE: result)
     else 
         let storage = {storage with xtzPool = storage.xtzPool + amount } in
         (([] : operation list), storage)
 
-// set baker
-let set_baker (param : set_baker) (storage : storage) : result =
-    let { baker = baker ;
-          freezeBaker = freezeBaker } = param in
-    if storage.selfIsUpdatingTokenPool then
-      (failwith error_SELF_IS_UPDATING_TOKEN_POOL_MUST_BE_FALSE : result)    
-    
-    // This test does not seem useful
-    // else if Tezos.amount > 0mutez then
-    //    (failwith error_AMOUNT_MUST_BE_ZERO  : result)    
-    else if Tezos.sender <> storage.manager then
-        (failwith error_ONLY_MANAGER_CAN_SET_BAKER : result)    
-    else if storage.freezeBaker then
-        (failwith error_BAKER_PERMANENTLY_FROZEN : result)
-    else
-        ([ Tezos.set_delegate baker ], {storage with freezeBaker = freezeBaker})
-
-// set manager
-let set_manager (new_manager : address) (storage : storage) : result =
-    if storage.selfIsUpdatingTokenPool then
-      (failwith error_SELF_IS_UPDATING_TOKEN_POOL_MUST_BE_FALSE : result)
-    // This test does not seem useful
-    // else if Tezos.amount > 0mutez then
-    //   (failwith error_AMOUNT_MUST_BE_ZERO : result)    
-    else if Tezos.sender <> storage.manager then
-        (failwith error_ONLY_MANAGER_CAN_SET_MANAGER : result)    
-    else
-        (([] : operation list), {storage with manager = new_manager})
-
-// set lqt_address
+(* set lqt_address *)
 let set_lqt_address (lqtAddress : address) (storage : storage) : result =
     if storage.selfIsUpdatingTokenPool then
         (failwith error_SELF_IS_UPDATING_TOKEN_POOL_MUST_BE_FALSE : result)
-    // This test doesn't seem useful
-    // else if Tezos.amount > 0mutez then
-    //   (failwith error_AMOUNT_MUST_BE_ZERO : result)        
+     else if Tezos.amount > 0mutez then
+        (failwith error_AMOUNT_MUST_BE_ZERO : result)        
     else if Tezos.sender <> storage.manager then
         (failwith error_ONLY_MANAGER_CAN_SET_LQT_ADRESS : result)    
     else if storage.lqtAddress <> ("tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU" : address) then
@@ -449,7 +390,7 @@ let update_token_pool_internal (token_pool : update_token_pool_internal) (storag
     if (not storage.selfIsUpdatingTokenPool or sender <> storage.tokenAddress) then
       (failwith error_THIS_ENTRYPOINT_MAY_ONLY_BE_CALLED_BY_GETBALANCE_OF_TOKENADDRESS : result)
     else 
-        // TODO probably should go ahead and validate rest of param even though it shouldn't matter
+      (* TODO probably should go ahead and validate rest of param even though it shouldn't matter *)
 #if FA2
         let token_pool =
           match token_pool with
@@ -475,18 +416,13 @@ let token_to_token (param : token_to_token) (storage : storage) : result =
       (failwith error_SELF_IS_UPDATING_TOKEN_POOL_MUST_BE_FALSE : result)
     else if Tezos.now >= deadline then
       (failwith error_THE_CURRENT_TIME_MUST_BE_LESS_THAN_THE_DEADLINE : result)
-    // These tests do not seem useful
-    // else if storage.xtzPool = 0mutez then
-    //   (failwith error_XTZ_POOL_MUST_BE_GREATER_THAN_ZERO : result)
-    // else if (storage.tokenPool = 0n) then
-    //     (failwith error_TOKEN_POOL_MUST_BE_GREATER_THAN_ZERO : result)
     else 
         let xtz_bought = natural_to_mutez (((tokensSold * 997n * storage.xtzPool) / natural_to_mutez(storage.tokenPool * 1000n + (tokensSold * 997n)))) in
         let storage = {storage with tokenPool = storage.tokenPool + tokensSold ; xtzPool = storage.xtzPool - xtz_bought}  in
         
-        // send xtz_bought to to_ address      
+        (* send xtz_bought to to_ address *)
         let op1 = Tezos.transaction (to_, minTokensBought, deadline)  xtz_bought outputDexterContract_contract in
-        // send tokensSold to the exchange address
+        (* send tokensSold to the exchange address *)
         let op2 = token_transfer storage.tokenAddress Tezos.sender Tezos.self_address tokensSold in
         ([op1; op2] , storage)
 
@@ -503,12 +439,8 @@ let update_consumer (operations, storage : result) : result =
         {storage with lastOracleUpdate = Tezos.now})
 #endif 
 
-        
-
-
-// =============================================================================
-// Main
-// =============================================================================
+       
+(* Main *)
 
 let main ((entrypoint, storage) : entrypoint * storage) : result = 
     match entrypoint with
@@ -516,10 +448,6 @@ let main ((entrypoint, storage) : entrypoint * storage) : result =
         add_liquidity param storage
     | RemoveLiquidity param ->
         remove_liquidity param storage
-    | SetBaker param ->
-        set_baker param storage
-    | SetManager param ->
-        set_manager param storage
     | SetLqtAddress param ->
         set_lqt_address param storage
     | Default ->
