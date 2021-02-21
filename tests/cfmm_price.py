@@ -52,7 +52,7 @@ def run_test(
     target_yearly_growth = math.exp(math.log(new_target / target) / delta_t.total_seconds() * 365.25 * 24 * 3600)
 
     # Check that the target grew at the expected rate
-    assert (abs((target_yearly_growth-1) - annual_drift) < 1e-6)
+    assert (abs((target_yearly_growth-1) - annual_drift) < 1e-5)
 
     # Check that the drift changed by the expected amount
     price = tez_balance / ctez_balance
@@ -66,9 +66,11 @@ def run_test(
     assert (abs(new_annual_drift - expected_annual_drift) < 1e-6)
 
 
-run_test(target = 1.03, annual_drift = 0.05, ctez_balance = 1.0, tez_balance = 1.03, delta_t = timedelta(minutes=20))
+run_test(target = 1.03, annual_drift = 0.05, ctez_balance = 1.0, tez_balance = 1.03, delta_t = timedelta(minutes=10*60))
 
-run_test(target = 1.03 * (1 - 1/60), annual_drift = 0.05, ctez_balance = 1.0, tez_balance = 1.03, delta_t = timedelta(minutes=20))
+run_test(target = 1.03 * (63/64), annual_drift = 0.05, ctez_balance = 1.0, tez_balance = 1.03, delta_t = timedelta(minutes=10*60))
 
-run_test(target = 1.03 * (1 + 1/60), annual_drift = 0.05, ctez_balance = 1.0, tez_balance = 1.03, delta_t = timedelta(minutes=20))
+run_test(target = 1.03 * (65/64), annual_drift = 0.05, ctez_balance = 1.0, tez_balance = 1.03, delta_t = timedelta(minutes=10*60))
+
+run_test(target = 1.03, annual_drift = -0.05, ctez_balance = 1.0, tez_balance = 1.03, delta_t = timedelta(minutes=10*60))
 
