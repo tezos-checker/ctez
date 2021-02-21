@@ -25,7 +25,8 @@ type oven = {tez_balance : tez ; ctez_outstanding : nat ; address : address}
 
 type storage = {
   ovens : (address, oven) big_map ;
-  target : nat ; drift : int ;
+  target : nat ;
+  drift : int ;
   last_drift_update : timestamp ;
   ctez_fa12_address : address ; (* address of the fa12 contract managing the ctez token *)
   cfmm_address : address ; (* address of the cfmm providing the price feed *)
