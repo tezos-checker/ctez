@@ -163,7 +163,13 @@ let cfmm_price (storage, tez, token : storage * tez * nat) : result =
     let target  = if storage.drift < 0  then abs (target - d_target) else target + d_target in
     let drift =         
       if (Bitwise.shift_left (tez / (1mutez)) 54n) > 65n * target * token  then  (* 54 is 48 + log2(64) *)
-        storage.drift - delta (* this is not homegeneous, but setting the constant delta is multiplied with to 1.0 happens to be reasonable *)
+        storage.drift - delta
+        (* This is not homegeneous, but setting the constant delta is multiplied with
+           to 1.0 magically happens to be reasonable. Why?
+           Because (24 * 3600 / 2^48) * 365.25*24*3600 ~ 0.97%.
+           This means that the annualized drift changes by roughly one percentage point
+           for each day over or under the target by more than 1/64th.
+        *)          
       else if (Bitwise.shift_left (tez / 1mutez) 54n) < 63n * target * token then
         storage.drift + delta 
       else 
