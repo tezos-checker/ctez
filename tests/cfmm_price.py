@@ -23,19 +23,10 @@ let (_, storage) = cfmm_price storage {mutez}mutez {muctez}n in
 (storage.target, storage.drift)
 """)
 
-#$ = open('_build/test.mligo')
-
-#f.close()
-
 test = make_test(annual_drift=0.05, tez_balance=1, ctez_balance=1.03)
-now = "2020-01-01T00:05:00"
-command = ["ligo", "interpret", test, "--now", "2020-01-01T00:05:00Z", "--sender", "tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU",  "--init-file", "../ctez.mligo"]
+now = "2020-01-01T00:05:00Z"
+command = ["ligo", "interpret", test, "--now", now, "--sender", "tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU",  "--init-file", "../ctez.mligo"]
 print(command)
 process = run(command, capture_output=True)
 print(process.stdout.decode('utf8'))
 print(process.stderr.decode('utf8'))
-
-
-  
-                      
-    
