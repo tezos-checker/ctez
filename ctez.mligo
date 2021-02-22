@@ -170,6 +170,9 @@ let cfmm_price (storage, tez, token : storage * tez * nat) : result =
     let delta = abs (Tezos.now - storage.last_drift_update) in
     let target = storage.target in 
     let d_target = Bitwise.shift_right (target * (abs storage.drift) * delta) 48n in
+    (* We assume that target - d_target never happens for economic reasons.
+       Concretely, even drift were as low as -50% annualized, it would take not
+       updating the target for 1.4 years for a negative number to occur *)
     let target  = if storage.drift < 0  then abs (target - d_target) else target + d_target in
     let drift =         
       if (Bitwise.shift_left (tez / (1mutez)) 54n) > 65n * target * token  then  (* 54 is 48 + log2(64) *)
