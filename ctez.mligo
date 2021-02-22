@@ -11,12 +11,13 @@
 type set_addresses = [@layout:comb] {cfmm_address : address ; ctez_fa12_address : address }
 type liquidate = [@layout:comb] { oven_owner : address ; quantity : nat ; [@annot:to] to_ : unit contract }
 type withdraw = [@layout:comb] { amount : tez ;  [@annot:to] to_ : unit contract }
-
+                                   
 type parameter =
   | Create of (key_hash option)
   | Deposit
   | Withdraw of withdraw
   | Liquidate of liquidate
+  | Delegate of (key_hash option)
   | Mint_or_burn of int
   | Cfmm_price of tez * nat
   | Set_addresses of set_addresses
@@ -35,7 +36,7 @@ type result = (operation list) * storage
 
 (* Types for oven *)
 type oven_parameter =
-  | Delegate of (key_hash option)
+  | Oven_delegate of (key_hash option)
   | Oven_deposit
   | Oven_withdraw of tez * (unit contract)
 type oven_storage = { admin : address (* vault admin contract *) }
@@ -53,7 +54,7 @@ let create (s : storage) (delegate : key_hash option) : result =
                (failwith "oven can only be called from main contract" : oven_result)
              else 
                (match p with
-                | Delegate ko -> ([Tezos.set_delegate ko], s)
+                | Oven_delegate ko -> ([Tezos.set_delegate ko], s)
                 | Oven_deposit -> (([] : operation list), s)
                 | Oven_withdraw x -> ([Tezos.transaction unit x.0 x.1], s))))
         (* End of contract code for an oven *)
@@ -71,7 +72,6 @@ let set_addresses (s : storage) (addresses : set_addresses) : result =
     (failwith "cfmm address already set" : result)
   else        
     (([] : operation list), {s with ctez_fa12_address = addresses.ctez_fa12_address ; cfmm_address = addresses.cfmm_address})
-
 
 let get_oven (oven_address : address) (s : storage) : oven = 
   match Big_map.find_opt oven_address s.ovens with
@@ -97,6 +97,11 @@ let get_oven_withdraw (oven_address : address) : (tez * (unit contract)) contrac
   | None -> (failwith "oven doesn't exist" : (tez * (unit contract)) contract)
   | Some c -> c
 
+let get_oven_delegate (oven_address : address) : (key_hash option) contract =
+  match (Tezos.get_entrypoint_opt "%oven_delegate" oven_address : (key_hash option) contract option) with
+  | None -> (failwith "oven address doesn't exist" : (key_hash option) contract)
+  | Some c -> c
+
 let withdraw (s : storage) (p : withdraw)   : result =
   let oven : oven = get_oven Tezos.sender s in
   let oven_contract = get_oven_withdraw oven.address in
@@ -110,6 +115,11 @@ let withdraw (s : storage) (p : withdraw)   : result =
     (failwith "withdrawal would not leave enough collateral" : result)
   else
     ([Tezos.transaction (p.amount, p.to_) 0mutez oven_contract], s)
+
+let delegate (s : storage) (d : key_hash option) : result = 
+  let oven : oven = get_oven Tezos.sender s in
+  let oven_contract = get_oven_delegate oven.address in
+  ([Tezos.transaction d 0mutez oven_contract], s)
 
 let get_ctez_mint_or_burn (fa12_address : address) : (int * address) contract = 
   match (Tezos.get_entrypoint_opt  "%mint_or_burn"  fa12_address : ((int * address) contract) option) with
@@ -181,6 +191,7 @@ let main (p, s : parameter * storage) : result =
   | Withdraw w -> (withdraw s w : result)
   | Deposit -> (deposit s : result)
   | Create d -> (create s d : result)
+  | Delegate d -> (delegate s d : result)
   | Liquidate l -> (liquidate s l : result)
   | Mint_or_burn xs -> (mint_or_burn s xs : result)
   | Cfmm_price xs -> (cfmm_price (s, xs.0, xs.1) : result)
