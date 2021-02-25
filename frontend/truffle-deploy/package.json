@@ -1,7 +1,7 @@
 {
-  "name": "prediction-market",
+  "name": "truffle-deploy",
   "version": "0.0.2",
-  "description": "Prediction Market",
+  "description": "Truffle Deployer for Ctez",
   "dependencies": {
     "@taquito/michelson-encoder": "8.0.0-beta.7",
     "@taquito/rpc": "8.0.0-beta.7",
@@ -35,7 +35,8 @@
     "test": "truffle test",
     "clean": "rimraf build",
     "compile:clean": "yarn clean && yarn compile",
-    "deploy:edo": "yarn migrate --network edonet && truffle exec scripts/setup.js --network edonet",
+    "postdeploy": "truffle exec scripts/setup.js --network edonet",
+    "deploy:edo": "yarn migrate --network edonet && yarn postdeploy",
     "deploy:dev": "yarn migrate && truffle exec scripts/setup.js"
   },
   "keywords": [
