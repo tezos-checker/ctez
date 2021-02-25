@@ -1,0 +1,17 @@
+node_modules
+build
+.test*/**
+.env
+yarn-error.log
+.vscode/**
+
+# -*- mode: gitignore; -*-
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+.DS_Store

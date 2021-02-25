@@ -1,0 +1,48 @@
+{
+  "name": "prediction-market",
+  "version": "0.0.2",
+  "description": "Prediction Market",
+  "dependencies": {
+    "@taquito/michelson-encoder": "8.0.0-beta.7",
+    "@taquito/rpc": "8.0.0-beta.7",
+    "@taquito/signer": "8.0.0-beta.7",
+    "@taquito/taquito": "8.0.0-beta.7",
+    "bignumber.js": "9.0.1",
+    "dotenv": "8.2.0",
+    "ganache-core": "2.13.2-tezos.2",
+    "patch-package": "6.2.2",
+    "postinstall-postinstall": "2.1.0",
+    "truffle": "^5.5.0-tezos.4",
+    "yargs": "16.2.0"
+  },
+  "devDependencies": {
+    "@types/bignumber.js": "5.0.0",
+    "@types/dotenv": "8.2.0",
+    "@types/yargs": "^15.0.12",
+    "ganache-cli": "6.12.1-tezos.0",
+    "husky": "4.3.8",
+    "prettier": "2.2.1",
+    "rimraf": "3.0.2",
+    "ts-node": "9.1.1",
+    "typescript": "4.1.5"
+  },
+  "scripts": {
+    "start-sandbox": "ganache-cli --flavor tezos --seed alice --genesisBlockHash BKoY8T9rewHkQR16iPaLECTuSgpT73ZJR3Gw4aSgwdtpGhovqMs",
+    "start-sandbox:edo": "yarn start-sandbox --hardfork edo",
+    "precompile": "node scripts/precompile.js",
+    "compile": "yarn precompile && truffle compile",
+    "migrate": "truffle migrate --reset",
+    "test": "truffle test",
+    "clean": "rimraf build",
+    "compile:clean": "yarn clean && yarn compile",
+    "deploy:edo": "yarn migrate --network edonet && truffle exec scripts/setup.js --network edonet",
+    "deploy:dev": "yarn migrate && truffle exec scripts/setup.js"
+  },
+  "keywords": [
+    "tezos",
+    "blockchain",
+    "truffle"
+  ],
+  "author": "Shubhendu Shekhar <@shekhar-shubhendu>",
+  "license": "MIT"
+}
