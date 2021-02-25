@@ -73,7 +73,7 @@ type storage =
 #if FA2
     tokenId : nat ;
 #endif
-    lqtAddress : address ;
+    lqtAddress : address option;
 #if ORACLE
     lastOracleUpdate : timestamp ;
 #endif
@@ -140,6 +140,7 @@ type mintOrBurn =
 [@inline] let error_CANNOT_GET_CFMM_PRICE_ENTRYPOINT_FROM_CONSUMER = 28n
 #include "_build/oracle_constant.mligo" 
 #endif
+[@inline] let error_LQT_ADDRESS_NOT_SET = 29n
 
 
 (* Functions *)
@@ -169,6 +170,14 @@ let token_transfer (tokenAddress : address) (from : address) (to_ : address) (to
     Tezos.transaction (from, (to_, token_amount)) 0mutez token_contract
 #endif
 
+let get_mint_or_burn (storage: storage): mintOrBurn contract =
+  let lqtAddress = match storage.lqtAddress with
+                     | None -> (failwith error_LQT_ADDRESS_NOT_SET: address)
+                     | Some x -> x in
+    (* Get the lqt admin entrypoint *)
+    match (Tezos.get_entrypoint_opt "%mintOrBurn" lqtAddress :  mintOrBurn contract option) with
+    | None -> (failwith error_LQT_CONTRACT_MUST_HAVE_MINT_OR_BURN_ENTRYPOINT : mintOrBurn contract)
+    | Some contract -> contract
 
 (* Entrypoint Functions *)
 
@@ -179,10 +188,7 @@ let add_liquidity (param : add_liquidity) (storage: storage) : result =
           deadline = deadline } = param in
 
     (* Get the lqt admin entrypoint *)
-    let lqt_admin : mintOrBurn contract =
-    match (Tezos.get_entrypoint_opt "%mintOrBurn" storage.lqtAddress :  mintOrBurn contract option) with
-    | None -> (failwith error_LQT_CONTRACT_MUST_HAVE_MINT_OR_BURN_ENTRYPOINT : mintOrBurn contract)
-    | Some contract -> contract in
+    let lqt_admin : mintOrBurn contract = get_mint_or_burn storage in
 
     if storage.selfIsUpdatingTokenPool then
         (failwith error_SELF_IS_UPDATING_TOKEN_POOL_MUST_BE_FALSE : result)
@@ -226,10 +232,7 @@ let remove_liquidity (param : remove_liquidity) (storage : storage) : result =
         | Some c -> c) in 
 
     (* Get the lqt admin entrypoint *)
-    let lqt_admin : mintOrBurn contract =
-    match (Tezos.get_entrypoint_opt "%mintOrBurn" storage.lqtAddress :  mintOrBurn contract option) with
-    | None -> (failwith error_LQT_CONTRACT_MUST_HAVE_A_MINT_OR_BURN_ENTRYPOINT : mintOrBurn contract)
-    | Some contract -> contract in
+    let lqt_admin : mintOrBurn contract = get_mint_or_burn storage in
 
     if storage.selfIsUpdatingTokenPool then
       (failwith error_SELF_IS_UPDATING_TOKEN_POOL_MUST_BE_FALSE : result)
@@ -352,11 +355,10 @@ let set_lqt_address (lqtAddress : address) (storage : storage) : result =
      else if Tezos.amount > 0mutez then
         (failwith error_AMOUNT_MUST_BE_ZERO : result)        
     else if Tezos.sender <> storage.manager then
-        (failwith error_ONLY_MANAGER_CAN_SET_LQT_ADRESS : result)    
-    else if storage.lqtAddress <> ("tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU" : address) then
-        (failwith error_LQT_ADDRESS_ALREADY_SET : result)
-    else
-        (([] : operation list), {storage with lqtAddress = lqtAddress})
+        (failwith error_ONLY_MANAGER_CAN_SET_LQT_ADRESS : result)
+    else match storage.lqtAddress with
+        | None -> (([] : operation list), {storage with lqtAddress = (Some lqtAddress)})
+        | Some x -> (failwith error_LQT_ADDRESS_ALREADY_SET : result)
 
 
 let update_token_pool (storage : storage) : result =
