@@ -1,20 +1,17 @@
-import { BeaconWallet } from "@taquito/beacon-wallet";
-import { BeaconMessageType, NetworkType } from "@airgap/beacon-sdk";
-import { WalletInterface } from "../interfaces/wallet";
-import { NETWORK } from "../utils/globals";
+import { BeaconWallet } from '@taquito/beacon-wallet';
+import { BeaconMessageType, NetworkType } from '@airgap/beacon-sdk';
+import { WalletInterface } from '../interfaces/wallet';
+import { NETWORK } from '../utils/globals';
 
 export const setConnected = (): void => {
-  localStorage.setItem("wallet-connected", "true");
+  localStorage.setItem('wallet-connected', 'true');
 };
 
 export const isWalletConnected = (): boolean => {
-  return localStorage.getItem("wallet-connected") === "true";
+  return localStorage.getItem('wallet-connected') === 'true';
 };
 
-const connectBeacon = async (
-  wallet: BeaconWallet,
-  network: NetworkType = NetworkType.EDONET
-) => {
+const connectBeacon = async (wallet: BeaconWallet, network: NetworkType = NetworkType.EDONET) => {
   try {
     await wallet.requestPermissions({ network: { type: network } });
   } catch (error) {
@@ -25,7 +22,7 @@ const connectBeacon = async (
 export const getBeaconInstance = async (
   name: string,
   connect = false,
-  network = NETWORK
+  network = NETWORK,
 ): Promise<WalletInterface | undefined> => {
   try {
     const wallet = new BeaconWallet({ name });
@@ -34,15 +31,10 @@ export const getBeaconInstance = async (
       ? await wallet.client.checkPermissions(BeaconMessageType.OperationRequest)
       : undefined;
     const signRequest = activeAccount
-      ? await wallet.client.checkPermissions(
-          BeaconMessageType.SignPayloadRequest
-        )
+      ? await wallet.client.checkPermissions(BeaconMessageType.SignPayloadRequest)
       : undefined;
     const networkType: NetworkType = network as NetworkType;
-    connect &&
-      !opsRequest &&
-      !signRequest &&
-      (await connectBeacon(wallet, networkType));
+    connect && !opsRequest && !signRequest && (await connectBeacon(wallet, networkType));
     setConnected();
     return {
       wallet,
@@ -55,6 +47,6 @@ export const getBeaconInstance = async (
 };
 
 export const disconnectBeacon = async (wallet: BeaconWallet): Promise<void> => {
-  localStorage.removeItem("wallet-connected");
+  localStorage.removeItem('wallet-connected');
   await wallet.disconnect();
 };
