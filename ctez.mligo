@@ -31,8 +31,8 @@ type storage = {
   target : nat ;
   drift : int ;
   last_drift_update : timestamp ;
-  ctez_fa12_address : address ; (* address of the fa12 contract managing the ctez token *)
-  cfmm_address : address ; (* address of the cfmm providing the price feed *)
+  ctez_fa12_address : address option; (* address of the fa12 contract managing the ctez token *)
+  cfmm_address : address option; (* address of the cfmm providing the price feed *)
 }
 type result = (operation list) * storage
 
@@ -60,6 +60,9 @@ type oven_result = (operation list) * oven_storage
 [@inline] let error_OVEN_NOT_UNDERCOLLATERALIZED = 11n
 [@inline] let error_EXCESSIVE_CTEZ_MINTING = 12n
 [@inline] let error_CALLER_MUST_BE_CFMM = 13n
+[@inline] let error_CTEZ_FA12_ADDRESS_NOT_SET = 14n 
+[@inline] let error_CFMM_ADDRESS_NOT_SET = 15n
+
   
 let create (s : storage) (delegate : key_hash option) : result = 
   if Big_map.mem Tezos.sender s.ovens then
@@ -82,15 +85,16 @@ let create (s : storage) (delegate : key_hash option) : result =
         { admin = Tezos.self_address } in
     let oven = {tez_balance = Tezos.amount ; ctez_outstanding = 0n ; address = origination.1}  in
     let ovens = Big_map.update Tezos.sender (Some oven) s.ovens in
-    ([origination.0], {s with ovens = ovens}) 
+    ([origination.0], {s with ovens = ovens})
 
-let set_addresses (s : storage) (addresses : set_addresses) : result = 
-  if s.ctez_fa12_address <> ("tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU" : address) then
-    (failwith error_CTEZ_FA12_ADDRESS_ALREADY_SET : result)
-  else if  s.cfmm_address <> ("tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU" : address) then
-    (failwith error_CFMM_ADDRESS_ALREADY_SET : result)
-  else        
-    (([] : operation list), {s with ctez_fa12_address = addresses.ctez_fa12_address ; cfmm_address = addresses.cfmm_address})
+let set_addresses (s : storage) (addresses : set_addresses) : result =
+  let s = match s.ctez_fa12_address with
+          | None -> {s with ctez_fa12_address = (Some addresses.ctez_fa12_address);}
+          | Some x -> (failwith error_CTEZ_FA12_ADDRESS_ALREADY_SET : storage) in
+  let s = match s.cfmm_address with
+                        | None -> {s with cfmm_address = (Some addresses.cfmm_address);}
+                        | Some x -> (failwith error_CTEZ_FA12_ADDRESS_ALREADY_SET : storage) in
+  ([] : operation list), s
 
 let get_oven (oven_address : address) (s : storage) : oven = 
   match Big_map.find_opt oven_address s.ovens with
@@ -140,7 +144,10 @@ let delegate (s : storage) (d : key_hash option) : result =
   let oven_contract = get_oven_delegate oven.address in
   ([Tezos.transaction d 0mutez oven_contract], s)
 
-let get_ctez_mint_or_burn (fa12_address : address) : (int * address) contract = 
+let get_ctez_mint_or_burn (fa12_address_opt : address option) : (int * address) contract =
+  let fa12_address = match fa12_address_opt with
+                     | None -> (failwith error_CTEZ_FA12_ADDRESS_NOT_SET: address)
+                     | Some x -> x in
   match (Tezos.get_entrypoint_opt  "%mint_or_burn"  fa12_address : ((int * address) contract) option) with
   | None -> (failwith error_CTEZ_FA12_CONTRACT_MISSING_MINT_OR_BURN_ENTRYPOINT : (int * address) contract)
   | Some c -> c 
@@ -185,8 +192,11 @@ let get_target (storage : storage) (callback : nat contract) : result =
 
 (* todo: restore when ligo interpret is fixed
    let cfmm_price (storage : storage) (tez : tez) (token : nat) : result =      *)
-let cfmm_price (storage, tez, token : storage * tez * nat) : result = 
-  if Tezos.sender <> storage.cfmm_address then
+let cfmm_price (storage, tez, token : storage * tez * nat) : result =
+  let cfmm_address = match storage.cfmm_address with
+                     | None -> (failwith error_CFMM_ADDRESS_NOT_SET: address)
+                     | Some x -> x in
+  if Tezos.sender <> cfmm_address then
     (failwith error_CALLER_MUST_BE_CFMM : result)
   else
     let delta = abs (Tezos.now - storage.last_drift_update) in

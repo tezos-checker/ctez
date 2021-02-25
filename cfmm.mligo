@@ -69,6 +69,7 @@ type storage =
     selfIsUpdatingTokenPool : bool ;
     manager : address ;
     tokenAddress : address ;
+    consumerAddress: address;
 #if FA2
     tokenId : nat ;
 #endif
@@ -426,7 +427,7 @@ let update_consumer (operations, storage : result) : result =
     if storage.lastOracleUpdate = Tezos.now
         then (operations, storage)
     else 
-        let consumer = match (Tezos.get_entrypoint_opt "%cfmm_price" const_CONSUMER_ADDRESS : ((tez * nat) contract) option) with
+        let consumer = match (Tezos.get_entrypoint_opt "%cfmm_price" storage.consumerAddress : ((tez * nat) contract) option) with
         | None -> (failwith error_CANNOT_GET_CFMM_PRICE_ENTRYPOINT_FROM_CONSUMER : (tez * nat) contract)
         | Some c -> c in
         ((Tezos.transaction (storage.xtzPool, storage.tokenPool) 0mutez consumer) :: operations,
