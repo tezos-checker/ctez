@@ -92,8 +92,8 @@ let set_addresses (s : storage) (addresses : set_addresses) : result =
           | None -> {s with ctez_fa12_address = (Some addresses.ctez_fa12_address);}
           | Some x -> (failwith error_CTEZ_FA12_ADDRESS_ALREADY_SET : storage) in
   let s = match s.cfmm_address with
-                        | None -> {s with cfmm_address = (Some addresses.cfmm_address);}
-                        | Some x -> (failwith error_CTEZ_FA12_ADDRESS_ALREADY_SET : storage) in
+          | None -> {s with cfmm_address = (Some addresses.cfmm_address);}
+          | Some x -> (failwith error_CTEZ_FA12_ADDRESS_ALREADY_SET : storage) in
   ([] : operation list), s
 
 let get_oven (oven_address : address) (s : storage) : oven = 
