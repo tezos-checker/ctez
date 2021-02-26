@@ -29,6 +29,7 @@ module.exports = async (deployer, _network, accounts) => {
     tokenAddress: fa12.address,
     consumerAddress: ctez.address,
     lastOracleUpdate: "2021-01-01T00:00:00Z",
+    lqtAddress: "tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU",
   });
   await deployer.deploy(FA12LQT, {
     admin: cfmm.address,
