@@ -1,8 +1,11 @@
 import { useContext } from 'react';
-import { IWalletContext } from '../interfaces';
+import { WalletInterface } from '../interfaces';
 import WalletContext from './walletContext';
 
-export const useWallet = (): IWalletContext => {
+export const useWallet = (): [
+  Partial<WalletInterface>,
+  (wallet: Partial<WalletInterface>) => void,
+] => {
   const walletContext = useContext(WalletContext);
-  return walletContext;
+  return [walletContext.wallet, walletContext.setWallet];
 };
