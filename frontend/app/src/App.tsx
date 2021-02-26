@@ -1,9 +1,11 @@
 import React, { Suspense, useEffect, useState } from 'react';
+import { HelmetProvider } from 'react-helmet-async';
 import { WalletProvider } from './wallet/walletContext';
 import { WalletInterface } from './interfaces';
 import { initTezos, setWalletProvider } from './contracts/client';
 import { APP_NAME, NETWORK, RPC_URL, RPC_PORT } from './utils/globals';
 import { getBeaconInstance, isWalletConnected } from './wallet';
+import { AppRouter } from './router';
 
 const App: React.FC = () => {
   const [wallet, setWallet] = useState<Partial<WalletInterface>>({});
@@ -23,9 +25,11 @@ const App: React.FC = () => {
 
   return (
     <Suspense fallback="Loading...">
-      <WalletProvider value={{ wallet, setWallet }}>
-        <div>App works</div>
-      </WalletProvider>
+      <HelmetProvider>
+        <WalletProvider value={{ wallet, setWallet }}>
+          <AppRouter />
+        </WalletProvider>
+      </HelmetProvider>
     </Suspense>
   );
 };
