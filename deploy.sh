@@ -25,9 +25,8 @@ $TZC originate contract fa12_ctez transferring 0 from $deployment_key running 'f
 FA12_CTEZ_ADDRESS=`$TZC show known contract fa12_ctez`
 
 # Build and deploy cfmm
-echo "[@inline] let const_CONSUMER_ADDRESS = (\"${CTEZ_ADDRESS}\" : address)" > _build/oracle_constant.mligo
 ligo compile-contract cfmm_tez_ctez.mligo main > _build/cfmm.tz
-sed s/FA12_CTEZ/${FA12_CTEZ_ADDRESS}/ < cfmm_initial_storage.mligo  > _build/cfmm_storage.mligo
+sed s/FA12_CTEZ/${FA12_CTEZ_ADDRESS}/ < cfmm_initial_storage.mligo | sed s/CTEZ_ADDRESS/${CTEZ_ADDRESS}/ > _build/cfmm_storage.mligo
 
 ligo compile-storage cfmm_tez_ctez.mligo main "$(<_build/cfmm_storage.mligo)" > _build/cfmm_storage.tz
 $TZC originate contract cfmm transferring 0.000001 from $deployment_key running 'file:_build/cfmm.tz' --init "$(<_build/cfmm_storage.tz)" --burn-cap 10 

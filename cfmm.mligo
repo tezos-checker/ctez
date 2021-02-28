@@ -3,8 +3,12 @@
 //#define CASH_IS_FA2
 //#define CASH_IS_FA12
 
+(* If the token uses the fa2 standard *)
 //#define TOKEN_IS_FA2 
+(* To support baking *)
 //#define HAS_BAKER 
+(* To push prices to some consumer contract once per block *)
+//#define ORACLE
 
 (* ============================================================================
  * Entrypoints
@@ -131,6 +135,7 @@ type storage =
     lqtAddress : address ;
 #if ORACLE
     lastOracleUpdate : timestamp ;
+    consumerAddress : address ;
 #endif
   }
 
@@ -222,15 +227,6 @@ type mintOrBurn =
  * ============================================================================= *)
 
  [@inline] let null_address = ("tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU" : address)
- 
-#if ORACLE
- (* this file should contain a single line of the form 
-   let const_CONSUMER_ADDRESS = ("tz1..." : address)
- *)
-#include "_build/oracle_constant.mligo" 
-#endif 
-
-
 
 (* ============================================================================= 
  * Functions
@@ -678,7 +674,7 @@ let update_consumer (operations, storage : result) : result =
     if storage.lastOracleUpdate = Tezos.now
         then (operations, storage)
     else 
-        let consumer = match (Tezos.get_entrypoint_opt "%cfmm_price" const_CONSUMER_ADDRESS : ((nat * nat) contract) option) with
+        let consumer = match (Tezos.get_entrypoint_opt "%cfmm_price" storage.consumerAddress : ((nat * nat) contract) option) with
         | None -> (failwith error_CANNOT_GET_CFMM_PRICE_ENTRYPOINT_FROM_CONSUMER : (nat * nat) contract)
         | Some c -> c in
         ((Tezos.transaction (storage.cashPool, storage.tokenPool) 0mutez consumer) :: operations,
