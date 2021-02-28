@@ -1,3 +1,8 @@
+// TODO for tickets
+// basically allow  ticket_to_token, token_to_ticket, but also fa12_to_token and token_to_fa12 so that people can participate more easily. The token_to_ticket and ticket_to_token entrypoints
+// can be used specifically for the token_to_token calls
+// try to see how much code can be shared in  say fa12_to_token and ticket_to_token
+
 // =============================================================================
 // Entrypoints
 // =============================================================================
