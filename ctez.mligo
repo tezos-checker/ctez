@@ -20,7 +20,7 @@ type parameter =
   | Liquidate of liquidate
   | Delegate of (key_hash option)
   | Mint_or_burn of int
-  | Cfmm_price of tez * nat
+  | Cfmm_price of nat * nat
   | Set_addresses of set_addresses
   | Get_target of nat contract
 
@@ -185,7 +185,7 @@ let get_target (storage : storage) (callback : nat contract) : result =
 
 (* todo: restore when ligo interpret is fixed
    let cfmm_price (storage : storage) (tez : tez) (token : nat) : result =      *)
-let cfmm_price (storage, tez, token : storage * tez * nat) : result = 
+let cfmm_price (storage, tez, token : storage * nat * nat) : result = 
   if Tezos.sender <> storage.cfmm_address then
     (failwith error_CALLER_MUST_BE_CFMM : result)
   else
@@ -197,7 +197,7 @@ let cfmm_price (storage, tez, token : storage * tez * nat) : result =
        updating the target for 1.4 years for a negative number to occur *)
     let target  = if storage.drift < 0  then abs (target - d_target) else target + d_target in
     let drift =         
-      if (Bitwise.shift_left (tez / (1mutez)) 54n) > 65n * target * token  then  (* 54 is 48 + log2(64) *)
+      if (Bitwise.shift_left tez  54n) > 65n * target * token  then  (* 54 is 48 + log2(64) *)
         storage.drift - delta
         (* This is not homegeneous, but setting the constant delta is multiplied with
            to 1.0 magically happens to be reasonable. Why?
@@ -205,7 +205,7 @@ let cfmm_price (storage, tez, token : storage * tez * nat) : result =
            This means that the annualized drift changes by roughly one percentage point
            for each day over or under the target by more than 1/64th.
         *)          
-      else if (Bitwise.shift_left (tez / 1mutez) 54n) < 63n * target * token then
+      else if (Bitwise.shift_left tez 54n) < 63n * target * token then
         storage.drift + delta 
       else 
         storage.drift in
