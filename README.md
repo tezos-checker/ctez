@@ -36,7 +36,7 @@ A constant product market making contract (similar to uniswap) allows people to 
 
 Each time the CFMM pushes its rate to the ctez contract, the drift, and the target factor for ctez, are adjusted.
 
-If the price of ctez implied by the CPMM is below the target by over 1/64th, the drift is *raised* by about one percentage point per fractional years per fractional days since the last adjustment. If the price of ctez is more than 1/64th above the target, the drift is *lowered* by about one percentage point per fractional years per fractional day since the time of last adjustment.
+If the price of ctez implied by the CPMM is below the target by over 1/64th, the drift is *raised* by about one percentage point per fractional years per fractional days since the last adjustment. If the price of ctez is more than 1/64th above the target, the drift is *lowered* by about one percentage point per fractional years per fractional day since the time of last adjustment. Note that, by a small miracle, `ln(1.01) / year / day ~ 1.027 * 2^(-48) / s^2` which we use to simplify the computation in the implementation.
 
 Given that there's almost no real movement in this pair, it doesn't need a whole lot of liquidity to function effectively, just a tad enough that the rate read from the contract isn't too noisy, hence the lack of baking shouldn't be a huge hindrance.
 
