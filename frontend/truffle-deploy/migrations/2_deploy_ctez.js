@@ -10,6 +10,8 @@ const ctezInitialStorage = {
   target: 1 << 48,
   drift: 0,
   last_drift_update: "2021-01-01T00:00:00Z",
+  cfmm_address: "tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU",
+  ctez_fa12_address: "tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU",
 };
 
 module.exports = async (deployer, _network, accounts) => {
@@ -22,10 +24,9 @@ module.exports = async (deployer, _network, accounts) => {
   });
   await deployer.deploy(cfmm, {
     tokenPool: 1,
-    xtzPool: 1,
+    cashPool: 1,
     lqtTotal: 1,
-    selfIsUpdatingTokenPool: false,
-    manager: accounts[0],
+    pendingPoolUpdates: 0,
     tokenAddress: fa12.address,
     consumerAddress: ctez.address,
     lastOracleUpdate: "2021-01-01T00:00:00Z",

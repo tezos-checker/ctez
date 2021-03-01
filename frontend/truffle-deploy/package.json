@@ -31,7 +31,7 @@
     "start-sandbox:edo": "yarn start-sandbox --hardfork edo",
     "precompile": "node scripts/precompile.js",
     "compile": "yarn precompile && truffle compile",
-    "migrate": "truffle migrate --reset",
+    "migrate": "yarn compile && truffle migrate --reset",
     "test": "truffle test",
     "clean": "rimraf build",
     "compile:clean": "yarn clean && yarn compile",
