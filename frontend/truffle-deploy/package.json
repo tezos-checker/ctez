@@ -29,7 +29,7 @@
   "scripts": {
     "start-sandbox": "ganache-cli --flavor tezos --seed alice --genesisBlockHash BKoY8T9rewHkQR16iPaLECTuSgpT73ZJR3Gw4aSgwdtpGhovqMs",
     "start-sandbox:edo": "yarn start-sandbox --hardfork edo",
-    "precompile": "node scripts/precompile.js",
+    "precompile": "node scripts/precompile.js tez",
     "compile": "yarn precompile && truffle compile",
     "migrate": "yarn compile && truffle migrate --reset",
     "test": "truffle test",

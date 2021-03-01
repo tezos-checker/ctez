@@ -1,8 +1,16 @@
 const fs = require("fs");
 const path = require("path");
-
+const args = process.argv.slice(2);
 const rootDir = path.join(__dirname, "..", "..", "..");
 const destDir = path.join(__dirname, "..", "contracts");
+
+const cTezCustomDefines = {
+  tez: "#define CASH_IS_TEZ",
+  fa2: "#define CASH_IS_FA2",
+  fa12: "#define CASH_IS_FA12",
+};
+
+const userSelection = args.length > 0 ? args[0] : "tez";
 
 const files = [
   {
@@ -30,7 +38,10 @@ files.forEach(({ name, newName }) => {
 const file = path.join(destDir, "cfmm.mligo");
 const data = fs.readFileSync(file);
 const fd = fs.openSync(file, "w+");
-const buffer = Buffer.from("#define CASH_IS_TEZ", "utf-8");
+const buffer = Buffer.from(
+  `#define ORACLE\n${cTezCustomDefines[userSelection]}`,
+  "utf-8"
+);
 
 fs.writeSync(fd, buffer, 0, buffer.length, 0);
 fs.writeSync(fd, data, 0, data.length, buffer.length);
