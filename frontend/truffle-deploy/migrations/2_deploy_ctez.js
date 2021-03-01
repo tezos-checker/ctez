@@ -2,12 +2,11 @@ const cfmm = artifacts.require("cfmm");
 const ctez = artifacts.require("ctez");
 const fa12 = artifacts.require("fa12");
 const FA12LQT = artifacts.require("FA12LQT");
-
 const { MichelsonMap } = require("@taquito/michelson-encoder");
 
 const ctezInitialStorage = {
   ovens: MichelsonMap.fromLiteral({}),
-  target: 1 << 48,
+  target: 1n << 48n,
   drift: 0,
   last_drift_update: "2021-01-01T00:00:00Z",
   cfmm_address: "tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU",
