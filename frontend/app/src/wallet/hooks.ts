@@ -1,11 +1,18 @@
 import { useContext } from 'react';
+import { disconnectBeacon } from '.';
 import { WalletInterface } from '../interfaces';
 import WalletContext from './walletContext';
 
-export const useWallet = (): [
+type useWalletReturnType = [
   Partial<WalletInterface>,
   (wallet: Partial<WalletInterface>) => void,
-] => {
-  const walletContext = useContext(WalletContext);
-  return [walletContext.wallet, walletContext.setWallet];
+  () => void,
+];
+export const useWallet = (): useWalletReturnType => {
+  const { wallet, setWallet } = useContext(WalletContext);
+  const disconnectWallet = () => {
+    wallet.wallet && disconnectBeacon(wallet.wallet);
+    setWallet({});
+  };
+  return [wallet, setWallet, disconnectWallet];
 };

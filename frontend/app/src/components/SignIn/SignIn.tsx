@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { setWalletProvider } from '../../contracts/client';
 import { APP_NAME, NETWORK } from '../../utils/globals';
-import { getBeaconInstance, disconnectBeacon } from '../../wallet';
+import { getBeaconInstance } from '../../wallet';
 import { useWallet } from '../../wallet/hooks';
 import Identicon from '../Identicon';
 import ProfilePopover from '../ProfilePopover';
@@ -15,7 +15,7 @@ const SignedInBoxStyled = styled(Box)`
 
 export const SignIn: React.FC = () => {
   const { t } = useTranslation(['header']);
-  const [wallet, setWallet] = useWallet();
+  const [{ wallet, pkh: userAddress, network }, setWallet, disconnectWallet] = useWallet();
   const [isOpen, setOpen] = useState(false);
 
   const connectWallet = async () => {
@@ -26,7 +26,7 @@ export const SignIn: React.FC = () => {
 
   return (
     <div>
-      {!wallet.wallet ? (
+      {!wallet ? (
         <Box component="span">
           <Button variant="outlined" onClick={connectWallet} sx={{ textTransform: 'none' }}>
             {t('signIn')}
@@ -36,16 +36,13 @@ export const SignIn: React.FC = () => {
         <Grid container direction="row-reverse">
           <Grid item>
             <SignedInBoxStyled>
-              <Identicon seed={wallet?.pkh ?? ''} onClick={() => setOpen(true)} />
+              <Identicon seed={userAddress ?? ''} onClick={() => setOpen(true)} />
               <ProfilePopover
                 isOpen={isOpen}
                 onClose={() => setOpen(false)}
-                handleAction={() => {
-                  wallet?.wallet && disconnectBeacon(wallet?.wallet);
-                  setWallet({});
-                }}
-                address={wallet?.pkh ?? ''}
-                network={wallet?.network ?? ''}
+                handleAction={disconnectWallet}
+                address={userAddress ?? ''}
+                network={network ?? ''}
                 actionText={t('signOut')}
               />
             </SignedInBoxStyled>
