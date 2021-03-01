@@ -85,7 +85,7 @@ type update_token_pool_internal = update_fa12_pool
 type update_cash_pool_internal = update_fa2_pool
 #endif 
 
-#if CASH_IS_FA12
+#if !CASH_IS_FA12
 type update_cash_pool_internal = update_fa12_pool
 #endif 
 
