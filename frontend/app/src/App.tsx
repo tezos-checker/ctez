@@ -3,9 +3,10 @@ import { HelmetProvider } from 'react-helmet-async';
 import { WalletProvider } from './wallet/walletContext';
 import { WalletInterface } from './interfaces';
 import { initTezos, setWalletProvider } from './contracts/client';
-import { APP_NAME, NETWORK, RPC_URL, RPC_PORT } from './utils/globals';
+import { APP_NAME, NETWORK, RPC_URL, RPC_PORT, CTEZ_ADDRESS } from './utils/globals';
 import { getBeaconInstance, isWalletConnected } from './wallet';
 import { AppRouter } from './router';
+import { create, initCTez } from './contracts/ctez';
 
 const App: React.FC = () => {
   const [wallet, setWallet] = useState<Partial<WalletInterface>>({});
@@ -19,8 +20,16 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-    initTezos(RPC_URL, RPC_PORT);
-    checkWalletConnection();
+    const setup = async () => {
+      try {
+        initTezos(RPC_URL, RPC_PORT);
+        await checkWalletConnection();
+        CTEZ_ADDRESS && (await initCTez(CTEZ_ADDRESS));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    setup();
   }, []);
 
   return (

@@ -6,8 +6,13 @@ export const executeMethod = async (
   methodName: string,
   args: unknown[] = [['Unit']],
   confirmation = 0,
+  amount = 0,
+  mutez = false,
 ): Promise<string> => {
-  const op = await contract.methods[methodName](...args).send();
+  const op = await contract.methods[methodName](...args).send({
+    amount: amount > 0 ? amount : undefined,
+    mutez,
+  });
   confirmation && (await op.confirmation(confirmation));
   return op.opHash;
 };
