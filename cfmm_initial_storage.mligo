@@ -1,9 +1,10 @@
 { tokenPool = 1n ; 
-  xtzPool = 1mutez ;
+  cashPool = 1n ;
   lqtTotal = 1n ;
-  selfIsUpdatingTokenPool = false ;  
-  manager = ("MANAGER_ADDRESS" : address) ;
+  pendingPoolUpdates = 0n ;  
   tokenAddress = ("FA12_CTEZ" : address) ;
   lqtAddress = ("tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU" : address) ;
-  lastOracleUpdate = ("2021-01-01T00:00:00Z" : timestamp) }
+  lastOracleUpdate = ("2021-01-01T00:00:00Z" : timestamp) ;
+  consumerAddress = ("CTEZ_ADDRESS" : address) ;
+  }
   
