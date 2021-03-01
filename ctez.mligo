@@ -141,7 +141,7 @@ let delegate (s : storage) (d : key_hash option) : result =
   ([Tezos.transaction d 0mutez oven_contract], s)
 
 let get_ctez_mint_or_burn (fa12_address : address) : (int * address) contract = 
-  match (Tezos.get_entrypoint_opt  "%mint_or_burn"  fa12_address : ((int * address) contract) option) with
+  match (Tezos.get_entrypoint_opt  "%mintOrBurn"  fa12_address : ((int * address) contract) option) with
   | None -> (failwith error_CTEZ_FA12_CONTRACT_MISSING_MINT_OR_BURN_ENTRYPOINT : (int * address) contract)
   | Some c -> c 
 
