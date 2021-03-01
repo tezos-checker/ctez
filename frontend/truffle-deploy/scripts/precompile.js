@@ -28,3 +28,11 @@ files.forEach(({ name, newName }) => {
     if (err) throw err;
   });
 });
+
+const file = path.join(destDir, "cfmm.mligo");
+const data = fs.readFileSync(file);
+const fd = fs.openSync(file, "w+");
+const buffer = Buffer.from("#define CASH_IS_FA12", "utf-8");
+
+fs.writeSync(fd, buffer, 0, buffer.length, 0);
+fs.writeSync(fd, data, 0, data.length, buffer.length);
