@@ -1,14 +1,13 @@
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LinkList } from '../components/LinkList/LinkList';
 import Page from '../components/Page';
+import { ovenExists } from '../contracts/ctez';
+import { useWallet } from '../wallet/hooks';
 
 export const HomePage: React.FC = () => {
   const { t } = useTranslation(['common']);
   const methodList = [
-    {
-      to: '/create',
-      primary: t('createVault'),
-    },
     {
       to: '/deposit',
       primary: t('deposit'),
@@ -30,10 +29,29 @@ export const HomePage: React.FC = () => {
       primary: t('delegate'),
     },
   ];
+  const [list, setList] = useState(methodList);
+  const [{ pkh: userAddress }] = useWallet();
+  useEffect(() => {
+    const getOvenStatus = async () => {
+      if (userAddress && !list[0].to.includes('create')) {
+        const ovenStatus = await ovenExists(userAddress);
+        if (!ovenStatus) {
+          setList([
+            {
+              to: '/create',
+              primary: t('createVault'),
+            },
+            ...list,
+          ]);
+        }
+      }
+    };
+    getOvenStatus();
+  }, [userAddress]);
 
   return (
     <Page>
-      <LinkList list={methodList} />
+      <LinkList list={list} />
     </Page>
   );
 };

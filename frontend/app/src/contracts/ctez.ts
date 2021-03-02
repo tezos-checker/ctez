@@ -1,6 +1,6 @@
 import { WalletContract } from '@taquito/taquito';
-import { string } from 'yup/lib/locale';
 import { ErrorType } from '../interfaces';
+import { CTEZ_ADDRESS } from '../utils/globals';
 import { executeMethod, initContract } from './utils';
 
 let cTez: WalletContract;
@@ -9,7 +9,7 @@ export const initCTez = async (address: string) => {
   cTez = await initContract(address);
 };
 
-export const getCTez = async (): Promise<WalletContract> => {
+export const getCTez = (): WalletContract => {
   return cTez;
 };
 
@@ -41,6 +41,22 @@ export const liquidate = async (overOwner: string, amount: number, to: string): 
 export const mintOrBurn = async (quantity: number): Promise<string> => {
   const hash = await executeMethod(cTez, 'mint_or_burn', [quantity]);
   return hash;
+};
+
+export const ovenExists = async (userAddress: string): Promise<boolean | undefined> => {
+  try {
+    if (!cTez && CTEZ_ADDRESS) {
+      await initCTez(CTEZ_ADDRESS);
+    }
+    const storage: any = await cTez.storage();
+    const oven = await storage.ovens.get(userAddress);
+    if (oven) {
+      return true;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+  return false;
 };
 
 export const cTezError: ErrorType = {
