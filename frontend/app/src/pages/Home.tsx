@@ -32,10 +32,14 @@ export const HomePage: React.FC = () => {
   const [list, setList] = useState(methodList);
   const [{ pkh: userAddress }] = useWallet();
   useEffect(() => {
+    /**
+     * Needs refactor
+     */
     const getOvenStatus = async () => {
-      if (userAddress && !list[0].to.includes('create')) {
+      if (userAddress) {
         const ovenStatus = await ovenExists(userAddress);
-        if (!ovenStatus) {
+        if (!ovenStatus && !list[0].to.includes('/create')) {
+          console.log(ovenStatus);
           setList([
             {
               to: '/create',
@@ -44,6 +48,14 @@ export const HomePage: React.FC = () => {
             ...list,
           ]);
         }
+      } else if (!list[0].to.includes('/create')) {
+        setList([
+          {
+            to: '/create',
+            primary: t('createVault'),
+          },
+          ...list,
+        ]);
       }
     };
     getOvenStatus();
