@@ -47,7 +47,7 @@ type cash_to_token =
 
 type token_to_cash =
   [@layout:comb]
-  { [@annot] to_ : address ; (* where to send the cash *)
+  { [@annot:to] to_ : address ; (* where to send the cash *)
     tokensSold : nat ; (* how many tokens are being sold *)
     minCashBought : nat ; (* minimum amount of cash desired *)
     deadline : timestamp ; (* time before which the request must be completed *)
@@ -340,7 +340,7 @@ let add_liquidity (param : add_liquidity) (storage: storage) : result =
             let op_token = token_transfer storage Tezos.sender Tezos.self_address tokens_deposited in     
 #if !CASH_IS_TEZ
             (* send cash from sender to self *)
-            let op_cash = cash_transfer storage Tezos.self_address Tezos.sender cashDeposited in
+            let op_cash = cash_transfer storage Tezos.sender Tezos.self_address cashDeposited in
 #endif
             (* mint lqt tokens for them *)
             let op_lqt = mint_or_burn storage owner (int lqt_minted) in
@@ -579,9 +579,11 @@ let update_pools (storage : storage) : result =
       (op_list, {storage with pendingPoolUpdates = pendingPoolUpdates})
 
 
+[@inline]
 let update_fa12_pool_internal (pool_update : update_fa12_pool) : nat =
     pool_update
 
+[@inline]
 let update_fa2_pool_internal (pool_update : update_fa2_pool) : nat =
         (* We trust the FA2 to provide the expected balance. there are no BFS
           shenanigans to worry about unless the token contract misbehaves. *)
