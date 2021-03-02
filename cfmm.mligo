@@ -655,10 +655,10 @@ let token_to_token (param : token_to_token) (storage : storage) : result =
             let cashContract_approve =  (match (Tezos.get_entrypoint_opt "%approve" storage.cashAddress : (address * nat) contract option) with
                 | None -> (failwith error_MISSING_APPROVE_ENTRYPOINT_IN_CASH_CONTRACT : (address * nat) contract)
                 | Some c -> c) in
-            (Tezos.transaction (Tezos.self_address, 0n) 
+            (Tezos.transaction (outputCfmmContract, 0n)
                           0mutez
                           cashContract_approve,
-            Tezos.transaction (Tezos.self_address, cash_bought) 
+            Tezos.transaction (outputCfmmContract, cash_bought)
                           0mutez
                           cashContract_approve) in
 #else 
