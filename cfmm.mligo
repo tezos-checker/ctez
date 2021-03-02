@@ -100,6 +100,7 @@ type entrypoint =
 #if HAS_BAKER
 | SetBaker        of set_baker
 | SetManager      of address
+| AcceptManager   of unit
 | Default         of unit
 #endif
 #if !CASH_IS_TEZ
@@ -121,6 +122,7 @@ type storage =
 #if HAS_BAKER
     freezeBaker : bool ;    
     manager : address ;
+    new_manager : address ;
 #endif
     tokenAddress : address ;
 #if TOKEN_IS_FA2
@@ -180,7 +182,7 @@ type mintOrBurn =
 [@inline] let error_MAX_TOKENS_DEPOSITED_MUST_BE_GREATER_THAN_OR_EQUAL_TO_TOKENS_DEPOSITED = 4n
 [@inline] let error_LQT_MINTED_MUST_BE_GREATER_THAN_MIN_LQT_MINTED = 5n
 (* 6n *)
-(* 7n *)
+[@inline] let error_ONLY_NEW_MANAGER_CAN_ACCEPT = 7n
 [@inline] let error_CASH_BOUGHT_MUST_BE_GREATER_THAN_OR_EQUAL_TO_MIN_CASH_BOUGHT = 8n
 [@inline] let error_INVALID_TO_ADDRESS = 9n
 [@inline] let error_AMOUNT_MUST_BE_ZERO = 10n
@@ -517,7 +519,16 @@ let set_manager (new_manager : address) (storage : storage) : result =
     else if Tezos.sender <> storage.manager then
         (failwith error_ONLY_MANAGER_CAN_SET_MANAGER : result)
     else
-        (([] : operation list), {storage with manager = new_manager})
+        (([] : operation list), {storage with new_manager = new_manager})
+
+let accept_manager (storage : storage) : result = 
+    if storage.pendingPoolUpdates > 0n then 
+        (failwith error_PENDING_POOL_UPDATES_MUST_BE_ZERO : result)
+    else if Tezos.sender <> storage.new_manager then
+        (failwith error_ONLY_NEW_MANAGER_CAN_ACCEPT : result)
+    else
+        (([] : operation list), {storage with manager = storage.new_manager})
+        
 #endif        
 
 let set_lqt_address (lqtAddress : address) (storage : storage) : result =
@@ -655,10 +666,10 @@ let token_to_token (param : token_to_token) (storage : storage) : result =
             let cashContract_approve =  (match (Tezos.get_entrypoint_opt "%approve" storage.cashAddress : (address * nat) contract option) with
                 | None -> (failwith error_MISSING_APPROVE_ENTRYPOINT_IN_CASH_CONTRACT : (address * nat) contract)
                 | Some c -> c) in
-            (Tezos.transaction (outputCfmmContract, 0n)
+            (Tezos.transaction (outputCfmmContract, 0n) 
                           0mutez
                           cashContract_approve,
-            Tezos.transaction (outputCfmmContract, cash_bought)
+            Tezos.transaction (outputCfmmContract, cash_bought) 
                           0mutez
                           cashContract_approve) in
 #else 
@@ -705,6 +716,8 @@ let main ((entrypoint, storage) : entrypoint * storage) : result =
         set_baker param storage
     | SetManager param ->
         set_manager param storage
+    | AcceptManager -> 
+        accept_manager storage
     | Default ->
         default_ storage
 #endif
