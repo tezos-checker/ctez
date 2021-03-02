@@ -32,7 +32,7 @@ const WithdrawComponent: React.FC<WithTranslation> = ({ t }) => {
   };
 
   const validationSchema = Yup.object().shape({
-    amount: Yup.number().min(1).required(t('required')),
+    amount: Yup.number().min(0.1).required(t('required')),
     to: Yup.string().required(t('required')),
   });
 
@@ -89,7 +89,7 @@ const WithdrawComponent: React.FC<WithTranslation> = ({ t }) => {
                     label={t('amount')}
                     className="amount"
                     type="number"
-                    min="1"
+                    min="0.1"
                   />
                 </Grid>
                 <Grid item>

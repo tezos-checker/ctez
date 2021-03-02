@@ -1,4 +1,5 @@
 import { WalletContract } from '@taquito/taquito';
+import BigNumber from 'bignumber.js';
 import { ErrorType } from '../interfaces';
 import { Oven } from '../interfaces/ctez';
 import { CTEZ_ADDRESS } from '../utils/globals';
@@ -30,12 +31,16 @@ export const deposit = async (amount: number): Promise<string> => {
 };
 
 export const withdraw = async (amount: number, to: string): Promise<string> => {
-  const hash = await executeMethod(cTez, 'withdraw', [amount, to]);
+  const hash = await executeMethod(cTez, 'withdraw', [new BigNumber(amount).shiftedBy(6), to]);
   return hash;
 };
 
 export const liquidate = async (overOwner: string, amount: number, to: string): Promise<string> => {
-  const hash = await executeMethod(cTez, 'liquidate', [overOwner, amount, to]);
+  const hash = await executeMethod(cTez, 'liquidate', [
+    overOwner,
+    new BigNumber(amount).shiftedBy(6),
+    to,
+  ]);
   return hash;
 };
 
