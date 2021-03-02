@@ -33,7 +33,7 @@ export const HomePage: React.FC = () => {
   const [{ pkh: userAddress }] = useWallet();
   useEffect(() => {
     /**
-     * Needs refactor
+     * TODO: Needs refactor
      */
     const getOvenStatus = async () => {
       if (userAddress) {
@@ -47,8 +47,10 @@ export const HomePage: React.FC = () => {
             },
             ...list,
           ]);
+        } else {
+          setList(methodList);
         }
-      } else if (!list[0].to.includes('/create')) {
+      } else if (!userAddress && !list[0].to.includes('/create')) {
         setList([
           {
             to: '/create',
