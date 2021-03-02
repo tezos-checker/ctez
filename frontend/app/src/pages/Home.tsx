@@ -25,6 +25,10 @@ export const HomePage: React.FC = () => {
       to: '/liquidate',
       primary: t('liquidate'),
     },
+    {
+      to: '/delegate',
+      primary: t('delegate'),
+    },
   ];
 
   return (

@@ -18,6 +18,11 @@ export const create = async (bakerAddress: string): Promise<string> => {
   return hash;
 };
 
+export const delegate = async (bakerAddress: string): Promise<string> => {
+  const hash = await executeMethod(cTez, 'delegate', [bakerAddress]);
+  return hash;
+};
+
 export const deposit = async (amount: number): Promise<string> => {
   const hash = await executeMethod(cTez, 'deposit', undefined, 0, amount);
   return hash;
