@@ -1,0 +1,13 @@
+{
+  "createVault": "Create Oven",
+  "submit": "Submit",
+  "delegate": "Delegate",
+  "delegatePlaceholder": "Delegate (e.g. tz1...)",
+  "required": "Required",
+  "deposit": "Deposit",
+  "amount": "Amount",
+  "withdraw": "Withdraw",
+  "mintOrBurn": "Mint or Burn",
+  "ovenOwner": "Oven Owner",
+  "liquidate": "Liquidate"
+}

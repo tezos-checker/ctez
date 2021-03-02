@@ -7,7 +7,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { DEFAULT_LANGUAGE } from '../../i18n';
 import { APP_NAME, NETWORK } from '../../utils/globals';
-import { Header } from '../header';
+import { Header } from '../Header';
 import { Typography } from '../Typography';
 
 const ContainerStyled = styled(Container)`

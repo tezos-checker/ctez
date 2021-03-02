@@ -1,48 +1,35 @@
-import { Button } from '@material-ui/core';
+import { useTranslation } from 'react-i18next';
+import { LinkList } from '../components/LinkList/LinkList';
 import Page from '../components/Page';
-import { create, deposit, liquidate, mintOrBurn, withdraw } from '../contracts/ctez';
-import { useWallet } from '../wallet/hooks';
 
 export const HomePage: React.FC = () => {
-  const [{ pkh }] = useWallet();
+  const { t } = useTranslation(['common']);
+  const methodList = [
+    {
+      to: '/create',
+      primary: t('createVault'),
+    },
+    {
+      to: '/deposit',
+      primary: t('deposit'),
+    },
+    {
+      to: '/withdraw',
+      primary: t('withdraw'),
+    },
+    {
+      to: '/mint-or-burn',
+      primary: t('mintOrBurn'),
+    },
+    {
+      to: '/liquidate',
+      primary: t('liquidate'),
+    },
+  ];
+
   return (
     <Page>
-      Home Page
-      <Button
-        onClick={() => {
-          create('tz1aWXP237BLwNHJcCD4b3DutCevhqq2T1Z9');
-        }}
-      >
-        Create
-      </Button>
-      <Button
-        onClick={() => {
-          deposit(1);
-        }}
-      >
-        Deposit
-      </Button>
-      <Button
-        onClick={() => {
-          pkh && withdraw(1, pkh);
-        }}
-      >
-        Withdraw
-      </Button>
-      <Button
-        onClick={() => {
-          pkh && liquidate(pkh, 1, pkh);
-        }}
-      >
-        Liquidate
-      </Button>
-      <Button
-        onClick={() => {
-          mintOrBurn(1);
-        }}
-      >
-        Mint or Burn
-      </Button>
+      <LinkList list={methodList} />
     </Page>
   );
 };

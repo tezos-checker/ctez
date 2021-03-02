@@ -1,12 +1,16 @@
 import React, { Suspense, useEffect, useState } from 'react';
 import { HelmetProvider } from 'react-helmet-async';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { ToastProvider } from 'react-toast-notifications';
 import { WalletProvider } from './wallet/walletContext';
 import { WalletInterface } from './interfaces';
 import { initTezos, setWalletProvider } from './contracts/client';
 import { APP_NAME, NETWORK, RPC_URL, RPC_PORT, CTEZ_ADDRESS } from './utils/globals';
 import { getBeaconInstance, isWalletConnected } from './wallet';
 import { AppRouter } from './router';
-import { create, initCTez } from './contracts/ctez';
+import { initCTez } from './contracts/ctez';
+
+const queryClient = new QueryClient();
 
 const App: React.FC = () => {
   const [wallet, setWallet] = useState<Partial<WalletInterface>>({});
@@ -35,9 +39,13 @@ const App: React.FC = () => {
   return (
     <Suspense fallback="Loading...">
       <HelmetProvider>
-        <WalletProvider value={{ wallet, setWallet }}>
-          <AppRouter />
-        </WalletProvider>
+        <QueryClientProvider client={queryClient}>
+          <WalletProvider value={{ wallet, setWallet }}>
+            <ToastProvider placement="bottom-right">
+              <AppRouter />
+            </ToastProvider>
+          </WalletProvider>
+        </QueryClientProvider>
       </HelmetProvider>
     </Suspense>
   );
