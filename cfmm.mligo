@@ -438,7 +438,7 @@ let cash_to_token (param : cash_to_token) (storage : storage) =
         let op_cash = cash_transfer storage Tezos.sender Tezos.self_address cashSold in
 #endif
         (* Send tokens_withdrawn from exchange to sender. *)
-        let op_token = token_transfer storage Tezos.self_address Tezos.sender tokens_bought in
+        let op_token = token_transfer storage Tezos.self_address to_ tokens_bought in
         ([
 #if !CASH_IS_TEZ            
             op_cash;
