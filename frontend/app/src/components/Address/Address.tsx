@@ -21,6 +21,7 @@ const trimAddress = (address: string, trimSize: TrimSizeType = 'small'): string 
 };
 
 export interface AddressProps {
+  label?: string;
   address: string;
   trim?: boolean;
   onCopy?: () => void | Promise<void>;
@@ -38,6 +39,7 @@ const CopyClipBoardStyled = styled(CopyToClipboard)`
 `;
 
 export const Address: React.FC<AddressProps> = ({
+  label,
   address,
   trim,
   onCopy,
@@ -51,6 +53,7 @@ export const Address: React.FC<AddressProps> = ({
     <Grid container>
       <Grid item>
         <Typography size={size} component={component}>
+          {label && `${label}: `}
           {str}
         </Typography>
         <CopyClipBoardStyled

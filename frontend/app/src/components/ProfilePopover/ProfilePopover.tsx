@@ -4,6 +4,7 @@ import { Popover, Divider, Button } from '@material-ui/core';
 import Address from '../Address';
 import Identicon from '../Identicon';
 import { Typography } from '../Typography';
+import { Oven } from '../../interfaces/ctez';
 
 const useStyles = makeStyles((theme: any) => ({
   popover: {
@@ -40,8 +41,7 @@ const useStyles = makeStyles((theme: any) => ({
 export interface ProfilePopoverProps {
   address: string;
   network: string;
-  stablecoin?: string | number;
-  stablecoinSymbol?: string;
+  oven?: Oven;
   isOpen: boolean;
   actionText: string;
   onClose: () => void | Promise<void>;
@@ -52,8 +52,7 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
   address,
   network,
   isOpen,
-  stablecoin,
-  stablecoinSymbol,
+  oven,
   onClose,
   handleAction,
   actionText,
@@ -83,10 +82,25 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
           <Identicon alt={address} seed={address} />
           <div className={classes.accountDetails}>
             <Address address={address} trim trimSize="medium" />
-            {stablecoinSymbol && stablecoin && (
-              <Typography size="caption" component="span" color="textSecondary">
-                {stablecoinSymbol}: {stablecoin}
-              </Typography>
+            {oven && (
+              <>
+                <Typography size="caption" component="span" color="textSecondary">
+                  <Address
+                    address={oven.address}
+                    trim
+                    trimSize="small"
+                    size="caption"
+                    label="Oven"
+                  />
+                </Typography>
+
+                <Typography size="caption" component="span" color="textSecondary">
+                  Oven Balance: {oven.tez_balance.shiftedBy(-6).toString()}
+                </Typography>
+                <Typography size="caption" component="span" color="textSecondary">
+                  Outstanding CTez: {oven.ctez_outstanding.shiftedBy(-6).toString()}
+                </Typography>
+              </>
             )}
             <Typography size="caption" component="span" color="textSecondary">
               {network}

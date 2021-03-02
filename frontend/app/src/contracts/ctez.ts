@@ -1,5 +1,6 @@
 import { WalletContract } from '@taquito/taquito';
 import { ErrorType } from '../interfaces';
+import { Oven } from '../interfaces/ctez';
 import { CTEZ_ADDRESS } from '../utils/globals';
 import { executeMethod, initContract } from './utils';
 
@@ -43,20 +44,17 @@ export const mintOrBurn = async (quantity: number): Promise<string> => {
   return hash;
 };
 
-export const ovenExists = async (userAddress: string): Promise<boolean | undefined> => {
+export const getOven = async (userAddress: string): Promise<Oven | undefined> => {
   try {
     if (!cTez && CTEZ_ADDRESS) {
       await initCTez(CTEZ_ADDRESS);
     }
     const storage: any = await cTez.storage();
     const oven = await storage.ovens.get(userAddress);
-    if (oven) {
-      return true;
-    }
+    return oven;
   } catch (error) {
     console.log(error);
   }
-  return false;
 };
 
 export const cTezError: ErrorType = {

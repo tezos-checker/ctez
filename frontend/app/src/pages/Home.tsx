@@ -1,8 +1,12 @@
+import { CircularProgress } from '@material-ui/core';
+import { AxiosError } from 'axios';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from 'react-query';
 import { LinkList } from '../components/LinkList/LinkList';
 import Page from '../components/Page';
-import { ovenExists } from '../contracts/ctez';
+import { getOven } from '../contracts/ctez';
+import { Oven } from '../interfaces/ctez';
 import { useWallet } from '../wallet/hooks';
 
 export const HomePage: React.FC = () => {
@@ -31,41 +35,29 @@ export const HomePage: React.FC = () => {
   ];
   const [list, setList] = useState(methodList);
   const [{ pkh: userAddress }] = useWallet();
-  useEffect(() => {
-    /**
-     * TODO: Needs refactor
-     */
-    const getOvenStatus = async () => {
-      if (userAddress) {
-        const ovenStatus = await ovenExists(userAddress);
-        if (!ovenStatus && !list[0].to.includes('/create')) {
-          console.log(ovenStatus);
-          setList([
-            {
-              to: '/create',
-              primary: t('createVault'),
-            },
-            ...list,
-          ]);
-        } else {
-          setList(methodList);
-        }
-      } else if (!userAddress && !list[0].to.includes('/create')) {
-        setList([
-          {
-            to: '/create',
-            primary: t('createVault'),
-          },
-          ...list,
-        ]);
-      }
-    };
-    getOvenStatus();
-  }, [userAddress]);
 
-  return (
-    <Page>
-      <LinkList list={list} />
-    </Page>
+  const { data: ovenData, isLoading } = useQuery<Oven | undefined, AxiosError, Oven | undefined>(
+    ['ovenData', userAddress],
+    async () => {
+      if (userAddress) {
+        return getOven(userAddress);
+      }
+    },
   );
+
+  useEffect(() => {
+    if (userAddress && ovenData) {
+      setList(methodList);
+    } else if (!list[0].to.includes('/create')) {
+      setList([
+        {
+          to: '/create',
+          primary: t('createVault'),
+        },
+        ...list,
+      ]);
+    }
+  }, [ovenData]);
+
+  return <Page>{isLoading ? <CircularProgress /> : <LinkList list={list} />}</Page>;
 };
