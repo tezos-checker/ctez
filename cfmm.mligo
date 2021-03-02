@@ -137,7 +137,7 @@ type storage =
     lqtAddress : address ;
 #if ORACLE
     lastOracleUpdate : timestamp ;
-    consumerAddress : address ;
+    consumerEntrypoint : address ;
 #endif
   }
 
@@ -694,7 +694,7 @@ let update_consumer (operations, storage : result) : result =
     if storage.lastOracleUpdate = Tezos.now
         then (operations, storage)
     else 
-        let consumer = match (Tezos.get_entrypoint_opt "%cfmm_price" storage.consumerAddress : ((nat * nat) contract) option) with
+        let consumer = match (Tezos.get_contract_opt storage.consumerEntrypoint : ((nat * nat) contract) option) with
         | None -> (failwith error_CANNOT_GET_CFMM_PRICE_ENTRYPOINT_FROM_CONSUMER : (nat * nat) contract)
         | Some c -> c in
         ((Tezos.transaction (storage.cashPool, storage.tokenPool) 0mutez consumer) :: operations,
