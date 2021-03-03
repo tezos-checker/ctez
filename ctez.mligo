@@ -152,7 +152,8 @@ let liquidate (s: storage) (p : liquidate) : result  =
     let remaining_ctez = match Michelson.is_nat (oven.ctez_outstanding - p.quantity) with
       | None -> (failwith error_CANNOT_BURN_MORE_THAN_OUTSTANDING_AMOUNT_OF_CTEZ : nat)
       | Some n -> n  in        
-    let extracted_balance = (Bitwise.shift_right (p.quantity * s.target) 44n) * 1mutez / 15n in (* 44 is 48 - log2(16) *)
+    (* get 32/31 of the target price, meaning there is a 1/31 penalty for the oven owner for being liquidated *)
+    let extracted_balance = (Bitwise.shift_right (p.quantity * s.target) 43n) * 1mutez / 31n in (* 43 is 48 - log2(32) *)
     let new_balance = oven.tez_balance - extracted_balance in
     let oven = {oven with ctez_outstanding = remaining_ctez ; tez_balance = new_balance} in
     let ovens = Big_map.update p.oven_owner (Some oven) s.ovens in
