@@ -45,7 +45,7 @@ export const liquidate = async (overOwner: string, amount: number, to: string): 
 };
 
 export const mintOrBurn = async (quantity: number): Promise<string> => {
-  const hash = await executeMethod(cTez, 'mint_or_burn', [quantity]);
+  const hash = await executeMethod(cTez, 'mint_or_burn', [new BigNumber(quantity).shiftedBy(6)]);
   return hash;
 };
 
