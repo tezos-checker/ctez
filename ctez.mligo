@@ -11,14 +11,13 @@
 type set_addresses = [@layout:comb] {cfmm_address : address ; ctez_fa12_address : address }
 type liquidate = [@layout:comb] { oven_owner : address ; quantity : nat ; [@annot:to] to_ : unit contract }
 type withdraw = [@layout:comb] { amount : tez ;  [@annot:to] to_ : unit contract }
-
+type register_deposit = [@layout:comb] { owner : address ; amount : tez }
 
 type parameter =
   | Create of (key_hash option)
-  | Deposit
   | Withdraw of withdraw
   | Liquidate of liquidate
-  | Delegate of (key_hash option)
+  | Register_deposit of register_deposit
   | Mint_or_burn of int
   | Cfmm_price of nat * nat
   | Set_addresses of set_addresses
@@ -40,15 +39,21 @@ type result = (operation list) * storage
 type oven_parameter =
   | Oven_delegate of (key_hash option)
   | Oven_deposit
+  | Oven_edit_depositor of address * bool
   | Oven_withdraw of tez * (unit contract)
-type oven_storage = { admin : address (* vault admin contract *) }
+
+type oven_storage = {
+  admin : address (* vault admin contract *) ;
+  owner : address (* owner of the oven *) ;
+  depositors : address set (* who can deposit in the oven *) ;
+  }
 type oven_result = (operation list) * oven_storage
 (* End of oven types *)
 
 
 [@inline] let error_OVEN_ALREADY_EXISTS = 0n
-[@inline] let error_OVEN_CAN_ONLY_BE_CALLED_FROM_MAIN_CONTRACT = 1n
-[@inline] let error_CTEZ_FA12_ADDRESS_ALREADY_SET = 2n 
+[@inline] let error_INVALID_CALLER_FOR_OVEN_OWNER = 1n
+[@inline] let error_CTEZ_FA12_ADDRESS_ALREADY_SET = 2n
 [@inline] let error_CFMM_ADDRESS_ALREADY_SET = 3n
 [@inline] let error_OVEN_DOESNT_EXIST= 4n
 [@inline] let error_OVEN_MISSING_WITHDRAW_ENTRYPOINT = 5n
@@ -60,58 +65,70 @@ type oven_result = (operation list) * oven_storage
 [@inline] let error_OVEN_NOT_UNDERCOLLATERALIZED = 11n
 [@inline] let error_EXCESSIVE_CTEZ_MINTING = 12n
 [@inline] let error_CALLER_MUST_BE_CFMM = 13n
-  
-let create (s : storage) (delegate : key_hash option) : result = 
+
+let create (s : storage) (delegate : key_hash option) : result =
   if Big_map.mem Tezos.sender s.ovens then
     (failwith error_OVEN_ALREADY_EXISTS : result)
   else
-    let origination : operation * address  = Tezos.create_contract 
+    let origination : operation * address  = Tezos.create_contract
         (* Contract code for an oven *)
         (fun (p , s : oven_parameter * oven_storage) -> (
-             if Tezos.sender <> s.admin then
-               (* error_OVEN_CAN_ONLY_BE_CALLED_FROM_MAIN_CONTRACT *)
-               (failwith 1n : oven_result)
-             else 
-               (match p with
-                | Oven_delegate ko -> ([Tezos.set_delegate ko], s)
-                | Oven_deposit -> (([] : operation list), s)
-                | Oven_withdraw x -> ([Tezos.transaction unit x.0 x.1], s))))
+             (* error codes *)
+             let error_WITHDRAW_CAN_ONLY_BE_CALLED_FROM_MAIN_CONTRACT = 1n in
+             let error_ONLY_OWNER_CAN_DELEGATE = 2n in
+             let error_CANNOT_FIND_REGISTER_DEPOSIT_ENTRYPOINT = 3n in
+             let error_UNAUTHORIZED_DEPOSITOR = 4n in
+              (match p with
+                (* Withdraw form the oven, can only be called from the main contract. *)
+                | Oven_withdraw x ->
+                  if Tezos.sender <> s.admin then
+                    (failwith error_WITHDRAW_CAN_ONLY_BE_CALLED_FROM_MAIN_CONTRACT : oven_result)
+                  else
+                    ([Tezos.transaction unit x.0 x.1], s)
+                (* Change delegation *)
+                | Oven_delegate ko ->
+                  if Tezos.sender <> s.owner then
+                    (failwith error_ONLY_OWNER_CAN_DELEGATE : oven_result)
+                  else ([Tezos.set_delegate ko], s)
+                (* Make a deposit. If authorized, this will notify the main contract. *)
+                | Oven_deposit ->
+                  if Tezos.sender = s.owner or Set.mem Tezos.sender s.depositors or Set.mem ("tz1authorizeAnyoneToDeposit3AC7qy8Qf" : address) s.depositors then
+                    let register = (
+                      match (Tezos.get_entrypoint_opt "%register_deposit" s.admin : (register_deposit contract) option) with
+                      | None -> (failwith error_CANNOT_FIND_REGISTER_DEPOSIT_ENTRYPOINT : register_deposit contract)
+                      | Some register -> register) in
+                    (([ Tezos.transaction {amount = Tezos.amount ; owner = s.owner} 0mutez register] : operation list), s)
+                  else
+                    (failwith error_UNAUTHORIZED_DEPOSITOR : oven_result)
+                (* Edit the set of authorized depositors. Insert tz1authorizeAnyoneToDeposit3AC7qy8Qf to authorize anyone. *)
+                | Oven_edit_depositor edit ->
+                  let (depositor, insert) = edit in
+                  (([] : operation list), {s with depositors = if insert then Set.add depositor s.depositors else Set.remove depositor s.depositors}))))
         (* End of contract code for an oven *)
         delegate
         Tezos.amount
-        { admin = Tezos.self_address } in
+        { admin = Tezos.self_address ; owner = Tezos.sender ; depositors = (Set.empty : address set) } in
     let oven = {tez_balance = Tezos.amount ; ctez_outstanding = 0n ; address = origination.1}  in
     let ovens = Big_map.update Tezos.sender (Some oven) s.ovens in
-    ([origination.0], {s with ovens = ovens}) 
+    ([origination.0], {s with ovens = ovens})
 
-let set_addresses (s : storage) (addresses : set_addresses) : result = 
+let set_addresses (s : storage) (addresses : set_addresses) : result =
   if s.ctez_fa12_address <> ("tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU" : address) then
     (failwith error_CTEZ_FA12_ADDRESS_ALREADY_SET : result)
   else if  s.cfmm_address <> ("tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU" : address) then
     (failwith error_CFMM_ADDRESS_ALREADY_SET : result)
-  else        
+  else
     (([] : operation list), {s with ctez_fa12_address = addresses.ctez_fa12_address ; cfmm_address = addresses.cfmm_address})
 
-let get_oven (oven_address : address) (s : storage) : oven = 
+let get_oven (oven_address : address) (s : storage) : oven =
   match Big_map.find_opt oven_address s.ovens with
   | None -> (failwith error_OVEN_DOESNT_EXIST : oven)
   | Some o -> o
 
-let is_under_collateralized (oven : oven) (target : nat): bool = 
+let is_under_collateralized (oven : oven) (target : nat): bool =
   (15n * oven.tez_balance) < (Bitwise.shift_right (oven.ctez_outstanding * target) 44n) * 1mutez
 
-let deposit (s : storage) : result =
-  let oven : oven = get_oven Tezos.sender s in    
-  let oven = {oven with tez_balance = oven.tez_balance + Tezos.amount} in
-  let ovens = Big_map.update Tezos.sender (Some oven) s.ovens in
-  let s = {s with ovens = ovens} in
-  let oven_contract = 
-    match (Tezos.get_entrypoint_opt "%oven_deposit" oven.address : unit contract option) with
-    | None -> (failwith error_OVEN_MISSING_DEPOSIT_ENTRYPOINT : unit contract)
-    | Some c -> c
-  in ([Tezos.transaction unit Tezos.amount oven_contract], s)
-
-let get_oven_withdraw (oven_address : address) : (tez * (unit contract)) contract = 
+let get_oven_withdraw (oven_address : address) : (tez * (unit contract)) contract =
   match (Tezos.get_entrypoint_opt "%oven_withdraw" oven_address : (tez * (unit contract)) contract option) with
   | None -> (failwith error_OVEN_MISSING_WITHDRAW_ENTRYPOINT : (tez * (unit contract)) contract)
   | Some c -> c
@@ -126,7 +143,7 @@ let withdraw (s : storage) (p : withdraw)   : result =
   let oven_contract = get_oven_withdraw oven.address in
 
   (* Check for undercollateralization *)
-  let new_balance = oven.tez_balance - p.amount in    
+  let new_balance = oven.tez_balance - p.amount in
   let oven = {oven with tez_balance = new_balance} in
   let ovens = Big_map.update Tezos.sender (Some oven) s.ovens in
   let s = {s with ovens = ovens} in
@@ -135,23 +152,29 @@ let withdraw (s : storage) (p : withdraw)   : result =
   else
     ([Tezos.transaction (p.amount, p.to_) 0mutez oven_contract], s)
 
-let delegate (s : storage) (d : key_hash option) : result = 
-  let oven : oven = get_oven Tezos.sender s in
-  let oven_contract = get_oven_delegate oven.address in
-  ([Tezos.transaction d 0mutez oven_contract], s)
+let register_deposit (s : storage) (p : register_deposit) : result =
+    (* First check that the call is legit *)
+    let oven = get_oven p.owner s in
+    if oven.address <> Tezos.sender then
+      (failwith error_INVALID_CALLER_FOR_OVEN_OWNER : result)
+    else
+      (* register the increased balance *)
+      let oven = {oven with tez_balance = oven.tez_balance + p.amount} in
+      let ovens = Big_map.update p.owner (Some oven) s.ovens in
+      (([] : operation list), {s with ovens = ovens})
 
-let get_ctez_mint_or_burn (fa12_address : address) : (int * address) contract = 
+let get_ctez_mint_or_burn (fa12_address : address) : (int * address) contract =
   match (Tezos.get_entrypoint_opt  "%mintOrBurn"  fa12_address : ((int * address) contract) option) with
   | None -> (failwith error_CTEZ_FA12_CONTRACT_MISSING_MINT_OR_BURN_ENTRYPOINT : (int * address) contract)
-  | Some c -> c 
+  | Some c -> c
 
 (* liquidate the oven by burning "quantity" ctez *)
 let liquidate (s: storage) (p : liquidate) : result  =
   let oven : oven = get_oven p.oven_owner s in
-  if is_under_collateralized oven s.target then            
+  if is_under_collateralized oven s.target then
     let remaining_ctez = match Michelson.is_nat (oven.ctez_outstanding - p.quantity) with
       | None -> (failwith error_CANNOT_BURN_MORE_THAN_OUTSTANDING_AMOUNT_OF_CTEZ : nat)
-      | Some n -> n  in        
+      | Some n -> n  in
     (* get 32/31 of the target price, meaning there is a 1/31 penalty for the oven owner for being liquidated *)
     let extracted_balance = (Bitwise.shift_right (p.quantity * s.target) 43n) * 1mutez / 31n in (* 43 is 48 - log2(32) *)
     let new_balance = oven.tez_balance - extracted_balance in
@@ -160,14 +183,14 @@ let liquidate (s: storage) (p : liquidate) : result  =
     let s = {s with ovens = ovens} in
     let oven_contract = get_oven_withdraw oven.address in
     let op_take_collateral = Tezos.transaction (extracted_balance, p.to_) 0mutez oven_contract in
-    let ctez_mint_or_burn = get_ctez_mint_or_burn s.ctez_fa12_address in 
-    let op_burn_ctez = Tezos.transaction (-p.quantity, Tezos.sender) 0mutez ctez_mint_or_burn in 
+    let ctez_mint_or_burn = get_ctez_mint_or_burn s.ctez_fa12_address in
+    let op_burn_ctez = Tezos.transaction (-p.quantity, Tezos.sender) 0mutez ctez_mint_or_burn in
     ([op_burn_ctez ; op_take_collateral], s)
-  else   
+  else
     (failwith error_OVEN_NOT_UNDERCOLLATERALIZED : result)
 
-let mint_or_burn (s : storage) (quantity: int) : result = 
-  let oven : oven = get_oven Tezos.sender s in 
+let mint_or_burn (s : storage) (quantity: int) : result =
+  let oven : oven = get_oven Tezos.sender s in
   let ctez_outstanding = match Michelson.is_nat (oven.ctez_outstanding + quantity) with
     | None -> (failwith error_CANNOT_BURN_MORE_THAN_OUTSTANDING_AMOUNT_OF_CTEZ : nat)
     | Some n -> n in
@@ -178,7 +201,7 @@ let mint_or_burn (s : storage) (quantity: int) : result =
     (failwith  error_EXCESSIVE_CTEZ_MINTING : result)
     (* mint or burn quantity in the fa1.2 of ctez *)
   else
-    let ctez_mint_or_burn = get_ctez_mint_or_burn s.ctez_fa12_address in 
+    let ctez_mint_or_burn = get_ctez_mint_or_burn s.ctez_fa12_address in
     ([Tezos.transaction (quantity, Tezos.sender) 0mutez ctez_mint_or_burn], s)
 
 let get_target (storage : storage) (callback : nat contract) : result =
@@ -186,18 +209,18 @@ let get_target (storage : storage) (callback : nat contract) : result =
 
 (* todo: restore when ligo interpret is fixed
    let cfmm_price (storage : storage) (tez : tez) (token : nat) : result =      *)
-let cfmm_price (storage, tez, token : storage * nat * nat) : result = 
+let cfmm_price (storage, tez, token : storage * nat * nat) : result =
   if Tezos.sender <> storage.cfmm_address then
     (failwith error_CALLER_MUST_BE_CFMM : result)
   else
     let delta = abs (Tezos.now - storage.last_drift_update) in
-    let target = storage.target in 
+    let target = storage.target in
     let d_target = Bitwise.shift_right (target * (abs storage.drift) * delta) 48n in
     (* We assume that target - d_target never happens for economic reasons.
        Concretely, even drift were as low as -50% annualized, it would take not
        updating the target for 1.4 years for a negative number to occur *)
     let target  = if storage.drift < 0  then abs (target - d_target) else target + d_target in
-    let drift =         
+    let drift =
       if (Bitwise.shift_left tez  54n) > 65n * target * token  then  (* 54 is 48 + log2(64) *)
         storage.drift - delta
         (* This is not homegeneous, but setting the constant delta is multiplied with
@@ -205,19 +228,18 @@ let cfmm_price (storage, tez, token : storage * nat * nat) : result =
            Because (24 * 3600 / 2^48) * 365.25*24*3600 ~ 0.97%.
            This means that the annualized drift changes by roughly one percentage point
            for each day over or under the target by more than 1/64th.
-        *)          
+        *)
       else if (Bitwise.shift_left tez 54n) < 63n * target * token then
-        storage.drift + delta 
-      else 
+        storage.drift + delta
+      else
         storage.drift in
     (([] : operation list), {storage with drift = drift ; last_drift_update = Tezos.now ; target = target})
 
-let main (p, s : parameter * storage) : result = 
-  match p with    
+let main (p, s : parameter * storage) : result =
+  match p with
   | Withdraw w -> (withdraw s w : result)
-  | Deposit -> (deposit s : result)
+  | Register_deposit r -> (register_deposit s r : result)
   | Create d -> (create s d : result)
-  | Delegate d -> (delegate s d : result)
   | Liquidate l -> (liquidate s l : result)
   | Mint_or_burn xs -> (mint_or_burn s xs : result)
   | Cfmm_price xs -> (cfmm_price (s, xs.0, xs.1) : result)
