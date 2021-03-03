@@ -1,8 +1,10 @@
 import { WalletContract } from '@taquito/taquito';
 import BigNumber from 'bignumber.js';
+import TezosIcon from '../components/TezosIcon';
 import { ErrorType } from '../interfaces';
 import { Oven } from '../interfaces/ctez';
 import { CTEZ_ADDRESS } from '../utils/globals';
+import { getTezosInstance } from './client';
 import { executeMethod, initContract } from './utils';
 
 let cTez: WalletContract;
@@ -49,6 +51,12 @@ export const mintOrBurn = async (quantity: number): Promise<string> => {
   return hash;
 };
 
+export const getOvenDelegate = async (oven: Oven): Promise<string | null> => {
+  const tezos = getTezosInstance();
+  const baker = await tezos.rpc.getDelegate(oven.address);
+  return baker;
+};
+
 export const getOven = async (userAddress: string): Promise<Oven | undefined> => {
   try {
     if (!cTez && CTEZ_ADDRESS) {
@@ -56,7 +64,8 @@ export const getOven = async (userAddress: string): Promise<Oven | undefined> =>
     }
     const storage: any = await cTez.storage();
     const oven = await storage.ovens.get(userAddress);
-    return oven;
+    const baker = oven ? await getOvenDelegate(oven) : null;
+    return { ...oven, baker };
   } catch (error) {
     console.log(error);
   }

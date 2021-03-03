@@ -53,8 +53,7 @@ export const Address: React.FC<AddressProps> = ({
     <Grid container>
       <Grid item>
         <Typography size={size} component={component}>
-          {label && `${label}: `}
-          {str}
+          {label ? `${label}: ${str}` : str}
         </Typography>
         <CopyClipBoardStyled
           onCopy={() => {

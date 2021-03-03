@@ -93,7 +93,17 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
                     label="Oven"
                   />
                 </Typography>
-
+                {oven.baker && (
+                  <Typography size="caption" component="span" color="textSecondary">
+                    <Address
+                      address={oven.baker}
+                      trim
+                      trimSize="small"
+                      size="caption"
+                      label="Baker"
+                    />
+                  </Typography>
+                )}
                 <Typography size="caption" component="span" color="textSecondary">
                   Oven Balance: {oven.tez_balance.shiftedBy(-6).toString()}
                 </Typography>

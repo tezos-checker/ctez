@@ -11,7 +11,7 @@ import { useWallet } from '../../wallet/hooks';
 import Identicon from '../Identicon';
 import ProfilePopover from '../ProfilePopover';
 
-import { getOven } from '../../contracts/ctez';
+import { getOven, getOvenDelegate } from '../../contracts/ctez';
 import { Oven } from '../../interfaces/ctez';
 
 const SignedInBoxStyled = styled(Box)`
@@ -23,7 +23,7 @@ export const SignIn: React.FC = () => {
   const [{ wallet, pkh: userAddress, network }, setWallet, disconnectWallet] = useWallet();
   const [isOpen, setOpen] = useState(false);
 
-  const { data: ovenData, isLoading } = useQuery<Oven | undefined, AxiosError, Oven | undefined>(
+  const { data: ovenData } = useQuery<Oven | undefined, AxiosError, Oven | undefined>(
     ['ovenData', userAddress],
     async () => {
       if (userAddress) {

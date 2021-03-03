@@ -4,4 +4,5 @@ export interface Oven {
   address: string;
   ctez_outstanding: BigNumber;
   tez_balance: BigNumber;
+  baker: string | null;
 }
