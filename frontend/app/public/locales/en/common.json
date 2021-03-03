@@ -9,5 +9,9 @@
   "withdraw": "Withdraw",
   "mintOrBurn": "Mint or Burn",
   "ovenOwner": "Oven Owner",
-  "liquidate": "Liquidate"
+  "liquidate": "Liquidate",
+  "oven": "Oven",
+  "ovenBalance": "Oven balance",
+  "outstandingCTez": "Outstanding CTez",
+  "baker": "Baker"
 }

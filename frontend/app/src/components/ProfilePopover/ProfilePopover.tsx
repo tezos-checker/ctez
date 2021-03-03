@@ -1,6 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Popover, Divider, Button } from '@material-ui/core';
+import { useTranslation } from 'react-i18next';
 import Address from '../Address';
 import Identicon from '../Identicon';
 import { Typography } from '../Typography';
@@ -59,7 +60,7 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
 }) => {
   const classes = useStyles();
   const id = isOpen ? 'profile-popover' : undefined;
-
+  const { t } = useTranslation(['common']);
   return (
     <div>
       <Popover
@@ -90,7 +91,7 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
                     trim
                     trimSize="small"
                     size="caption"
-                    label="Oven"
+                    label={t('oven')}
                   />
                 </Typography>
                 {oven.baker && (
@@ -100,15 +101,15 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
                       trim
                       trimSize="small"
                       size="caption"
-                      label="Baker"
+                      label={t('baker')}
                     />
                   </Typography>
                 )}
                 <Typography size="caption" component="span" color="textSecondary">
-                  Oven Balance: {oven.tez_balance.shiftedBy(-6).toString()}
+                  {t('ovenBalance')}: {oven.tez_balance.shiftedBy(-6).toString()}
                 </Typography>
                 <Typography size="caption" component="span" color="textSecondary">
-                  Outstanding CTez: {oven.ctez_outstanding.shiftedBy(-6).toString()}
+                  {t('outstandingCTez')}: {oven.ctez_outstanding.shiftedBy(-6).toString()}
                 </Typography>
               </>
             )}
