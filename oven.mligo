@@ -7,6 +7,7 @@
         let error_CANNOT_FIND_REGISTER_DEPOSIT_ENTRYPOINT = 3n in
         let error_UNAUTHORIZED_DEPOSITOR = 4n in
         let error_SET_ANY_OFF_FIRST = 5n in
+        let error_ONLY_OWNER_CAN_EDIT_DEPOSITORS = 6n in
         (match p with
         (* Withdraw form the oven, can only be called from the main contract. *)
         | Oven_withdraw x ->
@@ -24,7 +25,7 @@
             if Tezos.sender = s.owner or (
                 match s.depositors with
                     | Any -> true
-                    | Whitelist depositors -> Set.mem Tezos.sender s.error_ONLY_OWNER_CAN_EDIT_DEPOSITORS
+                    | Whitelist depositors -> Set.mem Tezos.sender depositors
             ) then
                 let register = (
                     match (Tezos.get_entrypoint_opt "%register_deposit" s.admin : (register_deposit contract) option) with
@@ -39,9 +40,9 @@
                 (failwith error_ONLY_OWNER_CAN_EDIT_DEPOSITORS : oven_result)
             else
                 let depositors = (match edit with
-                    | Allow_any allow -> if allow then Any else Whitelist Set.empty
-                    | Allow_account (allow, depositor) -> (match s.depositors with
-                        | Any -> (failwith error_SET_ANY_OFF_FIRST : oven_result)
+                    | Allow_any allow -> if allow then Any else Whitelist (Set.empty : address set)
+                    | Allow_account x -> let (allow, depositor) = x in (match s.depositors with
+                        | Any -> (failwith error_SET_ANY_OFF_FIRST : depositors)
                         | Whitelist depositors -> Whitelist (
                             if allow then Set.add depositor depositors else Set.remove depositor depositors))) in
-                (([] : operation list), {s with depositors = depositors})
+                (([] : operation list), {s with depositors = depositors}))))
