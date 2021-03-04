@@ -17,12 +17,12 @@
             ([Tezos.transaction unit x.0 x.1], s)
         (* Change delegation *)
         | Oven_delegate ko ->
-            if Tezos.sender <> s.owner then
+            if Tezos.sender <> s.handle.owner then
             (failwith error_ONLY_OWNER_CAN_DELEGATE : oven_result)
             else ([Tezos.set_delegate ko], s)
         (* Make a deposit. If authorized, this will notify the main contract. *)
         | Oven_deposit ->
-            if Tezos.sender = s.owner or (
+            if Tezos.sender = s.handle.owner or (
                 match s.depositors with
                     | Any -> true
                     | Whitelist depositors -> Set.mem Tezos.sender depositors
@@ -31,12 +31,12 @@
                     match (Tezos.get_entrypoint_opt "%register_deposit" s.admin : (register_deposit contract) option) with
                     | None -> (failwith error_CANNOT_FIND_REGISTER_DEPOSIT_ENTRYPOINT : register_deposit contract)
                     | Some register -> register) in
-                (([ Tezos.transaction {amount = Tezos.amount ; owner = s.owner} 0mutez register] : operation list), s)
+                (([ Tezos.transaction {amount = Tezos.amount ; handle = s.handle} 0mutez register] : operation list), s)
             else
                 (failwith error_UNAUTHORIZED_DEPOSITOR : oven_result)
         (* Edit the set of authorized depositors. Insert tz1authorizeAnyoneToDeposit3AC7qy8Qf to authorize anyone. *)
         | Oven_edit_depositor edit ->
-            if Tezos.sender <> s.owner then
+            if Tezos.sender <> s.handle.owner then
                 (failwith error_ONLY_OWNER_CAN_EDIT_DEPOSITORS : oven_result)
             else
                 let depositors = (match edit with

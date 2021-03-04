@@ -15,11 +15,17 @@ type depositors =
   | Any
   | Whitelist of address set
 
+type oven_handle = [@layout:comb] {id : nat ; owner : address}
+type register_deposit = [@layout:comb] { handle : oven_handle ; amount : tez }
+
+
 type oven_storage = {
   admin : address (* vault admin contract *) ;
-  owner : address (* owner of the oven *) ;
+  handle : oven_handle (* owner of the oven *) ;
   depositors : depositors (* who can deposit in the oven *) ;
   }
 type oven_result = (operation list) * oven_storage
+
+
 
 #endif
