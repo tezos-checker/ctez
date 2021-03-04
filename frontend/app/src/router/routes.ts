@@ -1,4 +1,5 @@
 import { ComponentRoute } from '../interfaces/router';
+import { AddLiquidityPage } from '../pages/AddLiquidity';
 import { CreateVaultPage } from '../pages/CreateVaultPage';
 import { DelegatePage } from '../pages/DelegatePage';
 import { DepositPage } from '../pages/DepositPage';
@@ -8,6 +9,10 @@ import { MintBurnPage } from '../pages/MintBurnPage';
 import { WithdrawPage } from '../pages/Withdraw';
 
 export const routes: ComponentRoute[] = [
+  {
+    component: AddLiquidityPage,
+    path: '/add-liquidity',
+  },
   {
     component: DelegatePage,
     path: '/delegate',

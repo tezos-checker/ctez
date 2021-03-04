@@ -5,44 +5,41 @@ import { Field, Form, Formik } from 'formik';
 import { Button, Grid, Paper } from '@material-ui/core';
 import { useToasts } from 'react-toast-notifications';
 import { useHistory } from 'react-router-dom';
-import { cTezError, liquidate } from '../contracts/ctez';
 import Page from '../components/Page';
 import FormikTextField from '../components/TextField';
 import { useWallet } from '../wallet/hooks';
-
-interface LiquidateForm {
-  ovenOwner: string;
-  amount: number;
-  to: string;
-}
+import { AddLiquidityParams } from '../interfaces';
+import { addLiquidity, cfmmError } from '../contracts/cfmm';
+import { FormikDateTimePicker } from '../components/DateTimePicker';
 
 const PaperStyled = styled(Paper)`
   padding: 2em;
-  & .to,
-  .ovenOwner {
+  & .owner {
     min-width: 40rem;
   }
 `;
 
-const LiquidateComponent: React.FC<WithTranslation> = ({ t }) => {
+const AddLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
   const [{ pkh: userAddress }] = useWallet();
   const { addToast } = useToasts();
   const history = useHistory();
-  const initialValues: LiquidateForm = {
-    ovenOwner: userAddress ?? '',
-    amount: 0,
-    to: userAddress ?? '',
+  const initialValues: AddLiquidityParams = {
+    owner: userAddress ?? '',
+    maxTokensDeposited: 0,
+    minLqtMinted: 0,
+    deadline: new Date(),
   };
 
   const validationSchema = Yup.object().shape({
-    ovenOwner: Yup.string().required(t('required')),
-    amount: Yup.number().min(0.1).required(t('required')),
-    to: Yup.string().required(t('required')),
+    owner: Yup.string().required(t('required')),
+    maxTokensDeposited: Yup.number().required(t('required')),
+    minLqtMinted: Yup.number().required(t('required')),
+    deadline: Yup.date().required(t('required')),
   });
 
-  const handleFormSubmit = async (data: LiquidateForm) => {
+  const handleFormSubmit = async (data: AddLiquidityParams) => {
     try {
-      const result = await liquidate(data.ovenOwner, data.amount, data.to);
+      const result = await addLiquidity(data);
       if (result) {
         addToast('Transaction Submitted', {
           appearance: 'success',
@@ -51,7 +48,7 @@ const LiquidateComponent: React.FC<WithTranslation> = ({ t }) => {
         });
       }
     } catch (error) {
-      const errorText = cTezError[error.data[1].with.int as number] || 'Transaction Failed';
+      const errorText = cfmmError[error.data[1].with.int as number] || 'Transaction Failed';
       addToast(errorText, {
         appearance: 'error',
         autoDismiss: true,
@@ -60,7 +57,7 @@ const LiquidateComponent: React.FC<WithTranslation> = ({ t }) => {
   };
 
   return (
-    <Page title={t('liquidate')}>
+    <Page title={t('addLiquidity')}>
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
@@ -79,30 +76,44 @@ const LiquidateComponent: React.FC<WithTranslation> = ({ t }) => {
                 <Grid item>
                   <Field
                     component={FormikTextField}
-                    name="ovenOwner"
-                    id="ovenOwner"
-                    label={t('ovenOwner')}
-                    className="ovenOwner"
+                    name="owner"
+                    id="owner"
+                    label={t('owner')}
+                    className="owner"
                   />
                 </Grid>
                 <Grid item>
                   <Field
                     component={FormikTextField}
-                    name="to"
-                    id="to"
-                    label={t('to')}
-                    className="to"
-                  />
-                </Grid>
-                <Grid item>
-                  <Field
-                    component={FormikTextField}
-                    name="amount"
-                    id="amount"
-                    label={t('amount')}
-                    className="amount"
+                    name="maxTokensDeposited"
+                    id="maxTokensDeposited"
+                    label={t('maxTokensDeposited')}
+                    className="maxTokensDeposited"
                     type="number"
-                    min="0.1"
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item>
+                  <Field
+                    component={FormikTextField}
+                    name="minLqtMinted"
+                    id="minLqtMinted"
+                    label={t('minLqtMinted')}
+                    className="minLqtMinted"
+                    type="number"
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item>
+                  <Field
+                    component={FormikDateTimePicker}
+                    name="deadline"
+                    id="deadline"
+                    label={t('deadline')}
+                    inputFormat="dd/MM/yyyy HH:mm"
+                    className="deadline"
+                    type="number"
+                    disablePast
                   />
                 </Grid>
                 <Grid item>
@@ -124,4 +135,4 @@ const LiquidateComponent: React.FC<WithTranslation> = ({ t }) => {
   );
 };
 
-export const LiquidatePage = withTranslation(['common'])(LiquidateComponent);
+export const AddLiquidityPage = withTranslation(['common'])(AddLiquidityComponent);

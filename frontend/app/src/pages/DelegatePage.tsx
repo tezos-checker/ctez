@@ -11,6 +11,7 @@ import { getDelegates } from '../api/tzkt';
 import { create, cTezError, delegate } from '../contracts/ctez';
 import Page from '../components/Page';
 import { FormikAutocomplete } from '../components/Autocomplete';
+import { Baker } from '../interfaces';
 
 interface DelegateForm {
   delegate: string;
@@ -24,7 +25,7 @@ const PaperStyled = styled(Paper)`
 `;
 
 const DelegateComponent: React.FC<WithTranslation> = ({ t }) => {
-  const { data: delegates } = useQuery<string[], AxiosError, string[]>(['delegates'], () => {
+  const { data: delegates } = useQuery<Baker[], AxiosError, Baker[]>(['delegates'], () => {
     return getDelegates();
   });
   const { addToast } = useToasts();

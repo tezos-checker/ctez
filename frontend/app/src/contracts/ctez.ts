@@ -1,6 +1,5 @@
 import { WalletContract } from '@taquito/taquito';
 import BigNumber from 'bignumber.js';
-import TezosIcon from '../components/TezosIcon';
 import { ErrorType } from '../interfaces';
 import { Oven } from '../interfaces/ctez';
 import { CTEZ_ADDRESS } from '../utils/globals';

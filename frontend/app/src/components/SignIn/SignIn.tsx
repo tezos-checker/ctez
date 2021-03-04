@@ -1,8 +1,6 @@
 import { Box, Button, Grid } from '@material-ui/core';
 import styled from '@emotion/styled';
 import React, { useState } from 'react';
-import { AxiosError } from 'axios';
-import { useQuery } from 'react-query';
 import { useTranslation } from 'react-i18next';
 import { setWalletProvider } from '../../contracts/client';
 import { APP_NAME, NETWORK } from '../../utils/globals';
@@ -10,9 +8,6 @@ import { getBeaconInstance } from '../../wallet';
 import { useWallet } from '../../wallet/hooks';
 import Identicon from '../Identicon';
 import ProfilePopover from '../ProfilePopover';
-
-import { getOven, getOvenDelegate } from '../../contracts/ctez';
-import { Oven } from '../../interfaces/ctez';
 
 const SignedInBoxStyled = styled(Box)`
   cursor: pointer;
@@ -22,15 +17,6 @@ export const SignIn: React.FC = () => {
   const { t } = useTranslation(['header']);
   const [{ wallet, pkh: userAddress, network }, setWallet, disconnectWallet] = useWallet();
   const [isOpen, setOpen] = useState(false);
-
-  const { data: ovenData } = useQuery<Oven | undefined, AxiosError, Oven | undefined>(
-    ['ovenData', userAddress],
-    async () => {
-      if (userAddress) {
-        return getOven(userAddress);
-      }
-    },
-  );
 
   const connectWallet = async () => {
     const newWallet = await getBeaconInstance(APP_NAME, true, NETWORK);
@@ -58,7 +44,6 @@ export const SignIn: React.FC = () => {
                 address={userAddress ?? ''}
                 network={network ?? ''}
                 actionText={t('signOut')}
-                oven={ovenData}
               />
             </SignedInBoxStyled>
           </Grid>

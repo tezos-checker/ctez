@@ -1,10 +1,11 @@
 import React from 'react';
 import { Autocomplete as MaterialAutocomplete, TextField, TextFieldProps } from '@material-ui/core';
 import { FieldProps } from 'formik';
+import { Baker } from '../../interfaces';
 
 export type FormikAutocompleteProps = FieldProps &
   TextFieldProps & {
-    options: string[];
+    options: Baker[];
   };
 export const FormikAutocomplete: React.FC<FormikAutocompleteProps> = ({
   options = [],
@@ -15,8 +16,9 @@ export const FormikAutocomplete: React.FC<FormikAutocompleteProps> = ({
   return (
     <MaterialAutocomplete
       freeSolo
+      getOptionLabel={(option) => option.name ?? option.address}
       options={options}
-      onChange={(_, value) => setFieldValue(name, value)}
+      onChange={(_, value: any) => setFieldValue(name, value.address)}
       renderInput={(params) => (
         <TextField
           {...params}
