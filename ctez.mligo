@@ -64,7 +64,7 @@ let create (s : storage) (delegate : key_hash option) : result =
         (* End of contract code for an oven *)
         delegate
         Tezos.amount
-        { admin = Tezos.self_address ; owner = Tezos.sender ; depositors = (Set.empty : address set) } in
+        { admin = Tezos.self_address ; owner = Tezos.sender ; depositors = Whitelist (Set.empty : address set) } in
     let oven = {tez_balance = Tezos.amount ; ctez_outstanding = 0n ; address = origination.1}  in
     let ovens = Big_map.update Tezos.sender (Some oven) s.ovens in
     ([origination.0], {s with ovens = ovens})
