@@ -27,7 +27,7 @@ module.exports = async (deployer, _network, accounts) => {
     lqtTotal: 1,
     pendingPoolUpdates: 0,
     tokenAddress: fa12.address,
-    consumerAddress: ctez.address,
+    consumerEntrypoint: `${ctez.address}%cfmm_price`,
     lastOracleUpdate: "2021-01-01T00:00:00Z",
     lqtAddress: "tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU",
   });

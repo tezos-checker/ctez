@@ -9,7 +9,7 @@
 *)
 
 (* Types for oven *)
-#include "oven_types.mligo"
+#include "../helpers/oven_types.mligo"
 (* End of oven types *)
 
 type set_addresses = [@layout:comb] {cfmm_address : address ; ctez_fa12_address : address }
@@ -63,7 +63,7 @@ let create (s : storage) (create : create) : result =
   else
     let origination : operation * address  = Tezos.create_contract
         (* Contract code for an oven *)
-#include "oven.mligo"
+#include "../helpers/oven.mligo"
         (* End of contract code for an oven *)
         create.delegate
         Tezos.amount
