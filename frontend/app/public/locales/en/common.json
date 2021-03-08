@@ -18,5 +18,6 @@
   "maxTokensDeposited": "Max tokens to deposit",
   "minLqtMinted": "Min LQT to mint",
   "deadline": "Deadline",
-  "addLiquidity": "Add Liquidity"
+  "addLiquidity": "Add Liquidity",
+  "to": "To"
 }

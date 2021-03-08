@@ -43,7 +43,7 @@ export const Address: React.FC<AddressProps> = ({
   address,
   trim,
   onCopy,
-  size = 'subtitle1',
+  size = 'inherit',
   component = 'span',
   trimSize,
 }) => {

@@ -12,6 +12,7 @@ import { create, cTezError } from '../contracts/ctez';
 import Page from '../components/Page';
 import { FormikAutocomplete } from '../components/Autocomplete';
 import { Baker } from '../interfaces';
+import { useWallet } from '../wallet/hooks';
 
 interface CreateVaultForm {
   delegate: string;
@@ -28,6 +29,7 @@ const CreateVaultComponent: React.FC<WithTranslation> = ({ t }) => {
   const { data: delegates } = useQuery<Baker[], AxiosError, Baker[]>(['delegates'], () => {
     return getDelegates();
   });
+  const [{ pkh: userAddress }] = useWallet();
   const { addToast } = useToasts();
   const history = useHistory();
   const initialValues: CreateVaultForm = {
@@ -39,21 +41,23 @@ const CreateVaultComponent: React.FC<WithTranslation> = ({ t }) => {
   });
 
   const handleFormSubmit = async (data: CreateVaultForm) => {
-    try {
-      const result = await create(data.delegate);
-      if (result) {
-        addToast('Transaction Submitted', {
-          appearance: 'success',
+    if (userAddress) {
+      try {
+        const result = await create(userAddress, data.delegate);
+        if (result) {
+          addToast('Transaction Submitted', {
+            appearance: 'success',
+            autoDismiss: true,
+            onDismiss: () => history.push('/'),
+          });
+        }
+      } catch (error) {
+        const errorText = cTezError[error.data[1].with.int as number] || 'Transaction Failed';
+        addToast(errorText, {
+          appearance: 'error',
           autoDismiss: true,
-          onDismiss: () => history.push('/'),
         });
       }
-    } catch (error) {
-      const errorText = cTezError[error.data[1].with.int as number] || 'Transaction Failed';
-      addToast(errorText, {
-        appearance: 'error',
-        autoDismiss: true,
-      });
     }
   };
 

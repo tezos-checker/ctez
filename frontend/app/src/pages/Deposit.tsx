@@ -1,4 +1,4 @@
-import { withTranslation, WithTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 import styled from '@emotion/styled';
 import { Field, Form, Formik } from 'formik';
@@ -6,7 +6,6 @@ import { Button, Grid, Paper } from '@material-ui/core';
 import { useToasts } from 'react-toast-notifications';
 import { useHistory } from 'react-router-dom';
 import { cTezError, deposit } from '../contracts/ctez';
-import Page from '../components/Page';
 import FormikTextField from '../components/TextField';
 
 interface DepositForm {
@@ -15,13 +14,11 @@ interface DepositForm {
 
 const PaperStyled = styled(Paper)`
   padding: 2em;
-  & .amount {
-    min-width: 40rem;
-  }
 `;
 
-const DepositComponent: React.FC<WithTranslation> = ({ t }) => {
+export const Deposit: React.FC = () => {
   const { addToast } = useToasts();
+  const { t } = useTranslation(['common']);
   const history = useHistory();
   const initialValues: DepositForm = {
     amount: 0,
@@ -51,7 +48,7 @@ const DepositComponent: React.FC<WithTranslation> = ({ t }) => {
   };
 
   return (
-    <Page title={t('deposit')}>
+    <div>
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
@@ -91,8 +88,6 @@ const DepositComponent: React.FC<WithTranslation> = ({ t }) => {
           </PaperStyled>
         )}
       </Formik>
-    </Page>
+    </div>
   );
 };
-
-export const DepositPage = withTranslation(['common'])(DepositComponent);

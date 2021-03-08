@@ -1,4 +1,5 @@
-import { withTranslation, WithTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import styled from '@emotion/styled';
 import { Field, Form, Formik } from 'formik';
@@ -6,9 +7,9 @@ import { Button, Grid, Paper } from '@material-ui/core';
 import { useToasts } from 'react-toast-notifications';
 import { useHistory } from 'react-router-dom';
 import { cTezError, withdraw } from '../contracts/ctez';
-import Page from '../components/Page';
 import FormikTextField from '../components/TextField';
 import { useWallet } from '../wallet/hooks';
+import { RootState } from '../redux/rootReducer';
 
 interface WithdrawForm {
   amount: number;
@@ -17,15 +18,14 @@ interface WithdrawForm {
 
 const PaperStyled = styled(Paper)`
   padding: 2em;
-  & .to {
-    min-width: 40rem;
-  }
 `;
 
-const WithdrawComponent: React.FC<WithTranslation> = ({ t }) => {
+export const Withdraw: React.FC = () => {
+  const { t } = useTranslation(['common']);
   const [{ pkh: userAddress }] = useWallet();
   const { addToast } = useToasts();
   const history = useHistory();
+  const ovenId = useSelector((state: RootState) => state.ovenActions.ovenId);
   const initialValues: WithdrawForm = {
     amount: 0,
     to: userAddress ?? '',
@@ -37,26 +37,28 @@ const WithdrawComponent: React.FC<WithTranslation> = ({ t }) => {
   });
 
   const handleFormSubmit = async (data: WithdrawForm) => {
-    try {
-      const result = await withdraw(data.amount, data.to);
-      if (result) {
-        addToast('Transaction Submitted', {
-          appearance: 'success',
+    if (ovenId) {
+      try {
+        const result = await withdraw(ovenId, data.amount, data.to);
+        if (result) {
+          addToast('Transaction Submitted', {
+            appearance: 'success',
+            autoDismiss: true,
+            onDismiss: () => history.push('/'),
+          });
+        }
+      } catch (error) {
+        const errorText = cTezError[error.data[1].with.int as number] || 'Transaction Failed';
+        addToast(errorText, {
+          appearance: 'error',
           autoDismiss: true,
-          onDismiss: () => history.push('/'),
         });
       }
-    } catch (error) {
-      const errorText = cTezError[error.data[1].with.int as number] || 'Transaction Failed';
-      addToast(errorText, {
-        appearance: 'error',
-        autoDismiss: true,
-      });
     }
   };
 
   return (
-    <Page title={t('withdraw')}>
+    <div>
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
@@ -72,14 +74,8 @@ const WithdrawComponent: React.FC<WithTranslation> = ({ t }) => {
                 alignContent="center"
                 justifyContent="center"
               >
-                <Grid item>
-                  <Field
-                    component={FormikTextField}
-                    name="to"
-                    id="to"
-                    label={t('to')}
-                    className="to"
-                  />
+                <Grid item style={{ width: '100%' }}>
+                  <Field component={FormikTextField} name="to" id="to" label={t('to')} fullWidth />
                 </Grid>
                 <Grid item>
                   <Field
@@ -107,8 +103,6 @@ const WithdrawComponent: React.FC<WithTranslation> = ({ t }) => {
           </PaperStyled>
         )}
       </Formik>
-    </Page>
+    </div>
   );
 };
-
-export const WithdrawPage = withTranslation(['common'])(WithdrawComponent);

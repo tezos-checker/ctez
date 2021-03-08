@@ -1,46 +1,36 @@
-import { withTranslation, WithTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 import styled from '@emotion/styled';
-import { AxiosError } from 'axios';
-import { useQuery } from 'react-query';
 import { Field, Form, Formik } from 'formik';
 import { Button, Grid, Paper } from '@material-ui/core';
 import { useToasts } from 'react-toast-notifications';
 import { useHistory } from 'react-router-dom';
-import { getDelegates } from '../api/tzkt';
-import { create, cTezError, delegate } from '../contracts/ctez';
-import Page from '../components/Page';
-import { FormikAutocomplete } from '../components/Autocomplete';
-import { Baker } from '../interfaces';
+import { cTezError, mintOrBurn } from '../contracts/ctez';
+import FormikTextField from '../components/TextField';
 
-interface DelegateForm {
-  delegate: string;
+interface MintBurnForm {
+  amount: number;
 }
 
 const PaperStyled = styled(Paper)`
   padding: 2em;
-  & .delegate {
-    min-width: 40rem;
-  }
 `;
 
-const DelegateComponent: React.FC<WithTranslation> = ({ t }) => {
-  const { data: delegates } = useQuery<Baker[], AxiosError, Baker[]>(['delegates'], () => {
-    return getDelegates();
-  });
+export const MintOrBurn: React.FC = () => {
+  const { t } = useTranslation(['common']);
   const { addToast } = useToasts();
   const history = useHistory();
-  const initialValues: DelegateForm = {
-    delegate: '',
+  const initialValues: MintBurnForm = {
+    amount: 0,
   };
 
   const validationSchema = Yup.object().shape({
-    delegate: Yup.string().required(t('required')),
+    amount: Yup.number().min(1).required(t('required')),
   });
 
-  const handleFormSubmit = async (data: DelegateForm) => {
+  const handleFormSubmit = async (data: MintBurnForm) => {
     try {
-      const result = await delegate(data.delegate);
+      const result = await mintOrBurn(data.amount);
       if (result) {
         addToast('Transaction Submitted', {
           appearance: 'success',
@@ -58,7 +48,7 @@ const DelegateComponent: React.FC<WithTranslation> = ({ t }) => {
   };
 
   return (
-    <Page title={t('delegate')}>
+    <div>
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
@@ -76,13 +66,11 @@ const DelegateComponent: React.FC<WithTranslation> = ({ t }) => {
               >
                 <Grid item>
                   <Field
-                    component={FormikAutocomplete}
-                    name="delegate"
-                    id="delegate"
-                    label={t('delegate')}
-                    placeholder={t('delegatePlaceholder')}
-                    options={delegates}
-                    className="delegate"
+                    component={FormikTextField}
+                    name="amount"
+                    id="amount"
+                    label={t('amount')}
+                    className="amount"
                   />
                 </Grid>
                 <Grid item>
@@ -100,8 +88,6 @@ const DelegateComponent: React.FC<WithTranslation> = ({ t }) => {
           </PaperStyled>
         )}
       </Formik>
-    </Page>
+    </div>
   );
 };
-
-export const DelegatePage = withTranslation(['common'])(DelegateComponent);
