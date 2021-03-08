@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Collapse, Grid, Theme } from '@material-ui/core';
+import { Button, Grid, Theme } from '@material-ui/core';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
