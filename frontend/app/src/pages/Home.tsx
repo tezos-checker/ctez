@@ -116,7 +116,7 @@ export const HomePage: React.FC = () => {
             })}
         </Grid>
       )}
-      {!isLoading && !ovenData && <Box p={3}>{t('noOvens')}</Box>}
+      {!isLoading && userAddress && !ovenData && <Box p={3}>{t('noOvens')}</Box>}
       {!isLoading && ovenData && ovenData.length > 0 && (
         <Drawer
           open={showActions}
