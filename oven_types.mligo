@@ -7,7 +7,7 @@ type edit =
 
 type oven_parameter =
   | Oven_delegate of (key_hash option)
-  | Oven_deposit
+  | [@annot:default] Oven_deposit
   | Oven_edit_depositor of edit
   | Oven_withdraw of tez * (unit contract)
 
