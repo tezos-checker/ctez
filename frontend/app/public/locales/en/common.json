@@ -1,5 +1,4 @@
 {
-  "createVault": "Create Oven",
   "submit": "Submit",
   "delegate": "Delegate",
   "delegatePlaceholder": "Delegate (e.g. tz1...)",
@@ -21,5 +20,6 @@
   "addLiquidity": "Add Liquidity",
   "to": "To",
   "amountXtz": "Amount (in XTZ)",
-  "initialDeposit": "Initial deposit (in XTZ)"
+  "initialDeposit": "Initial deposit (in XTZ)",
+  "noOvens": "No ovens found..."
 }

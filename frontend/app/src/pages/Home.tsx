@@ -7,6 +7,7 @@ import {
   makeStyles,
   Theme,
   Grid,
+  Box,
 } from '@material-ui/core';
 import { useSelector, useDispatch } from 'react-redux';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -32,19 +33,6 @@ export const HomePage: React.FC = () => {
   const { t } = useTranslation(['common']);
   const dispatch = useDispatch();
   const history = useHistory();
-  const cTezMethods = [
-    {
-      to: '/create',
-      primary: t('createVault'),
-    },
-  ];
-
-  const cfmmMethods = [
-    {
-      to: '/add-liquidity',
-      primary: t('addLiquidity'),
-    },
-  ];
 
   const [{ pkh: userAddress }] = useWallet();
   const { data: ovenData, isLoading } = useQuery<
@@ -128,7 +116,7 @@ export const HomePage: React.FC = () => {
             })}
         </Grid>
       )}
-      {!isLoading && <LinkList list={cTezMethods} />}
+      {!isLoading && !ovenData && <Box p={3}>{t('noOvens')}</Box>}
       {!isLoading && ovenData && ovenData.length > 0 && (
         <Drawer
           open={showActions}

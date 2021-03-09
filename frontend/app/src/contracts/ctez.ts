@@ -1,7 +1,6 @@
 import { WalletContract } from '@taquito/taquito';
 import BigNumber from 'bignumber.js';
-import { ErrorType } from '../interfaces';
-import { Oven } from '../interfaces/ctez';
+import { EditDepositorOps, ErrorType, Oven } from '../interfaces';
 import { CTEZ_ADDRESS } from '../utils/globals';
 import { getLastOvenId, saveLastOven } from '../utils/ovenUtils';
 import { getTezosInstance } from './client';
@@ -34,11 +33,17 @@ export const delegate = async (ovenAddress: string, bakerAddress: string): Promi
   return hash;
 };
 
-/**
- *
- * @param ovenAddress "oven_edit_depositor Received 1 arguments while expecting one of the following signatures ([["allow_account","bool","address"],["allow_any","bool"]])"
- * @param amount
- */
+export const editDepositor = async (
+  ovenAddress: string,
+  ops: EditDepositorOps,
+  enable: boolean,
+  address?: string,
+): Promise<string> => {
+  const ovenContract = await initContract(ovenAddress);
+  const hash = await executeMethod(ovenContract, 'oven_edit_depositor', [ops, enable, address]);
+  return hash;
+};
+
 export const deposit = async (ovenAddress: string, amount: number): Promise<string> => {
   const ovenContract = await initContract(ovenAddress);
   const hash = await executeMethod(ovenContract, 'oven_deposit', undefined, 0, amount);

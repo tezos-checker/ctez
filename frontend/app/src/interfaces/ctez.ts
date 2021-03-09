@@ -15,3 +15,8 @@ export interface OvenSerializable {
   tez_balance: string;
   baker: string | null;
 }
+
+export enum EditDepositorOps {
+  AllowAny = 'allow_any',
+  AllowAccount = 'allow_account',
+}

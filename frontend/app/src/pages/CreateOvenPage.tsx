@@ -26,7 +26,7 @@ const PaperStyled = styled(Paper)`
   padding: 2em;
 `;
 
-const CreateVaultComponent: React.FC<WithTranslation> = ({ t }) => {
+const CreateOvenComponent: React.FC<WithTranslation> = ({ t }) => {
   const { data: delegates } = useQuery<Baker[], AxiosError, Baker[]>(['delegates'], () => {
     return getDelegates();
   });
@@ -65,7 +65,7 @@ const CreateVaultComponent: React.FC<WithTranslation> = ({ t }) => {
   };
 
   return (
-    <Page title={t('createVault')}>
+    <Page title={t('header:createOven')}>
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
@@ -130,4 +130,4 @@ const CreateVaultComponent: React.FC<WithTranslation> = ({ t }) => {
   );
 };
 
-export const CreateVaultPage = withTranslation(['common'])(CreateVaultComponent);
+export const CreateOvenPage = withTranslation(['common', 'header'])(CreateOvenComponent);

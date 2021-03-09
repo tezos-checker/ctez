@@ -1,6 +1,6 @@
 import { ComponentRoute } from '../interfaces/router';
 import { AddLiquidityPage } from '../pages/AddLiquidity';
-import { CreateVaultPage } from '../pages/CreateVaultPage';
+import { CreateOvenPage } from '../pages/CreateOvenPage';
 import { HomePage } from '../pages/Home';
 
 export const routes: ComponentRoute[] = [
@@ -9,7 +9,7 @@ export const routes: ComponentRoute[] = [
     path: '/add-liquidity',
   },
   {
-    component: CreateVaultPage,
+    component: CreateOvenPage,
     path: '/create',
   },
   {
