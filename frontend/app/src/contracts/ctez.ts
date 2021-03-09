@@ -3,6 +3,7 @@ import BigNumber from 'bignumber.js';
 import { ErrorType } from '../interfaces';
 import { Oven } from '../interfaces/ctez';
 import { CTEZ_ADDRESS } from '../utils/globals';
+import { getLastOvenId, saveLastOven } from '../utils/ovenId';
 import { getTezosInstance } from './client';
 import { executeMethod, initContract } from './utils';
 
@@ -16,8 +17,10 @@ export const getCTez = (): WalletContract => {
   return cTez;
 };
 
-export const create = async (bakerAddress: string): Promise<string> => {
-  const hash = await executeMethod(cTez, 'create', [bakerAddress]);
+export const create = async (userAddress: string, bakerAddress: string): Promise<string> => {
+  const newOvenId = getLastOvenId(userAddress) + 1;
+  const hash = await executeMethod(cTez, 'create', [newOvenId, bakerAddress]);
+  saveLastOven(userAddress, newOvenId);
   return hash;
 };
 
@@ -31,14 +34,26 @@ export const deposit = async (amount: number): Promise<string> => {
   return hash;
 };
 
-export const withdraw = async (amount: number, to: string): Promise<string> => {
-  const hash = await executeMethod(cTez, 'withdraw', [new BigNumber(amount).shiftedBy(6), to]);
+export const withdraw = async (ovenId: number, amount: number, to: string): Promise<string> => {
+  const hash = await executeMethod(cTez, 'withdraw', [
+    ovenId,
+    new BigNumber(amount).shiftedBy(6),
+    to,
+  ]);
   return hash;
 };
 
-export const liquidate = async (overOwner: string, amount: number, to: string): Promise<string> => {
+export const liquidate = async (
+  ovenId: number,
+  overOwner: string,
+  amount: number,
+  to: string,
+): Promise<string> => {
   const hash = await executeMethod(cTez, 'liquidate', [
-    overOwner,
+    {
+      id: ovenId,
+      owner: overOwner,
+    },
     new BigNumber(amount).shiftedBy(6),
     to,
   ]);
@@ -56,15 +71,32 @@ export const getOvenDelegate = async (oven: Oven): Promise<string | null> => {
   return baker;
 };
 
-export const getOven = async (userAddress: string): Promise<Oven | undefined> => {
+export const prepareOvenCall = async (
+  storage: any,
+  ovenId: number,
+  userAddress: string,
+): Promise<Oven> => {
+  const oven = await storage.ovens.get({
+    id: ovenId,
+    owner: userAddress,
+  });
+  const baker = oven ? await getOvenDelegate(oven) : null;
+  return { ...oven, baker };
+};
+
+export const getOvens = async (userAddress: string): Promise<Oven[] | undefined> => {
   try {
     if (!cTez && CTEZ_ADDRESS) {
       await initCTez(CTEZ_ADDRESS);
     }
+    const lastOvenId = getLastOvenId(userAddress);
     const storage: any = await cTez.storage();
-    const oven = await storage.ovens.get(userAddress);
-    const baker = oven ? await getOvenDelegate(oven) : null;
-    return { ...oven, baker };
+    const ovens: Promise<Oven>[] = [];
+    for (let i = lastOvenId; i > 0; i -= 1) {
+      ovens.push(prepareOvenCall(storage, i, userAddress));
+    }
+    const allOvenData = await Promise.all(ovens);
+    return allOvenData;
   } catch (error) {
     console.log(error);
   }
