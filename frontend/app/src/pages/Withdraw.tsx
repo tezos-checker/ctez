@@ -3,13 +3,14 @@ import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import styled from '@emotion/styled';
 import { Field, Form, Formik } from 'formik';
-import { Button, Grid, Paper } from '@material-ui/core';
+import { Button, Grid, Paper, InputAdornment } from '@material-ui/core';
 import { useToasts } from 'react-toast-notifications';
 import { useHistory } from 'react-router-dom';
 import { cTezError, withdraw } from '../contracts/ctez';
 import FormikTextField from '../components/TextField';
 import { useWallet } from '../wallet/hooks';
 import { RootState } from '../redux/rootReducer';
+import TezosIcon from '../components/TezosIcon';
 
 interface WithdrawForm {
   amount: number;
@@ -82,10 +83,17 @@ export const Withdraw: React.FC = () => {
                     component={FormikTextField}
                     name="amount"
                     id="amount"
-                    label={t('amount')}
+                    label={t('amountXtz')}
                     className="amount"
                     type="number"
                     min="0.1"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <TezosIcon height={30} width={30} />
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                 </Grid>
                 <Grid item>

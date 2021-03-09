@@ -17,9 +17,13 @@ export const getCTez = (): WalletContract => {
   return cTez;
 };
 
-export const create = async (userAddress: string, bakerAddress: string): Promise<string> => {
+export const create = async (
+  userAddress: string,
+  bakerAddress: string,
+  amount: number,
+): Promise<string> => {
   const newOvenId = getLastOvenId(userAddress) + 1;
-  const hash = await executeMethod(cTez, 'create', [newOvenId, bakerAddress]);
+  const hash = await executeMethod(cTez, 'create', [newOvenId, bakerAddress], undefined, amount);
   saveLastOven(userAddress, newOvenId);
   return hash;
 };
@@ -29,6 +33,11 @@ export const delegate = async (bakerAddress: string): Promise<string> => {
   return hash;
 };
 
+/**
+ *
+ * @param ovenAddress "oven_edit_depositor Received 1 arguments while expecting one of the following signatures ([["allow_account","bool","address"],["allow_any","bool"]])"
+ * @param amount
+ */
 export const deposit = async (ovenAddress: string, amount: number): Promise<string> => {
   const ovenContract = await initContract(ovenAddress);
   const hash = await executeMethod(ovenContract, 'oven_deposit', undefined, 0, amount);

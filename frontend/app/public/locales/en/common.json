@@ -19,5 +19,7 @@
   "minLqtMinted": "Min LQT to mint",
   "deadline": "Deadline",
   "addLiquidity": "Add Liquidity",
-  "to": "To"
+  "to": "To",
+  "amountXtz": "Amount (in XTZ)",
+  "initialDeposit": "Initial deposit (in XTZ)"
 }
