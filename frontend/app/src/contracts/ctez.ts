@@ -29,8 +29,9 @@ export const delegate = async (bakerAddress: string): Promise<string> => {
   return hash;
 };
 
-export const deposit = async (amount: number): Promise<string> => {
-  const hash = await executeMethod(cTez, 'deposit', undefined, 0, amount);
+export const deposit = async (ovenAddress: string, amount: number): Promise<string> => {
+  const ovenContract = await initContract(ovenAddress);
+  const hash = await executeMethod(ovenContract, 'oven_deposit', undefined, 0, amount);
   return hash;
 };
 
@@ -81,7 +82,7 @@ export const prepareOvenCall = async (
     owner: userAddress,
   });
   const baker = oven ? await getOvenDelegate(oven) : null;
-  return { ...oven, baker };
+  return { ...oven, baker, ovenId };
 };
 
 export const getOvens = async (userAddress: string): Promise<Oven[] | undefined> => {

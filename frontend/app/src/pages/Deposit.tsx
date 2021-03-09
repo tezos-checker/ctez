@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import styled from '@emotion/styled';
 import { Field, Form, Formik } from 'formik';
@@ -7,6 +8,7 @@ import { useToasts } from 'react-toast-notifications';
 import { useHistory } from 'react-router-dom';
 import { cTezError, deposit } from '../contracts/ctez';
 import FormikTextField from '../components/TextField';
+import { RootState } from '../redux/rootReducer';
 
 interface DepositForm {
   amount: number;
@@ -18,6 +20,7 @@ const PaperStyled = styled(Paper)`
 
 export const Deposit: React.FC = () => {
   const { addToast } = useToasts();
+  const ovenAddress = useSelector((state: RootState) => state.ovenActions.oven?.address);
   const { t } = useTranslation(['common']);
   const history = useHistory();
   const initialValues: DepositForm = {
@@ -29,21 +32,23 @@ export const Deposit: React.FC = () => {
   });
 
   const handleFormSubmit = async (data: DepositForm) => {
-    try {
-      const result = await deposit(data.amount);
-      if (result) {
-        addToast('Transaction Submitted', {
-          appearance: 'success',
+    if (ovenAddress) {
+      try {
+        const result = await deposit(ovenAddress, data.amount);
+        if (result) {
+          addToast('Transaction Submitted', {
+            appearance: 'success',
+            autoDismiss: true,
+            onDismiss: () => history.push('/'),
+          });
+        }
+      } catch (error) {
+        const errorText = cTezError[error.data[1].with.int as number] || 'Transaction Failed';
+        addToast(errorText, {
+          appearance: 'error',
           autoDismiss: true,
-          onDismiss: () => history.push('/'),
         });
       }
-    } catch (error) {
-      const errorText = cTezError[error.data[1].with.int as number] || 'Transaction Failed';
-      addToast(errorText, {
-        appearance: 'error',
-        autoDismiss: true,
-      });
     }
   };
 

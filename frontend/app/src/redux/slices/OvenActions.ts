@@ -1,12 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { Oven } from '../../interfaces/ctez';
 
 interface OvenActionState {
-  ovenId: number | null;
+  oven: Oven | null;
   showActions: boolean;
 }
 
 const initialState: OvenActionState = {
-  ovenId: null,
+  oven: null,
   showActions: false,
 };
 
@@ -17,11 +18,11 @@ export const OvenActionsSlice = createSlice({
     toggleActions: (state, action: PayloadAction<boolean>) => {
       state.showActions = action.payload;
     },
-    setOvenId: (state, action: PayloadAction<number>) => {
-      state.ovenId = action.payload;
+    setOven: (state, action: PayloadAction<Oven>) => {
+      state.oven = action.payload;
     },
     clearOven: (state) => {
-      state.ovenId = null;
+      state.oven = null;
       state.showActions = false;
     },
   },

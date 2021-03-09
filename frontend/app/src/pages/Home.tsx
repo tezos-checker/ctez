@@ -110,10 +110,9 @@ export const HomePage: React.FC = () => {
               <Grid item key={`${ovenValue.address}-${index}`}>
                 <OvenCard
                   {...ovenValue}
-                  ovenId={index + 1}
                   totalOvens={ovenData.length}
                   action={() => {
-                    dispatch(OvenActionsSlice.actions.setOvenId(index + 1));
+                    dispatch(OvenActionsSlice.actions.setOven(ovenValue));
                     dispatch(OvenActionsSlice.actions.toggleActions(true));
                   }}
                 />
@@ -125,8 +124,7 @@ export const HomePage: React.FC = () => {
       {!isLoading && ovenData && ovenData.length > 0 && (
         <Drawer
           open={showActions}
-          onClose={(e, r) => {
-            console.log(e, r);
+          onClose={() => {
             dispatch(OvenActionsSlice.actions.clearOven());
           }}
         >
