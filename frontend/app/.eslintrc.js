@@ -61,5 +61,7 @@ module.exports = {
     'react/react-in-jsx-scope': 'off',
     'react/no-array-index-key': 'off',
     'import/no-named-as-default': 'off',
+    'no-nested-ternary': 'warn',
+    'no-unneeded-ternary': 'warn',
   },
 };

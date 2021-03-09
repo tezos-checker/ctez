@@ -64,9 +64,9 @@ export const OvenCard: React.FC<OvenCardProps> = ({
   return (
     <Card className={classes.root}>
       <CardHeader
-        avatar={<Identicon seed={address} />}
-        title="My Oven"
-        subheader={<Address address={address} trimSize="large" trim />}
+        avatar={<Identicon seed={address} type="tzKtCat" />}
+        title={<Address address={address} trimSize="large" trim />}
+        subheader={`${t('ovenBalance')}: ${tez_balance?.shiftedBy(-6).toString() ?? 0}`}
       />
       <CardMedia
         className={classes.media}
@@ -82,11 +82,6 @@ export const OvenCard: React.FC<OvenCardProps> = ({
               </Typography>
             </Grid>
           )}
-          <Grid item>
-            <Typography size="body1" component="span" color="textSecondary">
-              {t('ovenBalance')}: {tez_balance?.shiftedBy(-6).toString() ?? 0}
-            </Typography>
-          </Grid>
           <Grid item>
             <Typography size="body1" component="span" color="textSecondary">
               {t('outstandingCTez')}: {ctez_outstanding?.shiftedBy(-6).toString() ?? 0}

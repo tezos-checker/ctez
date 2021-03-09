@@ -36,7 +36,7 @@ export const SignIn: React.FC = () => {
         <Grid container direction="row-reverse">
           <Grid item>
             <SignedInBoxStyled>
-              <Identicon seed={userAddress ?? ''} onClick={() => setOpen(true)} />
+              <Identicon seed={userAddress ?? ''} onClick={() => setOpen(true)} type="tzKtCat" />
               <ProfilePopover
                 isOpen={isOpen}
                 onClose={() => setOpen(false)}

@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js';
 import { ErrorType } from '../interfaces';
 import { Oven } from '../interfaces/ctez';
 import { CTEZ_ADDRESS } from '../utils/globals';
-import { getLastOvenId, saveLastOven } from '../utils/ovenId';
+import { getLastOvenId, saveLastOven } from '../utils/ovenUtils';
 import { getTezosInstance } from './client';
 import { executeMethod, initContract } from './utils';
 

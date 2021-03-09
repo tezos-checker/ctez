@@ -77,7 +77,7 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
         }}
       >
         <div className={classes.container}>
-          <Identicon alt={address} seed={address} />
+          <Identicon alt={address} seed={address} type="tzKtCat" />
           <div className={classes.accountDetails}>
             <Address address={address} trim trimSize="medium" />
             <Typography size="caption" component="span" color="textSecondary">

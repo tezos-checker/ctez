@@ -3,6 +3,7 @@ import { BlockiesOptions, create } from 'blockies-ts';
 import { Avatar, AvatarProps } from '@material-ui/core';
 
 export interface IdenticonProps extends Omit<Partial<BlockiesOptions>, 'seed'> {
+  type?: 'blockies' | 'tzKtCat';
   seed?: string;
   url?: string;
   variant?: AvatarProps['variant'];
@@ -11,6 +12,7 @@ export interface IdenticonProps extends Omit<Partial<BlockiesOptions>, 'seed'> {
 }
 
 export const Identicon: React.FC<IdenticonProps> = ({
+  type = 'blockies',
   seed,
   variant = 'circular',
   alt,
@@ -18,6 +20,10 @@ export const Identicon: React.FC<IdenticonProps> = ({
   onClick,
   ...rest
 }) => {
-  const data = url ?? create({ seed, ...rest }).toDataURL();
+  const data = url
+    ? url
+    : type === 'tzKtCat'
+    ? `https://services.tzkt.io/v1/avatars2/${seed}`
+    : create({ seed, ...rest }).toDataURL();
   return <Avatar variant={variant} alt={alt} src={data} onClick={onClick} />;
 };
