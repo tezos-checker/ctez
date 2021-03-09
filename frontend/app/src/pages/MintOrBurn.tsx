@@ -48,7 +48,6 @@ export const MintOrBurn: React.FC<MintOrBurnProps> = ({ type }) => {
           });
         }
       } catch (error) {
-        console.log(error);
         const errorText = cTezError[error.data[1].with.int as number] || 'Transaction Failed';
         addToast(errorText, {
           appearance: 'error',

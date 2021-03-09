@@ -19,8 +19,8 @@ import { Delegate } from '../../pages/Delegate';
 import { Liquidate } from '../../pages/Liquidate';
 
 interface TabPanelProps {
-  index: any;
-  value: any;
+  index: number;
+  value: number;
 }
 
 const TabPanel: React.FC<TabPanelProps> = ({ children, value, index, ...other }) => {
@@ -59,7 +59,7 @@ export const OvenActions: React.FC = () => {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
 
-  const handleChange = (event: any, newValue: number) => {
+  const handleChange = (event: React.SyntheticEvent<Element, Event>, newValue: number) => {
     setValue(newValue);
   };
 

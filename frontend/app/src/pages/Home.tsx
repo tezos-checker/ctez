@@ -17,7 +17,6 @@ import { useTranslation } from 'react-i18next';
 import { useQuery } from 'react-query';
 import { useHistory } from 'react-router-dom';
 import { Drawer } from '../components/Drawer/Drawer';
-import { LinkList } from '../components/LinkList/LinkList';
 import { OvenActions } from '../components/OvenActions/OvenActions';
 import { OvenCard } from '../components/OvenCard/OvenCard';
 import Page from '../components/Page';

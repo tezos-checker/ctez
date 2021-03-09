@@ -8,7 +8,7 @@ import { executeMethod, initContract } from './utils';
 
 let cTez: WalletContract;
 
-export const initCTez = async (address: string) => {
+export const initCTez = async (address: string): Promise<void> => {
   cTez = await initContract(address);
 };
 

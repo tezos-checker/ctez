@@ -21,7 +21,7 @@ interface OvenCardProps extends Oven {
   action?: () => void | Promise<void>;
 }
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     root: {
       maxWidth: 500,
