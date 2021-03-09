@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import styled from '@emotion/styled';
 import { Field, Form, Formik } from 'formik';
@@ -7,6 +8,7 @@ import { useToasts } from 'react-toast-notifications';
 import { useHistory } from 'react-router-dom';
 import { cTezError, mintOrBurn } from '../contracts/ctez';
 import FormikTextField from '../components/TextField';
+import { RootState } from '../redux/rootReducer';
 
 interface MintBurnForm {
   amount: number;
@@ -20,6 +22,7 @@ export const MintOrBurn: React.FC = () => {
   const { t } = useTranslation(['common']);
   const { addToast } = useToasts();
   const history = useHistory();
+  const ovenId = useSelector((state: RootState) => state.ovenActions.oven?.ovenId);
   const initialValues: MintBurnForm = {
     amount: 0,
   };
@@ -29,21 +32,24 @@ export const MintOrBurn: React.FC = () => {
   });
 
   const handleFormSubmit = async (data: MintBurnForm) => {
-    try {
-      const result = await mintOrBurn(data.amount);
-      if (result) {
-        addToast('Transaction Submitted', {
-          appearance: 'success',
+    if (ovenId) {
+      try {
+        const result = await mintOrBurn(ovenId, data.amount);
+        if (result) {
+          addToast('Transaction Submitted', {
+            appearance: 'success',
+            autoDismiss: true,
+            onDismiss: () => history.push('/'),
+          });
+        }
+      } catch (error) {
+        console.log(error);
+        const errorText = cTezError[error.data[1].with.int as number] || 'Transaction Failed';
+        addToast(errorText, {
+          appearance: 'error',
           autoDismiss: true,
-          onDismiss: () => history.push('/'),
         });
       }
-    } catch (error) {
-      const errorText = cTezError[error.data[1].with.int as number] || 'Transaction Failed';
-      addToast(errorText, {
-        appearance: 'error',
-        autoDismiss: true,
-      });
     }
   };
 

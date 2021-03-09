@@ -66,18 +66,19 @@ export const liquidate = async (
   to: string,
 ): Promise<string> => {
   const hash = await executeMethod(cTez, 'liquidate', [
-    {
-      id: ovenId,
-      owner: overOwner,
-    },
+    ovenId,
+    overOwner,
     new BigNumber(amount).shiftedBy(6),
     to,
   ]);
   return hash;
 };
 
-export const mintOrBurn = async (quantity: number): Promise<string> => {
-  const hash = await executeMethod(cTez, 'mint_or_burn', [new BigNumber(quantity).shiftedBy(6)]);
+export const mintOrBurn = async (ovenId: number, quantity: number): Promise<string> => {
+  const hash = await executeMethod(cTez, 'mint_or_burn', [
+    ovenId,
+    new BigNumber(quantity).shiftedBy(6),
+  ]);
   return hash;
 };
 
