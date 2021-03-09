@@ -33,10 +33,6 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const getRandomInt = (max: number) => {
-  return Math.floor(Math.floor(max) * Math.random()) + 1;
-};
-
 const scaleBetween = (
   unscaledNum: number,
   minAllowed: number,
@@ -62,13 +58,9 @@ export const OvenCard: React.FC<OvenCardProps> = ({
 }) => {
   const classes = useStyles();
   const { t } = useTranslation(['common']);
-  const [expanded, setExpanded] = React.useState(false);
   const imageSelected =
     ovenId > TOTAL_OVEN_IMG ? scaleBetween(ovenId, 1, 5, 6, totalOvens) : ovenId;
 
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
-  };
   return (
     <Card className={classes.root}>
       <CardHeader
@@ -92,12 +84,12 @@ export const OvenCard: React.FC<OvenCardProps> = ({
           )}
           <Grid item>
             <Typography size="body1" component="span" color="textSecondary">
-              {t('ovenBalance')}: {tez_balance.shiftedBy(-6).toString()}
+              {t('ovenBalance')}: {tez_balance?.shiftedBy(-6).toString() ?? 0}
             </Typography>
           </Grid>
           <Grid item>
             <Typography size="body1" component="span" color="textSecondary">
-              {t('outstandingCTez')}: {ctez_outstanding.shiftedBy(-6).toString()}
+              {t('outstandingCTez')}: {ctez_outstanding?.shiftedBy(-6).toString() ?? 0}
             </Typography>
           </Grid>
         </Grid>

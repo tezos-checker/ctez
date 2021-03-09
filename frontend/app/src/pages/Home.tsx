@@ -22,10 +22,10 @@ import { OvenCard } from '../components/OvenCard/OvenCard';
 import Page from '../components/Page';
 import { Typography } from '../components/Typography';
 import { getOvens } from '../contracts/ctez';
-import { Oven } from '../interfaces/ctez';
 import { useWallet } from '../wallet/hooks';
 import { RootState } from '../redux/rootReducer';
 import { OvenActionsSlice } from '../redux/slices/OvenActions';
+import { Oven } from '../interfaces';
 
 export const HomePage: React.FC = () => {
   const { t } = useTranslation(['common']);
@@ -52,7 +52,12 @@ export const HomePage: React.FC = () => {
     Oven[] | undefined
   >(['ovenData', userAddress], async () => {
     if (userAddress) {
-      return getOvens(userAddress);
+      const ovens = await getOvens(userAddress);
+      return ovens
+        ? ovens.filter((data: Oven) => {
+            return data && data.baker !== null;
+          })
+        : undefined;
     }
   });
 
@@ -106,18 +111,20 @@ export const HomePage: React.FC = () => {
         >
           {ovenData &&
             ovenData.length > 0 &&
-            ovenData.map((ovenValue, index) => (
-              <Grid item key={`${ovenValue.address}-${index}`}>
-                <OvenCard
-                  {...ovenValue}
-                  totalOvens={ovenData.length}
-                  action={() => {
-                    dispatch(OvenActionsSlice.actions.setOven(ovenValue));
-                    dispatch(OvenActionsSlice.actions.toggleActions(true));
-                  }}
-                />
-              </Grid>
-            ))}
+            ovenData.map((ovenValue, index) => {
+              return (
+                <Grid item key={`${ovenValue.address}-${index}`}>
+                  <OvenCard
+                    {...ovenValue}
+                    totalOvens={ovenData.length}
+                    action={() => {
+                      dispatch(OvenActionsSlice.actions.setOven(ovenValue));
+                      dispatch(OvenActionsSlice.actions.toggleActions(true));
+                    }}
+                  />
+                </Grid>
+              );
+            })}
         </Grid>
       )}
       {!isLoading && <LinkList list={cTezMethods} />}
