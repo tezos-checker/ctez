@@ -26,6 +26,7 @@ import { useWallet } from '../wallet/hooks';
 import { RootState } from '../redux/rootReducer';
 import { OvenActionsSlice } from '../redux/slices/OvenActions';
 import { Oven } from '../interfaces';
+import { toSerializeableOven } from '../utils/ovenUtils';
 
 export const HomePage: React.FC = () => {
   const { t } = useTranslation(['common']);
@@ -118,7 +119,7 @@ export const HomePage: React.FC = () => {
                     {...ovenValue}
                     totalOvens={ovenData.length}
                     action={() => {
-                      dispatch(OvenActionsSlice.actions.setOven(ovenValue));
+                      dispatch(OvenActionsSlice.actions.setOven(toSerializeableOven(ovenValue)));
                       dispatch(OvenActionsSlice.actions.toggleActions(true));
                     }}
                   />

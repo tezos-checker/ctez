@@ -51,7 +51,7 @@ module.exports = {
     'no-param-reassign': 'off',
     'import/no-cycle': 'warn',
     '@typescript-eslint/no-unused-expressions': [
-      'off',
+      'warn',
       {
         allowShortCircuit: true,
         allowTernary: true,

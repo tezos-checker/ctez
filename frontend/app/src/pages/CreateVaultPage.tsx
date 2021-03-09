@@ -20,9 +20,6 @@ interface CreateVaultForm {
 
 const PaperStyled = styled(Paper)`
   padding: 2em;
-  & .delegate {
-    min-width: 40rem;
-  }
 `;
 
 const CreateVaultComponent: React.FC<WithTranslation> = ({ t }) => {
@@ -78,7 +75,7 @@ const CreateVaultComponent: React.FC<WithTranslation> = ({ t }) => {
                 alignContent="center"
                 justifyContent="center"
               >
-                <Grid item>
+                <Grid item style={{ width: '100%' }}>
                   <Field
                     component={FormikAutocomplete}
                     name="delegate"
@@ -87,13 +84,14 @@ const CreateVaultComponent: React.FC<WithTranslation> = ({ t }) => {
                     placeholder={t('delegatePlaceholder')}
                     options={delegates}
                     className="delegate"
+                    fullWidth
                   />
                 </Grid>
                 <Grid item>
                   <Button
                     variant="contained"
                     type="submit"
-                    disabled={isSubmitting || !isValid || !dirty}
+                    disabled={!userAddress || isSubmitting || !isValid || !dirty}
                     fullWidth
                   >
                     {t('submit')}

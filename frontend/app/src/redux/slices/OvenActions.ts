@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Oven } from '../../interfaces/ctez';
+import { OvenSerializable } from '../../interfaces/ctez';
 
 interface OvenActionState {
-  oven: Oven | null;
+  oven: OvenSerializable | null;
   showActions: boolean;
 }
 
@@ -18,7 +18,7 @@ export const OvenActionsSlice = createSlice({
     toggleActions: (state, action: PayloadAction<boolean>) => {
       state.showActions = action.payload;
     },
-    setOven: (state, action: PayloadAction<Oven>) => {
+    setOven: (state, action: PayloadAction<OvenSerializable>) => {
       state.oven = action.payload;
     },
     clearOven: (state) => {
