@@ -36,10 +36,6 @@ export const HomePage: React.FC = () => {
       to: '/create',
       primary: t('createVault'),
     },
-    {
-      to: '/liquidate',
-      primary: t('liquidate'),
-    },
   ];
 
   const cfmmMethods = [
