@@ -10,6 +10,10 @@ import { cTezError, mintOrBurn } from '../contracts/ctez';
 import FormikTextField from '../components/TextField';
 import { RootState } from '../redux/rootReducer';
 
+interface MintOrBurnProps {
+  type: 'mint' | 'repay';
+}
+
 interface MintBurnForm {
   amount: number;
 }
@@ -18,7 +22,7 @@ const PaperStyled = styled(Paper)`
   padding: 2em;
 `;
 
-export const MintOrBurn: React.FC = () => {
+export const MintOrBurn: React.FC<MintOrBurnProps> = ({ type }) => {
   const { t } = useTranslation(['common']);
   const { addToast } = useToasts();
   const history = useHistory();
@@ -34,7 +38,8 @@ export const MintOrBurn: React.FC = () => {
   const handleFormSubmit = async (data: MintBurnForm) => {
     if (ovenId) {
       try {
-        const result = await mintOrBurn(ovenId, data.amount);
+        const amount = type === 'repay' ? -data.amount : data.amount;
+        const result = await mintOrBurn(ovenId, amount);
         if (result) {
           addToast('Transaction Submitted', {
             appearance: 'success',
