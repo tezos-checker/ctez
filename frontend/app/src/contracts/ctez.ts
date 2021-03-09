@@ -28,8 +28,9 @@ export const create = async (
   return hash;
 };
 
-export const delegate = async (bakerAddress: string): Promise<string> => {
-  const hash = await executeMethod(cTez, 'delegate', [bakerAddress]);
+export const delegate = async (ovenAddress: string, bakerAddress: string): Promise<string> => {
+  const ovenContract = await initContract(ovenAddress);
+  const hash = await executeMethod(ovenContract, 'oven_delegate', [bakerAddress]);
   return hash;
 };
 

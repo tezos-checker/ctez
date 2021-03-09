@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
+import { useSelector } from 'react-redux';
 import styled from '@emotion/styled';
 import { AxiosError } from 'axios';
 import { useQuery } from 'react-query';
@@ -11,6 +12,7 @@ import { getDelegates } from '../api/tzkt';
 import { cTezError, delegate } from '../contracts/ctez';
 import { FormikAutocomplete } from '../components/Autocomplete';
 import { Baker } from '../interfaces';
+import { RootState } from '../redux/rootReducer';
 
 interface DelegateForm {
   delegate: string;
@@ -25,6 +27,7 @@ export const Delegate: React.FC = () => {
   const { data: delegates } = useQuery<Baker[], AxiosError, Baker[]>(['delegates'], () => {
     return getDelegates();
   });
+  const ovenAddress = useSelector((state: RootState) => state.ovenActions.oven?.address);
   const { addToast } = useToasts();
   const history = useHistory();
   const initialValues: DelegateForm = {
@@ -36,21 +39,23 @@ export const Delegate: React.FC = () => {
   });
 
   const handleFormSubmit = async (data: DelegateForm) => {
-    try {
-      const result = await delegate(data.delegate);
-      if (result) {
-        addToast('Transaction Submitted', {
-          appearance: 'success',
+    if (ovenAddress) {
+      try {
+        const result = await delegate(ovenAddress, data.delegate);
+        if (result) {
+          addToast('Transaction Submitted', {
+            appearance: 'success',
+            autoDismiss: true,
+            onDismiss: () => history.push('/'),
+          });
+        }
+      } catch (error) {
+        const errorText = cTezError[error.data[1].with.int as number] || 'Transaction Failed';
+        addToast(errorText, {
+          appearance: 'error',
           autoDismiss: true,
-          onDismiss: () => history.push('/'),
         });
       }
-    } catch (error) {
-      const errorText = cTezError[error.data[1].with.int as number] || 'Transaction Failed';
-      addToast(errorText, {
-        appearance: 'error',
-        autoDismiss: true,
-      });
     }
   };
 
