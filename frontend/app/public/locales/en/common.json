@@ -31,5 +31,9 @@
   "address": "Address",
   "modifyDepositors": "Modify Depositor(s)",
   "mint": "Mint",
-  "repay": "Repay"
+  "repay": "Repay",
+  "removeLiquidity": "Remove Liquidity",
+  "minTokensWithdrawn": "Tokens to withdraw (Min)",
+  "minCashWithdrawn": "Cash to withdraw (Min)",
+  "lqtBurned": "LQT to burn"
 }

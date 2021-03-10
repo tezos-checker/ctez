@@ -87,6 +87,11 @@ export const HomePage: React.FC = () => {
               {t('addLiquidity')}
             </Typography>
           </AccordionDetails>
+          <AccordionDetails>
+            <Typography onClick={() => history.push('/remove-liquidity')}>
+              {t('removeLiquidity')}
+            </Typography>
+          </AccordionDetails>
         </Accordion>
       </div>
     );
