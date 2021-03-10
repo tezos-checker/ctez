@@ -39,5 +39,8 @@
   "xtzToDeposit": "XTZ to deposit",
   "minTokensBought": "Tokens to buy (Min)",
   "xtzToPay": "XTZ to pay",
-  "cashToToken": "Cash to token"
+  "cashToToken": "Cash to token",
+  "tokensSold": "Tokens to sell",
+  "minXTZBought": "XTZ to buy (Min)",
+  "tokenToCash": "Token to cash"
 }
