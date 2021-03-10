@@ -13,7 +13,7 @@ import Address from '../Address';
 import Identicon from '../Identicon';
 import { Typography } from '../Typography';
 
-const TOTAL_OVEN_IMG = 10;
+const TOTAL_OVEN_IMG = 11;
 
 interface OvenCardProps extends Oven {
   ovenId: number;
