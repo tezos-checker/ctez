@@ -1,5 +1,13 @@
 import { WalletContract } from '@taquito/taquito';
-import { AddLiquidityParams, ErrorType, RemoveLiquidityParams } from '../interfaces';
+import BigNumber from 'bignumber.js';
+import {
+  AddLiquidityParams,
+  CashToTokenParams,
+  ErrorType,
+  RemoveLiquidityParams,
+  TokenToCashParams,
+  TokenToTokenParams,
+} from '../interfaces';
 import { executeMethod, initContract } from './utils';
 
 let cfmm: WalletContract;
@@ -12,7 +20,7 @@ export const addLiquidity = async (args: AddLiquidityParams): Promise<string> =>
   const hash = await executeMethod(cfmm, 'addLiquidity', [
     args.owner,
     args.minLqtMinted,
-    args.maxTokensDeposited,
+    new BigNumber(args.maxTokensDeposited).shiftedBy(6),
     args.deadline.toISOString(),
   ]);
   return hash;
@@ -22,8 +30,38 @@ export const removeLiquidity = async (args: RemoveLiquidityParams): Promise<stri
   const hash = await executeMethod(cfmm, 'removeLiquidity', [
     args.to,
     args.lqtBurned,
-    args.minCashWithdrawn,
-    args.minTokensWithdrawn,
+    new BigNumber(args.minCashWithdrawn).shiftedBy(6),
+    new BigNumber(args.minTokensWithdrawn).shiftedBy(6),
+    args.deadline.toISOString(),
+  ]);
+  return hash;
+};
+
+export const cashToToken = async (args: CashToTokenParams): Promise<string> => {
+  const hash = await executeMethod(cfmm, 'cashToToken', [
+    args.to,
+    new BigNumber(args.minTokensBought).shiftedBy(6),
+    args.deadline.toISOString(),
+  ]);
+  return hash;
+};
+
+export const tokenToCash = async (args: TokenToCashParams): Promise<string> => {
+  const hash = await executeMethod(cfmm, 'tokenToCash', [
+    args.to,
+    new BigNumber(args.tokensSold).shiftedBy(6),
+    new BigNumber(args.minCashBought).shiftedBy(6),
+    args.deadline.toISOString(),
+  ]);
+  return hash;
+};
+
+export const tokenToToken = async (args: TokenToTokenParams): Promise<string> => {
+  const hash = await executeMethod(cfmm, 'tokenToToken', [
+    args.outputCfmmContract,
+    new BigNumber(args.minTokensBought).shiftedBy(6),
+    args.to,
+    new BigNumber(args.tokensSold).shiftedBy(6),
     args.deadline.toISOString(),
   ]);
   return hash;
