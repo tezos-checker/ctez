@@ -2,7 +2,7 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 import styled from '@emotion/styled';
 import { Field, Form, Formik } from 'formik';
-import { Button, Grid, Paper } from '@material-ui/core';
+import { Button, Grid, Paper, InputAdornment } from '@material-ui/core';
 import { useToasts } from 'react-toast-notifications';
 import { useHistory } from 'react-router-dom';
 import Page from '../components/Page';
@@ -11,6 +11,7 @@ import { useWallet } from '../wallet/hooks';
 import { AddLiquidityParams } from '../interfaces';
 import { addLiquidity, cfmmError } from '../contracts/cfmm';
 import { FormikDateTimePicker } from '../components/DateTimePicker';
+import { TezosIcon } from '../components/TezosIcon';
 
 const PaperStyled = styled(Paper)`
   padding: 2em;
@@ -25,6 +26,7 @@ const AddLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
     maxTokensDeposited: 0,
     minLqtMinted: 0,
     deadline: new Date(),
+    amount: 0,
   };
 
   const validationSchema = Yup.object().shape({
@@ -89,6 +91,24 @@ const AddLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
                     className="maxTokensDeposited"
                     type="number"
                     fullWidth
+                  />
+                </Grid>
+                <Grid item>
+                  <Field
+                    component={FormikTextField}
+                    name="amount"
+                    id="amount"
+                    label={t('xtzToDeposit')}
+                    className="amount"
+                    type="number"
+                    fullWidth
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <TezosIcon height={30} width={30} />
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                 </Grid>
                 <Grid item>

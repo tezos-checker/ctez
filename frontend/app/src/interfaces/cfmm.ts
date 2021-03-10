@@ -3,6 +3,7 @@ export interface AddLiquidityParams {
   deadline: Date;
   minLqtMinted: number;
   maxTokensDeposited: number;
+  amount: number;
 }
 
 export interface RemoveLiquidityParams {

@@ -27,7 +27,7 @@ export const addLiquidity = async (args: AddLiquidityParams): Promise<string> =>
       args.deadline.toISOString(),
     ],
     undefined,
-    new BigNumber(args.maxTokensDeposited).shiftedBy(6).toNumber(),
+    new BigNumber(args.amount).shiftedBy(6).toNumber(),
     true,
   );
   return hash;
