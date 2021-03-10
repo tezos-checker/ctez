@@ -44,13 +44,13 @@ export const removeLiquidity = async (args: RemoveLiquidityParams): Promise<stri
   return hash;
 };
 
-export const cashToToken = async (args: CashToTokenParams, amount: number): Promise<string> => {
+export const cashToToken = async (args: CashToTokenParams): Promise<string> => {
   const hash = await executeMethod(
     cfmm,
     'cashToToken',
     [args.to, new BigNumber(args.minTokensBought).shiftedBy(6), args.deadline.toISOString()],
     undefined,
-    new BigNumber(amount).shiftedBy(6).toNumber(),
+    new BigNumber(args.amount).shiftedBy(6).toNumber(),
     true,
   );
   return hash;

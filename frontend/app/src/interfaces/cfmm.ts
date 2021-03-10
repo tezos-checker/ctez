@@ -18,6 +18,7 @@ export interface CashToTokenParams {
   to: string;
   minTokensBought: number;
   deadline: Date;
+  amount: number;
   // cashSold: number; # For !CASH_IS_TEZ
 }
 

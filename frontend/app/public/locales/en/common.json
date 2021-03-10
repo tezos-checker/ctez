@@ -36,5 +36,8 @@
   "minTokensWithdrawn": "Tokens to withdraw (Min)",
   "minCashWithdrawn": "Cash to withdraw (Min)",
   "lqtBurned": "LQT to burn",
-  "xtzToDeposit": "XTZ to deposit"
+  "xtzToDeposit": "XTZ to deposit",
+  "minTokensBought": "Tokens to buy (Min)",
+  "xtzToPay": "XTZ to pay",
+  "cashToToken": "Cash to token"
 }
