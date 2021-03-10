@@ -34,6 +34,7 @@ const AddLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
     maxTokensDeposited: Yup.number().required(t('required')),
     minLqtMinted: Yup.number().required(t('required')),
     deadline: Yup.date().required(t('required')),
+    amount: Yup.number().required(t('required')),
   });
 
   const handleFormSubmit = async (data: AddLiquidityParams) => {
