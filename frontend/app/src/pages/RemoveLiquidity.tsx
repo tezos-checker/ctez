@@ -25,7 +25,7 @@ const RemoveLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
     lqtBurned: 1,
     minCashWithdrawn: 1,
     minTokensWithdrawn: 1,
-    deadline: new Date(),
+    deadline: new Date(new Date().getTime() + 5 * 60000),
   };
 
   const validationSchema = Yup.object().shape({

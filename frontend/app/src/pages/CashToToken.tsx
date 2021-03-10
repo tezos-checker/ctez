@@ -24,7 +24,7 @@ const CashToTokenComponent: React.FC<WithTranslation> = ({ t }) => {
   const initialValues: CashToTokenParams = {
     to: userAddress ?? '',
     minTokensBought: 0,
-    deadline: new Date(),
+    deadline: new Date(new Date().getTime() + 5 * 60000),
     amount: 0,
   };
 

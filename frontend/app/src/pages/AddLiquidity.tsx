@@ -25,7 +25,7 @@ const AddLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
     owner: userAddress ?? '',
     maxTokensDeposited: 0,
     minLqtMinted: 0,
-    deadline: new Date(),
+    deadline: new Date(new Date().getTime() + 5 * 60000),
     amount: 0,
   };
 

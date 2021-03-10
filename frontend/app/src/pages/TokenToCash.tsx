@@ -25,7 +25,7 @@ const TokenToCashComponent: React.FC<WithTranslation> = ({ t }) => {
     to: userAddress ?? '',
     minCashBought: 0,
     tokensSold: 0,
-    deadline: new Date(),
+    deadline: new Date(new Date().getTime() + 5 * 60000),
   };
 
   const validationSchema = Yup.object().shape({
