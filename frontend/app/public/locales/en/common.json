@@ -21,5 +21,15 @@
   "to": "To",
   "amountXtz": "Amount (in XTZ)",
   "initialDeposit": "Initial deposit (in XTZ)",
-  "noOvens": "No ovens found..."
+  "noOvens": "No ovens found...",
+  "allow_any": "Everyone",
+  "allow_account": "An address",
+  "allow": "Allow",
+  "deny": "Deny",
+  "operation": "Operation",
+  "action": "Action",
+  "address": "Address",
+  "modifyDepositors": "Modify Depositor(s)",
+  "mint": "Mint",
+  "repay": "Repay"
 }

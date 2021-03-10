@@ -5,7 +5,6 @@ import styled from '@emotion/styled';
 import { Field, Form, Formik } from 'formik';
 import { Button, Grid, Paper, InputAdornment } from '@material-ui/core';
 import { useToasts } from 'react-toast-notifications';
-import { useHistory } from 'react-router-dom';
 import { cTezError, withdraw } from '../contracts/ctez';
 import FormikTextField from '../components/TextField';
 import { useWallet } from '../wallet/hooks';
@@ -25,7 +24,6 @@ export const Withdraw: React.FC = () => {
   const { t } = useTranslation(['common']);
   const [{ pkh: userAddress }] = useWallet();
   const { addToast } = useToasts();
-  const history = useHistory();
   const ovenId = useSelector((state: RootState) => state.ovenActions.oven?.ovenId);
   const initialValues: WithdrawForm = {
     amount: 0,
@@ -45,7 +43,6 @@ export const Withdraw: React.FC = () => {
           addToast('Transaction Submitted', {
             appearance: 'success',
             autoDismiss: true,
-            onDismiss: () => history.push('/'),
           });
         }
       } catch (error) {

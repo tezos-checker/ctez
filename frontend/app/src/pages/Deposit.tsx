@@ -6,7 +6,6 @@ import styled from '@emotion/styled';
 import { Field, Form, Formik } from 'formik';
 import { Button, Grid, InputAdornment, Paper } from '@material-ui/core';
 import { useToasts } from 'react-toast-notifications';
-import { useHistory } from 'react-router-dom';
 import { cTezError, deposit } from '../contracts/ctez';
 import FormikTextField from '../components/TextField';
 import { RootState } from '../redux/rootReducer';
@@ -24,7 +23,6 @@ export const Deposit: React.FC = () => {
   const { addToast } = useToasts();
   const ovenAddress = useSelector((state: RootState) => state.ovenActions.oven?.address);
   const { t } = useTranslation(['common']);
-  const history = useHistory();
   const initialValues: DepositForm = {
     amount: 0,
   };
@@ -41,7 +39,6 @@ export const Deposit: React.FC = () => {
           addToast('Transaction Submitted', {
             appearance: 'success',
             autoDismiss: true,
-            onDismiss: () => history.push('/'),
           });
         }
       } catch (error) {

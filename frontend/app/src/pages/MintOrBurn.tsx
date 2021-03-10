@@ -5,7 +5,6 @@ import styled from '@emotion/styled';
 import { Field, Form, Formik } from 'formik';
 import { Button, Grid, Paper } from '@material-ui/core';
 import { useToasts } from 'react-toast-notifications';
-import { useHistory } from 'react-router-dom';
 import { cTezError, mintOrBurn } from '../contracts/ctez';
 import FormikTextField from '../components/TextField';
 import { RootState } from '../redux/rootReducer';
@@ -25,7 +24,6 @@ const PaperStyled = styled(Paper)`
 export const MintOrBurn: React.FC<MintOrBurnProps> = ({ type }) => {
   const { t } = useTranslation(['common']);
   const { addToast } = useToasts();
-  const history = useHistory();
   const ovenId = useSelector((state: RootState) => state.ovenActions.oven?.ovenId);
   const initialValues: MintBurnForm = {
     amount: 0,
@@ -44,7 +42,6 @@ export const MintOrBurn: React.FC<MintOrBurnProps> = ({ type }) => {
           addToast('Transaction Submitted', {
             appearance: 'success',
             autoDismiss: true,
-            onDismiss: () => history.push('/'),
           });
         }
       } catch (error) {

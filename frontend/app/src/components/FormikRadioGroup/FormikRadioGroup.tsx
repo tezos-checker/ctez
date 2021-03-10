@@ -10,7 +10,7 @@ import {
 import { FieldProps } from 'formik';
 
 interface RadioOption {
-  value: string;
+  value: string | boolean | number;
   label: string;
   disabled?: boolean;
 }
@@ -41,8 +41,14 @@ export const FormikRadioGroup: React.FC<FormikRadioGroupProps> = ({
         onChange={formikHandleChange}
         {...rest}
       >
-        {options.map(({ value, label, disabled }) => (
-          <FormControlLabel value={value} disabled={disabled} control={<Radio />} label={label} />
+        {options.map(({ value: val, label, disabled }) => (
+          <FormControlLabel
+            key={label}
+            value={val}
+            disabled={disabled}
+            control={<Radio />}
+            label={label}
+          />
         ))}
       </MaterialRadioGroup>
     </FormControl>

@@ -40,7 +40,11 @@ export const editDepositor = async (
   address?: string,
 ): Promise<string> => {
   const ovenContract = await initContract(ovenAddress);
-  const hash = await executeMethod(ovenContract, 'oven_edit_depositor', [ops, enable, address]);
+  const hash = await executeMethod(ovenContract, 'oven_edit_depositor', [
+    ops,
+    enable,
+    address && address.trim().length > 1 ? address : undefined,
+  ]);
   return hash;
 };
 

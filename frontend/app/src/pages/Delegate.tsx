@@ -7,7 +7,6 @@ import { useQuery } from 'react-query';
 import { Field, Form, Formik } from 'formik';
 import { Button, Grid, Paper } from '@material-ui/core';
 import { useToasts } from 'react-toast-notifications';
-import { useHistory } from 'react-router-dom';
 import { getDelegates } from '../api/tzkt';
 import { cTezError, delegate } from '../contracts/ctez';
 import { FormikAutocomplete } from '../components/Autocomplete';
@@ -29,7 +28,6 @@ export const Delegate: React.FC = () => {
   });
   const ovenAddress = useSelector((state: RootState) => state.ovenActions.oven?.address);
   const { addToast } = useToasts();
-  const history = useHistory();
   const initialValues: DelegateForm = {
     delegate: '',
   };
@@ -46,7 +44,6 @@ export const Delegate: React.FC = () => {
           addToast('Transaction Submitted', {
             appearance: 'success',
             autoDismiss: true,
-            onDismiss: () => history.push('/'),
           });
         }
       } catch (error) {
