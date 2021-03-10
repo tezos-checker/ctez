@@ -5,9 +5,9 @@ import styled from '@emotion/styled';
 import { Field, Form, Formik } from 'formik';
 import { Button, Grid, Paper } from '@material-ui/core';
 import { useToasts } from 'react-toast-notifications';
-import { cTezError, mintOrBurn } from '../contracts/ctez';
-import FormikTextField from '../components/TextField';
-import { RootState } from '../redux/rootReducer';
+import { mintOrBurn, cTezError } from '../../contracts/ctez';
+import { RootState } from '../../redux/rootReducer';
+import FormikTextField from '../TextField';
 
 interface MintOrBurnProps {
   type: 'mint' | 'repay';

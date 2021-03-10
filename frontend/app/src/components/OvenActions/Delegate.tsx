@@ -7,11 +7,11 @@ import { useQuery } from 'react-query';
 import { Field, Form, Formik } from 'formik';
 import { Button, Grid, Paper } from '@material-ui/core';
 import { useToasts } from 'react-toast-notifications';
-import { getDelegates } from '../api/tzkt';
-import { cTezError, delegate } from '../contracts/ctez';
-import { FormikAutocomplete } from '../components/Autocomplete';
-import { Baker } from '../interfaces';
-import { RootState } from '../redux/rootReducer';
+import { getDelegates } from '../../api/tzkt';
+import { cTezError, delegate } from '../../contracts/ctez';
+import { FormikAutocomplete } from '../Autocomplete';
+import { Baker } from '../../interfaces';
+import { RootState } from '../../redux/rootReducer';
 
 interface DelegateForm {
   delegate: string;

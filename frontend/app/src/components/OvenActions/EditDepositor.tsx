@@ -5,11 +5,11 @@ import styled from '@emotion/styled';
 import { Field, Form, Formik } from 'formik';
 import { Button, Grid, Paper } from '@material-ui/core';
 import { useToasts } from 'react-toast-notifications';
-import { cTezError, editDepositor } from '../contracts/ctez';
-import FormikTextField from '../components/TextField';
-import { RootState } from '../redux/rootReducer';
-import { EditDepositorOps } from '../interfaces';
-import { FormikRadioGroup } from '../components/FormikRadioGroup/FormikRadioGroup';
+import { editDepositor, cTezError } from '../../contracts/ctez';
+import { EditDepositorOps } from '../../interfaces';
+import { RootState } from '../../redux/rootReducer';
+import { FormikRadioGroup } from '../FormikRadioGroup/FormikRadioGroup';
+import { FormikTextField } from '../TextField';
 
 interface EditDepositorForm {
   op: EditDepositorOps;

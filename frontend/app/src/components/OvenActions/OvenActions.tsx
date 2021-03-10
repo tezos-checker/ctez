@@ -15,12 +15,12 @@ import {
   FcPaid,
   FcDecision,
 } from 'react-icons/fc';
-import { Deposit } from '../../pages/Deposit';
-import { Withdraw } from '../../pages/Withdraw';
-import { MintOrBurn } from '../../pages/MintOrBurn';
-import { Delegate } from '../../pages/Delegate';
-import { Liquidate } from '../../pages/Liquidate';
-import { EditDepositor } from '../../pages/EditDepositor';
+import { Deposit } from './Deposit';
+import { Withdraw } from './Withdraw';
+import { MintOrBurn } from './MintOrBurn';
+import { Delegate } from './Delegate';
+import { Liquidate } from './Liquidate';
+import { EditDepositor } from './EditDepositor';
 
 interface TabPanelProps {
   index: number;

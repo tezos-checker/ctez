@@ -4,37 +4,42 @@ import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import styled from '@emotion/styled';
 import { Field, Form, Formik } from 'formik';
-import { Button, Grid, InputAdornment, Paper } from '@material-ui/core';
+import { Button, Grid, Paper, InputAdornment } from '@material-ui/core';
 import { useToasts } from 'react-toast-notifications';
-import { cTezError, deposit } from '../contracts/ctez';
-import FormikTextField from '../components/TextField';
-import { RootState } from '../redux/rootReducer';
-import TezosIcon from '../components/TezosIcon';
+import { cTezError, withdraw } from '../../contracts/ctez';
+import { RootState } from '../../redux/rootReducer';
+import { useWallet } from '../../wallet/hooks';
+import FormikTextField from '../TextField';
+import { TezosIcon } from '../TezosIcon';
 
-interface DepositForm {
+interface WithdrawForm {
   amount: number;
+  to: string;
 }
 
 const PaperStyled = styled(Paper)`
   padding: 2em;
 `;
 
-export const Deposit: React.FC = () => {
-  const { addToast } = useToasts();
-  const ovenAddress = useSelector((state: RootState) => state.ovenActions.oven?.address);
+export const Withdraw: React.FC = () => {
   const { t } = useTranslation(['common']);
-  const initialValues: DepositForm = {
+  const [{ pkh: userAddress }] = useWallet();
+  const { addToast } = useToasts();
+  const ovenId = useSelector((state: RootState) => state.ovenActions.oven?.ovenId);
+  const initialValues: WithdrawForm = {
     amount: 0,
+    to: userAddress ?? '',
   };
 
   const validationSchema = Yup.object().shape({
-    amount: Yup.number().min(1).required(t('required')),
+    amount: Yup.number().min(0.1).required(t('required')),
+    to: Yup.string().required(t('required')),
   });
 
-  const handleFormSubmit = async (data: DepositForm) => {
-    if (ovenAddress) {
+  const handleFormSubmit = async (data: WithdrawForm) => {
+    if (ovenId) {
       try {
-        const result = await deposit(ovenAddress, data.amount);
+        const result = await withdraw(ovenId, data.amount, data.to);
         if (result) {
           addToast('Transaction Submitted', {
             appearance: 'success',
@@ -68,6 +73,9 @@ export const Deposit: React.FC = () => {
                 alignContent="center"
                 justifyContent="center"
               >
+                <Grid item style={{ width: '100%' }}>
+                  <Field component={FormikTextField} name="to" id="to" label={t('to')} fullWidth />
+                </Grid>
                 <Grid item>
                   <Field
                     component={FormikTextField}
@@ -75,6 +83,8 @@ export const Deposit: React.FC = () => {
                     id="amount"
                     label={t('amountXtz')}
                     className="amount"
+                    type="number"
+                    min="0.1"
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">

@@ -1,53 +1,44 @@
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import styled from '@emotion/styled';
 import { Field, Form, Formik } from 'formik';
-import { Button, Grid, Paper } from '@material-ui/core';
+import { Button, Grid, InputAdornment, Paper } from '@material-ui/core';
 import { useToasts } from 'react-toast-notifications';
-import { useHistory } from 'react-router-dom';
-import { cTezError, liquidate } from '../contracts/ctez';
-import FormikTextField from '../components/TextField';
-import { useWallet } from '../wallet/hooks';
-import { RootState } from '../redux/rootReducer';
+import { cTezError, deposit } from '../../contracts/ctez';
+import FormikTextField from '../TextField';
+import { RootState } from '../../redux/rootReducer';
+import TezosIcon from '../TezosIcon';
 
-interface LiquidateForm {
-  ovenOwner: string;
+interface DepositForm {
   amount: number;
-  to: string;
 }
 
 const PaperStyled = styled(Paper)`
   padding: 2em;
 `;
 
-export const Liquidate: React.FC = () => {
-  const { t } = useTranslation(['common']);
-  const [{ pkh: userAddress }] = useWallet();
+export const Deposit: React.FC = () => {
   const { addToast } = useToasts();
-  const history = useHistory();
-  const ovenId = useSelector((state: RootState) => state.ovenActions.oven?.ovenId);
-  const initialValues: LiquidateForm = {
-    ovenOwner: userAddress ?? '',
+  const ovenAddress = useSelector((state: RootState) => state.ovenActions.oven?.address);
+  const { t } = useTranslation(['common']);
+  const initialValues: DepositForm = {
     amount: 0,
-    to: userAddress ?? '',
   };
 
   const validationSchema = Yup.object().shape({
-    ovenOwner: Yup.string().required(t('required')),
-    amount: Yup.number().min(0.1).required(t('required')),
-    to: Yup.string().required(t('required')),
+    amount: Yup.number().min(1).required(t('required')),
   });
 
-  const handleFormSubmit = async (data: LiquidateForm) => {
-    if (ovenId) {
+  const handleFormSubmit = async (data: DepositForm) => {
+    if (ovenAddress) {
       try {
-        const result = await liquidate(ovenId, data.ovenOwner, data.amount, data.to);
+        const result = await deposit(ovenAddress, data.amount);
         if (result) {
           addToast('Transaction Submitted', {
             appearance: 'success',
             autoDismiss: true,
-            onDismiss: () => history.push('/'),
           });
         }
       } catch (error) {
@@ -77,35 +68,20 @@ export const Liquidate: React.FC = () => {
                 alignContent="center"
                 justifyContent="center"
               >
-                <Grid item style={{ width: '100%' }}>
-                  <Field
-                    component={FormikTextField}
-                    name="ovenOwner"
-                    id="ovenOwner"
-                    label={t('ovenOwner')}
-                    className="ovenOwner"
-                    fullWidth
-                  />
-                </Grid>
-                <Grid item>
-                  <Field
-                    component={FormikTextField}
-                    name="to"
-                    id="to"
-                    label={t('to')}
-                    className="to"
-                    fullWidth
-                  />
-                </Grid>
                 <Grid item>
                   <Field
                     component={FormikTextField}
                     name="amount"
                     id="amount"
-                    label={t('amount')}
+                    label={t('amountXtz')}
                     className="amount"
-                    type="number"
-                    min="0.1"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <TezosIcon height={30} width={30} />
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                 </Grid>
                 <Grid item>
