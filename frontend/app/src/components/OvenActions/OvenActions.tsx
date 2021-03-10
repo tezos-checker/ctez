@@ -73,7 +73,8 @@ export const OvenActions: React.FC = () => {
           indicatorColor="primary"
           textColor="primary"
           aria-label="scrollable force tabs example"
-          scrollButtons="auto"
+          scrollButtons
+          allowScrollButtonsMobile
         >
           <Tab className={classes.tab} label="Deposit" icon={<FcBusiness />} {...a11yProps(0)} />
           <Tab
