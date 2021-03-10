@@ -46,7 +46,7 @@ const CreateOvenComponent: React.FC<WithTranslation> = ({ t }) => {
   const handleFormSubmit = async (data: CreateVaultForm) => {
     if (userAddress) {
       try {
-        const result = await create(userAddress, data.delegate, (data.amount = 0));
+        const result = await create(userAddress, data.delegate, data.amount);
         if (result) {
           addToast('Transaction Submitted', {
             appearance: 'success',
