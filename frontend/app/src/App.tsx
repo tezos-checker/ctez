@@ -2,7 +2,7 @@ import React, { Suspense, useEffect, useState } from 'react';
 import { HelmetProvider } from 'react-helmet-async';
 import { LocalizationProvider } from '@material-ui/pickers';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import { ToastProvider } from 'react-toast-notifications';
+import { ToastProvider, DefaultToastContainer } from 'react-toast-notifications';
 import DateFnsUtils from '@material-ui/pickers/adapter/date-fns';
 import { WalletProvider } from './wallet/walletContext';
 import { WalletInterface } from './interfaces';
@@ -14,6 +14,14 @@ import { initCTez } from './contracts/ctez';
 import { initCfmm } from './contracts/cfmm';
 
 const queryClient = new QueryClient();
+
+/**
+ * Hack to show errors above drawer
+ */
+const AppToastContainer: React.FC = (props: any) => {
+  const newProps = { ...props, style: { zIndex: 9999 } };
+  return <DefaultToastContainer {...newProps} />;
+};
 
 const App: React.FC = () => {
   const [wallet, setWallet] = useState<Partial<WalletInterface>>({});
@@ -46,7 +54,10 @@ const App: React.FC = () => {
         <QueryClientProvider client={queryClient}>
           <LocalizationProvider dateAdapter={DateFnsUtils}>
             <WalletProvider value={{ wallet, setWallet }}>
-              <ToastProvider placement="bottom-right">
+              <ToastProvider
+                placement="bottom-right"
+                components={{ ToastContainer: AppToastContainer }}
+              >
                 <AppRouter />
               </ToastProvider>
             </WalletProvider>

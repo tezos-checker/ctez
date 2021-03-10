@@ -17,12 +17,19 @@ export const initCfmm = async (address: string): Promise<void> => {
 };
 
 export const addLiquidity = async (args: AddLiquidityParams): Promise<string> => {
-  const hash = await executeMethod(cfmm, 'addLiquidity', [
-    args.owner,
-    args.minLqtMinted,
-    new BigNumber(args.maxTokensDeposited).shiftedBy(6),
-    args.deadline.toISOString(),
-  ]);
+  const hash = await executeMethod(
+    cfmm,
+    'addLiquidity',
+    [
+      args.owner,
+      args.minLqtMinted,
+      new BigNumber(args.maxTokensDeposited).shiftedBy(6),
+      args.deadline.toISOString(),
+    ],
+    undefined,
+    new BigNumber(args.maxTokensDeposited).shiftedBy(6).toNumber(),
+    true,
+  );
   return hash;
 };
 
@@ -37,12 +44,15 @@ export const removeLiquidity = async (args: RemoveLiquidityParams): Promise<stri
   return hash;
 };
 
-export const cashToToken = async (args: CashToTokenParams): Promise<string> => {
-  const hash = await executeMethod(cfmm, 'cashToToken', [
-    args.to,
-    new BigNumber(args.minTokensBought).shiftedBy(6),
-    args.deadline.toISOString(),
-  ]);
+export const cashToToken = async (args: CashToTokenParams, amount: number): Promise<string> => {
+  const hash = await executeMethod(
+    cfmm,
+    'cashToToken',
+    [args.to, new BigNumber(args.minTokensBought).shiftedBy(6), args.deadline.toISOString()],
+    undefined,
+    new BigNumber(amount).shiftedBy(6).toNumber(),
+    true,
+  );
   return hash;
 };
 
