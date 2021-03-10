@@ -1,6 +1,6 @@
 import React from 'react';
-import { Button, Grid, Theme } from '@material-ui/core';
-import { makeStyles, createStyles } from '@material-ui/core/styles';
+import { Button, Grid } from '@material-ui/core';
+import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
@@ -21,10 +21,14 @@ interface OvenCardProps extends Oven {
   action?: () => void | Promise<void>;
 }
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      maxWidth: 500,
+      maxWidth: '20rem',
+      marginLeft: '3rem',
+      [theme.breakpoints.down('sm')]: {
+        marginLeft: '1.5rem',
+      },
     },
     media: {
       height: 0,
@@ -66,7 +70,7 @@ export const OvenCard: React.FC<OvenCardProps> = ({
     <Card className={classes.root}>
       <CardHeader
         avatar={<Identicon seed={address} type="tzKtCat" />}
-        title={<Address address={address} trimSize="large" trim />}
+        title={<Address address={address} trimSize="medium" trim />}
         subheader={`${t('ovenBalance')}: ${tez_balance?.shiftedBy(-6).toString() ?? 0}`}
       />
       <CardMedia
