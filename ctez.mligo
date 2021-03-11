@@ -15,7 +15,7 @@
 type set_addresses = [@layout:comb] {cfmm_address : address ; ctez_fa12_address : address }
 type liquidate = [@layout:comb] { handle : oven_handle ; quantity : nat ; [@annot:to] to_ : unit contract }
 type withdraw = [@layout:comb] { id : nat ; amount : tez ;  [@annot:to] to_ : unit contract }
-type create = [@layout:comb] {id : nat ; delegate : key_hash option}
+type create = [@layout:comb] {id : nat ; delegate : key_hash option ; depositors : depositors }
 type mint_or_burn = [@layout:comb] {id : nat ; quantity : int}
 
 type parameter =
@@ -61,16 +61,16 @@ let create (s : storage) (create : create) : result =
   if Big_map.mem handle s.ovens then
     (failwith error_OVEN_ALREADY_EXISTS : result)
   else
-    let origination : operation * address  = Tezos.create_contract
+    let (origination_op, oven_address) : operation * address  = Tezos.create_contract
         (* Contract code for an oven *)
 #include "oven.mligo"
         (* End of contract code for an oven *)
         create.delegate
         Tezos.amount
-        { admin = Tezos.self_address ; handle = handle ; depositors = Whitelist (Set.empty : address set) } in
-    let oven = {tez_balance = Tezos.amount ; ctez_outstanding = 0n ; address = origination.1}  in
+        { admin = Tezos.self_address ; handle = handle ; depositors = create.depositors } in
+    let oven = {tez_balance = Tezos.amount ; ctez_outstanding = 0n ; address = oven_address}  in
     let ovens = Big_map.update handle (Some oven) s.ovens in
-    ([origination.0], {s with ovens = ovens})
+    ([origination_op], {s with ovens = ovens})
 
 let set_addresses (s : storage) (addresses : set_addresses) : result =
   if s.ctez_fa12_address <> ("tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU" : address) then
