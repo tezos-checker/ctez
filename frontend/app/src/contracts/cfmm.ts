@@ -19,18 +19,20 @@ export const initCfmm = async (address: string): Promise<void> => {
   cfmm = await initContract(address);
 };
 
-export const addLiquidity = async (args: AddLiquidityParams, user: string): Promise<string> => {
-  const tezos = getTezosInstance();
+export const getTokenAllowanceOps = async (
+  userAddress: string,
+  newAllowance: number,
+): Promise<WalletParamsWithKind[]> => {
+  const batchOps: WalletParamsWithKind[] = [];
   const CTezFa12 = await getCTezFa12Contract();
-  const maxTokensDeposited = new BigNumber(args.maxTokensDeposited).shiftedBy(6);
+  const maxTokensDeposited = new BigNumber(newAllowance).shiftedBy(6);
   const storage: any = await CTezFa12.storage();
   const currentAllowance = new BigNumber(
-    (await storage.allowances.get({ owner: user, spender: CFMM_ADDRESS })) ?? 0,
+    (await storage.allowances.get({ owner: userAddress, spender: CFMM_ADDRESS })) ?? 0,
   )
     .shiftedBy(-6)
     .toNumber();
-  const batchOps: WalletParamsWithKind[] = [];
-  if (currentAllowance < args.maxTokensDeposited) {
+  if (currentAllowance < newAllowance) {
     if (currentAllowance > 0) {
       batchOps.push({
         kind: OpKind.TRANSACTION,
@@ -42,6 +44,19 @@ export const addLiquidity = async (args: AddLiquidityParams, user: string): Prom
       ...CTezFa12.methods.approve(CFMM_ADDRESS, maxTokensDeposited).toTransferParams(),
     });
   }
+  return batchOps;
+};
+
+export const addLiquidity = async (
+  args: AddLiquidityParams,
+  userAddress: string,
+): Promise<string> => {
+  const tezos = getTezosInstance();
+  const CTezFa12 = await getCTezFa12Contract();
+  const batchOps: WalletParamsWithKind[] = await getTokenAllowanceOps(
+    userAddress,
+    args.maxTokensDeposited,
+  );
   const batch = tezos.wallet.batch([
     ...batchOps,
     {
@@ -50,7 +65,7 @@ export const addLiquidity = async (args: AddLiquidityParams, user: string): Prom
         .addLiquidity(
           args.owner,
           args.minLqtMinted,
-          maxTokensDeposited,
+          new BigNumber(args.maxTokensDeposited).shiftedBy(6),
           args.deadline.toISOString(),
         )
         .toTransferParams(),
@@ -88,19 +103,34 @@ export const cashToToken = async (args: CashToTokenParams): Promise<string> => {
   return hash;
 };
 
-export const tokenToCash = async (args: TokenToCashParams): Promise<string> => {
+export const tokenToCash = async (
+  args: TokenToCashParams,
+  userAddress: string,
+): Promise<string> => {
   const tezos = getTezosInstance();
   const CTezFa12 = await getCTezFa12Contract();
-  const minTokensToSell = new BigNumber(args.tokensSold).shiftedBy(6);
-  const minCash = new BigNumber(args.minCashBought).shiftedBy(6);
-  const batch = tezos.wallet.batch([]);
-  const hash = await executeMethod(cfmm, 'tokenToCash', [
-    args.to,
-    new BigNumber(args.tokensSold).shiftedBy(6),
-    new BigNumber(args.minCashBought).shiftedBy(6),
-    args.deadline.toISOString(),
+  const batchOps: WalletParamsWithKind[] = await getTokenAllowanceOps(userAddress, args.tokensSold);
+
+  const batch = tezos.wallet.batch([
+    ...batchOps,
+    {
+      kind: OpKind.TRANSACTION,
+      ...cfmm.methods
+        .tokenToCash(
+          args.to,
+          new BigNumber(args.tokensSold).shiftedBy(6),
+          new BigNumber(args.minCashBought).shiftedBy(6),
+          args.deadline.toISOString(),
+        )
+        .toTransferParams(),
+    },
+    {
+      kind: OpKind.TRANSACTION,
+      ...CTezFa12.methods.approve(CFMM_ADDRESS, 0).toTransferParams(),
+    },
   ]);
-  return hash;
+  const hash = await batch.send();
+  return hash.opHash;
 };
 
 export const tokenToToken = async (args: TokenToTokenParams): Promise<string> => {

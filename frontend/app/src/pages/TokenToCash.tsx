@@ -36,21 +36,23 @@ const TokenToCashComponent: React.FC<WithTranslation> = ({ t }) => {
   });
 
   const handleFormSubmit = async (data: TokenToCashParams) => {
-    try {
-      const result = await tokenToCash(data);
-      if (result) {
-        addToast('Transaction Submitted', {
-          appearance: 'success',
+    if (userAddress) {
+      try {
+        const result = await tokenToCash(data, userAddress);
+        if (result) {
+          addToast('Transaction Submitted', {
+            appearance: 'success',
+            autoDismiss: true,
+            onDismiss: () => history.push('/'),
+          });
+        }
+      } catch (error) {
+        const errorText = cfmmError[error.data[1].with.int as number] || 'Transaction Failed';
+        addToast(errorText, {
+          appearance: 'error',
           autoDismiss: true,
-          onDismiss: () => history.push('/'),
         });
       }
-    } catch (error) {
-      const errorText = cfmmError[error.data[1].with.int as number] || 'Transaction Failed';
-      addToast(errorText, {
-        appearance: 'error',
-        autoDismiss: true,
-      });
     }
   };
 
