@@ -8,14 +8,14 @@ import { Field, Form, Formik } from 'formik';
 import { Button, Grid, Paper, InputAdornment } from '@material-ui/core';
 import { useToasts } from 'react-toast-notifications';
 import { useHistory } from 'react-router-dom';
-import { getDelegates } from '../api/tzkt';
-import { create, cTezError } from '../contracts/ctez';
-import Page from '../components/Page';
-import { FormikAutocomplete } from '../components/Autocomplete';
-import { Baker } from '../interfaces';
-import { useWallet } from '../wallet/hooks';
-import FormikTextField from '../components/TextField';
-import { TezosIcon } from '../components/TezosIcon';
+import { getDelegates } from '../../api/tzkt';
+import { create, cTezError } from '../../contracts/ctez';
+import Page from '../../components/Page';
+import { FormikAutocomplete } from '../../components/Autocomplete';
+import { Baker } from '../../interfaces';
+import { useWallet } from '../../wallet/hooks';
+import FormikTextField from '../../components/TextField';
+import { TezosIcon } from '../../components/TezosIcon';
 
 interface CreateVaultForm {
   delegate: string;

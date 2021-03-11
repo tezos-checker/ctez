@@ -1,17 +1,17 @@
-import { withTranslation, WithTranslation } from 'react-i18next';
 import * as Yup from 'yup';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import styled from '@emotion/styled';
 import { Field, Form, Formik } from 'formik';
 import { Button, Grid, Paper, InputAdornment } from '@material-ui/core';
 import { useToasts } from 'react-toast-notifications';
 import { useHistory } from 'react-router-dom';
-import Page from '../components/Page';
-import FormikTextField from '../components/TextField';
-import { useWallet } from '../wallet/hooks';
-import { AddLiquidityParams } from '../interfaces';
-import { addLiquidity, cfmmError } from '../contracts/cfmm';
-import { FormikDateTimePicker } from '../components/DateTimePicker';
-import { TezosIcon } from '../components/TezosIcon';
+import Page from '../../components/Page';
+import FormikTextField from '../../components/TextField';
+import { useWallet } from '../../wallet/hooks';
+import { AddLiquidityParams } from '../../interfaces';
+import { addLiquidity, cfmmError } from '../../contracts/cfmm';
+import { FormikDateTimePicker } from '../../components/DateTimePicker';
+import { TezosIcon } from '../../components/TezosIcon';
 
 const PaperStyled = styled(Paper)`
   padding: 2em;

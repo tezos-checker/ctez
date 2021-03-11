@@ -1,44 +1,43 @@
-import { withTranslation, WithTranslation } from 'react-i18next';
 import * as Yup from 'yup';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import styled from '@emotion/styled';
 import { Field, Form, Formik } from 'formik';
-import { Button, Grid, Paper } from '@material-ui/core';
+import { Button, Grid, Paper, InputAdornment } from '@material-ui/core';
 import { useToasts } from 'react-toast-notifications';
 import { useHistory } from 'react-router-dom';
-import Page from '../components/Page';
-import FormikTextField from '../components/TextField';
-import { useWallet } from '../wallet/hooks';
-import { RemoveLiquidityParams } from '../interfaces';
-import { cfmmError, removeLiquidity } from '../contracts/cfmm';
-import { FormikDateTimePicker } from '../components/DateTimePicker';
+import Page from '../../components/Page';
+import FormikTextField from '../../components/TextField';
+import { useWallet } from '../../wallet/hooks';
+import { CashToTokenParams } from '../../interfaces';
+import { cashToToken, cfmmError } from '../../contracts/cfmm';
+import { FormikDateTimePicker } from '../../components/DateTimePicker';
+import { TezosIcon } from '../../components/TezosIcon';
 
 const PaperStyled = styled(Paper)`
   padding: 2em;
 `;
 
-const RemoveLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
+const CashToTokenComponent: React.FC<WithTranslation> = ({ t }) => {
   const [{ pkh: userAddress }] = useWallet();
   const { addToast } = useToasts();
   const history = useHistory();
-  const initialValues: RemoveLiquidityParams = {
+  const initialValues: CashToTokenParams = {
     to: userAddress ?? '',
-    lqtBurned: 1,
-    minCashWithdrawn: 1,
-    minTokensWithdrawn: 1,
+    minTokensBought: 0,
     deadline: new Date(new Date().getTime() + 5 * 60000),
+    amount: 0,
   };
 
   const validationSchema = Yup.object().shape({
     to: Yup.string().required(t('required')),
-    lqtBurned: Yup.number().required(t('required')),
-    minCashWithdrawn: Yup.number().required(t('required')),
-    minTokensWithdrawn: Yup.number().required(t('required')),
+    minTokensBought: Yup.number().required(t('required')),
     deadline: Yup.date().required(t('required')),
+    amount: Yup.number().required(t('required')),
   });
 
-  const handleFormSubmit = async (data: RemoveLiquidityParams) => {
+  const handleFormSubmit = async (data: CashToTokenParams) => {
     try {
-      const result = await removeLiquidity(data);
+      const result = await cashToToken(data);
       if (result) {
         addToast('Transaction Submitted', {
           appearance: 'success',
@@ -56,7 +55,7 @@ const RemoveLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
   };
 
   return (
-    <Page title={t('removeLiquidity')}>
+    <Page title={t('cashToToken')}>
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
@@ -85,10 +84,10 @@ const RemoveLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
                 <Grid item>
                   <Field
                     component={FormikTextField}
-                    name="lqtBurned"
-                    id="lqtBurned"
-                    label={t('lqtBurned')}
-                    className="lqtBurned"
+                    name="minTokensBought"
+                    id="minTokensBought"
+                    label={t('minTokensBought')}
+                    className="minTokensBought"
                     type="number"
                     fullWidth
                   />
@@ -96,23 +95,19 @@ const RemoveLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
                 <Grid item>
                   <Field
                     component={FormikTextField}
-                    name="minCashWithdrawn"
-                    id="minCashWithdrawn"
-                    label={t('minCashWithdrawn')}
-                    className="minCashWithdrawn"
+                    name="amount"
+                    id="amount"
+                    label={t('xtzToPay')}
+                    className="amount"
                     type="number"
                     fullWidth
-                  />
-                </Grid>
-                <Grid item>
-                  <Field
-                    component={FormikTextField}
-                    name="minTokensWithdrawn"
-                    id="minTokensWithdrawn"
-                    label={t('minTokensWithdrawn')}
-                    className="minTokensWithdrawn"
-                    type="number"
-                    fullWidth
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <TezosIcon height={30} width={30} />
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                 </Grid>
                 <Grid item>
@@ -146,4 +141,4 @@ const RemoveLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
   );
 };
 
-export const RemoveLiquidityPage = withTranslation(['common'])(RemoveLiquidityComponent);
+export const CashToTokenPage = withTranslation(['common'])(CashToTokenComponent);

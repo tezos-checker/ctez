@@ -1,10 +1,11 @@
 import { ComponentRoute } from '../interfaces/router';
-import { AddLiquidityPage } from '../pages/AddLiquidity';
-import { RemoveLiquidityPage } from '../pages/RemoveLiquidity';
-import { CreateOvenPage } from '../pages/CreateOven';
-import { HomePage } from '../pages/Home';
-import { CashToTokenPage } from '../pages/CashToToken';
-import { TokenToCashPage } from '../pages/TokenToCash';
+import { MyOvenPage } from '../pages/MyOvenPage';
+import { Uniswap } from '../pages/Uniswap';
+import { AddLiquidityPage } from '../pages/Uniswap/AddLiquidity';
+import { CashToTokenPage } from '../pages/Uniswap/CashToToken';
+import { CreateOvenPage } from '../pages/Uniswap/CreateOven';
+import { RemoveLiquidityPage } from '../pages/Uniswap/RemoveLiquidity';
+import { TokenToCashPage } from '../pages/Uniswap/TokenToCash';
 
 export const routes: ComponentRoute[] = [
   {
@@ -28,7 +29,11 @@ export const routes: ComponentRoute[] = [
     path: '/create',
   },
   {
-    component: HomePage,
+    component: Uniswap,
+    path: '/uniswap',
+  },
+  {
+    component: MyOvenPage,
     path: '/',
   },
 ];

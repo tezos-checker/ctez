@@ -16,6 +16,7 @@ const ContainerStyled = styled(Container)`
 
 export interface PageProps {
   title?: string;
+  showBackButton?: boolean;
   description?: string;
 }
 
