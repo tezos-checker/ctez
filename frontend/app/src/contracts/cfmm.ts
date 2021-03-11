@@ -1,4 +1,4 @@
-import { WalletContract } from '@taquito/taquito';
+import { OpKind, WalletContract } from '@taquito/taquito';
 import BigNumber from 'bignumber.js';
 import {
   AddLiquidityParams,
@@ -8,6 +8,9 @@ import {
   TokenToCashParams,
   TokenToTokenParams,
 } from '../interfaces';
+import { CFMM_ADDRESS } from '../utils/globals';
+import { getTezosInstance } from './client';
+import { getCTezFa12Contract } from './fa12';
 import { executeMethod, initContract } from './utils';
 
 let cfmm: WalletContract;
@@ -17,20 +20,29 @@ export const initCfmm = async (address: string): Promise<void> => {
 };
 
 export const addLiquidity = async (args: AddLiquidityParams): Promise<string> => {
-  const hash = await executeMethod(
-    cfmm,
-    'addLiquidity',
-    [
-      args.owner,
-      args.minLqtMinted,
-      new BigNumber(args.maxTokensDeposited).shiftedBy(6),
-      args.deadline.toISOString(),
-    ],
-    undefined,
-    new BigNumber(args.amount).shiftedBy(6).toNumber(),
-    true,
-  );
-  return hash;
+  const tezos = getTezosInstance();
+  const CTezFa12 = await getCTezFa12Contract();
+  const maxTokensDeposited = new BigNumber(args.maxTokensDeposited).shiftedBy(6);
+  const batch = tezos.wallet.batch([
+    {
+      kind: OpKind.TRANSACTION,
+      ...CTezFa12.methods.approve(CFMM_ADDRESS, maxTokensDeposited).toTransferParams(),
+    },
+    {
+      kind: OpKind.TRANSACTION,
+      ...cfmm.methods
+        .addLiquidity(
+          args.owner,
+          args.minLqtMinted,
+          maxTokensDeposited,
+          args.deadline.toISOString(),
+        )
+        .toTransferParams(),
+      amount: args.amount,
+    },
+  ]);
+  const hash = await batch.send();
+  return hash.opHash;
 };
 
 export const removeLiquidity = async (args: RemoveLiquidityParams): Promise<string> => {
