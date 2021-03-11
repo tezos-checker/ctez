@@ -39,7 +39,7 @@ const AddLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
 
   const handleFormSubmit = async (data: AddLiquidityParams) => {
     try {
-      const result = await addLiquidity(data);
+      const result = await addLiquidity(data, userAddress!);
       if (result) {
         addToast('Transaction Submitted', {
           appearance: 'success',
@@ -48,6 +48,7 @@ const AddLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
         });
       }
     } catch (error) {
+      console.log(error);
       const errorText = cfmmError[error.data[1].with.int as number] || 'Transaction Failed';
       addToast(errorText, {
         appearance: 'error',
