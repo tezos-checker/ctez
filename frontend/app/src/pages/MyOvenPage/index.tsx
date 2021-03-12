@@ -53,20 +53,22 @@ export const MyOvenPage: React.FC = () => {
         >
           {ovenData &&
             ovenData.length > 0 &&
-            ovenData.map((ovenValue, index) => {
-              return (
-                <Grid item key={`${ovenValue.address}-${index}`}>
-                  <OvenCard
-                    {...ovenValue}
-                    totalOvens={ovenData.length}
-                    action={() => {
-                      dispatch(OvenActionsSlice.actions.setOven(toSerializeableOven(ovenValue)));
-                      dispatch(OvenActionsSlice.actions.toggleActions(true));
-                    }}
-                  />
-                </Grid>
-              );
-            })}
+            ovenData
+              .sort((a, b) => b.ovenId - a.ovenId)
+              .map((ovenValue, index) => {
+                return (
+                  <Grid item key={`${ovenValue.address}-${index}`}>
+                    <OvenCard
+                      {...ovenValue}
+                      totalOvens={ovenData.length}
+                      action={() => {
+                        dispatch(OvenActionsSlice.actions.setOven(toSerializeableOven(ovenValue)));
+                        dispatch(OvenActionsSlice.actions.toggleActions(true));
+                      }}
+                    />
+                  </Grid>
+                );
+              })}
         </Grid>
       )}
       {!isLoading && userAddress && ovenData?.length === 0 && <Box p={3}>{t('noOvens')}</Box>}
