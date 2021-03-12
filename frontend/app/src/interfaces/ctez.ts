@@ -20,3 +20,11 @@ export enum EditDepositorOps {
   AllowAny = 'allow_any',
   AllowAccount = 'allow_account',
 }
+
+export enum Depositor {
+  any = 'any',
+  whitelist = 'whitelist',
+}
+
+// ([["nat","key_hash","any","unit"],
+// ["nat","key_hash","whitelist","set"],

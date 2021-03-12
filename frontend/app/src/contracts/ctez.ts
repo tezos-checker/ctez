@@ -1,6 +1,6 @@
 import { WalletContract } from '@taquito/taquito';
 import BigNumber from 'bignumber.js';
-import { EditDepositorOps, ErrorType, Oven } from '../interfaces';
+import { Depositor, EditDepositorOps, ErrorType, Oven } from '../interfaces';
 import { CTEZ_ADDRESS } from '../utils/globals';
 import { getLastOvenId, saveLastOven } from '../utils/ovenUtils';
 import { getTezosInstance } from './client';
@@ -19,11 +19,19 @@ export const getCTez = (): WalletContract => {
 export const create = async (
   userAddress: string,
   bakerAddress: string,
-  amount: number,
+  op: Depositor,
+  allowedDepositors?: string[],
+  amount = 0,
 ): Promise<string> => {
-  const newOvenId = getLastOvenId(userAddress) + 1;
-  const hash = await executeMethod(cTez, 'create', [newOvenId, bakerAddress], undefined, amount);
-  saveLastOven(userAddress, newOvenId);
+  const newOvenId = getLastOvenId(userAddress, cTez.address) + 1;
+  const hash = await executeMethod(
+    cTez,
+    'create',
+    [newOvenId, bakerAddress, op, allowedDepositors],
+    undefined,
+    amount,
+  );
+  saveLastOven(userAddress, cTez.address, newOvenId);
   return hash;
 };
 
@@ -110,7 +118,7 @@ export const getOvens = async (userAddress: string): Promise<Oven[] | undefined>
     if (!cTez && CTEZ_ADDRESS) {
       await initCTez(CTEZ_ADDRESS);
     }
-    const lastOvenId = getLastOvenId(userAddress);
+    const lastOvenId = getLastOvenId(userAddress, cTez.address);
     const storage: any = await cTez.storage();
     const ovens: Promise<Oven>[] = [];
     for (let i = lastOvenId; i > 0; i -= 1) {

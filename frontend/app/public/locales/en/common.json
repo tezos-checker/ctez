@@ -42,5 +42,9 @@
   "cashToToken": "Cash to token",
   "tokensSold": "Tokens to sell",
   "minXTZBought": "XTZ to buy (Min)",
-  "tokenToCash": "Token to cash"
+  "tokenToCash": "Token to cash",
+  "allowedDepositors": "Allowed depositors",
+  "any": "Any",
+  "whitelist": "Whitelist",
+  "depositorOp": "Who can deposit"
 }

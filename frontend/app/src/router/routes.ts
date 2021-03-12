@@ -3,7 +3,7 @@ import { MyOvenPage } from '../pages/MyOvenPage';
 import { Uniswap } from '../pages/Uniswap';
 import { AddLiquidityPage } from '../pages/Uniswap/AddLiquidity';
 import { CashToTokenPage } from '../pages/Uniswap/CashToToken';
-import { CreateOvenPage } from '../pages/Uniswap/CreateOven';
+import { CreateOvenPage } from '../pages/CreateOven/CreateOven';
 import { RemoveLiquidityPage } from '../pages/Uniswap/RemoveLiquidity';
 import { TokenToCashPage } from '../pages/Uniswap/TokenToCash';
 

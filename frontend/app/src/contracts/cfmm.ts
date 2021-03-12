@@ -1,4 +1,4 @@
-import { OpKind, Wallet, WalletContract, WalletParamsWithKind } from '@taquito/taquito';
+import { OpKind, WalletContract, WalletParamsWithKind } from '@taquito/taquito';
 import BigNumber from 'bignumber.js';
 import {
   AddLiquidityParams,

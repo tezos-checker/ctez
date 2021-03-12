@@ -12,14 +12,18 @@ import { getDelegates } from '../../api/tzkt';
 import { create, cTezError } from '../../contracts/ctez';
 import Page from '../../components/Page';
 import { FormikAutocomplete } from '../../components/Autocomplete';
-import { Baker } from '../../interfaces';
+import { Baker, Depositor } from '../../interfaces';
 import { useWallet } from '../../wallet/hooks';
 import FormikTextField from '../../components/TextField';
 import { TezosIcon } from '../../components/TezosIcon';
+import { MultiInputTextField } from '../../components/MultiInputTextField/MultiInputTextField';
+import { FormikRadioGroup } from '../../components/FormikRadioGroup/FormikRadioGroup';
 
 interface CreateVaultForm {
   delegate: string;
   amount: number;
+  depositors: string[];
+  depositorOp: Depositor;
 }
 
 const PaperStyled = styled(Paper)`
@@ -36,17 +40,39 @@ const CreateOvenComponent: React.FC<WithTranslation> = ({ t }) => {
   const initialValues: CreateVaultForm = {
     delegate: '',
     amount: 0,
+    depositors: [],
+    depositorOp: Depositor.any,
   };
 
   const validationSchema = Yup.object().shape({
     delegate: Yup.string().required(t('required')),
     amount: Yup.number().optional(),
+    depositors: Yup.array().of(Yup.string()).required(t('required')),
   });
 
+  const opSelectionList = [
+    {
+      label: t(Depositor.any),
+      value: Depositor.any,
+    },
+    {
+      label: t(Depositor.whitelist),
+      value: Depositor.whitelist,
+    },
+  ];
+
   const handleFormSubmit = async (data: CreateVaultForm) => {
+    console.log(data);
     if (userAddress) {
       try {
-        const result = await create(userAddress, data.delegate, data.amount);
+        const depositors = data.depositors.length > 0 ? data.depositors : undefined;
+        const result = await create(
+          userAddress,
+          data.delegate,
+          data.depositorOp,
+          depositors,
+          data.amount,
+        );
         if (result) {
           addToast('Transaction Submitted', {
             appearance: 'success',
@@ -55,6 +81,7 @@ const CreateOvenComponent: React.FC<WithTranslation> = ({ t }) => {
           });
         }
       } catch (error) {
+        console.log(error);
         const errorText = cTezError[error.data[1].with.int as number] || 'Transaction Failed';
         addToast(errorText, {
           appearance: 'error',
@@ -71,7 +98,7 @@ const CreateOvenComponent: React.FC<WithTranslation> = ({ t }) => {
         validationSchema={validationSchema}
         onSubmit={handleFormSubmit}
       >
-        {({ isSubmitting, isValid, dirty }) => (
+        {({ isSubmitting, isValid, dirty, values }) => (
           <PaperStyled>
             <Form>
               <Grid
@@ -111,11 +138,36 @@ const CreateOvenComponent: React.FC<WithTranslation> = ({ t }) => {
                     }}
                   />
                 </Grid>
+                <Grid item style={{ width: '100%' }}>
+                  <Field
+                    component={FormikRadioGroup}
+                    name="depositorOp"
+                    id="depositorOp"
+                    groupLabel={t('depositorOp')}
+                    options={opSelectionList}
+                  />
+                </Grid>
+                <Grid item>
+                  <Field
+                    component={MultiInputTextField}
+                    id="depositors"
+                    name="depositors"
+                    placeholder="e.g. tz3d1ZjAkd9zCGMoRTMYNaeZhFurS65U2U1J"
+                    label={t('allowedDepositors')}
+                    disabled={values.depositorOp === Depositor.any}
+                  />
+                </Grid>
                 <Grid item>
                   <Button
                     variant="contained"
                     type="submit"
-                    disabled={!userAddress || isSubmitting || !isValid || !dirty}
+                    disabled={
+                      !userAddress ||
+                      isSubmitting ||
+                      !isValid ||
+                      !dirty ||
+                      (values.depositorOp === Depositor.whitelist && values.depositors.length === 0)
+                    }
                     fullWidth
                   >
                     {t('submit')}
