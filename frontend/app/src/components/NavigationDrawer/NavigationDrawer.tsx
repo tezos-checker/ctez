@@ -16,6 +16,7 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { GiCookingGlove, GiSwapBag } from 'react-icons/gi';
 import { useHistory } from 'react-router';
+import { useTranslation } from 'react-i18next';
 
 const drawerWidth = 240;
 
@@ -87,6 +88,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({ open, handle
   const classes = useStyles();
   const theme = useTheme();
   const history = useHistory();
+  const { t } = useTranslation(['header']);
   return (
     <Drawer
       className={classes.drawer}
@@ -108,13 +110,13 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({ open, handle
           <ListItemIcon>
             <GiCookingGlove />
           </ListItemIcon>
-          <ListItemText primary="My Ovens" />
+          <ListItemText primary={t('myOvens')} />
         </ListItem>
         <ListItem button onClick={() => history.push('/uniswap')}>
           <ListItemIcon>
             <GiSwapBag />
           </ListItemIcon>
-          <ListItemText primary="Uniswap" />
+          <ListItemText primary={t('buyOrSell')} />
         </ListItem>
       </List>
     </Drawer>

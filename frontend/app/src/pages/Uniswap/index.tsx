@@ -32,7 +32,7 @@ export const Uniswap: React.FC = () => {
   const classes = useStyles();
 
   return (
-    <Page title={t('header:uniswap')}>
+    <Page title={t('header:buyOrSell')}>
       <div className={classes.root}>
         <Accordion>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>

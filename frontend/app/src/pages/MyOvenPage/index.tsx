@@ -20,28 +20,26 @@ export const MyOvenPage: React.FC = () => {
   const dispatch = useDispatch();
   const { showActions } = useSelector((state: RootState) => state.ovenActions);
   const [{ pkh: userAddress }] = useWallet();
-  const { data: ovenData, isLoading } = useQuery<
-    Oven[] | undefined,
-    AxiosError,
-    Oven[] | undefined
-  >(
+  const { data: ovenData, isLoading } = useQuery<Oven[], AxiosError, Oven[]>(
     ['ovenData', userAddress],
     async () => {
       if (userAddress) {
         const ovens = await getOvens(userAddress);
-        return ovens
-          ? ovens.filter((data: Oven) => {
-              return data && data.baker !== null;
-            })
-          : undefined;
+        const result =
+          typeof ovens !== 'undefined'
+            ? ovens.filter((data: Oven) => {
+                return data && data.baker !== null;
+              })
+            : [];
+        return result;
       }
+      return [];
     },
     {
       refetchInterval: 30000,
       staleTime: 3000,
     },
   );
-
   return (
     <Page>
       {isLoading && <CircularProgress />}
@@ -71,7 +69,7 @@ export const MyOvenPage: React.FC = () => {
             })}
         </Grid>
       )}
-      {!isLoading && userAddress && !ovenData && <Box p={3}>{t('noOvens')}</Box>}
+      {!isLoading && userAddress && ovenData?.length === 0 && <Box p={3}>{t('noOvens')}</Box>}
       {!isLoading && ovenData && ovenData.length > 0 && (
         <Drawer
           open={showActions}

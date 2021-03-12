@@ -1,12 +1,12 @@
 import { BigNumber } from 'bignumber.js';
 import { Oven, OvenSerializable } from '../interfaces';
 
-export const getLastOvenId = (address: string): number => {
-  return Number(localStorage.getItem(`oven:${address}:last`) ?? 0);
+export const getLastOvenId = (userAddress: string): number => {
+  return Number(localStorage.getItem(`oven:${userAddress}:last`) ?? 0);
 };
 
-export const saveLastOven = (address: string, ovenId: number): void => {
-  return localStorage.setItem(`oven:${address}:last`, String(ovenId));
+export const saveLastOven = (userAddress: string, ovenId: number): void => {
+  return localStorage.setItem(`oven:${userAddress}:last`, String(ovenId));
 };
 
 export const toSerializeableOven = (oven: Oven): OvenSerializable => {
