@@ -15,6 +15,8 @@ import { executeMethod, initContract } from './utils';
 
 let cfmm: WalletContract;
 
+type FA12TokenType = 'ctez' | 'lqt';
+
 export const initCfmm = async (address: string): Promise<void> => {
   cfmm = await initContract(address);
 };
@@ -23,9 +25,11 @@ export const getTokenAllowanceOps = async (
   tokenContract: WalletContract,
   userAddress: string,
   newAllowance: number,
+  tokenType: FA12TokenType = 'ctez',
 ): Promise<WalletParamsWithKind[]> => {
   const batchOps: WalletParamsWithKind[] = [];
-  const maxTokensDeposited = new BigNumber(newAllowance).shiftedBy(6);
+  const maxTokensDeposited =
+    tokenType === 'ctez' ? new BigNumber(newAllowance).shiftedBy(6) : new BigNumber(newAllowance);
   const storage: any = await tokenContract.storage();
   const currentAllowance = new BigNumber(
     (await storage.allowances.get({ owner: userAddress, spender: CFMM_ADDRESS })) ?? 0,
@@ -91,6 +95,7 @@ export const removeLiquidity = async (
     LQTFa12,
     userAddress,
     args.lqtBurned,
+    'lqt',
   );
   const batch = tezos.wallet.batch([
     ...batchOps,
