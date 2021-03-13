@@ -182,19 +182,20 @@ let cfmm_price (storage, tez, token : storage * nat * nat) : result =
        Concretely, even drift were as low as -50% annualized, it would take not
        updating the target for 1.4 years for a negative number to occur *)
     let target  = if storage.drift < 0  then abs (target - d_target) else target + d_target in
-    let drift =
-      if (Bitwise.shift_left tez  54n) > 65n * target * token  then  (* 54 is 48 + log2(64) *)
-        storage.drift - delta
-        (* This is not homegeneous, but setting the constant delta is multiplied with
+    (* This is not homegeneous, but setting the constant delta is multiplied with
            to 1.0 magically happens to be reasonable. Why?
            Because (24 * 3600 / 2^48) * 365.25*24*3600 ~ 0.97%.
            This means that the annualized drift changes by roughly one percentage point
            for each day over or under the target by more than 1/64th.
         *)
-      else if (Bitwise.shift_left tez 54n) < 63n * target * token then
-        storage.drift + delta
-      else
-        storage.drift in
+    let d_drift =
+      let price = (Bitwise.shift_left tez 48n) / token in
+      let target_less_price = target - price in
+      let x = Bitwise.shift_left (abs (target_less_price * target_less_price)) 10n in
+      let p2 = price * price  in
+      if x > p2 then delta else x * delta / p2 in
+
+    let drift = storage.last_drift_update + d_drift in
     (([] : operation list), {storage with drift = drift ; last_drift_update = Tezos.now ; target = target})
 
 let main (p, s : parameter * storage) : result =
