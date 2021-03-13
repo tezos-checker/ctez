@@ -70,7 +70,6 @@ const CreateOvenComponent: React.FC<WithTranslation> = ({ t }) => {
           {
             value: delegate,
             label: 'Delegate',
-            noDelete: true,
           },
         ]
       : [

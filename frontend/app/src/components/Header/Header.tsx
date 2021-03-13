@@ -27,23 +27,6 @@ const HeaderActionBox = styled(Box)`
     display: inline-block;
     vertical-align: top;
   }
-
-  & .sign-in {
-    /* padding-left: 64%; */
-
-    /* @media screen and (max-width: 768px) {
-      padding-left: 51%;
-    }
-    @media screen and (max-width: 425px) {
-      padding-left: 46%;
-    }
-    @media screen and (max-width: 375px) {
-      padding-left: 38%;
-    }
-    @media screen and (max-width: 320px) {
-      padding-left: 26%;
-    } */
-  }
 `;
 
 const HeaderContainer = styled.div`
