@@ -44,7 +44,7 @@
   "minXTZBought": "XTZ to buy (Min)",
   "tokenToCash": "CTez to XTZ",
   "allowedDepositors": "Allowed depositors",
-  "any": "Any",
+  "any": "Everyone",
   "whitelist": "Whitelist",
   "depositorOp": "Who can deposit"
 }

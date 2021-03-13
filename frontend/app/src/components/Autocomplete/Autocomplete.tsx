@@ -6,11 +6,13 @@ import { Baker } from '../../interfaces';
 export type FormikAutocompleteProps = FieldProps &
   TextFieldProps & {
     options: Baker[];
+    handleChange?: (value: string) => void | Promise<void>;
   };
 export const FormikAutocomplete: React.FC<FormikAutocompleteProps> = ({
   options = [],
   form: { setTouched, setFieldValue, touched, errors },
   field: { name },
+  handleChange,
   ...rest
 }) => {
   return (
@@ -18,7 +20,11 @@ export const FormikAutocomplete: React.FC<FormikAutocompleteProps> = ({
       freeSolo
       getOptionLabel={(option) => option.name ?? option.address}
       options={options}
-      onChange={(_, value: any) => setFieldValue(name, value.address)}
+      onChange={(_, value: any) => {
+        const addr = value?.address ?? '';
+        setFieldValue(name, addr);
+        handleChange && handleChange(addr);
+      }}
       renderInput={(params) => (
         <TextField
           {...params}

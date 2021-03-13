@@ -29,9 +29,9 @@ const HeaderActionBox = styled(Box)`
   }
 
   & .sign-in {
-    padding-left: 64%;
+    /* padding-left: 64%; */
 
-    @media screen and (max-width: 768px) {
+    /* @media screen and (max-width: 768px) {
       padding-left: 51%;
     }
     @media screen and (max-width: 425px) {
@@ -42,7 +42,7 @@ const HeaderActionBox = styled(Box)`
     }
     @media screen and (max-width: 320px) {
       padding-left: 26%;
-    }
+    } */
   }
 `;
 
@@ -78,14 +78,14 @@ export const Header: React.FC<HeaderProps> = ({ title, onClick }) => {
     <HeaderContainer>
       <header>
         <HeaderActionBox>
-          <Grid container direction="row">
-            <Grid item>
+          <Grid container direction="row" style={{ flexWrap: 'nowrap' }}>
+            <Grid item style={{ flex: '0 0 auto' }}>
               <IconButton onClick={() => setNavDrawer(true)}>
                 <MenuIcon />
               </IconButton>
             </Grid>
-            <Grid item>
-              <div onClick={onClick} aria-hidden="true">
+            <Grid item style={{ flexGrow: 1 }}>
+              <div onClick={onClick} aria-hidden="true" style={{ display: 'flex', flexGrow: 1 }}>
                 <TezosIcon />
                 <Typography size="body" component="h1" margin="0.4em 0 0.4em 1em">
                   {title}

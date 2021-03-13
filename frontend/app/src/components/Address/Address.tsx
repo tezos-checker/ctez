@@ -5,20 +5,8 @@ import FileCopyOutlinedIcon from '@material-ui/icons/FileCopyOutlined';
 import DoneRoundedIcon from '@material-ui/icons/DoneRounded';
 import styled from '@emotion/styled';
 import { Typography, TypographyProps } from '../Typography';
-
-type TrimSizeType = 'small' | 'medium' | 'large';
-
-const trimSizeMap = {
-  small: 4,
-  medium: 7,
-  large: 10,
-};
-
-const trimAddress = (address: string, trimSize: TrimSizeType = 'small'): string => {
-  return `${address.substr(0, trimSizeMap[trimSize])}...${address.substr(
-    trimSizeMap[trimSize] * -1,
-  )}`;
-};
+import { AddressTrimSizeType } from '../../interfaces';
+import { trimAddress } from '../../utils/addressUtils';
 
 export interface AddressProps {
   label?: string;
@@ -27,7 +15,7 @@ export interface AddressProps {
   onCopy?: () => void | Promise<void>;
   size?: TypographyProps['size'];
   component?: TypographyProps['component'];
-  trimSize?: TrimSizeType;
+  trimSize?: AddressTrimSizeType;
 }
 
 const CopyClipBoardStyled = styled(CopyToClipboard)`

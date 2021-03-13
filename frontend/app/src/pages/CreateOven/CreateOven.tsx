@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 import styled from '@emotion/styled';
@@ -16,13 +16,16 @@ import { Baker, Depositor } from '../../interfaces';
 import { useWallet } from '../../wallet/hooks';
 import FormikTextField from '../../components/TextField';
 import { TezosIcon } from '../../components/TezosIcon';
-import { MultiInputTextField } from '../../components/MultiInputTextField/MultiInputTextField';
+import {
+  MultiInputTextField,
+  MultiInputTextFieldOption,
+} from '../../components/MultiInputTextField/MultiInputTextField';
 import { FormikRadioGroup } from '../../components/FormikRadioGroup/FormikRadioGroup';
 
 interface CreateVaultForm {
   delegate: string;
   amount: number;
-  depositors: string[];
+  depositors: string[] | MultiInputTextFieldOption[];
   depositorOp: Depositor;
 }
 
@@ -35,37 +38,72 @@ const CreateOvenComponent: React.FC<WithTranslation> = ({ t }) => {
     return getDelegates();
   });
   const [{ pkh: userAddress }] = useWallet();
+  const [delegate, setDelegate] = useState('');
   const { addToast } = useToasts();
   const history = useHistory();
-  const initialValues: CreateVaultForm = {
-    delegate: '',
-    amount: 0,
-    depositors: [],
-    depositorOp: Depositor.any,
-  };
 
   const validationSchema = Yup.object().shape({
     delegate: Yup.string().required(t('required')),
     amount: Yup.number().optional(),
-    depositors: Yup.array().of(Yup.string()).required(t('required')),
+    depositors: Yup.array().required(t('required')),
   });
 
   const opSelectionList = [
     {
-      label: t(Depositor.any),
-      value: Depositor.any,
-    },
-    {
       label: t(Depositor.whitelist),
       value: Depositor.whitelist,
     },
+    {
+      label: t(Depositor.any),
+      value: Depositor.any,
+    },
   ];
 
+  const defaultDepositorList =
+    delegate !== ''
+      ? [
+          {
+            value: userAddress!,
+            label: 'You',
+            noDelete: true,
+          },
+          {
+            value: delegate,
+            label: 'Delegate',
+            noDelete: true,
+          },
+        ]
+      : [
+          {
+            value: userAddress!,
+            label: 'You',
+            noDelete: true,
+          },
+        ];
+
+  const [initialValues, setInitialValues] = useState<CreateVaultForm>({
+    delegate,
+    amount: 0,
+    depositors: userAddress ? defaultDepositorList : [],
+    depositorOp: Depositor.whitelist,
+  });
+
+  useEffect(() => {
+    const newState: CreateVaultForm = {
+      ...initialValues,
+      delegate,
+      depositors: userAddress ? defaultDepositorList : [],
+    };
+    setInitialValues(newState);
+  }, [userAddress, delegate]);
+
   const handleFormSubmit = async (data: CreateVaultForm) => {
-    console.log(data);
     if (userAddress) {
       try {
-        const depositors = data.depositors.length > 0 ? data.depositors : undefined;
+        const depositors =
+          data.depositors.length > 0 && data.depositorOp === Depositor.whitelist
+            ? data.depositors.map((item: any) => item?.value ?? item)
+            : undefined;
         const result = await create(
           userAddress,
           data.delegate,
@@ -94,11 +132,13 @@ const CreateOvenComponent: React.FC<WithTranslation> = ({ t }) => {
   return (
     <Page title={t('header:createOven')}>
       <Formik
+        enableReinitialize
+        validateOnMount
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={handleFormSubmit}
       >
-        {({ isSubmitting, isValid, dirty, values }) => (
+        {({ isSubmitting, isValid, values }) => (
           <PaperStyled>
             <Form>
               <Grid
@@ -118,6 +158,7 @@ const CreateOvenComponent: React.FC<WithTranslation> = ({ t }) => {
                     options={delegates}
                     className="delegate"
                     fullWidth
+                    handleChange={(value: string) => setDelegate(value)}
                   />
                 </Grid>
                 <Grid item>
@@ -155,19 +196,15 @@ const CreateOvenComponent: React.FC<WithTranslation> = ({ t }) => {
                     placeholder="e.g. tz3d1ZjAkd9zCGMoRTMYNaeZhFurS65U2U1J"
                     label={t('allowedDepositors')}
                     disabled={values.depositorOp === Depositor.any}
+                    isAddressField
+                    defaultValue={defaultDepositorList}
                   />
                 </Grid>
                 <Grid item>
                   <Button
                     variant="contained"
                     type="submit"
-                    disabled={
-                      !userAddress ||
-                      isSubmitting ||
-                      !isValid ||
-                      !dirty ||
-                      (values.depositorOp === Depositor.whitelist && values.depositors.length === 0)
-                    }
+                    disabled={!userAddress || isSubmitting || !isValid}
                     fullWidth
                   >
                     {t('submit')}

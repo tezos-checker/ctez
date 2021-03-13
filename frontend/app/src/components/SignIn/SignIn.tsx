@@ -28,7 +28,7 @@ export const SignIn: React.FC = () => {
 
   return (
     <div>
-      <Grid container direction="row">
+      <Grid container direction="row" style={{ flexWrap: 'nowrap' }}>
         <Box component="span" pr={1}>
           <Button
             variant="outlined"
