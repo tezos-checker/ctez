@@ -188,14 +188,20 @@ let cfmm_price (storage, tez, token : storage * nat * nat) : result =
            This means that the annualized drift changes by roughly one percentage point
            for each day over or under the target by more than 1/64th.
         *)
+
+    let price = (Bitwise.shift_left tez 48n) / token in
+    let target_less_price : int = target - price in
     let d_drift =
-      let price = (Bitwise.shift_left tez 48n) / token in
-      let target_less_price = target - price in
       let x = Bitwise.shift_left (abs (target_less_price * target_less_price)) 10n in
       let p2 = price * price  in
       if x > p2 then delta else x * delta / p2 in
 
-    let drift = storage.last_drift_update + d_drift in
+    let drift =
+    if target_less_price > 0 then
+      storage.drift + d_drift
+    else
+      storage.drift - d_drift in
+
     (([] : operation list), {storage with drift = drift ; last_drift_update = Tezos.now ; target = target})
 
 let main (p, s : parameter * storage) : result =
