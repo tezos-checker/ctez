@@ -12,6 +12,7 @@ import { AddLiquidityParams } from '../../interfaces';
 import { addLiquidity, cfmmError } from '../../contracts/cfmm';
 import { FormikDateTimePicker } from '../../components/DateTimePicker';
 import { TezosIcon } from '../../components/TezosIcon';
+import { CTezIcon } from '../../components/CTezIcon/CTezIcon';
 
 const PaperStyled = styled(Paper)`
   padding: 2em;
@@ -95,6 +96,13 @@ const AddLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
                     className="maxTokensDeposited"
                     type="number"
                     fullWidth
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <CTezIcon height={30} width={30} />
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                 </Grid>
                 <Grid item>

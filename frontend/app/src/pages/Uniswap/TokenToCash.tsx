@@ -12,6 +12,7 @@ import { TokenToCashParams } from '../../interfaces';
 import { cfmmError, tokenToCash } from '../../contracts/cfmm';
 import { FormikDateTimePicker } from '../../components/DateTimePicker';
 import { TezosIcon } from '../../components/TezosIcon';
+import { CTezIcon } from '../../components/CTezIcon/CTezIcon';
 
 const PaperStyled = styled(Paper)`
   padding: 2em;
@@ -110,6 +111,13 @@ const TokenToCashComponent: React.FC<WithTranslation> = ({ t }) => {
                     className="tokensSold"
                     type="number"
                     fullWidth
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <CTezIcon height={30} width={30} />
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                 </Grid>
                 <Grid item>

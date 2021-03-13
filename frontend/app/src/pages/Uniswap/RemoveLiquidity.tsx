@@ -2,7 +2,7 @@ import * as Yup from 'yup';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import styled from '@emotion/styled';
 import { Field, Form, Formik } from 'formik';
-import { Button, Grid, Paper } from '@material-ui/core';
+import { Button, Grid, Paper, InputAdornment } from '@material-ui/core';
 import { useToasts } from 'react-toast-notifications';
 import { useHistory } from 'react-router-dom';
 import Page from '../../components/Page';
@@ -11,6 +11,8 @@ import { useWallet } from '../../wallet/hooks';
 import { RemoveLiquidityParams } from '../../interfaces';
 import { cfmmError, removeLiquidity } from '../../contracts/cfmm';
 import { FormikDateTimePicker } from '../../components/DateTimePicker';
+import { TezosIcon } from '../../components/TezosIcon';
+import { CTezIcon } from '../../components/CTezIcon/CTezIcon';
 
 const PaperStyled = styled(Paper)`
   padding: 2em;
@@ -104,6 +106,13 @@ const RemoveLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
                     className="minCashWithdrawn"
                     type="number"
                     fullWidth
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <TezosIcon height={30} width={30} />
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                 </Grid>
                 <Grid item>
@@ -115,6 +124,13 @@ const RemoveLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
                     className="minTokensWithdrawn"
                     type="number"
                     fullWidth
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <CTezIcon height={30} width={30} />
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                 </Grid>
                 <Grid item>
