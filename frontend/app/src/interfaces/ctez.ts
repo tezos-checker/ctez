@@ -1,3 +1,4 @@
+import { MichelsonMap } from '@taquito/taquito';
 import BigNumber from 'bignumber.js';
 
 export interface Oven {
@@ -26,5 +27,27 @@ export enum Depositor {
   whitelist = 'whitelist',
 }
 
-// ([["nat","key_hash","any","unit"],
-// ["nat","key_hash","whitelist","set"],
+/**
+ * TODO: Update to actual type
+ */
+export type depositors = any;
+
+export interface oven_handle {
+  id: BigNumber;
+  owner: string;
+}
+
+export interface oven {
+  admin: string;
+  handle: oven_handle;
+  depositors: depositors;
+}
+
+export interface CTezStorage {
+  ovens: MichelsonMap<oven_handle, oven>;
+  target: BigNumber;
+  drift: BigNumber;
+  last_drift_update: Date;
+  ctez_fa12_address: string;
+  cfmm_address: string;
+}

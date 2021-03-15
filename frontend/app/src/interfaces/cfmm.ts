@@ -1,3 +1,5 @@
+import BigNumber from 'bignumber.js';
+
 export interface AddLiquidityParams {
   owner: string;
   deadline: Date;
@@ -35,4 +37,14 @@ export interface TokenToTokenParams {
   to: string;
   tokensSold: number;
   deadline: Date;
+}
+
+export interface CfmmStorage {
+  tokenPool: BigNumber;
+  cashPool: BigNumber;
+  pendingPoolUpdates: BigNumber;
+  tokenAddress: string;
+  lqtAddress: string;
+  lastOracleUpdate: Date;
+  consumerEntrypoint: string;
 }

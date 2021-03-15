@@ -1,6 +1,6 @@
 import { WalletContract } from '@taquito/taquito';
 import BigNumber from 'bignumber.js';
-import { Depositor, EditDepositorOps, ErrorType, Oven } from '../interfaces';
+import { CTezStorage, Depositor, EditDepositorOps, ErrorType, Oven } from '../interfaces';
 import { CTEZ_ADDRESS } from '../utils/globals';
 import { getLastOvenId, saveLastOven } from '../utils/ovenUtils';
 import { getTezosInstance } from './client';
@@ -14,6 +14,11 @@ export const initCTez = async (address: string): Promise<void> => {
 
 export const getCTez = (): WalletContract => {
   return cTez;
+};
+
+export const getCtezStorage = async (): Promise<CTezStorage> => {
+  const storage = await cTez.storage<CTezStorage>();
+  return storage;
 };
 
 export const create = async (

@@ -3,6 +3,7 @@ import BigNumber from 'bignumber.js';
 import {
   AddLiquidityParams,
   CashToTokenParams,
+  CfmmStorage,
   ErrorType,
   RemoveLiquidityParams,
   TokenToCashParams,
@@ -19,6 +20,11 @@ type FA12TokenType = 'ctez' | 'lqt';
 
 export const initCfmm = async (address: string): Promise<void> => {
   cfmm = await initContract(address);
+};
+
+export const getCfmmStorage = async (): Promise<CfmmStorage> => {
+  const storage = await cfmm.storage<CfmmStorage>();
+  return storage;
 };
 
 export const getTokenAllowanceOps = async (

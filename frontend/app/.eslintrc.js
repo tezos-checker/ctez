@@ -63,5 +63,6 @@ module.exports = {
     'import/no-named-as-default': 'off',
     'no-nested-ternary': 'warn',
     'no-unneeded-ternary': 'warn',
+    '@typescript-eslint/naming-convention': 'warn',
   },
 };
