@@ -32,7 +32,7 @@ export const ListItemLink: React.FC<ListItemLinkProps> = (props: ListItemLinkPro
   );
 
   return (
-    <StyledPaper elevation={0}>
+    <StyledPaper elevation={1}>
       <ListItem button component={renderLink} disabled={disabled}>
         <ListItemText primary={primary} />
       </ListItem>

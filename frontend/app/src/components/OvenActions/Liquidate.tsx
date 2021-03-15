@@ -3,13 +3,14 @@ import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import styled from '@emotion/styled';
 import { Field, Form, Formik } from 'formik';
-import { Button, Grid, Paper } from '@material-ui/core';
+import { Button, Grid, InputAdornment, Paper } from '@material-ui/core';
 import { useToasts } from 'react-toast-notifications';
 import { useHistory } from 'react-router-dom';
 import { cTezError, liquidate } from '../../contracts/ctez';
 import FormikTextField from '../TextField';
 import { useWallet } from '../../wallet/hooks';
 import { RootState } from '../../redux/rootReducer';
+import { CTezIcon } from '../CTezIcon/CTezIcon';
 
 interface LiquidateForm {
   ovenOwner: string;
@@ -77,7 +78,7 @@ export const Liquidate: React.FC = () => {
                 alignContent="center"
                 justifyContent="center"
               >
-                <Grid item style={{ width: '100%' }}>
+                <Grid item style={{ width: '40%' }}>
                   <Field
                     component={FormikTextField}
                     name="ovenOwner"
@@ -106,6 +107,13 @@ export const Liquidate: React.FC = () => {
                     className="amount"
                     type="number"
                     min="0.1"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <CTezIcon height={20} width={20} />
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                 </Grid>
                 <Grid item>

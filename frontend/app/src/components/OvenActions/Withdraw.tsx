@@ -73,7 +73,7 @@ export const Withdraw: React.FC = () => {
                 alignContent="center"
                 justifyContent="center"
               >
-                <Grid item style={{ width: '100%' }}>
+                <Grid item style={{ width: '40%' }}>
                   <Field component={FormikTextField} name="to" id="to" label={t('to')} fullWidth />
                 </Grid>
                 <Grid item>

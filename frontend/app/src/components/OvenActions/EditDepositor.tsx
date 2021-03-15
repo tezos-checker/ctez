@@ -107,7 +107,7 @@ export const EditDepositor: React.FC = () => {
                 alignContent="center"
                 justifyContent="center"
               >
-                <Grid item style={{ width: '100%' }}>
+                <Grid item style={{ width: '40%' }}>
                   <Field
                     component={FormikRadioGroup}
                     name="op"
@@ -116,7 +116,7 @@ export const EditDepositor: React.FC = () => {
                     options={opSelectionList}
                   />
                 </Grid>
-                <Grid item style={{ width: '100%' }}>
+                <Grid item style={{ width: '40%' }}>
                   <Field
                     component={FormikRadioGroup}
                     name="enable"
@@ -125,7 +125,7 @@ export const EditDepositor: React.FC = () => {
                     options={enableDisableList}
                   />
                 </Grid>
-                <Grid item style={{ width: '100%' }}>
+                <Grid item style={{ width: '40%' }}>
                   <Field
                     component={FormikTextField}
                     name="address"

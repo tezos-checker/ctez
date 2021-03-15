@@ -3,11 +3,12 @@ import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import styled from '@emotion/styled';
 import { Field, Form, Formik } from 'formik';
-import { Button, Grid, Paper } from '@material-ui/core';
+import { Button, Grid, InputAdornment, Paper } from '@material-ui/core';
 import { useToasts } from 'react-toast-notifications';
 import { mintOrBurn, cTezError } from '../../contracts/ctez';
 import { RootState } from '../../redux/rootReducer';
 import FormikTextField from '../TextField';
+import { CTezIcon } from '../CTezIcon/CTezIcon';
 
 interface MintOrBurnProps {
   type: 'mint' | 'repay';
@@ -78,6 +79,13 @@ export const MintOrBurn: React.FC<MintOrBurnProps> = ({ type }) => {
                     id="amount"
                     label={t('amount')}
                     className="amount"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <CTezIcon height={20} width={20} />
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                 </Grid>
                 <Grid item>

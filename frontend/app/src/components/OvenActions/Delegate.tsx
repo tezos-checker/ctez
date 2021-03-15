@@ -73,7 +73,7 @@ export const Delegate: React.FC = () => {
                 alignContent="center"
                 justifyContent="center"
               >
-                <Grid item style={{ width: '100%' }}>
+                <Grid item style={{ width: '40%' }}>
                   <Field
                     component={FormikAutocomplete}
                     name="delegate"
