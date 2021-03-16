@@ -8,7 +8,7 @@ const ctezInitialStorage = {
   ovens: MichelsonMap.fromLiteral({}),
   target: 1n << 48n,
   drift: 0,
-  last_drift_update: "2021-01-01T00:00:00Z",
+  last_drift_update: new Date().toISOString(),
   cfmm_address: "tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU",
   ctez_fa12_address: "tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU",
 };
@@ -28,7 +28,7 @@ module.exports = async (deployer, _network, accounts) => {
     pendingPoolUpdates: 0,
     tokenAddress: fa12.address,
     consumerEntrypoint: `${ctez.address}%cfmm_price`,
-    lastOracleUpdate: "2021-01-01T00:00:00Z",
+    lastOracleUpdate: new Date().toISOString(),
     lqtAddress: "tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU",
   });
   await deployer.deploy(FA12LQT, {
