@@ -42,6 +42,7 @@ export const Deposit: React.FC = () => {
           });
         }
       } catch (error) {
+        console.log(error);
         const errorText = cTezError[error.data[1].with.int as number] || 'Transaction Failed';
         addToast(errorText, {
           appearance: 'error',

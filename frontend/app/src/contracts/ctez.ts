@@ -63,7 +63,7 @@ export const editDepositor = async (
 
 export const deposit = async (ovenAddress: string, amount: number): Promise<string> => {
   const ovenContract = await initContract(ovenAddress);
-  const hash = await executeMethod(ovenContract, 'oven_deposit', undefined, 0, amount);
+  const hash = await executeMethod(ovenContract, 'default', undefined, 0, amount);
   return hash;
 };
 
