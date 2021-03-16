@@ -8,7 +8,7 @@ import { StatsCard } from '../StatsCard/StatsCard';
 
 export const OvenStats: React.FC = () => {
   const { t } = useTranslation(['common']);
-  const { data: stats } = useQuery<BaseStats, AxiosError, BaseStats>(['delegates'], () => {
+  const { data: stats } = useQuery<BaseStats, AxiosError, BaseStats>(['baseStats'], async () => {
     return getBaseStats();
   });
 

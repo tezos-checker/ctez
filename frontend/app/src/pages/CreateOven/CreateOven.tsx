@@ -41,7 +41,6 @@ const CreateOvenComponent: React.FC<WithTranslation> = ({ t }) => {
   const [delegate, setDelegate] = useState('');
   const { addToast } = useToasts();
   const history = useHistory();
-
   const validationSchema = Yup.object().shape({
     delegate: Yup.string().required(t('required')),
     amount: Yup.number().optional(),
