@@ -46,5 +46,10 @@
   "allowedDepositors": "Authorized depositors",
   "any": "Everyone",
   "whitelist": "Whitelist",
-  "depositorOp": "Who can deposit"
+  "depositorOp": "Who can deposit",
+  "currentTarget": "Current target",
+  "currentPrice": "Current price",
+  "premium": "Premium",
+  "currentAnnualDrift": "Current annual drift",
+  "totalLiquidity": "Total Liquidity"
 }

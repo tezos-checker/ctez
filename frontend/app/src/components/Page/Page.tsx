@@ -9,6 +9,7 @@ import { DEFAULT_LANGUAGE } from '../../i18n';
 import { APP_NAME, NETWORK } from '../../utils/globals';
 import { Header } from '../Header';
 import { Typography } from '../Typography';
+import { OvenStats } from '../OvenStats/OvenStats';
 
 const ContainerStyled = styled(Container)`
   padding-top: 1em;
@@ -38,6 +39,7 @@ export const Page: React.FC<PageProps> = ({ title, children, description }) => {
         {description && <meta name="description" content={description} />}
       </Helmet>
       <Header title={APP_NAME} onClick={() => history.push('/')} />
+      <OvenStats />
       {title && (
         <ContainerStyled>
           <IconButton

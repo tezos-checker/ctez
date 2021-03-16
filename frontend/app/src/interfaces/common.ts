@@ -10,4 +10,5 @@ export interface BaseStats {
   premium: number;
   currentAnnualDrift: number;
   totalLiquidity: number;
+  [key: string]: number;
 }
