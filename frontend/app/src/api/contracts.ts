@@ -14,8 +14,8 @@ export const getBaseStats = async (): Promise<BaseStats> => {
   return {
     currentTarget,
     currentPrice,
-    premium,
-    currentAnnualDrift,
+    premium: premium * 100,
+    currentAnnualDrift: currentAnnualDrift * 100,
     totalLiquidity,
   };
 };
