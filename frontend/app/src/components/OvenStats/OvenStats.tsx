@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { useQuery } from 'react-query';
 import { getBaseStats } from '../../api/contracts';
 import { BaseStats } from '../../interfaces';
-import { roundToTwo } from '../../utils/globals';
 import { StatsCard } from '../StatsCard/StatsCard';
 
 export const OvenStats: React.FC = () => {
@@ -21,7 +20,7 @@ export const OvenStats: React.FC = () => {
             <Grid item key={`${index}`} md={3} xs="auto" lg={2}>
               <StatsCard
                 label={t(item)}
-                value={roundToTwo(stats[item])}
+                value={stats[item]}
                 isPercentage={item === 'premium' || item === 'currentAnnualDrift'}
               />
             </Grid>

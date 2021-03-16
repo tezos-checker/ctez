@@ -5,10 +5,10 @@ export interface ErrorType {
 export type AddressTrimSizeType = 'small' | 'medium' | 'large';
 
 export interface BaseStats {
-  currentTarget: number;
-  currentPrice: number;
-  premium: number;
-  currentAnnualDrift: number;
-  totalLiquidity: number;
-  [key: string]: number;
+  currentTarget: string;
+  currentPrice: string;
+  premium: string;
+  currentAnnualDrift: string;
+  totalLiquidity: string;
+  [key: string]: string;
 }

@@ -12,10 +12,10 @@ export const getBaseStats = async (): Promise<BaseStats> => {
   const currentAnnualDrift = (1.0 + drift / 2 ** 48) ** (365.25 * 24 * 3600) - 1.0;
   const totalLiquidity = (cfmmStorage.cashPool.toNumber() * 2) / 1e6;
   return {
-    currentTarget,
-    currentPrice,
-    premium: premium * 100,
-    currentAnnualDrift: currentAnnualDrift * 100,
-    totalLiquidity,
+    currentTarget: currentTarget.toFixed(6),
+    currentPrice: currentPrice.toFixed(6),
+    premium: (premium * 100).toFixed(2),
+    currentAnnualDrift: (currentAnnualDrift * 100).toFixed(2),
+    totalLiquidity: totalLiquidity.toFixed(2),
   };
 };
