@@ -19,13 +19,14 @@ export interface PageProps {
   title?: string;
   showBackButton?: boolean;
   description?: string;
+  showStats?: boolean;
 }
 
 interface PageLocationStateParams {
   backPath?: string;
 }
 
-export const Page: React.FC<PageProps> = ({ title, children, description }) => {
+export const Page: React.FC<PageProps> = ({ title, children, description, showStats = false }) => {
   const { state } = useLocation<PageLocationStateParams>();
   const history = useHistory();
   const { i18n } = useTranslation();
@@ -39,7 +40,7 @@ export const Page: React.FC<PageProps> = ({ title, children, description }) => {
         {description && <meta name="description" content={description} />}
       </Helmet>
       <Header title={APP_NAME} onClick={() => history.push('/')} />
-      <OvenStats />
+      <Container disableGutters>{showStats && <OvenStats />}</Container>
       {title && (
         <ContainerStyled>
           <IconButton

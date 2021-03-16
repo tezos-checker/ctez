@@ -41,7 +41,7 @@ export const MyOvenPage: React.FC = () => {
     },
   );
   return (
-    <Page>
+    <Page showStats>
       {isLoading && <CircularProgress />}
       {!isLoading && (
         <Grid

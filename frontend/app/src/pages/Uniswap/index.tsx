@@ -28,7 +28,7 @@ export const Uniswap: React.FC = () => {
   };
 
   return (
-    <Page title={t('header:buyOrSell')}>
+    <Page title={t('header:buyOrSell')} showStats>
       <LinkList {...listItem} />
     </Page>
   );

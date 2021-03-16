@@ -14,10 +14,10 @@ export const OvenStats: React.FC = () => {
 
   return (
     <Box p={3}>
-      <Grid container direction="row" spacing={3}>
+      <Grid container direction="row" spacing={1}>
         {stats &&
           Object.keys(stats).map((item, index) => (
-            <Grid item key={`${index}`}>
+            <Grid item key={`${index}`} md={3} xs="auto" lg={2}>
               <StatsCard
                 label={t(item)}
                 value={stats[item]}
