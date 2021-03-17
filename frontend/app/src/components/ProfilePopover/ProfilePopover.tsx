@@ -4,6 +4,7 @@ import { Popover, Divider, Button } from '@material-ui/core';
 import Address from '../Address';
 import Identicon from '../Identicon';
 import { Typography } from '../Typography';
+import { UserBalance } from '../../interfaces';
 
 const useStyles = makeStyles((theme: any) => ({
   popover: {
@@ -44,6 +45,7 @@ export interface ProfilePopoverProps {
   actionText: string;
   onClose: () => void | Promise<void>;
   handleAction: () => void | Promise<void>;
+  balance?: UserBalance;
 }
 
 export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
@@ -53,6 +55,7 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
   onClose,
   handleAction,
   actionText,
+  balance,
 }) => {
   const classes = useStyles();
   const id = isOpen ? 'profile-popover' : undefined;
@@ -78,6 +81,16 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
           <Identicon alt={address} seed={address} type="tzKtCat" />
           <div className={classes.accountDetails}>
             <Address address={address} trim trimSize="medium" />
+            {typeof balance !== 'undefined' && (
+              <>
+                <Typography size="subtitle2" component="span" color="textSecondary">
+                  {`XTZ: ${balance.xtz}`}
+                </Typography>
+                <Typography size="subtitle2" component="span" color="textSecondary">
+                  {`CTez: ${balance.ctez}`}
+                </Typography>
+              </>
+            )}
             <Typography size="caption" component="span" color="textSecondary">
               {network}
             </Typography>

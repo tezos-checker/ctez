@@ -6,7 +6,7 @@ export const getUserBalance = async (userAddress: string): Promise<UserBalance> 
   const tezos = getTezosInstance();
   const ctezFa12 = await getCTezFa12Contract();
   const ctezFa12Storage: any = await ctezFa12.storage();
-  const ctez = (await ctezFa12Storage.tokens.get(userAddress)) ?? 0;
+  const ctez = (await ctezFa12Storage.tokens.get(userAddress)).shiftedBy(-6).toNumber() ?? 0;
   const xtz = (await tezos.tz.getBalance(userAddress)).shiftedBy(-6).toNumber() ?? 0;
   return {
     xtz,
