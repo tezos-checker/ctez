@@ -103,7 +103,7 @@ export const Liquidate: React.FC = () => {
                     component={FormikTextField}
                     name="amount"
                     id="amount"
-                    label={t('amount')}
+                    label={t('amountCtez')}
                     className="amount"
                     type="number"
                     min="0.1"
