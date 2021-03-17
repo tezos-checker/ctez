@@ -1,17 +1,20 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { UserOvenStats } from '../../interfaces';
 import { OvenSerializable } from '../../interfaces/ctez';
 
-interface OvenActionState {
+interface OvenSliceState {
   oven: OvenSerializable | null;
   showActions: boolean;
+  userOvenData: UserOvenStats;
 }
 
-const initialState: OvenActionState = {
+const initialState: OvenSliceState = {
   oven: null,
   showActions: false,
+  userOvenData: { xtz: 0, ctez: 0, totalOvens: 0 },
 };
 
-export const OvenActionsSlice = createSlice({
+export const OvenSlice = createSlice({
   name: 'ovenActions',
   initialState,
   reducers: {
@@ -24,6 +27,9 @@ export const OvenActionsSlice = createSlice({
     clearOven: (state) => {
       state.oven = null;
       state.showActions = false;
+    },
+    setOvenData: (state: OvenSliceState, action: PayloadAction<UserOvenStats>) => {
+      state.userOvenData = action.payload;
     },
   },
 });

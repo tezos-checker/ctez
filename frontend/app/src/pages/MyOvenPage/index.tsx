@@ -1,7 +1,7 @@
 import { CircularProgress, Grid, Box } from '@material-ui/core';
 import { useSelector, useDispatch } from 'react-redux';
 import { AxiosError } from 'axios';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from 'react-query';
 import { Drawer } from '../../components/Drawer/Drawer';
@@ -11,8 +11,8 @@ import Page from '../../components/Page';
 import { getOvens } from '../../contracts/ctez';
 import { useWallet } from '../../wallet/hooks';
 import { RootState } from '../../redux/rootReducer';
-import { OvenActionsSlice } from '../../redux/slices/OvenActions';
-import { Oven } from '../../interfaces';
+import { OvenSlice } from '../../redux/slices/OvenSlice';
+import { Oven, UserOvenStats } from '../../interfaces';
 import { toSerializeableOven } from '../../utils/ovenUtils';
 
 export const MyOvenPage: React.FC = () => {
@@ -40,6 +40,19 @@ export const MyOvenPage: React.FC = () => {
       staleTime: 3000,
     },
   );
+  useEffect(() => {
+    if (ovenData && ovenData.length > 0) {
+      const ovenUserData: UserOvenStats = ovenData.reduce(
+        (acc, item) => {
+          acc.ctez += item.ctez_outstanding.shiftedBy(-6).toNumber();
+          acc.xtz += item.tez_balance.shiftedBy(-6).toNumber();
+          return acc;
+        },
+        { xtz: 0, ctez: 0, totalOvens: ovenData.length },
+      );
+      dispatch(OvenSlice.actions.setOvenData(ovenUserData));
+    }
+  }, [ovenData]);
   return (
     <Page showStats>
       {isLoading && <CircularProgress />}
@@ -62,8 +75,8 @@ export const MyOvenPage: React.FC = () => {
                       {...ovenValue}
                       totalOvens={ovenData.length}
                       action={() => {
-                        dispatch(OvenActionsSlice.actions.setOven(toSerializeableOven(ovenValue)));
-                        dispatch(OvenActionsSlice.actions.toggleActions(true));
+                        dispatch(OvenSlice.actions.setOven(toSerializeableOven(ovenValue)));
+                        dispatch(OvenSlice.actions.toggleActions(true));
                       }}
                     />
                   </Grid>
@@ -76,7 +89,7 @@ export const MyOvenPage: React.FC = () => {
         <Drawer
           open={showActions}
           onClose={() => {
-            dispatch(OvenActionsSlice.actions.clearOven());
+            dispatch(OvenSlice.actions.clearOven());
           }}
         >
           <OvenActions />

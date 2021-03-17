@@ -51,5 +51,7 @@
   "currentPrice": "Current price",
   "premium": "Premium",
   "currentAnnualDrift": "Current annual drift",
-  "totalLiquidity": "Total Liquidity"
+  "totalLiquidity": "Total Liquidity",
+  "tezInOvens": "Tez in Ovens",
+  "ctezOutstanding": "CTez Outstanding"
 }

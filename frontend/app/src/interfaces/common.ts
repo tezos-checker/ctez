@@ -12,3 +12,9 @@ export interface BaseStats {
   totalLiquidity: string;
   [key: string]: string;
 }
+
+export interface UserOvenStats {
+  totalOvens: number;
+  xtz: number;
+  ctez: number;
+}
