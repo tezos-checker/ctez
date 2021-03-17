@@ -15,7 +15,7 @@ const initialState: OvenSliceState = {
 };
 
 export const OvenSlice = createSlice({
-  name: 'ovenActions',
+  name: 'oven',
   initialState,
   reducers: {
     toggleActions: (state, action: PayloadAction<boolean>) => {
@@ -28,7 +28,7 @@ export const OvenSlice = createSlice({
       state.oven = null;
       state.showActions = false;
     },
-    setOvenData: (state: OvenSliceState, action: PayloadAction<UserOvenStats>) => {
+    setUserOvenData: (state: OvenSliceState, action: PayloadAction<UserOvenStats>) => {
       state.userOvenData = action.payload;
     },
   },

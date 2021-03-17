@@ -24,7 +24,7 @@ const PaperStyled = styled(Paper)`
 export const EditDepositor: React.FC = () => {
   const { t } = useTranslation(['common']);
   const { addToast } = useToasts();
-  const ovenAddress = useSelector((state: RootState) => state.ovenActions.oven?.address);
+  const ovenAddress = useSelector((state: RootState) => state.oven.oven?.address);
   const initialValues: EditDepositorForm = {
     op: EditDepositorOps.AllowAccount,
     enable: 'true',

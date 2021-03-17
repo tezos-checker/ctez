@@ -18,7 +18,7 @@ import { toSerializeableOven } from '../../utils/ovenUtils';
 export const MyOvenPage: React.FC = () => {
   const { t } = useTranslation(['common', 'header']);
   const dispatch = useDispatch();
-  const { showActions } = useSelector((state: RootState) => state.ovenActions);
+  const { showActions } = useSelector((state: RootState) => state.oven);
   const [{ pkh: userAddress }] = useWallet();
   const { data: ovenData, isLoading } = useQuery<Oven[], AxiosError, Oven[]>(
     ['ovenData', userAddress],
@@ -50,7 +50,7 @@ export const MyOvenPage: React.FC = () => {
         },
         { xtz: 0, ctez: 0, totalOvens: ovenData.length },
       );
-      dispatch(OvenSlice.actions.setOvenData(ovenUserData));
+      dispatch(OvenSlice.actions.setUserOvenData(ovenUserData));
     }
   }, [ovenData]);
   return (

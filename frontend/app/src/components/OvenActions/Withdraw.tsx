@@ -25,7 +25,7 @@ export const Withdraw: React.FC = () => {
   const { t } = useTranslation(['common']);
   const [{ pkh: userAddress }] = useWallet();
   const { addToast } = useToasts();
-  const ovenId = useSelector((state: RootState) => state.ovenActions.oven?.ovenId);
+  const ovenId = useSelector((state: RootState) => state.oven.oven?.ovenId);
   const initialValues: WithdrawForm = {
     amount: 0,
     to: userAddress ?? '',

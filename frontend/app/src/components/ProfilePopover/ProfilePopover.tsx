@@ -4,7 +4,7 @@ import { Popover, Divider, Button } from '@material-ui/core';
 import Address from '../Address';
 import Identicon from '../Identicon';
 import { Typography } from '../Typography';
-import { UserBalance } from '../../interfaces';
+import { UserBalance, UserOvenStats } from '../../interfaces';
 
 const useStyles = makeStyles((theme: any) => ({
   popover: {
@@ -46,6 +46,7 @@ export interface ProfilePopoverProps {
   onClose: () => void | Promise<void>;
   handleAction: () => void | Promise<void>;
   balance?: UserBalance;
+  ovenDetails?: UserOvenStats;
 }
 
 export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
@@ -56,6 +57,7 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
   handleAction,
   actionText,
   balance,
+  ovenDetails,
 }) => {
   const classes = useStyles();
   const id = isOpen ? 'profile-popover' : undefined;
@@ -84,10 +86,20 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
             {typeof balance !== 'undefined' && (
               <>
                 <Typography size="subtitle2" component="span" color="textSecondary">
-                  {`XTZ: ${balance.xtz}`}
+                  {`ꜩ: ${balance.xtz}`}
                 </Typography>
                 <Typography size="subtitle2" component="span" color="textSecondary">
-                  {`CTez: ${balance.ctez}`}
+                  {`cꜩ: ${balance.ctez}`}
+                </Typography>
+              </>
+            )}
+            {typeof ovenDetails !== 'undefined' && (
+              <>
+                <Typography size="subtitle2" component="span" color="textSecondary">
+                  {`ꜩ in ovens: ${ovenDetails.xtz}`}
+                </Typography>
+                <Typography size="subtitle2" component="span" color="textSecondary">
+                  {`cꜩ outstanding: ${ovenDetails.ctez}`}
                 </Typography>
               </>
             )}

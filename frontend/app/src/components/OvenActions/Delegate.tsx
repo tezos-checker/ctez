@@ -26,7 +26,7 @@ export const Delegate: React.FC = () => {
   const { data: delegates } = useQuery<Baker[], AxiosError, Baker[]>(['delegates'], () => {
     return getDelegates();
   });
-  const ovenAddress = useSelector((state: RootState) => state.ovenActions.oven?.address);
+  const ovenAddress = useSelector((state: RootState) => state.oven.oven?.address);
   const { addToast } = useToasts();
   const initialValues: DelegateForm = {
     delegate: '',

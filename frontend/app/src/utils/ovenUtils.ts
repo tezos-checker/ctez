@@ -24,3 +24,7 @@ export const toOven = (oven: OvenSerializable): Oven => {
     ctez_outstanding: new BigNumber(oven.ctez_outstanding),
   };
 };
+
+export const maxCTez = (tez: number, target: number): string => {
+  return (tez / (target * (16 / 15))).toFixed(6);
+};

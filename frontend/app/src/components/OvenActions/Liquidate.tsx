@@ -27,7 +27,7 @@ export const Liquidate: React.FC = () => {
   const [{ pkh: userAddress }] = useWallet();
   const { addToast } = useToasts();
   const history = useHistory();
-  const ovenId = useSelector((state: RootState) => state.ovenActions.oven?.ovenId);
+  const ovenId = useSelector((state: RootState) => state.oven.oven?.ovenId);
   const initialValues: LiquidateForm = {
     ovenOwner: userAddress ?? '',
     amount: 0,

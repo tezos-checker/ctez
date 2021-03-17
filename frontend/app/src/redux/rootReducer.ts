@@ -1,8 +1,10 @@
 import { combineReducers } from '@reduxjs/toolkit';
 import { OvenSlice } from './slices/OvenSlice';
+import { StatsSlice } from './slices/StatsSlice';
 
 const rootReducer = combineReducers({
-  ovenActions: OvenSlice.reducer,
+  oven: OvenSlice.reducer,
+  stats: StatsSlice.reducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

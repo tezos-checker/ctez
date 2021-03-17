@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import styled from '@emotion/styled';
 import { IconButton, Grid, Box } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
-import TezosIcon from '../TezosIcon';
 import { Typography } from '../Typography';
 import { SignIn } from '../SignIn/SignIn';
 import { NavigationDrawer } from '../NavigationDrawer/NavigationDrawer';
+import { CTezIcon } from '../CTezIcon/CTezIcon';
 
 export interface HeaderProps {
   title: string;
@@ -69,10 +69,7 @@ export const Header: React.FC<HeaderProps> = ({ title, onClick }) => {
             </Grid>
             <Grid item style={{ flexGrow: 1 }}>
               <div onClick={onClick} aria-hidden="true" style={{ display: 'flex', flexGrow: 1 }}>
-                <TezosIcon />
-                <Typography size="body" component="h1" margin="0.4em 0 0.4em 1em">
-                  {title}
-                </Typography>
+                <CTezIcon />
               </div>
             </Grid>
             <Grid item className="sign-in">

@@ -25,7 +25,7 @@ const PaperStyled = styled(Paper)`
 export const MintOrBurn: React.FC<MintOrBurnProps> = ({ type }) => {
   const { t } = useTranslation(['common']);
   const { addToast } = useToasts();
-  const ovenId = useSelector((state: RootState) => state.ovenActions.oven?.ovenId);
+  const ovenId = useSelector((state: RootState) => state.oven.oven?.ovenId);
   const initialValues: MintBurnForm = {
     amount: 0,
   };
@@ -77,7 +77,7 @@ export const MintOrBurn: React.FC<MintOrBurnProps> = ({ type }) => {
                     component={FormikTextField}
                     name="amount"
                     id="amount"
-                    label={t('amount')}
+                    label={t('amountCtez')}
                     className="amount"
                     InputProps={{
                       startAdornment: (

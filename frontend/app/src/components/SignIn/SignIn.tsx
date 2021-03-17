@@ -1,4 +1,5 @@
 import { Box, Button, Grid } from '@material-ui/core';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from '@emotion/styled';
 import { AxiosError } from 'axios';
 import { useQuery } from 'react-query';
@@ -14,6 +15,8 @@ import Identicon from '../Identicon';
 import ProfilePopover from '../ProfilePopover';
 import { UserBalance } from '../../interfaces';
 import { getUserBalance } from '../../api/user';
+import { OvenSlice } from '../../redux/slices/OvenSlice';
+import { RootState } from '../../redux/rootReducer';
 
 const SignedInBoxStyled = styled(Box)`
   cursor: pointer;
@@ -21,8 +24,10 @@ const SignedInBoxStyled = styled(Box)`
 
 export const SignIn: React.FC = () => {
   const { t } = useTranslation(['header']);
+  const dispatch = useDispatch();
   const [{ wallet, pkh: userAddress, network }, setWallet, disconnectWallet] = useWallet();
   const [isOpen, setOpen] = useState(false);
+  const userOvenData = useSelector((state: RootState) => state.oven.userOvenData);
   const { data: balance } = useQuery<UserBalance | undefined, AxiosError, UserBalance | undefined>(
     [`user-balance-${userAddress}`],
     () => {
@@ -35,6 +40,11 @@ export const SignIn: React.FC = () => {
     const newWallet = await getBeaconInstance(APP_NAME, true, NETWORK);
     newWallet?.wallet && setWalletProvider(newWallet.wallet);
     newWallet && setWallet(newWallet);
+  };
+
+  const onWalletDisconnect = () => {
+    dispatch(OvenSlice.actions.setUserOvenData({ ctez: 0, xtz: 0, totalOvens: 0 }));
+    disconnectWallet();
   };
 
   return (
@@ -64,11 +74,12 @@ export const SignIn: React.FC = () => {
               <ProfilePopover
                 isOpen={isOpen}
                 onClose={() => setOpen(false)}
-                handleAction={disconnectWallet}
+                handleAction={onWalletDisconnect}
                 address={userAddress ?? ''}
                 network={network ?? ''}
                 actionText={t('signOut')}
                 balance={balance}
+                ovenDetails={userOvenData}
               />
             </SignedInBoxStyled>
           </Grid>

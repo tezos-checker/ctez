@@ -21,7 +21,7 @@ const PaperStyled = styled(Paper)`
 
 export const Deposit: React.FC = () => {
   const { addToast } = useToasts();
-  const ovenAddress = useSelector((state: RootState) => state.ovenActions.oven?.address);
+  const ovenAddress = useSelector((state: RootState) => state.oven.oven?.address);
   const { t } = useTranslation(['common']);
   const initialValues: DepositForm = {
     amount: 0,
