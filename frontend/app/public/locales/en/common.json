@@ -57,5 +57,6 @@
   "tezInOvens": "tez in Ovens",
   "ctezOutstanding": "ctez Outstanding",
   "maxCtez": "Max mintable ctez",
-  "mintableCtez": "Remaining mintable ctez"
+  "mintableCtez": "Remaining mintable ctez",
+  "annualDriftPastWeek": "Annual Drift (past week)"
 }

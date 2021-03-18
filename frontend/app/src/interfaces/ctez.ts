@@ -51,3 +51,12 @@ export interface CTezStorage {
   ctez_fa12_address: string;
   cfmm_address: string;
 }
+
+export interface CTezTzktStorage {
+  drift: string;
+  ovens: string;
+  target: string;
+  cfmm_address: string;
+  ctez_fa12_address: string;
+  last_drift_update: string;
+}

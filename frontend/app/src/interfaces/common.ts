@@ -9,6 +9,7 @@ export interface BaseStats {
   currentPrice: string;
   premium: string;
   currentAnnualDrift: string;
+  annualDriftPastWeek: string;
   totalLiquidity: string;
   [key: string]: string;
 }

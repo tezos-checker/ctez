@@ -62,7 +62,7 @@ export const OvenStats: React.FC = () => {
               <StatsCard label={t(item)}>
                 <StatCardExtra
                   value={item === 'totalLiquidity' ? `ꜩ ${stats[item]}` : stats[item]}
-                  isPercentage={item === 'premium' || item === 'currentAnnualDrift'}
+                  isPercentage={item === 'premium' || item.includes('Drift')}
                 />
               </StatsCard>
             </Grid>
