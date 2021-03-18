@@ -6,8 +6,7 @@ import {
   Table,
   TableCell,
   CardContent,
-  TableBody,
-  TableRow,
+  TableHead,
 } from '@material-ui/core';
 import { AxiosError } from 'axios';
 import cx from 'clsx';
@@ -81,7 +80,7 @@ export const OvenStats: React.FC<OvenStatsProps> = ({ type = 'oven' }) => {
   useEffect(() => {
     if (stats) {
       dispatch(StatsSlice.actions.setBaseStats(stats));
-      const keys = type === 'oven' ? OVEN_STATS : UNISWAP_STATS;
+      const keys = type === 'oven' ? OVEN_STATS : [...UNISWAP_STATS, ...OVEN_STATS];
       const data = keys.map((item) => {
         let value = item === 'totalLiquidity' ? `ꜩ ${stats[item]}` : stats[item];
         value = item === 'premium' || item.includes('Drift') ? `${value}%` : value;
@@ -100,16 +99,13 @@ export const OvenStats: React.FC<OvenStatsProps> = ({ type = 'oven' }) => {
         <CardHeader title={t('stats')} className={classes.header} />
         <CardContent className={classes.content}>
           <Table>
-            <TableBody>
+            <TableHead>
               {statsData.map((row) => (
-                <TableRow key={row.title}>
-                  <TableCell component="th" scope="row">
-                    {row.title}
-                  </TableCell>
-                  <TableCell align="right">{row.value}</TableCell>
-                </TableRow>
+                <TableCell component="th" scope="row" key={row.title} sx={{ padding: '0.5rem' }}>
+                  {row.title}: {row.value}
+                </TableCell>
               ))}
-            </TableBody>
+            </TableHead>
           </Table>
         </CardContent>
       </Card>
