@@ -49,7 +49,6 @@ export const scaleBetween = (
   return scaleBetween(num, minAllowed, maxAllowed, min, adjustedMax);
 };
 
-
 export const getOvenImageId = (ovenId: number, totalOvens: number): number => {
   return ovenId > TOTAL_OVEN_IMAGES ? scaleBetween(ovenId, 1, 5, 6, totalOvens) : ovenId;
 };
