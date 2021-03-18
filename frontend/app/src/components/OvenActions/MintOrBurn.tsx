@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
+import { BigNumber } from 'bignumber.js';
 import * as Yup from 'yup';
 import styled from '@emotion/styled';
 import { Field, Form, Formik } from 'formik';
@@ -37,6 +38,8 @@ export const MintOrBurn: React.FC<MintOrBurnProps> = ({ type }) => {
   const { max, remaining } = currentTarget
     ? getOvenMaxCtez(tez_balance, ctez_outstanding, currentTarget)
     : { max: 0, remaining: 0 };
+
+  const outStandingCtez = new BigNumber(ctez_outstanding).shiftedBy(-6).toNumber() ?? 0;
   const maxMintableCtez = max < 0 ? 0 : max;
   const remainingMintableCtez = remaining < 0 ? 0 : remaining;
   const validationSchema = Yup.object().shape({
@@ -85,6 +88,11 @@ export const MintOrBurn: React.FC<MintOrBurnProps> = ({ type }) => {
                 alignContent="center"
                 justifyContent="center"
               >
+                <Grid item>
+                  <Typography size="body1" component="span" color="textSecondary">
+                    {t('outstandingCTez')}: {outStandingCtez}
+                  </Typography>
+                </Grid>
                 <Grid item>
                   <Typography size="body1" component="span" color="textSecondary">
                     {t('maxCtez')}: {maxMintableCtez}
