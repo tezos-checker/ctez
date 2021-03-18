@@ -68,7 +68,11 @@ export const Header: React.FC<HeaderProps> = ({ title, onClick }) => {
               </IconButton>
             </Grid>
             <Grid item style={{ flexGrow: 1 }}>
-              <div onClick={onClick} aria-hidden="true" style={{ display: 'flex', flexGrow: 1 }}>
+              <div
+                onClick={onClick}
+                aria-hidden="true"
+                style={{ display: 'flex', flexGrow: 1, cursor: 'pointer' }}
+              >
                 <CTezIcon />
               </div>
             </Grid>
