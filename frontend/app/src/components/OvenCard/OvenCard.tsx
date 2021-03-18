@@ -13,11 +13,10 @@ import Address from '../Address';
 import Identicon from '../Identicon';
 import { Typography } from '../Typography';
 
-const TOTAL_OVEN_IMG = 11;
-
 interface OvenCardProps extends Oven {
-  ovenId: number;
-  totalOvens: number;
+  imageId: number;
+  maxCtez: number;
+  mintableCtez: number;
   action?: () => void | Promise<void>;
 }
 
@@ -37,47 +36,27 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const scaleBetween = (
-  unscaledNum: number,
-  minAllowed: number,
-  maxAllowed: number,
-  min: number,
-  max: number,
-): number => {
-  const adjustedMax = min === max ? max + 1 : max;
-  const num = Math.ceil(
-    ((maxAllowed - minAllowed) * (unscaledNum - min)) / (adjustedMax - min) + minAllowed,
-  );
-  if (num % 1 === 0) return num;
-  return scaleBetween(num, minAllowed, maxAllowed, min, adjustedMax);
-};
-
 export const OvenCard: React.FC<OvenCardProps> = ({
   address,
   baker,
   ctez_outstanding,
   tez_balance,
-  ovenId,
-  totalOvens,
+  imageId,
   action,
+  maxCtez,
+  mintableCtez,
 }) => {
   const classes = useStyles();
   const { t } = useTranslation(['common']);
-  const imageSelected =
-    ovenId > TOTAL_OVEN_IMG ? scaleBetween(ovenId, 1, 5, 6, totalOvens) : ovenId;
 
   return (
     <Card className={classes.root}>
       <CardHeader
         avatar={<Identicon seed={address} type="tzKtCat" />}
         title={<Address address={address} trimSize="medium" trim />}
-        subheader={`${t('ovenBalance')}: ${tez_balance?.shiftedBy(-6).toString() ?? 0}`}
+        subheader={`${t('ovenBalance')}: ${tez_balance?.shiftedBy(-6).toNumber() ?? 0}`}
       />
-      <CardMedia
-        className={classes.media}
-        image={`/img/ovens/${imageSelected}.jpeg`}
-        title="My Oven"
-      />
+      <CardMedia className={classes.media} image={`/img/ovens/${imageId}.jpeg`} title="My Oven" />
       <CardContent>
         <Grid container direction="column">
           {baker && (
@@ -89,7 +68,17 @@ export const OvenCard: React.FC<OvenCardProps> = ({
           )}
           <Grid item>
             <Typography size="body1" component="span" color="textSecondary">
-              {t('outstandingCTez')}: {ctez_outstanding?.shiftedBy(-6).toString() ?? 0}
+              {t('outstandingCTez')}: {ctez_outstanding?.shiftedBy(-6).toNumber() ?? 0}
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Typography size="body1" component="span" color="textSecondary">
+              {t('maxCtez')}: {maxCtez < 0 ? 0 : maxCtez}
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Typography size="body1" component="span" color="textSecondary">
+              {t('mintableCtez')}: {mintableCtez < 0 ? 0 : mintableCtez}
             </Typography>
           </Grid>
         </Grid>
@@ -104,7 +93,7 @@ export const OvenCard: React.FC<OvenCardProps> = ({
           endIcon={<ExpandMoreIcon color="action" />}
         >
           <Typography size="caption" color="CaptionText">
-            Actions
+            {t('actions')}
           </Typography>
         </Button>
       </CardActions>

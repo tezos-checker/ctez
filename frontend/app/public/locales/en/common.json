@@ -29,6 +29,7 @@
   "deny": "Deny",
   "operation": "Operation",
   "action": "Action",
+  "actions": "Actions",
   "address": "Address",
   "modifyDepositors": "Modify Depositor(s)",
   "mint": "Mint",
@@ -54,5 +55,7 @@
   "currentAnnualDrift": "Current annual drift",
   "totalLiquidity": "Total Liquidity",
   "tezInOvens": "tez in Ovens",
-  "ctezOutstanding": "ctez Outstanding"
+  "ctezOutstanding": "ctez Outstanding",
+  "maxCtez": "Max mintable ctez",
+  "mintableCtez": "Remaining mintable ctez"
 }

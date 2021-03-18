@@ -1,5 +1,6 @@
 import { CircularProgress, Grid, Box } from '@material-ui/core';
 import { useSelector, useDispatch } from 'react-redux';
+import BigNumber from 'bignumber.js';
 import { AxiosError } from 'axios';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,11 +14,23 @@ import { useWallet } from '../../wallet/hooks';
 import { RootState } from '../../redux/rootReducer';
 import { OvenSlice } from '../../redux/slices/OvenSlice';
 import { Oven, UserOvenStats } from '../../interfaces';
-import { toSerializeableOven } from '../../utils/ovenUtils';
+import { maxCTez, scaleBetween, toSerializeableOven } from '../../utils/ovenUtils';
+import { TOTAL_OVEN_IMAGES } from '../../utils/globals';
+
+const getOvenImageId = (ovenId: number, totalOvens: number): number => {
+  return ovenId > TOTAL_OVEN_IMAGES ? scaleBetween(ovenId, 1, 5, 6, totalOvens) : ovenId;
+};
+
+const getOvenMaxCtez = (ovenTez: BigNumber, currentCtez: BigNumber, target: string) => {
+  const max = maxCTez(ovenTez.shiftedBy(-6).toNumber(), Number(target));
+  const remaining = max - currentCtez.shiftedBy(-6).toNumber();
+  return { max, remaining: Number(remaining.toFixed(6)) };
+};
 
 export const MyOvenPage: React.FC = () => {
   const { t } = useTranslation(['common', 'header']);
   const dispatch = useDispatch();
+  const currentTarget = useSelector((state: RootState) => state.stats.baseStats?.currentTarget);
   const { showActions } = useSelector((state: RootState) => state.oven);
   const [{ pkh: userAddress }] = useWallet();
   const { data: ovenData, isLoading } = useQuery<Oven[], AxiosError, Oven[]>(
@@ -69,11 +82,16 @@ export const MyOvenPage: React.FC = () => {
             ovenData
               .sort((a, b) => b.ovenId - a.ovenId)
               .map((ovenValue, index) => {
+                const { max, remaining } = currentTarget
+                  ? getOvenMaxCtez(ovenValue.tez_balance, ovenValue.ctez_outstanding, currentTarget)
+                  : { max: 0, remaining: 0 };
                 return (
                   <Grid item key={`${ovenValue.address}-${index}`}>
                     <OvenCard
                       {...ovenValue}
-                      totalOvens={ovenData.length}
+                      maxCtez={max}
+                      mintableCtez={remaining}
+                      imageId={getOvenImageId(ovenValue.ovenId, ovenData.length)}
                       action={() => {
                         dispatch(OvenSlice.actions.setOven(toSerializeableOven(ovenValue)));
                         dispatch(OvenSlice.actions.toggleActions(true));

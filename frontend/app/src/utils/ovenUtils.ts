@@ -25,6 +25,25 @@ export const toOven = (oven: OvenSerializable): Oven => {
   };
 };
 
-export const maxCTez = (tez: number, target: number): string => {
-  return (tez / (target * (16 / 15))).toFixed(6);
+export const maxCTez = (tez: number, target: number): number => {
+  return Number((tez / (target * (16 / 15))).toFixed(6));
+};
+
+/**
+ * For scaling image ids
+ *
+ * */
+export const scaleBetween = (
+  unscaledNum: number,
+  minAllowed: number,
+  maxAllowed: number,
+  min: number,
+  max: number,
+): number => {
+  const adjustedMax = min === max ? max + 1 : max;
+  const num = Math.ceil(
+    ((maxAllowed - minAllowed) * (unscaledNum - min)) / (adjustedMax - min) + minAllowed,
+  );
+  if (num % 1 === 0) return num;
+  return scaleBetween(num, minAllowed, maxAllowed, min, adjustedMax);
 };
