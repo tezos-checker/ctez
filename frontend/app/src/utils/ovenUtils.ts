@@ -1,5 +1,6 @@
 import { BigNumber } from 'bignumber.js';
 import { Oven, OvenSerializable } from '../interfaces';
+import { TOTAL_OVEN_IMAGES } from './globals';
 
 export const getLastOvenId = (userAddress: string, cTezAddress: string): number => {
   return Number(localStorage.getItem(`oven:${userAddress}:${cTezAddress}:last`) ?? 0);
@@ -46,4 +47,15 @@ export const scaleBetween = (
   );
   if (num % 1 === 0) return num;
   return scaleBetween(num, minAllowed, maxAllowed, min, adjustedMax);
+};
+
+
+export const getOvenImageId = (ovenId: number, totalOvens: number): number => {
+  return ovenId > TOTAL_OVEN_IMAGES ? scaleBetween(ovenId, 1, 5, 6, totalOvens) : ovenId;
+};
+
+export const getOvenMaxCtez = (ovenTez: BigNumber, currentCtez: BigNumber, target: string) => {
+  const max = maxCTez(ovenTez.shiftedBy(-6).toNumber(), Number(target));
+  const remaining = max - currentCtez.shiftedBy(-6).toNumber();
+  return { max, remaining: Number(remaining.toFixed(6)) };
 };

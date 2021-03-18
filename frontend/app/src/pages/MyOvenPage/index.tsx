@@ -1,6 +1,5 @@
 import { CircularProgress, Grid, Box } from '@material-ui/core';
 import { useSelector, useDispatch } from 'react-redux';
-import BigNumber from 'bignumber.js';
 import { AxiosError } from 'axios';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -14,18 +13,7 @@ import { useWallet } from '../../wallet/hooks';
 import { RootState } from '../../redux/rootReducer';
 import { OvenSlice } from '../../redux/slices/OvenSlice';
 import { Oven, UserOvenStats } from '../../interfaces';
-import { maxCTez, scaleBetween, toSerializeableOven } from '../../utils/ovenUtils';
-import { TOTAL_OVEN_IMAGES } from '../../utils/globals';
-
-const getOvenImageId = (ovenId: number, totalOvens: number): number => {
-  return ovenId > TOTAL_OVEN_IMAGES ? scaleBetween(ovenId, 1, 5, 6, totalOvens) : ovenId;
-};
-
-const getOvenMaxCtez = (ovenTez: BigNumber, currentCtez: BigNumber, target: string) => {
-  const max = maxCTez(ovenTez.shiftedBy(-6).toNumber(), Number(target));
-  const remaining = max - currentCtez.shiftedBy(-6).toNumber();
-  return { max, remaining: Number(remaining.toFixed(6)) };
-};
+import { getOvenImageId, getOvenMaxCtez, toSerializeableOven } from '../../utils/ovenUtils';
 
 export const MyOvenPage: React.FC = () => {
   const { t } = useTranslation(['common', 'header']);
