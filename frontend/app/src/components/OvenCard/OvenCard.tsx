@@ -16,7 +16,6 @@ import { Typography } from '../Typography';
 interface OvenCardProps extends Oven {
   imageId: number;
   maxCtez: number;
-  mintableCtez: number;
   action?: () => void | Promise<void>;
 }
 
@@ -44,17 +43,18 @@ export const OvenCard: React.FC<OvenCardProps> = ({
   imageId,
   action,
   maxCtez,
-  mintableCtez,
 }) => {
   const classes = useStyles();
   const { t } = useTranslation(['common']);
-
+  const maxMintableCtez = maxCtez < 0 ? 0 : maxCtez;
+  const outStandingCtez = ctez_outstanding?.shiftedBy(-6).toNumber() ?? 0;
+  const ovenBalance = tez_balance?.shiftedBy(-6).toNumber() ?? 0;
   return (
     <Card className={classes.root}>
       <CardHeader
         avatar={<Identicon seed={address} type="tzKtCat" />}
         title={<Address address={address} trimSize="medium" trim />}
-        subheader={`${t('ovenBalance')}: ${tez_balance?.shiftedBy(-6).toNumber() ?? 0}`}
+        subheader={`${t('ovenBalance')}: ${ovenBalance}`}
       />
       <CardMedia className={classes.media} image={`/img/ovens/${imageId}.jpeg`} title="My Oven" />
       <CardContent>
@@ -68,19 +68,16 @@ export const OvenCard: React.FC<OvenCardProps> = ({
           )}
           <Grid item>
             <Typography size="body1" component="span" color="textSecondary">
-              {t('outstandingCTez')}: {ctez_outstanding?.shiftedBy(-6).toNumber() ?? 0}
+              {t('outstandingCTez')}: {outStandingCtez}
             </Typography>
           </Grid>
-          <Grid item>
-            <Typography size="body1" component="span" color="textSecondary">
-              {t('maxCtez')}: {maxCtez < 0 ? 0 : maxCtez}
-            </Typography>
-          </Grid>
-          <Grid item>
-            <Typography size="body1" component="span" color="textSecondary">
-              {t('mintableCtez')}: {mintableCtez < 0 ? 0 : mintableCtez}
-            </Typography>
-          </Grid>
+          {maxMintableCtez > 0 && (
+            <Grid item>
+              <Typography size="body1" component="span" color="textSecondary">
+                {t('currentUtilization')}: {((outStandingCtez / maxMintableCtez) * 100).toFixed(2)}%
+              </Typography>
+            </Grid>
+          )}
         </Grid>
       </CardContent>
       <CardActions disableSpacing>

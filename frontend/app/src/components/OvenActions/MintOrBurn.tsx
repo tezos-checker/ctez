@@ -9,6 +9,8 @@ import { mintOrBurn, cTezError } from '../../contracts/ctez';
 import { RootState } from '../../redux/rootReducer';
 import FormikTextField from '../TextField';
 import { CTezIcon } from '../CTezIcon/CTezIcon';
+import { getOvenMaxCtez } from '../../utils/ovenUtils';
+import Typography from '../Typography';
 
 interface MintOrBurnProps {
   type: 'mint' | 'repay';
@@ -25,14 +27,24 @@ const PaperStyled = styled(Paper)`
 export const MintOrBurn: React.FC<MintOrBurnProps> = ({ type }) => {
   const { t } = useTranslation(['common']);
   const { addToast } = useToasts();
-  const ovenId = useSelector((state: RootState) => state.oven.oven?.ovenId);
-  const initialValues: MintBurnForm = {
-    amount: 0,
+  const oven = useSelector((state: RootState) => state.oven.oven);
+  const { ovenId, tez_balance, ctez_outstanding } = oven || {
+    ovenId: 0,
+    tez_balance: '0',
+    ctez_outstanding: '0',
   };
-
+  const currentTarget = useSelector((state: RootState) => state.stats.baseStats?.currentTarget);
+  const { max, remaining } = currentTarget
+    ? getOvenMaxCtez(tez_balance, ctez_outstanding, currentTarget)
+    : { max: 0, remaining: 0 };
+  const maxMintableCtez = max < 0 ? 0 : max;
+  const remainingMintableCtez = remaining < 0 ? 0 : remaining;
   const validationSchema = Yup.object().shape({
     amount: Yup.number().required(t('required')),
   });
+  const initialValues: MintBurnForm = {
+    amount: type === 'mint' ? remainingMintableCtez : 0,
+  };
 
   const handleFormSubmit = async (data: MintBurnForm) => {
     if (ovenId) {
@@ -61,8 +73,9 @@ export const MintOrBurn: React.FC<MintOrBurnProps> = ({ type }) => {
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={handleFormSubmit}
+        enableReinitialize
       >
-        {({ isSubmitting, isValid, dirty }) => (
+        {({ isSubmitting, isValid }) => (
           <PaperStyled>
             <Form>
               <Grid
@@ -72,6 +85,16 @@ export const MintOrBurn: React.FC<MintOrBurnProps> = ({ type }) => {
                 alignContent="center"
                 justifyContent="center"
               >
+                <Grid item>
+                  <Typography size="body1" component="span" color="textSecondary">
+                    {t('maxCtez')}: {maxMintableCtez}
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  <Typography size="body1" component="span" color="textSecondary">
+                    {t('mintableCtez')}: {remainingMintableCtez}
+                  </Typography>
+                </Grid>
                 <Grid item>
                   <Field
                     component={FormikTextField}
@@ -92,7 +115,7 @@ export const MintOrBurn: React.FC<MintOrBurnProps> = ({ type }) => {
                   <Button
                     variant="contained"
                     type="submit"
-                    disabled={isSubmitting || !isValid || !dirty}
+                    disabled={isSubmitting || !isValid}
                     fullWidth
                   >
                     {t('submit')}

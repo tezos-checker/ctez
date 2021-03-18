@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import styled from '@emotion/styled';
 import { IconButton, Grid, Box } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
-import { Typography } from '../Typography';
 import { SignIn } from '../SignIn/SignIn';
 import { NavigationDrawer } from '../NavigationDrawer/NavigationDrawer';
 import { CTezIcon } from '../CTezIcon/CTezIcon';

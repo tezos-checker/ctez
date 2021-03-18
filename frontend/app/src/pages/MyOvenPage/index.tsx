@@ -70,15 +70,18 @@ export const MyOvenPage: React.FC = () => {
             ovenData
               .sort((a, b) => b.ovenId - a.ovenId)
               .map((ovenValue, index) => {
-                const { max, remaining } = currentTarget
-                  ? getOvenMaxCtez(ovenValue.tez_balance, ovenValue.ctez_outstanding, currentTarget)
-                  : { max: 0, remaining: 0 };
+                const { max } = currentTarget
+                  ? getOvenMaxCtez(
+                      ovenValue.tez_balance.toString(),
+                      ovenValue.ctez_outstanding.toString(),
+                      currentTarget,
+                    )
+                  : { max: 0 };
                 return (
                   <Grid item key={`${ovenValue.address}-${index}`}>
                     <OvenCard
                       {...ovenValue}
                       maxCtez={max}
-                      mintableCtez={remaining}
                       imageId={getOvenImageId(ovenValue.ovenId, ovenData.length)}
                       action={() => {
                         dispatch(OvenSlice.actions.setOven(toSerializeableOven(ovenValue)));
