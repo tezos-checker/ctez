@@ -59,5 +59,6 @@
   "maxCtez": "Max mintable ctez",
   "mintableCtez": "Remaining mintable ctez",
   "annualDriftPastWeek": "Annual Drift (past week)",
-  "currentUtilization": "Current Utilization"
+  "currentUtilization": "Current Utilization",
+  "stats": "Statistics"
 }

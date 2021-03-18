@@ -27,7 +27,7 @@ interface PageLocationStateParams {
 }
 
 export const Page: React.FC<PageProps> = ({ title, children, description, showStats = false }) => {
-  const { state } = useLocation<PageLocationStateParams>();
+  const { state, pathname } = useLocation<PageLocationStateParams>();
   const history = useHistory();
   const { i18n } = useTranslation();
   const lang = i18n.language || window.localStorage.i18nextLng || DEFAULT_LANGUAGE;
@@ -40,7 +40,9 @@ export const Page: React.FC<PageProps> = ({ title, children, description, showSt
         {description && <meta name="description" content={description} />}
       </Helmet>
       <Header title={APP_NAME} onClick={() => history.push('/')} />
-      <Container disableGutters>{showStats && <OvenStats />}</Container>
+      <Container disableGutters>
+        {showStats && <OvenStats type={pathname.includes('uniswap') ? 'uniswap' : 'oven'} />}
+      </Container>
       {title && (
         <ContainerStyled>
           <IconButton
