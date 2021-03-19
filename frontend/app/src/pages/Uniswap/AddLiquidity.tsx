@@ -13,6 +13,7 @@ import { addLiquidity, cfmmError } from '../../contracts/cfmm';
 import { FormikDateTimePicker } from '../../components/DateTimePicker';
 import { TezosIcon } from '../../components/TezosIcon';
 import { CTezIcon } from '../../components/CTezIcon/CTezIcon';
+import { logger } from '../../utils/logger';
 
 const PaperStyled = styled(Paper)`
   padding: 2em;
@@ -50,7 +51,7 @@ const AddLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
           });
         }
       } catch (error) {
-        console.log(error);
+        logger.error(error);
         const errorText = cfmmError[error.data[1].with.int as number] || 'Transaction Failed';
         addToast(errorText, {
           appearance: 'error',

@@ -21,6 +21,7 @@ import {
   MultiInputTextFieldOption,
 } from '../../components/MultiInputTextField/MultiInputTextField';
 import { FormikRadioGroup } from '../../components/FormikRadioGroup/FormikRadioGroup';
+import { logger } from '../../utils/logger';
 
 interface CreateVaultForm {
   delegate: string;
@@ -117,7 +118,7 @@ const CreateOvenComponent: React.FC<WithTranslation> = ({ t }) => {
           });
         }
       } catch (error) {
-        console.log(error);
+        logger.error(error);
         const errorText = cTezError[error.data[1].with.int as number] || 'Transaction Failed';
         addToast(errorText, {
           appearance: 'error',

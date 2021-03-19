@@ -12,6 +12,7 @@ import { getBeaconInstance, isWalletConnected } from './wallet';
 import { AppRouter } from './router';
 import { initCTez } from './contracts/ctez';
 import { initCfmm } from './contracts/cfmm';
+import { logger } from './utils/logger';
 
 const queryClient = new QueryClient();
 
@@ -42,7 +43,7 @@ const App: React.FC = () => {
         CTEZ_ADDRESS && (await initCTez(CTEZ_ADDRESS));
         CFMM_ADDRESS && (await initCfmm(CFMM_ADDRESS));
       } catch (error) {
-        console.log(error);
+        logger.error(error);
       }
     };
     setup();

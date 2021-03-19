@@ -2,6 +2,7 @@ import { BeaconWallet } from '@taquito/beacon-wallet';
 import { BeaconMessageType, NetworkType } from '@airgap/beacon-sdk';
 import { WalletInterface } from '../interfaces/wallet';
 import { NETWORK } from '../utils/globals';
+import { logger } from '../utils/logger';
 
 export const setConnected = (): void => {
   localStorage.setItem('wallet-connected', 'true');
@@ -19,7 +20,7 @@ const connectBeacon = async (
     await wallet.requestPermissions({ network: { type: network } });
     return true;
   } catch (error) {
-    console.log(error);
+    logger.error(error);
   }
   return false;
 };
@@ -58,6 +59,6 @@ export const getBeaconInstance = async (
       pkh: connect ? await wallet.getPKH() : undefined,
     };
   } catch (error) {
-    console.log(error);
+    logger.error(error);
   }
 };

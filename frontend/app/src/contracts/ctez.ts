@@ -1,7 +1,16 @@
 import { WalletContract } from '@taquito/taquito';
 import BigNumber from 'bignumber.js';
-import { CTezStorage, Depositor, EditDepositorOps, ErrorType, Oven } from '../interfaces';
+import {
+  CTezStorage,
+  Depositor,
+  depositors,
+  EditDepositorOps,
+  ErrorType,
+  oven,
+  Oven,
+} from '../interfaces';
 import { CTEZ_ADDRESS } from '../utils/globals';
+import { logger } from '../utils/logger';
 import { getLastOvenId, saveLastOven } from '../utils/ovenUtils';
 import { getTezosInstance } from './client';
 import { executeMethod, initContract } from './utils';
@@ -99,9 +108,9 @@ export const mintOrBurn = async (ovenId: number, quantity: number): Promise<stri
   return hash;
 };
 
-export const getOvenDelegate = async (oven: Oven): Promise<string | null> => {
+export const getOvenDelegate = async (userOven: Oven): Promise<string | null> => {
   const tezos = getTezosInstance();
-  const baker = await tezos.rpc.getDelegate(oven.address);
+  const baker = await tezos.rpc.getDelegate(userOven.address);
   return baker;
 };
 
@@ -110,12 +119,12 @@ export const prepareOvenCall = async (
   ovenId: number,
   userAddress: string,
 ): Promise<Oven> => {
-  const oven = await storage.ovens.get({
+  const userOven = await storage.ovens.get({
     id: ovenId,
     owner: userAddress,
   });
-  const baker = oven ? await getOvenDelegate(oven) : null;
-  return { ...oven, baker, ovenId };
+  const baker = userOven ? await getOvenDelegate(userOven) : null;
+  return { ...userOven, baker, ovenId };
 };
 
 export const getOvens = async (userAddress: string): Promise<Oven[] | undefined> => {
@@ -132,8 +141,14 @@ export const getOvens = async (userAddress: string): Promise<Oven[] | undefined>
     const allOvenData = await Promise.all(ovens);
     return allOvenData;
   } catch (error) {
-    console.log(error);
+    logger.error(error);
   }
+};
+
+export const getOvenDepositor = async (ovenAddress: string): Promise<depositors> => {
+  const ovenContract = await initContract(ovenAddress);
+  const ovenStorage: oven = await ovenContract.storage();
+  return ovenStorage.depositors;
 };
 
 export const cTezError: ErrorType = {
@@ -151,4 +166,10 @@ export const cTezError: ErrorType = {
   11: 'OVEN NOT UNDERCOLLATERALIZED',
   12: 'EXCESSIVE CTEZ MINTING',
   13: 'CALLER MUST BE CFMM',
+  1001: 'WITHDRAW CAN ONLY BE CALLED FROM MAIN CONTRACT',
+  1002: 'ONLY OWNER CAN DELEGATE',
+  1003: 'CANNOT FIND REGISTER DEPOSIT ENTRYPOINT',
+  1004: 'UNAUTHORIZED DEPOSITOR',
+  1005: 'SET ANY OFF FIRST',
+  1006: 'ONLY OWNER CAN EDIT DEPOSITORS',
 };

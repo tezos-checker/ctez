@@ -10,6 +10,7 @@ import { cTezError, deposit } from '../../contracts/ctez';
 import FormikTextField from '../TextField';
 import { RootState } from '../../redux/rootReducer';
 import TezosIcon from '../TezosIcon';
+import { logger } from '../../utils/logger';
 
 interface DepositForm {
   amount: number;
@@ -42,7 +43,7 @@ export const Deposit: React.FC = () => {
           });
         }
       } catch (error) {
-        console.log(error);
+        logger.error(error);
         const errorText = cTezError[error.data[1].with.int as number] || 'Transaction Failed';
         addToast(errorText, {
           appearance: 'error',

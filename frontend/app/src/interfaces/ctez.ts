@@ -27,10 +27,9 @@ export enum Depositor {
   whitelist = 'whitelist',
 }
 
-/**
- * TODO: Update to actual type
- */
-export type depositors = any;
+export type depositors = string[] | { any: symbol };
+
+export type DepositorStatus = 'denyEveryone' | 'allowEveryone' | 'whitelist';
 
 export interface oven_handle {
   id: BigNumber;
