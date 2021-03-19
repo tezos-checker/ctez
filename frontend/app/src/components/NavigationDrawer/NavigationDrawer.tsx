@@ -92,9 +92,10 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({ open, handle
   return (
     <Drawer
       className={classes.drawer}
-      variant="persistent"
+      variant="temporary"
       anchor="left"
       open={open}
+      onBackdropClick={handleDrawerClose}
       classes={{
         paper: classes.drawerPaper,
       }}
