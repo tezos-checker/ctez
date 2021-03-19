@@ -2,12 +2,12 @@
 
 (fun (p , s : oven_parameter * oven_storage) -> (
         (* error codes *)
-        let error_WITHDRAW_CAN_ONLY_BE_CALLED_FROM_MAIN_CONTRACT = 1n in
-        let error_ONLY_OWNER_CAN_DELEGATE = 2n in
-        let error_CANNOT_FIND_REGISTER_DEPOSIT_ENTRYPOINT = 3n in
-        let error_UNAUTHORIZED_DEPOSITOR = 4n in
-        let error_SET_ANY_OFF_FIRST = 5n in
-        let error_ONLY_OWNER_CAN_EDIT_DEPOSITORS = 6n in
+        let error_WITHDRAW_CAN_ONLY_BE_CALLED_FROM_MAIN_CONTRACT = 1001n in
+        let error_ONLY_OWNER_CAN_DELEGATE = 1002n in
+        let error_CANNOT_FIND_REGISTER_DEPOSIT_ENTRYPOINT = 1003n in
+        let error_UNAUTHORIZED_DEPOSITOR = 1004n in
+        let error_SET_ANY_OFF_FIRST = 1005n in
+        let error_ONLY_OWNER_CAN_EDIT_DEPOSITORS = 1006n in
         (match p with
         (* Withdraw form the oven, can only be called from the main contract. *)
         | Oven_withdraw x ->
