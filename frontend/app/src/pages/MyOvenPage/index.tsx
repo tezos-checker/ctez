@@ -18,7 +18,7 @@ import { getOvenImageId, getOvenMaxCtez, toSerializeableOven } from '../../utils
 export const MyOvenPage: React.FC = () => {
   const { t } = useTranslation(['common', 'header']);
   const dispatch = useDispatch();
-  const currentTarget = useSelector((state: RootState) => state.stats.baseStats?.currentTarget);
+  const currentTarget = useSelector((state: RootState) => state.stats.baseStats?.originalTarget);
   const { showActions } = useSelector((state: RootState) => state.oven);
   const [{ pkh: userAddress }] = useWallet();
   const { data: ovenData, isLoading } = useQuery<Oven[], AxiosError, Oven[]>(

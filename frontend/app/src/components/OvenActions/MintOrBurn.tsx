@@ -34,7 +34,7 @@ export const MintOrBurn: React.FC<MintOrBurnProps> = ({ type }) => {
     tez_balance: '0',
     ctez_outstanding: '0',
   };
-  const currentTarget = useSelector((state: RootState) => state.stats.baseStats?.currentTarget);
+  const currentTarget = useSelector((state: RootState) => state.stats.baseStats?.originalTarget);
   const { max, remaining } = currentTarget
     ? getOvenMaxCtez(tez_balance, ctez_outstanding, currentTarget)
     : { max: 0, remaining: 0 };

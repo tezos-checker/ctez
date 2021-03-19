@@ -77,7 +77,7 @@ export const Header: React.FC<HeaderProps> = ({ onClick, stats }) => {
             </Grid>
           </Grid>
         </HeaderActionBox>
-        <StatsBar stats={stats} />
+        {stats.length > 0 && <StatsBar stats={stats} />}
       </header>
       <NavigationDrawer open={navDrawer} handleDrawerClose={handleNavDrawerClose} />
     </HeaderContainer>

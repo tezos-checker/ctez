@@ -27,6 +27,7 @@ export const getBaseStats = async (): Promise<BaseStats> => {
   const annualDriftPastWeek = (currentTarget / prevTarget) ** 52.1786 - 1.0;
   const totalLiquidity = (cfmmStorage.cashPool.toNumber() * 2) / 1e6;
   return {
+    originalTarget: currentTarget,
     currentTarget: currentTarget.toFixed(6),
     currentPrice: currentPrice.toFixed(6),
     premium: (premium * 100).toFixed(2),

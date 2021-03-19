@@ -27,7 +27,10 @@ export const toOven = (oven: OvenSerializable): Oven => {
 };
 
 export const maxCTez = (tez: number, target: number): number => {
-  return Number((tez / (target * (16 / 15))).toFixed(6));
+  const newTez = tez * 1e6;
+  const newTarget = target * 2 ** 48;
+  const result = (newTez * 15) / (newTarget / 2 ** 44);
+  return Number((Math.floor(result) / 1e6).toFixed(6));
 };
 
 /**
@@ -53,8 +56,8 @@ export const getOvenImageId = (ovenId: number, totalOvens: number): number => {
   return ovenId > TOTAL_OVEN_IMAGES ? scaleBetween(ovenId, 1, 5, 6, totalOvens) : ovenId;
 };
 
-export const getOvenMaxCtez = (ovenTez: string, currentCtez: string, target: string) => {
-  const max = maxCTez(new BigNumber(ovenTez).shiftedBy(-6).toNumber(), Number(target));
+export const getOvenMaxCtez = (ovenTez: string, currentCtez: string, target: number) => {
+  const max = maxCTez(new BigNumber(ovenTez).shiftedBy(-6).toNumber(), target);
   const remaining = max - new BigNumber(currentCtez).shiftedBy(-6).toNumber();
   return { max, remaining: Number(remaining.toFixed(6)) };
 };
