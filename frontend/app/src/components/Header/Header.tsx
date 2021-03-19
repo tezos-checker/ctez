@@ -6,8 +6,16 @@ import { SignIn } from '../SignIn/SignIn';
 import { NavigationDrawer } from '../NavigationDrawer/NavigationDrawer';
 import { CTezIcon } from '../CTezIcon/CTezIcon';
 
-export interface HeaderProps {
+export interface StatItem {
   title: string;
+  value: number | string;
+}
+
+export interface StatsBarProps {
+  stats: StatItem[];
+}
+
+export interface HeaderProps extends StatsBarProps {
   onClick?: () => void | Promise<void>;
 }
 
@@ -17,43 +25,32 @@ const HeaderActionBox = styled(Box)`
   display: flex;
   align-items: center;
   justify-content: space-between;
-
-  &h1 {
-    font-weight: 900;
-    font-size: 20px;
-    line-height: 1.5;
-    margin: 6px 0 6px 10px;
-    display: inline-block;
-    vertical-align: top;
-  }
 `;
 
 const HeaderContainer = styled.div`
-  .wrapper {
-    font-family: 'Nunito Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    padding: 15px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
   svg {
     display: inline-block;
     vertical-align: top;
   }
-
-  h1 {
-    font-weight: 900;
-    font-size: 20px;
-    line-height: 1;
-    margin: 6px 0 6px 10px;
-    display: inline-block;
-    vertical-align: top;
-  }
 `;
 
-export const Header: React.FC<HeaderProps> = ({ title, onClick }) => {
+export const StatsBar: React.FC<StatsBarProps> = ({ stats }) => {
+  return (
+    <Box p={2} color="#fff" sx={{ backgroundColor: 'rgba(0,0,0,0.4)' }}>
+      <Grid container spacing={2} alignItems="center" justifyContent="center">
+        {stats.map((item, index) => {
+          return (
+            <Grid item key={`${item.title}-${index}`}>
+              {item.title}: {item.value}
+            </Grid>
+          );
+        })}
+      </Grid>
+    </Box>
+  );
+};
+
+export const Header: React.FC<HeaderProps> = ({ onClick, stats }) => {
   const [navDrawer, setNavDrawer] = useState(false);
   const handleNavDrawerClose = () => setNavDrawer(false);
   return (
@@ -80,6 +77,7 @@ export const Header: React.FC<HeaderProps> = ({ title, onClick }) => {
             </Grid>
           </Grid>
         </HeaderActionBox>
+        <StatsBar stats={stats} />
       </header>
       <NavigationDrawer open={navDrawer} handleDrawerClose={handleNavDrawerClose} />
     </HeaderContainer>

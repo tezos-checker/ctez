@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, IconButton } from '@material-ui/core';
 import { ArrowBack } from '@material-ui/icons';
+import { AxiosError } from 'axios';
+import { useQuery } from 'react-query';
+import { useDispatch } from 'react-redux';
 import styled from '@emotion/styled';
 import { Helmet } from 'react-helmet-async';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -9,11 +12,24 @@ import { DEFAULT_LANGUAGE } from '../../i18n';
 import { APP_NAME, NETWORK } from '../../utils/globals';
 import { Header } from '../Header';
 import { Typography } from '../Typography';
-import { OvenStats } from '../OvenStats/OvenStats';
+
+import { getBaseStats } from '../../api/contracts';
+import { BaseStats } from '../../interfaces';
+import { StatsSlice } from '../../redux/slices/StatsSlice';
+import { StatItem } from '../Header/Header';
 
 const ContainerStyled = styled(Container)`
   padding-top: 1em;
 `;
+
+const UNISWAP_STATS = ['totalLiquidity'];
+const OVEN_STATS = [
+  'currentTarget',
+  'currentPrice',
+  'premium',
+  'currentAnnualDrift',
+  'annualDriftPastWeek',
+];
 
 export interface PageProps {
   title?: string;
@@ -29,9 +45,35 @@ interface PageLocationStateParams {
 export const Page: React.FC<PageProps> = ({ title, children, description, showStats = false }) => {
   const { state, pathname } = useLocation<PageLocationStateParams>();
   const history = useHistory();
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation(['common']);
   const lang = i18n.language || window.localStorage.i18nextLng || DEFAULT_LANGUAGE;
   const pageTitle = title ? `${title} - ${APP_NAME} - ${NETWORK}` : `${APP_NAME} - ${NETWORK}`;
+
+  const [statsData, setStatsData] = useState<StatItem[]>([]);
+  const dispatch = useDispatch();
+  const { data: stats, isLoading } = useQuery<BaseStats, AxiosError, BaseStats>(
+    ['baseStats'],
+    async () => {
+      return getBaseStats();
+    },
+  );
+
+  useEffect(() => {
+    if (stats) {
+      dispatch(StatsSlice.actions.setBaseStats(stats));
+      const keys = pathname.includes('uniswap') ? [...UNISWAP_STATS, ...OVEN_STATS] : OVEN_STATS;
+      const data = keys.map((item) => {
+        let value = item === 'totalLiquidity' ? `ꜩ ${stats[item]}` : stats[item];
+        value = item === 'premium' || item.includes('Drift') ? `${value}%` : value;
+        return {
+          title: t(item),
+          value,
+        };
+      });
+      setStatsData(data);
+    }
+  }, [stats]);
+
   return (
     <>
       <Helmet>
@@ -39,10 +81,7 @@ export const Page: React.FC<PageProps> = ({ title, children, description, showSt
         <title>{pageTitle}</title>
         {description && <meta name="description" content={description} />}
       </Helmet>
-      <Header title={APP_NAME} onClick={() => history.push('/')} />
-      <Container disableGutters>
-        {showStats && <OvenStats type={pathname.includes('uniswap') ? 'uniswap' : 'oven'} />}
-      </Container>
+      <Header onClick={() => history.push('/')} stats={statsData} />
       {title && (
         <ContainerStyled>
           <IconButton
