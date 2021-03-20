@@ -1,11 +1,11 @@
 import { ComponentRoute } from '../interfaces/router';
 import { MyOvenPage } from '../pages/MyOvenPage';
-import { Uniswap } from '../pages/Uniswap';
-import { AddLiquidityPage } from '../pages/Uniswap/AddLiquidity';
-import { CashToTokenPage } from '../pages/Uniswap/CashToToken';
+import { Buy_sell } from '../pages/Buy_sell';
+import { AddLiquidityPage } from '../pages/Buy_sell/AddLiquidity';
+import { CashToTokenPage } from '../pages/Buy_sell/CashToToken';
 import { CreateOvenPage } from '../pages/CreateOven/CreateOven';
-import { RemoveLiquidityPage } from '../pages/Uniswap/RemoveLiquidity';
-import { TokenToCashPage } from '../pages/Uniswap/TokenToCash';
+import { RemoveLiquidityPage } from '../pages/Buy_sell/RemoveLiquidity';
+import { TokenToCashPage } from '../pages/Buy_sell/TokenToCash';
 
 export const routes: ComponentRoute[] = [
   {
@@ -29,8 +29,8 @@ export const routes: ComponentRoute[] = [
     path: '/create',
   },
   {
-    component: Uniswap,
-    path: '/uniswap',
+    component: Buy_sell,
+    path: '/buy_sell',
   },
   {
     component: MyOvenPage,

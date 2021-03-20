@@ -22,7 +22,7 @@ const ContainerStyled = styled(Container)`
   padding-top: 1em;
 `;
 
-const UNISWAP_STATS = ['totalLiquidity'];
+const BUY_SELL_STATS = ['totalLiquidity'];
 const OVEN_STATS = [
   'currentTarget',
   'currentPrice',
@@ -61,7 +61,7 @@ export const Page: React.FC<PageProps> = ({ title, children, description, showSt
   useEffect(() => {
     if (stats) {
       dispatch(StatsSlice.actions.setBaseStats(stats));
-      const keys = pathname.includes('uniswap') ? [...UNISWAP_STATS, ...OVEN_STATS] : OVEN_STATS;
+      const keys = pathname.includes('buy_sell') ? [...BUY_SELL_STATS, ...OVEN_STATS] : OVEN_STATS;
       const data = keys.map((item) => {
         let value = item === 'totalLiquidity' ? `ꜩ ${stats[item]}` : stats[item];
         value = item === 'premium' || item.includes('Drift') ? `${value}%` : value;
