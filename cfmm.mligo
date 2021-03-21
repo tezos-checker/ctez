@@ -4,20 +4,20 @@
 //#define CASH_IS_FA12
 
 (* If the token uses the fa2 standard *)
-//#define TOKEN_IS_FA2 
+//#define TOKEN_IS_FA2
 (* To support baking *)
-//#define HAS_BAKER 
+//#define HAS_BAKER
 (* To push prices to some consumer contract once per block *)
 //#define ORACLE
+
 
 (* ============================================================================
  * Entrypoints
  * ============================================================================ *)
- 
 
 type add_liquidity =
   [@layout:comb]
-  { owner : address ; (* address that will own the minted lqt *)    
+  { owner : address ; (* address that will own the minted lqt *)
     minLqtMinted : nat ; (* minimum number of lqt that must be minter *)
     maxTokensDeposited : nat ; (* maximum number of tokens that may be deposited *)
 #if !CASH_IS_TEZ
@@ -73,7 +73,7 @@ type set_baker =
 
 (* getbalance update types for fa12 and fa2 *)
 type update_fa12_pool = nat
-type update_fa2_pool = ((address * nat)  * nat) list 
+type update_fa2_pool = ((address * nat)  * nat) list
 
 #if TOKEN_IS_FA2
 type update_token_pool_internal = update_fa2_pool
@@ -83,11 +83,11 @@ type update_token_pool_internal = update_fa12_pool
 
 #if CASH_IS_FA2
 type update_cash_pool_internal = update_fa2_pool
-#endif 
+#endif
 
 #if CASH_IS_FA12
 type update_cash_pool_internal = update_fa12_pool
-#endif 
+#endif
 
 type entrypoint =
 | AddLiquidity    of add_liquidity
@@ -120,7 +120,7 @@ type storage =
     lqtTotal : nat ;
     pendingPoolUpdates : nat ;
 #if HAS_BAKER
-    freezeBaker : bool ;    
+    freezeBaker : bool ;
     manager : address ;
     new_manager : address ;
 #endif
@@ -151,14 +151,14 @@ type balance_of = ((address * token_id) list * ((((address * nat) * nat) list) c
 (* FA1.2 *)
 type get_balance = address * (nat contract)
 
-#if TOKEN_IS_FA2 
+#if TOKEN_IS_FA2
 type token_contract_transfer = (address * (address * (token_id * nat)) list) list
 #else
 (*  FA1.2 *)
 type token_contract_transfer = address * (address * nat)
 #endif
 
-#if CASH_IS_FA2 
+#if CASH_IS_FA2
 type cash_contract_transfer = (address * (address * (token_id * nat)) list) list
 #else
 (* FA12 *)
@@ -191,7 +191,7 @@ type mintOrBurn =
 [@inline] let error_THE_AMOUNT_OF_TOKENS_WITHDRAWN_MUST_BE_GREATER_THAN_OR_EQUAL_TO_MIN_TOKENS_WITHDRAWN = 13n
 [@inline] let error_CANNOT_BURN_MORE_THAN_THE_TOTAL_AMOUNT_OF_LQT = 14n
 [@inline] let error_TOKEN_POOL_MINUS_TOKENS_WITHDRAWN_IS_NEGATIVE = 15n
-[@inline] let error_CASH_POOL_MINUS_CASH_WITHDRAWN_IS_NEGATIVE = 16n 
+[@inline] let error_CASH_POOL_MINUS_CASH_WITHDRAWN_IS_NEGATIVE = 16n
 [@inline] let error_CASH_POOL_MINUS_CASH_BOUGHT_IS_NEGATIVE = 17n
 [@inline] let error_TOKENS_BOUGHT_MUST_BE_GREATER_THAN_OR_EQUAL_TO_MIN_TOKENS_BOUGHT = 18n
 [@inline] let error_TOKEN_POOL_MINUS_TOKENS_BOUGHT_IS_NEGATIVE = 19n
@@ -230,17 +230,17 @@ type mintOrBurn =
 
  [@inline] let null_address = ("tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU" : address)
 
-(* ============================================================================= 
+(* =============================================================================
  * Functions
  * ============================================================================= *)
 
-(* this is slightly inefficient to inline, but, nice to have a clean stack for 
+(* this is slightly inefficient to inline, but, nice to have a clean stack for
    the entrypoints for the Coq verification *)
 [@inline]
 let mutez_to_natural (a: tez) : nat =  a / 1mutez
 
 [@inline]
-let natural_to_mutez (a: nat): tez = a * 1mutez  
+let natural_to_mutez (a: nat): tez = a * 1mutez
 
 [@inline]
 let is_a_nat (i : int) : nat option = Michelson.is_nat i
@@ -272,15 +272,15 @@ let token_transfer (storage : storage) (from : address) (to_ : address) (token_a
 
 [@inline]
 #if CASH_IS_TEZ
-let cash_transfer (to_ : address) (cash_amount : nat) : operation= 
+let cash_transfer (to_ : address) (cash_amount : nat) : operation=
     (* Cash transfer operation, in the case where CASH_IS_TEZ *)
     let to_contract : unit contract =
       match (Tezos.get_contract_opt to_ : unit contract option) with
       | None -> (failwith error_INVALID_TO_ADDRESS : unit contract)
       | Some c -> c in
-      Tezos.transaction () (natural_to_mutez cash_amount) to_contract    
+      Tezos.transaction () (natural_to_mutez cash_amount) to_contract
 #else
-let cash_transfer (storage : storage) (from : address) (to_ : address) (cash_amount : nat) : operation= 
+let cash_transfer (storage : storage) (from : address) (to_ : address) (cash_amount : nat) : operation=
     (* Cash transfer operation, in the case where cash is some fa2 or fa12 token *)
     let cash_contract: cash_contract_transfer contract =
     match (Tezos.get_entrypoint_opt "%transfer" storage.cashAddress : cash_contract_transfer contract option) with
@@ -306,11 +306,11 @@ let cash_transfer (storage : storage) (from : address) (to_ : address) (cash_amo
 
 let add_liquidity (param : add_liquidity) (storage: storage) : result =
     (* Adds liquidity to the contract, mints lqt in exchange for the deposited liquidity. *)
-    let { 
+    let {
           owner = owner ;
           minLqtMinted = minLqtMinted ;
           maxTokensDeposited = maxTokensDeposited ;
-#if !CASH_IS_TEZ        
+#if !CASH_IS_TEZ
           cashDeposited = cashDeposited ;
 #endif
           deadline = deadline } = param in
@@ -339,7 +339,7 @@ let add_liquidity (param : add_liquidity) (storage: storage) : result =
                 cashPool  = storage.cashPool + cashDeposited} in
 
             (* send tokens from sender to self *)
-            let op_token = token_transfer storage Tezos.sender Tezos.self_address tokens_deposited in     
+            let op_token = token_transfer storage Tezos.sender Tezos.self_address tokens_deposited in
 #if !CASH_IS_TEZ
             (* send cash from sender to self *)
             let op_cash = cash_transfer storage Tezos.sender Tezos.self_address cashDeposited in
@@ -348,7 +348,7 @@ let add_liquidity (param : add_liquidity) (storage: storage) : result =
             let op_lqt = mint_or_burn storage owner (int lqt_minted) in
 
             ([op_token;
-#if !CASH_IS_TEZ            
+#if !CASH_IS_TEZ
              op_cash;
 #endif
              op_lqt], storage)
@@ -364,7 +364,7 @@ let remove_liquidity (param : remove_liquidity) (storage : storage) : result =
     if storage.pendingPoolUpdates > 0n then
       (failwith error_PENDING_POOL_UPDATES_MUST_BE_ZERO : result)
     else if Tezos.now >= deadline then
-      (failwith error_THE_CURRENT_TIME_MUST_BE_LESS_THAN_THE_DEADLINE : result)    
+      (failwith error_THE_CURRENT_TIME_MUST_BE_LESS_THAN_THE_DEADLINE : result)
     else if Tezos.amount > 0mutez then
         (failwith error_AMOUNT_MUST_BE_ZERO : result)
     else begin
@@ -377,7 +377,7 @@ let remove_liquidity (param : remove_liquidity) (storage : storage) : result =
         else if tokens_withdrawn < minTokensWithdrawn  then
             (failwith error_THE_AMOUNT_OF_TOKENS_WITHDRAWN_MUST_BE_GREATER_THAN_OR_EQUAL_TO_MIN_TOKENS_WITHDRAWN : result)
         (* Proceed to form the operations and update the storage *)
-        else begin                                                                
+        else begin
             (* calculate lqtTotal, convert int to nat *)
             let new_lqtTotal = match (is_a_nat ( storage.lqtTotal - lqtBurned)) with
                 (* This check should be unecessary, the fa12 logic normally takes care of it *)
@@ -394,9 +394,9 @@ let remove_liquidity (param : remove_liquidity) (storage : storage) : result =
             let op_token = token_transfer storage Tezos.self_address Tezos.sender tokens_withdrawn in
 #if CASH_IS_TEZ
             let op_cash = cash_transfer to_ cash_withdrawn in
-#else            
+#else
             let op_cash = cash_transfer storage Tezos.self_address to_ cash_withdrawn in
-#endif        
+#endif
             let storage = {storage with cashPool = new_cashPool ; lqtTotal = new_lqtTotal ; tokenPool = new_tokenPool} in
             ([op_lqt; op_token; op_cash], storage)
         end
@@ -406,29 +406,29 @@ let remove_liquidity (param : remove_liquidity) (storage : storage) : result =
 let cash_to_token (param : cash_to_token) (storage : storage) =
    let { to_ = to_ ;
          minTokensBought = minTokensBought ;
-#if !CASH_IS_TEZ         
+#if !CASH_IS_TEZ
          cashSold = cashSold ;
-#endif         
+#endif
          deadline = deadline } = param in
 
 #if CASH_IS_TEZ
     let cashSold = mutez_to_natural Tezos.amount in
-#endif    
+#endif
     if storage.pendingPoolUpdates > 0n then
         (failwith error_PENDING_POOL_UPDATES_MUST_BE_ZERO : result)
     else if Tezos.now >= deadline then
-        (failwith error_THE_CURRENT_TIME_MUST_BE_LESS_THAN_THE_DEADLINE : result)    
+        (failwith error_THE_CURRENT_TIME_MUST_BE_LESS_THAN_THE_DEADLINE : result)
     else begin
         (* We don't check that xtzPool > 0, because that is impossible
            unless all liquidity has been removed. *)
         let cashPool = storage.cashPool in
-        let tokens_bought = 
-            (let bought = (cashSold * 997n * storage.tokenPool) / (cashPool * 1000n + (cashSold * 997n)) in
+        let tokens_bought =
+            (let bought = (cashSold * const_fee * storage.tokenPool) / (cashPool * const_fee_denom + (cashSold * const_fee)) in
             if bought < minTokensBought then
                 (failwith error_TOKENS_BOUGHT_MUST_BE_GREATER_THAN_OR_EQUAL_TO_MIN_TOKENS_BOUGHT : nat)
             else
                 bought)
-        in    
+        in
         let new_tokenPool = (match is_nat (storage.tokenPool - tokens_bought) with
             | None -> (failwith error_TOKEN_POOL_MINUS_TOKENS_BOUGHT_IS_NEGATIVE : nat)
             | Some difference -> difference) in
@@ -442,16 +442,16 @@ let cash_to_token (param : cash_to_token) (storage : storage) =
         (* Send tokens_withdrawn from exchange to sender. *)
         let op_token = token_transfer storage Tezos.self_address to_ tokens_bought in
         ([
-#if !CASH_IS_TEZ            
+#if !CASH_IS_TEZ
             op_cash;
-#endif            
+#endif
             op_token], storage)
     end
 
 
 let token_to_cash (param : token_to_cash) (storage : storage) =
     (* Accepts a payment in token and sends cash. *)
-    let { to_ = to_ ;        
+    let { to_ = to_ ;
           tokensSold = tokensSold ;
           minCashBought = minCashBought ;
           deadline = deadline } = param in
@@ -459,22 +459,22 @@ let token_to_cash (param : token_to_cash) (storage : storage) =
     if storage.pendingPoolUpdates > 0n then
         (failwith error_PENDING_POOL_UPDATES_MUST_BE_ZERO : result)
     else if Tezos.now >= deadline then
-        (failwith error_THE_CURRENT_TIME_MUST_BE_LESS_THAN_THE_DEADLINE : result)    
+        (failwith error_THE_CURRENT_TIME_MUST_BE_LESS_THAN_THE_DEADLINE : result)
     else if Tezos.amount > 0mutez then
         (failwith error_AMOUNT_MUST_BE_ZERO : result)
     else
         (* We don't check that tokenPool > 0, because that is impossible
            unless all liquidity has been removed. *)
-        let cash_bought = 
-            let bought = ((tokensSold * 997n * storage.cashPool) / (storage.tokenPool * 1000n + (tokensSold * 997n)))  in
+        let cash_bought =
+            let bought = ((tokensSold * const_fee * storage.cashPool) / (storage.tokenPool * const_fee_denom + (tokensSold * const_fee)))  in
                 if bought < minCashBought then (failwith error_CASH_BOUGHT_MUST_BE_GREATER_THAN_OR_EQUAL_TO_MIN_CASH_BOUGHT : nat) else bought in
 
         let op_token = token_transfer storage Tezos.sender Tezos.self_address tokensSold in
-#if CASH_IS_TEZ        
+#if CASH_IS_TEZ
         let op_cash = cash_transfer to_  cash_bought in
 #else
         let op_cash = cash_transfer storage Tezos.self_address  to_ cash_bought in
-#endif   
+#endif
         let new_cashPool = match is_nat (storage.cashPool - cash_bought) with
             | None -> (failwith error_ASSERTION_VIOLATED_CASH_BOUGHT_SHOULD_BE_LESS_THAN_CASHPOOL : nat)
             | Some n -> n in
@@ -483,13 +483,13 @@ let token_to_cash (param : token_to_cash) (storage : storage) =
         ([op_token; op_cash], storage)
 
 
-let default_ (storage : storage) : result = 
+let default_ (storage : storage) : result =
 (* Entrypoint to allow depositing tez. *)
 #if CASH_IS_TEZ
     (* update cashPool *)
     if storage.pendingPoolUpdates > 0n then
         (failwith error_PENDING_POOL_UPDATES_MUST_BE_ZERO: result)
-    else 
+    else
         let storage = {storage with cashPool = storage.cashPool + mutez_to_natural Tezos.amount } in
         (([] : operation list), storage)
 #else
@@ -501,7 +501,7 @@ let set_baker (param : set_baker) (storage : storage) : result =
     let { baker = baker ;
           freezeBaker = freezeBaker } = param in
     if storage.pendingPoolUpdates > 0n then
-      (failwith error_PENDING_POOL_UPDATES_MUST_BE_ZERO : result)    
+      (failwith error_PENDING_POOL_UPDATES_MUST_BE_ZERO : result)
     else if Tezos.amount > 0mutez then
        (failwith error_AMOUNT_MUST_BE_ZERO  : result)
     else if Tezos.sender <> storage.manager then
@@ -521,21 +521,21 @@ let set_manager (new_manager : address) (storage : storage) : result =
     else
         (([] : operation list), {storage with new_manager = new_manager})
 
-let accept_manager (storage : storage) : result = 
-    if storage.pendingPoolUpdates > 0n then 
+let accept_manager (storage : storage) : result =
+    if storage.pendingPoolUpdates > 0n then
         (failwith error_PENDING_POOL_UPDATES_MUST_BE_ZERO : result)
     else if Tezos.sender <> storage.new_manager then
         (failwith error_ONLY_NEW_MANAGER_CAN_ACCEPT : result)
     else
         (([] : operation list), {storage with manager = storage.new_manager})
-        
-#endif        
+
+#endif
 
 let set_lqt_address (lqtAddress : address) (storage : storage) : result =
     if storage.pendingPoolUpdates > 0n then
         (failwith error_PENDING_POOL_UPDATES_MUST_BE_ZERO : result)
     else if Tezos.amount > 0mutez then
-        (failwith error_AMOUNT_MUST_BE_ZERO : result)            
+        (failwith error_AMOUNT_MUST_BE_ZERO : result)
     else if storage.lqtAddress <> null_address then
         (failwith error_LQT_ADDRESS_ALREADY_SET : result)
     else
@@ -543,13 +543,13 @@ let set_lqt_address (lqtAddress : address) (storage : storage) : result =
 
 let update_pools (storage : storage) : result =
     (* Update the token pool and potentially the cash pool if cash is a token. *)
-    if Tezos.sender <> Tezos.source then 
+    if Tezos.sender <> Tezos.source then
         (failwith error_CALL_NOT_FROM_AN_IMPLICIT_ACCOUNT : result)
     else if Tezos.amount > 0mutez then
       (failwith error_AMOUNT_MUST_BE_ZERO : result)
-    else  
+    else
       let cfmm_update_token_pool_internal : update_token_pool_internal contract = Tezos.self "%updateTokenPoolInternal"  in
-#if !CASH_IS_TEZ 
+#if !CASH_IS_TEZ
       let cfmm_update_cash_pool_internal : update_cash_pool_internal contract = Tezos.self "%updateCashPoolInternal"  in
 #endif
 #if TOKEN_IS_FA2
@@ -573,7 +573,7 @@ let update_pools (storage : storage) : result =
         | Some contract -> contract) in
       let op_cash = Tezos.transaction (Tezos.self_address, cfmm_update_cash_pool_internal) 0mutez cash_get_balance in
       let op_list = op_cash :: op_list in
-#endif      
+#endif
 #if CASH_IS_FA2
       let cash_balance_of : balance_of contract = (match
         (Tezos.get_entrypoint_opt "%balance_of" storage.cashAddress : balance_of contract option) with
@@ -586,7 +586,7 @@ let update_pools (storage : storage) : result =
     let pendingPoolUpdates = 1n in
 #else
     let pendingPoolUpdates = 2n in
-#endif 
+#endif
       (op_list, {storage with pendingPoolUpdates = pendingPoolUpdates})
 
 
@@ -602,31 +602,31 @@ let update_fa2_pool_internal (pool_update : update_fa2_pool) : nat =
         | [] -> (failwith error_INVALID_FA2_BALANCE_RESPONSE : nat)
         | x :: xs -> x.1
 
-let update_token_pool_internal (pool_update : update_token_pool_internal) (storage : storage) : result = 
+let update_token_pool_internal (pool_update : update_token_pool_internal) (storage : storage) : result =
     if (storage.pendingPoolUpdates = 0n or Tezos.sender <> storage.tokenAddress) then
       (failwith error_THIS_ENTRYPOINT_MAY_ONLY_BE_CALLED_BY_GETBALANCE_OF_TOKENADDRESS : result)
-    else 
+    else
 #if TOKEN_IS_FA2
-    let pool = update_fa2_pool_internal (pool_update) in 
+    let pool = update_fa2_pool_internal (pool_update) in
 #else
-    let pool = update_fa12_pool_internal (pool_update) in 
+    let pool = update_fa12_pool_internal (pool_update) in
 #endif
     let pendingPoolUpdates = abs (storage.pendingPoolUpdates - 1n) in
     (([] : operation list), {storage with tokenPool = pool ; pendingPoolUpdates = pendingPoolUpdates})
 
 #if !CASH_IS_TEZ
-let update_cash_pool_internal (pool_update : update_cash_pool_internal) (storage : storage) : result = 
+let update_cash_pool_internal (pool_update : update_cash_pool_internal) (storage : storage) : result =
     if (storage.pendingPoolUpdates = 0n or Tezos.sender <> storage.cashAddress) then
       (failwith error_THIS_ENTRYPOINT_MAY_ONLY_BE_CALLED_BY_GETBALANCE_OF_CASHADDRESS : result)
-    else 
+    else
 #if CASH_IS_FA2
-    let pool = update_fa2_pool_internal (pool_update) in 
+    let pool = update_fa2_pool_internal (pool_update) in
 #else
-    let pool = update_fa12_pool_internal (pool_update) in 
+    let pool = update_fa12_pool_internal (pool_update) in
 #endif
     let pendingPoolUpdates = abs (storage.pendingPoolUpdates - 1) in
     (([] : operation list), {storage with cashPool = pool ; pendingPoolUpdates = pendingPoolUpdates})
-#endif    
+#endif
 
 let token_to_token (param : token_to_token) (storage : storage) : result =
     let { outputCfmmContract = outputCfmmContract ;
@@ -639,16 +639,16 @@ let token_to_token (param : token_to_token) (storage : storage) : result =
         (match (Tezos.get_entrypoint_opt "%cashToToken" outputCfmmContract : cash_to_token contract option) with
             | None -> (failwith error_INVALID_INTERMEDIATE_CONTRACT :  cash_to_token contract)
             | Some c -> c) in
-  
+
     if storage.pendingPoolUpdates > 0n then
       (failwith error_PENDING_POOL_UPDATES_MUST_BE_ZERO : result)
     else if Tezos.amount > 0mutez then
       (failwith error_AMOUNT_MUST_BE_ZERO : result)
     else if Tezos.now >= deadline then
       (failwith error_THE_CURRENT_TIME_MUST_BE_LESS_THAN_THE_DEADLINE : result)
-    else 
+    else
         (* We don't check that tokenPool > 0, because that is impossible unless all liquidity has been removed. *)
-        let cash_bought = ((tokensSold * 997n * storage.cashPool) / (storage.tokenPool * 1000n + (tokensSold * 997n)))  in
+        let cash_bought = ((tokensSold * const_fee * storage.cashPool) / (storage.tokenPool * const_fee_denom + (tokensSold * const_fee)))  in
         let new_cashPool = match is_nat (storage.cashPool - cash_bought) with
             | None -> (failwith error_CASH_POOL_MINUS_CASH_BOUGHT_IS_NEGATIVE : nat)
             | Some n -> n in
@@ -659,23 +659,23 @@ let token_to_token (param : token_to_token) (storage : storage) : result =
         let op_send_cash_to_output = Tezos.transaction { minTokensBought = minTokensBought ;
                                       deadline = deadline; to_ = to_ }
                                       (natural_to_mutez cash_bought)
-                                      outputCfmmContract_contract in        
+                                      outputCfmmContract_contract in
 #else
-        let allow_output_to_withdraw_cash = 
+        let allow_output_to_withdraw_cash =
 #if CASH_IS_FA12
             let cashContract_approve =  (match (Tezos.get_entrypoint_opt "%approve" storage.cashAddress : (address * nat) contract option) with
                 | None -> (failwith error_MISSING_APPROVE_ENTRYPOINT_IN_CASH_CONTRACT : (address * nat) contract)
                 | Some c -> c) in
-            (Tezos.transaction (outputCfmmContract, 0n) 
+            (Tezos.transaction (outputCfmmContract, 0n)
                           0mutez
                           cashContract_approve,
-            Tezos.transaction (outputCfmmContract, cash_bought) 
+            Tezos.transaction (outputCfmmContract, cash_bought)
                           0mutez
                           cashContract_approve) in
-#else 
+#else
         (failwith "unsupported" : operation * operation) in (* possible solution: move funds to a dedicated contract with an infinite allowance *)
 #endif
-        let op_send_cash_to_output = Tezos.transaction { minTokensBought = minTokensBought ;        
+        let op_send_cash_to_output = Tezos.transaction { minTokensBought = minTokensBought ;
                                       cashSold = cash_bought ;
                                       deadline = deadline ; to_ = to_}
                                       0mutez
@@ -683,9 +683,9 @@ let token_to_token (param : token_to_token) (storage : storage) : result =
 #endif
         let op_accept_token_from_sender = token_transfer storage Tezos.sender Tezos.self_address tokensSold in
         ([
-#if !CASH_IS_TEZ            
+#if !CASH_IS_TEZ
     allow_output_to_withdraw_cash.0 ; allow_output_to_withdraw_cash.1 ;
-#endif    
+#endif
         op_send_cash_to_output; op_accept_token_from_sender] , storage)
 
 
@@ -693,19 +693,19 @@ let token_to_token (param : token_to_token) (storage : storage) : result =
 let update_consumer (operations, storage : result) : result =
     if storage.lastOracleUpdate = Tezos.now
         then (operations, storage)
-    else 
+    else
         let consumer = match (Tezos.get_contract_opt storage.consumerEntrypoint : ((nat * nat) contract) option) with
         | None -> (failwith error_CANNOT_GET_CFMM_PRICE_ENTRYPOINT_FROM_CONSUMER : (nat * nat) contract)
         | Some c -> c in
         ((Tezos.transaction (storage.cashPool, storage.tokenPool) 0mutez consumer) :: operations,
         {storage with lastOracleUpdate = Tezos.now})
-#endif 
+#endif
 
 (* =============================================================================
  * Main
  * ============================================================================= *)
 
-let main ((entrypoint, storage) : entrypoint * storage) : result = 
+let main ((entrypoint, storage) : entrypoint * storage) : result =
     match entrypoint with
     | AddLiquidity param ->
         add_liquidity param storage
@@ -716,7 +716,7 @@ let main ((entrypoint, storage) : entrypoint * storage) : result =
         set_baker param storage
     | SetManager param ->
         set_manager param storage
-    | AcceptManager -> 
+    | AcceptManager ->
         accept_manager storage
     | Default ->
         default_ storage
