@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { LinkList, LinkListProps } from '../../components/LinkList/LinkList';
 import Page from '../../components/Page';
 
-export const Buy_sell: React.FC = () => {
+export const BuySell: React.FC = () => {
   const { t } = useTranslation(['common', 'header']);
 
   const listItem: LinkListProps = {
