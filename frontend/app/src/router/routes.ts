@@ -1,11 +1,11 @@
 import { ComponentRoute } from '../interfaces/router';
 import { MyOvenPage } from '../pages/MyOvenPage';
-import { Buy_sell } from '../pages/Buy_sell';
-import { AddLiquidityPage } from '../pages/Buy_sell/AddLiquidity';
-import { CashToTokenPage } from '../pages/Buy_sell/CashToToken';
+import { Buy_sell } from '../pages/BuySell';
+import { AddLiquidityPage } from '../pages/BuySell/AddLiquidity';
+import { CashToTokenPage } from '../pages/BuySell/CashToToken';
 import { CreateOvenPage } from '../pages/CreateOven/CreateOven';
-import { RemoveLiquidityPage } from '../pages/Buy_sell/RemoveLiquidity';
-import { TokenToCashPage } from '../pages/Buy_sell/TokenToCash';
+import { RemoveLiquidityPage } from '../pages/BuySell/RemoveLiquidity';
+import { TokenToCashPage } from '../pages/BuySell/TokenToCash';
 
 export const routes: ComponentRoute[] = [
   {
