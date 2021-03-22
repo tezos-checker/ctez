@@ -113,7 +113,7 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({ open, handle
           </ListItemIcon>
           <ListItemText primary={t('myOvens')} />
         </ListItem>
-        <ListItem button onClick={() => history.push('/buy_sell')}>
+        <ListItem button onClick={() => history.push('/buy-sell')}>
           <ListItemIcon>
             <GiSwapBag />
           </ListItemIcon>
