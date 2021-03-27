@@ -10,19 +10,19 @@ import { TokenToCashPage } from '../pages/BuySell/TokenToCash';
 export const routes: ComponentRoute[] = [
   {
     component: TokenToCashPage,
-    path: '/token-to-cash',
+    path: '/buy-sell/token-to-cash',
   },
   {
     component: CashToTokenPage,
-    path: '/cash-to-token',
+    path: '/buy-sell/cash-to-token',
   },
   {
     component: RemoveLiquidityPage,
-    path: '/remove-liquidity',
+    path: '/buy-sell/remove-liquidity',
   },
   {
     component: AddLiquidityPage,
-    path: '/add-liquidity',
+    path: '/buy-sell/add-liquidity',
   },
   {
     component: CreateOvenPage,
