@@ -41,13 +41,13 @@ export const Withdraw: React.FC = () => {
       try {
         const result = await withdraw(ovenId, data.amount, data.to);
         if (result) {
-          addToast('Transaction Submitted', {
+          addToast(t('txSubmitted'), {
             appearance: 'success',
             autoDismiss: true,
           });
         }
       } catch (error) {
-        const errorText = cTezError[error.data[1].with.int as number] || 'Transaction Failed';
+        const errorText = cTezError[error.data[1].with.int as number] || t('txFailed');
         addToast(errorText, {
           appearance: 'error',
           autoDismiss: true,

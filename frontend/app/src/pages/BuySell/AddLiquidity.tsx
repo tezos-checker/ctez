@@ -44,7 +44,7 @@ const AddLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
       try {
         const result = await addLiquidity(data, userAddress);
         if (result) {
-          addToast('Transaction Submitted', {
+          addToast(t('txSubmitted'), {
             appearance: 'success',
             autoDismiss: true,
             onDismiss: () => history.push('/'),
@@ -52,7 +52,7 @@ const AddLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
         }
       } catch (error) {
         logger.error(error);
-        const errorText = cfmmError[error.data[1].with.int as number] || 'Transaction Failed';
+        const errorText = cfmmError[error.data[1].with.int as number] || t('txFailed');
         addToast(errorText, {
           appearance: 'error',
           autoDismiss: true,

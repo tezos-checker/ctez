@@ -75,13 +75,13 @@ export const EditDepositor: React.FC = () => {
           data.address,
         );
         if (result) {
-          addToast('Transaction Submitted', {
+          addToast(t('txSubmitted'), {
             appearance: 'success',
             autoDismiss: true,
           });
         }
       } catch (error) {
-        const errorText = cTezError[error.data[1].with.int as number] || 'Transaction Failed';
+        const errorText = cTezError[error.data[1].with.int as number] || t('txFailed');
         addToast(errorText, {
           appearance: 'error',
           autoDismiss: true,

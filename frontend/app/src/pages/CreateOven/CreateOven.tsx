@@ -111,7 +111,7 @@ const CreateOvenComponent: React.FC<WithTranslation> = ({ t }) => {
           data.amount,
         );
         if (result) {
-          addToast('Transaction Submitted', {
+          addToast(t('txSubmitted'), {
             appearance: 'success',
             autoDismiss: true,
             onDismiss: () => history.push('/'),
@@ -119,7 +119,7 @@ const CreateOvenComponent: React.FC<WithTranslation> = ({ t }) => {
         }
       } catch (error) {
         logger.error(error);
-        const errorText = cTezError[error.data[1].with.int as number] || 'Transaction Failed';
+        const errorText = cTezError[error.data[1].with.int as number] || t('txFailed');
         addToast(errorText, {
           appearance: 'error',
           autoDismiss: true,

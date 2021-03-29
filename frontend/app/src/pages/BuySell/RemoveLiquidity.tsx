@@ -43,14 +43,14 @@ const RemoveLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
       try {
         const result = await removeLiquidity(data, userAddress);
         if (result) {
-          addToast('Transaction Submitted', {
+          addToast(t('txSubmitted'), {
             appearance: 'success',
             autoDismiss: true,
             onDismiss: () => history.push('/'),
           });
         }
       } catch (error) {
-        const errorText = cfmmError[error.data[1].with.int as number] || 'Transaction Failed';
+        const errorText = cfmmError[error.data[1].with.int as number] || t('txFailed');
         addToast(errorText, {
           appearance: 'error',
           autoDismiss: true,

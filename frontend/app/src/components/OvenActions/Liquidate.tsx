@@ -45,14 +45,14 @@ export const Liquidate: React.FC = () => {
       try {
         const result = await liquidate(ovenId, data.ovenOwner, data.amount, data.to);
         if (result) {
-          addToast('Transaction Submitted', {
+          addToast(t('txSubmitted'), {
             appearance: 'success',
             autoDismiss: true,
             onDismiss: () => history.push('/'),
           });
         }
       } catch (error) {
-        const errorText = cTezError[error.data[1].with.int as number] || 'Transaction Failed';
+        const errorText = cTezError[error.data[1].with.int as number] || t('txFailed');
         addToast(errorText, {
           appearance: 'error',
           autoDismiss: true,

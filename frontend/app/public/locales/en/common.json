@@ -64,6 +64,9 @@
   "minCtezBought": "Min ctez bought (approx.)",
   "minTezBought": "Min tez bought (approx.)",
   "transactionTimeout": "Transaction timeout",
-  "slippage": "Slippage (in %)",
-  "minutes": "Minutes"
+  "slippage": "Max slippage (%)",
+  "minutes": "Minutes",
+  "advanceOptions": "Advance Options",
+  "txSubmitted": "Transaction Submitted",
+  "txFailed": "Transaction Failed"
 }

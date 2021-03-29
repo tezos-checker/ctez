@@ -55,13 +55,13 @@ export const MintOrBurn: React.FC<MintOrBurnProps> = ({ type }) => {
         const amount = type === 'repay' ? -data.amount : data.amount;
         const result = await mintOrBurn(ovenId, amount);
         if (result) {
-          addToast('Transaction Submitted', {
+          addToast(t('txSubmitted'), {
             appearance: 'success',
             autoDismiss: true,
           });
         }
       } catch (error) {
-        const errorText = cTezError[error.data[1].with.int as number] || 'Transaction Failed';
+        const errorText = cTezError[error.data[1].with.int as number] || t('txFailed');
         addToast(errorText, {
           appearance: 'error',
           autoDismiss: true,
