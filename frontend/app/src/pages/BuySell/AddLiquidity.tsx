@@ -131,7 +131,7 @@ const AddLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
                 alignContent="center"
                 justifyContent="center"
               >
-                <Grid item>
+                <Grid item sx={{ minWidth: '37%' }}>
                   <Field
                     component={FormikTextField}
                     name="amount"
