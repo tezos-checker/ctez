@@ -63,11 +63,11 @@ const ConvertComponent: React.FC<ConversionParams> = ({ t, formType }) => {
   const calcMinBuyValue = (slippage: number, amount: number) => {
     if (cfmmStorage) {
       const { tokenPool, cashPool } = cfmmStorage;
-      const cashSold = amount * 10 ** 7;
+      const cashSold = amount * 1e7;
       const [aPool, bPool] =
         formType === 'tezToCtez' ? [tokenPool, cashPool] : [cashPool, tokenPool];
       const tokWithoutSlippage =
-        (cashSold * 997 * aPool.toNumber()) / (bPool.toNumber() * 1000 + cashSold * 997) / 10 ** 7;
+        (cashSold * 997 * aPool.toNumber()) / (bPool.toNumber() * 1000 + cashSold * 997) / 1e7;
       const tok = tokWithoutSlippage * (1 - slippage * 0.01);
       setWithoutSlippage(Number(tokWithoutSlippage.toFixed(6)));
       setMinBuyValue(Number(tok.toFixed(6)));

@@ -68,5 +68,7 @@
   "minutes": "Minutes",
   "advanceOptions": "Advance Options",
   "txSubmitted": "Transaction Submitted",
-  "txFailed": "Transaction Failed"
+  "txFailed": "Transaction Failed",
+  "minLqtPoolShare": "Min LQT pool share",
+  "maxCtezDeposited": "Max ctez to be deposited (approx.)"
 }

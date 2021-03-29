@@ -57,15 +57,12 @@ export const getTokenAllowanceOps = async (
   return batchOps;
 };
 
-export const addLiquidity = async (
-  args: AddLiquidityParams,
-  userAddress: string,
-): Promise<string> => {
+export const addLiquidity = async (args: AddLiquidityParams): Promise<string> => {
   const tezos = getTezosInstance();
   const CTezFa12 = await getCTezFa12Contract();
   const batchOps: WalletParamsWithKind[] = await getTokenAllowanceOps(
     CTezFa12,
-    userAddress,
+    args.owner,
     args.maxTokensDeposited,
   );
   const batch = tezos.wallet.batch([
@@ -76,7 +73,7 @@ export const addLiquidity = async (
         .addLiquidity(
           args.owner,
           args.minLqtMinted,
-          new BigNumber(args.maxTokensDeposited).shiftedBy(6),
+          args.maxTokensDeposited * 1e6,
           args.deadline.toISOString(),
         )
         .toTransferParams(),
