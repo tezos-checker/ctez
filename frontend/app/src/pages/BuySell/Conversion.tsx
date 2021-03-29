@@ -13,26 +13,31 @@ import Page from '../../components/Page';
 import FormikTextField from '../../components/TextField';
 import { useWallet } from '../../wallet/hooks';
 import { CfmmStorage } from '../../interfaces';
-import { cashToToken, cfmmError, getCfmmStorage } from '../../contracts/cfmm';
+import { cashToToken, cfmmError, getCfmmStorage, tokenToCash } from '../../contracts/cfmm';
 import { TezosIcon } from '../../components/TezosIcon';
+import { CTezIcon } from '../../components/CTezIcon/CTezIcon';
 import { logger } from '../../utils/logger';
+
+interface ConversionParams extends WithTranslation {
+  formType: 'tezToCtez' | 'ctezToTez';
+}
 
 const PaperStyled = styled(Paper)`
   padding: 2em;
 `;
 
-interface CashToTokenForm {
+interface ConversionFormParams {
   to: string;
   slippage: number;
   deadline: number;
   amount: number;
 }
 
-const CashToTokenComponent: React.FC<WithTranslation> = ({ t }) => {
+const ConvertComponent: React.FC<ConversionParams> = ({ t, formType }) => {
   const [{ pkh: userAddress }] = useWallet();
   const { addToast } = useToasts();
   const history = useHistory();
-  const [minTokens, setMinTokens] = useState(0);
+  const [minBuyValue, setMinBuyValue] = useState(0);
   const { data: cfmmStorage } = useQuery<CfmmStorage, AxiosError, CfmmStorage>(
     ['cfmmStorage'],
     async () => {
@@ -44,18 +49,20 @@ const CashToTokenComponent: React.FC<WithTranslation> = ({ t }) => {
     },
   );
 
-  const calcMinTokens = (slippage: number, cashSold: number): number => {
+  const calcMinBuyValue = (slippage: number, cashSold: number): number => {
     if (cfmmStorage) {
       const { tokenPool, cashPool } = cfmmStorage;
+      const [aPool, bPool] =
+        formType === 'tezToCtez' ? [tokenPool, cashPool] : [cashPool, tokenPool];
       const tok =
-        ((cashSold * 997 * tokenPool.toNumber()) / (cashPool.toNumber() * 1000 + cashSold * 997)) *
+        ((cashSold * 997 * aPool.toNumber()) / (bPool.toNumber() * 1000 + cashSold * 997)) *
         (1 - slippage);
       return Number(tok.toFixed(6));
     }
     return -1;
   };
 
-  const initialValues: CashToTokenForm = {
+  const initialValues: ConversionFormParams = {
     to: userAddress ?? '',
     slippage: 0,
     deadline: 20,
@@ -64,20 +71,31 @@ const CashToTokenComponent: React.FC<WithTranslation> = ({ t }) => {
 
   const validationSchema = Yup.object().shape({
     to: Yup.string().required(t('required')),
-    slippage: Yup.number().optional(),
+    slippage: Yup.number().min(0).optional(),
     deadline: Yup.number().min(0).required(t('required')),
-    amount: Yup.number().required(t('required')),
+    amount: Yup.number().min(0.000001).required(t('required')),
   });
 
-  const handleFormSubmit = async (formData: CashToTokenForm) => {
+  const handleFormSubmit = async (formData: ConversionFormParams) => {
     try {
       const deadline = addMinutes(new Date(), formData.deadline);
-      const result = await cashToToken({
-        amount: formData.amount,
-        deadline,
-        minTokensBought: minTokens,
-        to: formData.to,
-      });
+      const result =
+        formType === 'tezToCtez'
+          ? await cashToToken({
+              amount: formData.amount,
+              deadline,
+              minTokensBought: minBuyValue,
+              to: formData.to,
+            })
+          : await tokenToCash(
+              {
+                deadline,
+                minCashBought: minBuyValue,
+                to: formData.to,
+                tokensSold: formData.amount,
+              },
+              userAddress!,
+            );
       if (result) {
         addToast('Transaction Submitted', {
           appearance: 'success',
@@ -96,11 +114,12 @@ const CashToTokenComponent: React.FC<WithTranslation> = ({ t }) => {
   };
 
   return (
-    <Page title={t('cashToToken')}>
+    <Page title={t(formType)}>
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={handleFormSubmit}
+        validateOnMount
       >
         {({ isSubmitting, isValid, values }) => (
           <PaperStyled>
@@ -127,14 +146,18 @@ const CashToTokenComponent: React.FC<WithTranslation> = ({ t }) => {
                     component={FormikTextField}
                     name="amount"
                     id="amount"
-                    label={t('xtzToPay')}
+                    label={t(formType === 'tezToCtez' ? 'xtzToPay' : 'ctezToPay')}
                     className="amount"
                     type="number"
                     fullWidth
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
-                          <TezosIcon height={30} width={30} />
+                          {formType === 'tezToCtez' ? (
+                            <TezosIcon height={30} width={30} />
+                          ) : (
+                            <CTezIcon height={30} width={30} />
+                          )}
                         </InputAdornment>
                       ),
                     }}
@@ -142,8 +165,8 @@ const CashToTokenComponent: React.FC<WithTranslation> = ({ t }) => {
                       e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
                     ) => {
                       const { slippage } = values;
-                      const min = calcMinTokens(slippage, Number(e.target.value));
-                      setMinTokens(min);
+                      const min = calcMinBuyValue(slippage, Number(e.target.value));
+                      setMinBuyValue(min);
                     }}
                   />
                 </Grid>
@@ -166,15 +189,17 @@ const CashToTokenComponent: React.FC<WithTranslation> = ({ t }) => {
                       e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
                     ) => {
                       const { amount } = values;
-                      const min = calcMinTokens(Number(e.target.value), amount);
-                      setMinTokens(min);
+                      const min = calcMinBuyValue(Number(e.target.value), amount);
+                      setMinBuyValue(min);
                     }}
                   />
                 </Grid>
-                {minTokens > -1 && (
+                {minBuyValue > -1 && (
                   <Grid item>
                     <Typography>
-                      {t('minCtezBought')}: {minTokens}
+                      {`${t(
+                        formType === 'tezToCtez' ? 'minCtezBought' : 'minTezBought',
+                      )}: ${minBuyValue}`}
                     </Typography>
                   </Grid>
                 )}
@@ -215,4 +240,4 @@ const CashToTokenComponent: React.FC<WithTranslation> = ({ t }) => {
   );
 };
 
-export const CashToTokenPage = withTranslation(['common'])(CashToTokenComponent);
+export const ConversionPage = withTranslation(['common'])(ConvertComponent);

@@ -17,11 +17,11 @@ export const BuySell: React.FC = () => {
         to: '/buy-sell/remove-liquidity',
       },
       {
-        primary: t('cashToToken'),
+        primary: t('tezToCtez'),
         to: '/buy-sell/cash-to-token',
       },
       {
-        primary: t('tokenToCash'),
+        primary: t('ctezToTez'),
         to: '/buy-sell/token-to-cash',
       },
     ],

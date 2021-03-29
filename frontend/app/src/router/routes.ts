@@ -2,19 +2,24 @@ import { ComponentRoute } from '../interfaces/router';
 import { MyOvenPage } from '../pages/MyOvenPage';
 import { BuySell } from '../pages/BuySell';
 import { AddLiquidityPage } from '../pages/BuySell/AddLiquidity';
-import { CashToTokenPage } from '../pages/BuySell/CashToToken';
+import { ConversionPage } from '../pages/BuySell/Conversion';
 import { CreateOvenPage } from '../pages/CreateOven/CreateOven';
 import { RemoveLiquidityPage } from '../pages/BuySell/RemoveLiquidity';
-import { TokenToCashPage } from '../pages/BuySell/TokenToCash';
 
 export const routes: ComponentRoute[] = [
   {
-    component: TokenToCashPage,
+    component: ConversionPage,
     path: '/buy-sell/token-to-cash',
+    props: {
+      formType: 'ctezToTez',
+    },
   },
   {
-    component: CashToTokenPage,
+    component: ConversionPage,
     path: '/buy-sell/cash-to-token',
+    props: {
+      formType: 'tezToCtez',
+    },
   },
   {
     component: RemoveLiquidityPage,

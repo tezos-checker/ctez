@@ -7,7 +7,9 @@ const RouteWithSubRoutes = (route: ComponentRoute) => {
     <Route
       path={route.path}
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      render={(props: any) => <route.component {...props} routes={route?.routes} />}
+      render={(props: any) => (
+        <route.component {...props} routes={route?.routes} {...route?.props} />
+      )}
     />
   );
 };
