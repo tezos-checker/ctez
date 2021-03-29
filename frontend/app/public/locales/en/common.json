@@ -60,5 +60,8 @@
   "mintableCtez": "Remaining mintable ctez",
   "annualDriftPastWeek": "Annual Drift (past week)",
   "currentUtilization": "Current Utilization",
-  "stats": "Statistics"
+  "stats": "Statistics",
+  "minCtezBought": "Min ctez bought (approx.)",
+  "transactionTimeout": "Transaction timeout",
+  "slippage": "Slippage (in %)"
 }
