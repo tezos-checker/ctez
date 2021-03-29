@@ -47,4 +47,5 @@ export interface CfmmStorage {
   lqtAddress: string;
   lastOracleUpdate: Date;
   consumerEntrypoint: string;
+  lqtTotal: BigNumber;
 }

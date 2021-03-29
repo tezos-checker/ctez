@@ -10,9 +10,6 @@ module.exports = {
     'plugin:react/recommended',
     'plugin:react-hooks/recommended',
     'plugin:jest/recommended',
-    'prettier',
-    'prettier/react',
-    'prettier/@typescript-eslint',
     'plugin:prettier/recommended',
   ],
   plugins: ['react', '@typescript-eslint', 'jest'],
@@ -30,7 +27,7 @@ module.exports = {
     ecmaFeatures: {
       jsx: true,
     },
-    ecmaVersion: 2021,
+    ecmaVersion: 2018,
     sourceType: 'module',
     project: tsconfigPath,
   },
@@ -51,7 +48,7 @@ module.exports = {
     'no-param-reassign': 'off',
     'import/no-cycle': 'warn',
     '@typescript-eslint/no-unused-expressions': [
-      'warn',
+      'off',
       {
         allowShortCircuit: true,
         allowTernary: true,

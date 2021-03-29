@@ -10,19 +10,19 @@ export const BuySell: React.FC = () => {
     list: [
       {
         primary: t('addLiquidity'),
-        to: '/add-liquidity',
+        to: '/buy-sell/add-liquidity',
       },
       {
         primary: t('removeLiquidity'),
-        to: '/remove-liquidity',
+        to: '/buy-sell/remove-liquidity',
       },
       {
-        primary: t('cashToToken'),
-        to: '/cash-to-token',
+        primary: t('tezToCtez'),
+        to: '/buy-sell/cash-to-token',
       },
       {
-        primary: t('tokenToCash'),
-        to: '/token-to-cash',
+        primary: t('ctezToTez'),
+        to: '/buy-sell/token-to-cash',
       },
     ],
   };
