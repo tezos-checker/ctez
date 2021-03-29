@@ -6,7 +6,17 @@ import styled from '@emotion/styled';
 import { useQuery } from 'react-query';
 import { AxiosError } from 'axios';
 import { Field, Form, Formik } from 'formik';
-import { Button, Grid, Paper, InputAdornment, Typography } from '@material-ui/core';
+import {
+  Button,
+  Grid,
+  Paper,
+  InputAdornment,
+  Typography,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+} from '@material-ui/core';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { useToasts } from 'react-toast-notifications';
 import { useHistory } from 'react-router-dom';
 import Page from '../../components/Page';
@@ -38,6 +48,7 @@ const ConvertComponent: React.FC<ConversionParams> = ({ t, formType }) => {
   const { addToast } = useToasts();
   const history = useHistory();
   const [minBuyValue, setMinBuyValue] = useState(0);
+  const [minWithoutSlippage, setWithoutSlippage] = useState(0);
   const { data: cfmmStorage } = useQuery<CfmmStorage, AxiosError, CfmmStorage>(
     ['cfmmStorage'],
     async () => {
@@ -49,17 +60,19 @@ const ConvertComponent: React.FC<ConversionParams> = ({ t, formType }) => {
     },
   );
 
-  const calcMinBuyValue = (slippage: number, cashSold: number): number => {
+  const calcMinBuyValue = (slippage: number, cashSold: number) => {
     if (cfmmStorage) {
       const { tokenPool, cashPool } = cfmmStorage;
       const [aPool, bPool] =
         formType === 'tezToCtez' ? [tokenPool, cashPool] : [cashPool, tokenPool];
-      const tok =
-        ((cashSold * 997 * aPool.toNumber()) / (bPool.toNumber() * 1000 + cashSold * 997)) *
-        (1 - slippage);
-      return Number(tok.toFixed(6));
+      const tokWithoutSlippage =
+        (cashSold * 997 * aPool.toNumber()) / (bPool.toNumber() * 1000 + cashSold * 997);
+      const tok = tokWithoutSlippage * (1 - slippage * 0.01);
+      setWithoutSlippage(Number(tokWithoutSlippage.toFixed(6)));
+      setMinBuyValue(Number(tok.toFixed(6)));
+    } else {
+      setMinBuyValue(-1);
     }
-    return -1;
   };
 
   const initialValues: ConversionFormParams = {
@@ -160,66 +173,98 @@ const ConvertComponent: React.FC<ConversionParams> = ({ t, formType }) => {
                           )}
                         </InputAdornment>
                       ),
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          {' '}
+                          ≈
+                          {formType === 'tezToCtez' ? (
+                            <>
+                              <CTezIcon height={30} width={30} />
+                              {minWithoutSlippage}
+                            </>
+                          ) : (
+                            <>
+                              <TezosIcon height={30} width={30} />
+                              {minWithoutSlippage}
+                            </>
+                          )}
+                        </InputAdornment>
+                      ),
                     }}
                     handleChange={(
                       e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
                     ) => {
                       const { slippage } = values;
-                      const min = calcMinBuyValue(slippage, Number(e.target.value));
-                      setMinBuyValue(min);
+                      calcMinBuyValue(slippage, Number(e.target.value));
                     }}
                   />
                 </Grid>
                 <Grid item>
-                  <Field
-                    component={FormikTextField}
-                    name="slippage"
-                    id="slippage"
-                    label={t('slippage')}
-                    type="number"
-                    fullWidth
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <Typography>%</Typography>
-                        </InputAdornment>
-                      ),
-                    }}
-                    handleChange={(
-                      e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
-                    ) => {
-                      const { amount } = values;
-                      const min = calcMinBuyValue(Number(e.target.value), amount);
-                      setMinBuyValue(min);
-                    }}
-                  />
-                </Grid>
-                {minBuyValue > -1 && (
-                  <Grid item>
-                    <Typography>
-                      {`${t(
-                        formType === 'tezToCtez' ? 'minCtezBought' : 'minTezBought',
-                      )}: ${minBuyValue}`}
-                    </Typography>
-                  </Grid>
-                )}
-                <Grid item>
-                  <Field
-                    component={FormikTextField}
-                    name="deadline"
-                    id="deadline"
-                    label={t('transactionTimeout')}
-                    className="deadline"
-                    type="number"
-                    fullWidth
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <Typography>{t('minutes')}</Typography>
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
+                  <Accordion>
+                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                      {t('advanceOptions')}
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <Grid
+                        container
+                        spacing={4}
+                        direction="column"
+                        alignContent="center"
+                        justifyContent="center"
+                      >
+                        <Grid item>
+                          <Field
+                            component={FormikTextField}
+                            name="slippage"
+                            id="slippage"
+                            label={t('slippage')}
+                            type="number"
+                            fullWidth
+                            InputProps={{
+                              endAdornment: (
+                                <InputAdornment position="end">
+                                  <Typography>%</Typography>
+                                </InputAdornment>
+                              ),
+                            }}
+                            handleChange={(
+                              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+                            ) => {
+                              const { amount } = values;
+                              calcMinBuyValue(Number(e.target.value), amount);
+                            }}
+                          />
+                        </Grid>
+                        {minBuyValue > -1 && (
+                          <Grid item>
+                            <Typography>
+                              {`${t(
+                                formType === 'tezToCtez' ? 'minCtezBought' : 'minTezBought',
+                              )}: ${minBuyValue}`}
+                            </Typography>
+                          </Grid>
+                        )}
+                        <Grid item>
+                          <Field
+                            component={FormikTextField}
+                            name="deadline"
+                            id="deadline"
+                            label={t('transactionTimeout')}
+                            className="deadline"
+                            type="number"
+                            fullWidth
+                            InputProps={{
+                              endAdornment: (
+                                <InputAdornment position="end">
+                                  <Typography>{t('minutes')}</Typography>
+                                </InputAdornment>
+                              ),
+                            }}
+                          />
+                        </Grid>
+                      </Grid>
+                    </AccordionDetails>
+                  </Accordion>
                 </Grid>
                 <Grid item>
                   <Button
