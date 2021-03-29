@@ -1,46 +1,89 @@
+import { useState } from 'react';
+import { AxiosError } from 'axios';
+import { useQuery } from 'react-query';
 import * as Yup from 'yup';
+import { addMinutes } from 'date-fns';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import styled from '@emotion/styled';
 import { Field, Form, Formik } from 'formik';
-import { Button, Grid, Paper, InputAdornment } from '@material-ui/core';
+import { Button, Grid, Paper, InputAdornment, Typography } from '@material-ui/core';
 import { useToasts } from 'react-toast-notifications';
 import { useHistory } from 'react-router-dom';
 import Page from '../../components/Page';
 import FormikTextField from '../../components/TextField';
 import { useWallet } from '../../wallet/hooks';
-import { RemoveLiquidityParams } from '../../interfaces';
-import { cfmmError, removeLiquidity } from '../../contracts/cfmm';
-import { FormikDateTimePicker } from '../../components/DateTimePicker';
-import { TezosIcon } from '../../components/TezosIcon';
-import { CTezIcon } from '../../components/CTezIcon/CTezIcon';
+import { CfmmStorage, RemoveLiquidityParams } from '../../interfaces';
+import { cfmmError, getCfmmStorage, removeLiquidity } from '../../contracts/cfmm';
 
 const PaperStyled = styled(Paper)`
   padding: 2em;
 `;
 
+interface RemoveLiquidityForm {
+  to: string;
+  deadline: number;
+  lqtBurned: number;
+  slippage: number;
+}
+
 const RemoveLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
   const [{ pkh: userAddress }] = useWallet();
+  const [values, setValues] = useState({
+    cashWithdraw: 0,
+    tokenWithdraw: 0,
+  });
   const { addToast } = useToasts();
   const history = useHistory();
-  const initialValues: RemoveLiquidityParams = {
+  const { data: cfmmStorage } = useQuery<CfmmStorage, AxiosError, CfmmStorage>(
+    ['cfmmStorage'],
+    async () => {
+      return getCfmmStorage();
+    },
+    {
+      refetchInterval: 30000,
+      staleTime: 3000,
+    },
+  );
+
+  const calcMinValues = (slippage: number, lqtBurned: number) => {
+    if (cfmmStorage) {
+      const { cashPool, tokenPool, lqtTotal } = cfmmStorage;
+      const cashWithdraw =
+        ((lqtBurned * cashPool.toNumber()) / lqtTotal.toNumber()) * (1 - slippage * 0.01);
+      const tokenWithdraw =
+        ((lqtBurned * tokenPool.toNumber()) / lqtTotal.toNumber()) * (1 - slippage * 0.01);
+      setValues({
+        cashWithdraw: Number(cashWithdraw.toFixed(6)),
+        tokenWithdraw: Number(tokenWithdraw.toFixed(6)),
+      });
+    }
+  };
+
+  const initialValues: RemoveLiquidityForm = {
     to: userAddress ?? '',
-    lqtBurned: 1,
-    minCashWithdrawn: 1,
-    minTokensWithdrawn: 1,
-    deadline: new Date(new Date().getTime() + 5 * 60000),
+    lqtBurned: 0,
+    deadline: 20,
+    slippage: 0,
   };
 
   const validationSchema = Yup.object().shape({
     to: Yup.string().required(t('required')),
     lqtBurned: Yup.number().required(t('required')),
-    minCashWithdrawn: Yup.number().required(t('required')),
-    minTokensWithdrawn: Yup.number().required(t('required')),
-    deadline: Yup.date().required(t('required')),
+    deadline: Yup.number().min(0).optional(),
+    slippage: Yup.number().min(0).optional(),
   });
 
-  const handleFormSubmit = async (data: RemoveLiquidityParams) => {
+  const handleFormSubmit = async (formData: RemoveLiquidityForm) => {
     if (userAddress) {
       try {
+        const deadline = addMinutes(new Date(), formData.deadline);
+        const data: RemoveLiquidityParams = {
+          deadline,
+          to: formData.to,
+          lqtBurned: formData.lqtBurned,
+          minCashWithdrawn: values.cashWithdraw,
+          minTokensWithdrawn: values.tokenWithdraw,
+        };
         const result = await removeLiquidity(data, userAddress);
         if (result) {
           addToast(t('txSubmitted'), {
@@ -66,7 +109,7 @@ const RemoveLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
         validationSchema={validationSchema}
         onSubmit={handleFormSubmit}
       >
-        {({ isSubmitting, isValid }) => (
+        {({ isSubmitting, isValid, values: formValues }) => (
           <PaperStyled>
             <Form>
               <Grid
@@ -95,54 +138,59 @@ const RemoveLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
                     className="lqtBurned"
                     type="number"
                     fullWidth
-                  />
-                </Grid>
-                <Grid item>
-                  <Field
-                    component={FormikTextField}
-                    name="minCashWithdrawn"
-                    id="minCashWithdrawn"
-                    label={t('minCashWithdrawn')}
-                    className="minCashWithdrawn"
-                    type="number"
-                    fullWidth
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <TezosIcon height={30} width={30} />
-                        </InputAdornment>
-                      ),
+                    handleChange={(
+                      e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+                    ) => {
+                      const { slippage } = formValues;
+                      calcMinValues(slippage, Number(e.target.value));
                     }}
                   />
                 </Grid>
                 <Grid item>
                   <Field
                     component={FormikTextField}
-                    name="minTokensWithdrawn"
-                    id="minTokensWithdrawn"
-                    label={t('minTokensWithdrawn')}
-                    className="minTokensWithdrawn"
+                    name="slippage"
+                    id="slippage"
+                    label={t('slippage')}
                     type="number"
                     fullWidth
                     InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <CTezIcon height={30} width={30} />
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <Typography>%</Typography>
                         </InputAdornment>
                       ),
+                    }}
+                    handleChange={(
+                      e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+                    ) => {
+                      const { lqtBurned } = formValues;
+                      calcMinValues(Number(e.target.value), lqtBurned);
                     }}
                   />
                 </Grid>
                 <Grid item>
+                  <Typography>{`${t('minCashWithdrawn')}: ${values.cashWithdraw}`}</Typography>
+                </Grid>
+                <Grid item>
+                  <Typography>{`${t('minTokensWithdrawn')}: ${values.tokenWithdraw}`}</Typography>
+                </Grid>
+                <Grid item>
                   <Field
-                    component={FormikDateTimePicker}
+                    component={FormikTextField}
                     name="deadline"
                     id="deadline"
-                    label={t('deadline')}
-                    inputFormat="dd/MM/yyyy HH:mm"
+                    label={t('transactionTimeout')}
                     className="deadline"
                     type="number"
-                    disablePast
+                    fullWidth
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <Typography>{t('minutes')}</Typography>
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                 </Grid>
                 <Grid item>
