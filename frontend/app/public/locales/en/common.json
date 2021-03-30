@@ -71,5 +71,8 @@
   "txFailed": "Transaction Failed",
   "minLqtPoolShare": "Expected pool share",
   "maxCtezDeposited": "Max ctez to be deposited (approx.)",
-  "invalidAddress": "Invalid address"
+  "invalidAddress": "Invalid address",
+  "shouldMinimum": "Should be minimum",
+  "shouldPositive": "Should be a positive number",
+  "shouldInteger": "Should be an integer"
 }

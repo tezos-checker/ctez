@@ -74,7 +74,11 @@ const RemoveLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
         test: (value) => validateAddress(value) === 3,
       })
       .required(t('required')),
-    lqtBurned: Yup.number().min(1).required(t('required')),
+    lqtBurned: Yup.number()
+      .min(1, `${t('shouldMinimum')} 1`)
+      .positive(t('shouldPositive'))
+      .integer(t('shouldInteger'))
+      .required(t('required')),
     deadline: Yup.number().min(0).optional(),
     slippage: Yup.number().min(0).optional(),
   });

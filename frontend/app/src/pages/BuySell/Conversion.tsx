@@ -93,7 +93,10 @@ const ConvertComponent: React.FC<ConversionParams> = ({ t, formType }) => {
       .required(t('required')),
     slippage: Yup.number().min(0).optional(),
     deadline: Yup.number().min(0).required(t('required')),
-    amount: Yup.number().min(0.000001).required(t('required')),
+    amount: Yup.number()
+      .min(0.000001, `${t('shouldMinimum')} 0.000001`)
+      .positive(t('shouldPositive'))
+      .required(t('required')),
   });
 
   const handleFormSubmit = async (formData: ConversionFormParams) => {
