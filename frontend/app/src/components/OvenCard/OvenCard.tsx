@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Grid } from '@material-ui/core';
+import { Box, Button, Grid } from '@material-ui/core';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -16,6 +16,7 @@ import { Typography } from '../Typography';
 interface OvenCardProps extends Oven {
   imageId: number;
   maxCtez: number;
+  isMonthAway?: boolean;
   action?: () => void | Promise<void>;
 }
 
@@ -43,6 +44,7 @@ export const OvenCard: React.FC<OvenCardProps> = ({
   imageId,
   action,
   maxCtez,
+  isMonthAway = false,
 }) => {
   const classes = useStyles();
   const { t } = useTranslation(['common']);
@@ -52,7 +54,15 @@ export const OvenCard: React.FC<OvenCardProps> = ({
   return (
     <Card className={classes.root}>
       <CardHeader
-        avatar={<Identicon seed={address} type="tzKtCat" />}
+        avatar={
+          isMonthAway ? (
+            <Box borderColor="secondary.main" border={2} borderRadius="50%" color="secondary.main">
+              <Identicon seed={address} type="tzKtCat" />
+            </Box>
+          ) : (
+            <Identicon seed={address} type="tzKtCat" />
+          )
+        }
         title={<Address address={address} trimSize="medium" trim />}
         subheader={`${t('ovenBalance')}: ${ovenBalance}`}
       />

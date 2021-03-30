@@ -11,15 +11,17 @@ import { RootState } from '../../redux/rootReducer';
 import { OvenSlice } from '../../redux/slices/OvenSlice';
 import { UserOvenStats } from '../../interfaces';
 import { getOvenImageId, getOvenMaxCtez, toSerializeableOven } from '../../utils/ovenUtils';
-import { useOvenData } from '../../api/queries';
+import { useCtezBaseStats, useOvenData } from '../../api/queries';
+import { isMonthFromLiquidation } from '../../api/contracts';
 
 export const MyOvenPage: React.FC = () => {
   const { t } = useTranslation(['common', 'header']);
   const dispatch = useDispatch();
   const currentTarget = useSelector((state: RootState) => state.stats.baseStats?.originalTarget);
-  const { showActions } = useSelector((state: RootState) => state.oven);
+  const { showActions, userOvenData } = useSelector((state: RootState) => state.oven);
   const [{ pkh: userAddress }] = useWallet();
   const { data: ovenData, isLoading } = useOvenData(userAddress);
+  const { data: baseStats } = useCtezBaseStats();
   useEffect(() => {
     if (ovenData && ovenData.length > 0) {
       const ovenUserData: UserOvenStats = ovenData.reduce(
@@ -49,6 +51,15 @@ export const MyOvenPage: React.FC = () => {
             ovenData
               .sort((a, b) => b.ovenId - a.ovenId)
               .map((ovenValue, index) => {
+                const isMonthAway =
+                  baseStats && userOvenData
+                    ? isMonthFromLiquidation(
+                        userOvenData.ctez,
+                        Number(baseStats?.currentTarget),
+                        userOvenData.xtz,
+                        baseStats?.drift,
+                      )
+                    : false;
                 const { max } = currentTarget
                   ? getOvenMaxCtez(
                       ovenValue.tez_balance.toString(),
@@ -60,6 +71,7 @@ export const MyOvenPage: React.FC = () => {
                   <Grid item key={`${ovenValue.address}-${index}`}>
                     <OvenCard
                       {...ovenValue}
+                      isMonthAway={isMonthAway}
                       maxCtez={max}
                       imageId={getOvenImageId(ovenValue.ovenId, ovenData.length)}
                       action={() => {

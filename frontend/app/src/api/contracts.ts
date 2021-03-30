@@ -47,7 +47,7 @@ export const isMonthFromLiquidation = (
   return (
     outstandingCtez *
       target ** (((1 + currentDrift / 2 ** 48) * 365.25 * 24 * 3600) / 12) *
-      (16 / 15) >
+      (16 / 15) >=
     tezBalance
   );
 };

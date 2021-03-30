@@ -12,6 +12,7 @@ import FormikTextField from '../TextField';
 import { CTezIcon } from '../CTezIcon/CTezIcon';
 import { getOvenMaxCtez } from '../../utils/ovenUtils';
 import Typography from '../Typography';
+import { logger } from '../../utils/logger';
 
 interface MintOrBurnProps {
   type: 'mint' | 'repay';
@@ -61,6 +62,7 @@ export const MintOrBurn: React.FC<MintOrBurnProps> = ({ type }) => {
           });
         }
       } catch (error) {
+        logger.warn(error);
         const errorText = cTezError[error.data[1].with.int as number] || t('txFailed');
         addToast(errorText, {
           appearance: 'error',
