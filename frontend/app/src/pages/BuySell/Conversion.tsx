@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { validateAddress } from '@taquito/utils';
 import * as Yup from 'yup';
 import { addMinutes } from 'date-fns';
 import { withTranslation, WithTranslation } from 'react-i18next';
@@ -27,6 +28,7 @@ import { cashToToken, cfmmError, getCfmmStorage, tokenToCash } from '../../contr
 import { TezosIcon } from '../../components/TezosIcon';
 import { CTezIcon } from '../../components/CTezIcon/CTezIcon';
 import { logger } from '../../utils/logger';
+import { DEFAULT_SLIPPAGE } from '../../utils/globals';
 
 interface ConversionParams extends WithTranslation {
   formType: 'tezToCtez' | 'ctezToTez';
@@ -78,13 +80,17 @@ const ConvertComponent: React.FC<ConversionParams> = ({ t, formType }) => {
 
   const initialValues: ConversionFormParams = {
     to: userAddress ?? '',
-    slippage: 0,
+    slippage: DEFAULT_SLIPPAGE,
     deadline: 20,
     amount: 0,
   };
 
   const validationSchema = Yup.object().shape({
-    to: Yup.string().required(t('required')),
+    to: Yup.string()
+      .test({
+        test: (value) => validateAddress(value) === 3,
+      })
+      .required(t('required')),
     slippage: Yup.number().min(0).optional(),
     deadline: Yup.number().min(0).required(t('required')),
     amount: Yup.number().min(0.000001).required(t('required')),

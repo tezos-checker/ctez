@@ -16,6 +16,7 @@ import { AddLiquidityParams, CfmmStorage } from '../../interfaces';
 import { addLiquidity, cfmmError, getCfmmStorage } from '../../contracts/cfmm';
 import { TezosIcon } from '../../components/TezosIcon';
 import { logger } from '../../utils/logger';
+import { DEFAULT_SLIPPAGE } from '../../utils/globals';
 
 const PaperStyled = styled(Paper)`
   padding: 2em;
@@ -73,7 +74,7 @@ const AddLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
   };
 
   const initialValues: AddLiquidityForm = {
-    slippage: 0,
+    slippage: DEFAULT_SLIPPAGE,
     deadline: 20,
     amount: 0,
   };
@@ -131,7 +132,7 @@ const AddLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
                 alignContent="center"
                 justifyContent="center"
               >
-                <Grid item>
+                <Grid item sx={{ minWidth: '37%' }}>
                   <Field
                     component={FormikTextField}
                     name="amount"

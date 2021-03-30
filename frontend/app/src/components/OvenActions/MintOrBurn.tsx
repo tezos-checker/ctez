@@ -43,7 +43,7 @@ export const MintOrBurn: React.FC<MintOrBurnProps> = ({ type }) => {
   const maxMintableCtez = max < 0 ? 0 : max;
   const remainingMintableCtez = remaining < 0 ? 0 : remaining;
   const validationSchema = Yup.object().shape({
-    amount: Yup.number().required(t('required')),
+    amount: Yup.number().min(0.000001).required(t('required')),
   });
   const initialValues: MintBurnForm = {
     amount: 0,
@@ -77,6 +77,7 @@ export const MintOrBurn: React.FC<MintOrBurnProps> = ({ type }) => {
         validationSchema={validationSchema}
         onSubmit={handleFormSubmit}
         enableReinitialize
+        validateOnMount
       >
         {({ isSubmitting, isValid }) => (
           <PaperStyled>

@@ -29,7 +29,7 @@ export const Deposit: React.FC = () => {
   };
 
   const validationSchema = Yup.object().shape({
-    amount: Yup.number().min(1).required(t('required')),
+    amount: Yup.number().min(0.000001).required(t('required')),
   });
 
   const handleFormSubmit = async (data: DepositForm) => {

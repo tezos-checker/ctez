@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { validateAddress } from '@taquito/utils';
 import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import styled from '@emotion/styled';
@@ -35,9 +36,19 @@ export const Liquidate: React.FC = () => {
   };
 
   const validationSchema = Yup.object().shape({
-    ovenOwner: Yup.string().required(t('required')),
-    amount: Yup.number().min(0.1).required(t('required')),
-    to: Yup.string().required(t('required')),
+    ovenOwner: Yup.string()
+      .test({
+        test: (value) => validateAddress(value) === 3,
+        message: t('invalidAddress'),
+      })
+      .required(t('required')),
+    amount: Yup.number().min(0.000001).required(t('required')),
+    to: Yup.string()
+      .test({
+        test: (value) => validateAddress(value) === 3,
+        message: t('invalidAddress'),
+      })
+      .required(t('required')),
   });
 
   const handleFormSubmit = async (data: LiquidateForm) => {

@@ -1,4 +1,5 @@
 import React from 'react';
+import { validateAddress } from '@taquito/utils';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
@@ -33,7 +34,12 @@ export const Withdraw: React.FC = () => {
 
   const validationSchema = Yup.object().shape({
     amount: Yup.number().min(0.1).required(t('required')),
-    to: Yup.string().required(t('required')),
+    to: Yup.string()
+      .test({
+        test: (value) => validateAddress(value) === 3,
+        message: t('invalidAddress'),
+      })
+      .required(t('required')),
   });
 
   const handleFormSubmit = async (data: WithdrawForm) => {

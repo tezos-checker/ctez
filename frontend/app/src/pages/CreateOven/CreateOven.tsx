@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { validateAddress } from '@taquito/utils';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 import styled from '@emotion/styled';
@@ -43,9 +44,23 @@ const CreateOvenComponent: React.FC<WithTranslation> = ({ t }) => {
   const { addToast } = useToasts();
   const history = useHistory();
   const validationSchema = Yup.object().shape({
-    delegate: Yup.string().required(t('required')),
+    delegate: Yup.string()
+      .test({
+        test: (value) => validateAddress(value) === 3,
+      })
+      .required(t('required')),
     amount: Yup.number().optional(),
-    depositors: Yup.array().required(t('required')),
+    depositors: Yup.array()
+      .test({
+        test: (value) => {
+          return (
+            value?.reduce((acc, item: any) => {
+              return acc && validateAddress(item?.value) === 3;
+            }, true) ?? true
+          );
+        },
+      })
+      .required(t('required')),
   });
 
   const opSelectionList = [
