@@ -3,8 +3,6 @@ import * as Yup from 'yup';
 import { addMinutes } from 'date-fns';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import styled from '@emotion/styled';
-import { AxiosError } from 'axios';
-import { useQuery } from 'react-query';
 import { Field, Form, Formik } from 'formik';
 import { Button, Grid, Paper, InputAdornment, Typography } from '@material-ui/core';
 import { useToasts } from 'react-toast-notifications';
@@ -12,11 +10,12 @@ import { useHistory } from 'react-router-dom';
 import Page from '../../components/Page';
 import FormikTextField from '../../components/TextField';
 import { useWallet } from '../../wallet/hooks';
-import { AddLiquidityParams, CfmmStorage } from '../../interfaces';
-import { addLiquidity, cfmmError, getCfmmStorage } from '../../contracts/cfmm';
+import { AddLiquidityParams } from '../../interfaces';
+import { addLiquidity, cfmmError } from '../../contracts/cfmm';
 import { TezosIcon } from '../../components/TezosIcon';
 import { logger } from '../../utils/logger';
 import { DEFAULT_SLIPPAGE } from '../../utils/globals';
+import { useCfmmStorage } from '../../api/queries';
 
 const PaperStyled = styled(Paper)`
   padding: 2em;
@@ -35,16 +34,7 @@ const AddLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
   const [minPoolPercent, setMinPoolPercent] = useState(0);
   const [minLQT, setMinLQT] = useState(0);
   const history = useHistory();
-  const { data: cfmmStorage } = useQuery<CfmmStorage, AxiosError, CfmmStorage>(
-    ['cfmmStorage'],
-    async () => {
-      return getCfmmStorage();
-    },
-    {
-      refetchInterval: 30000,
-      staleTime: 3000,
-    },
-  );
+  const { data: cfmmStorage } = useCfmmStorage();
 
   const calcMaxToken = (slippage: number, cashDeposited: number) => {
     if (cfmmStorage) {

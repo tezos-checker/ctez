@@ -3,17 +3,14 @@ import { validateAddress } from '@taquito/utils';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 import styled from '@emotion/styled';
-import { AxiosError } from 'axios';
-import { useQuery } from 'react-query';
 import { Field, Form, Formik } from 'formik';
 import { Button, Grid, Paper, InputAdornment } from '@material-ui/core';
 import { useToasts } from 'react-toast-notifications';
 import { useHistory } from 'react-router-dom';
-import { getDelegates } from '../../api/tzkt';
 import { create, cTezError } from '../../contracts/ctez';
 import Page from '../../components/Page';
 import { FormikAutocomplete } from '../../components/Autocomplete';
-import { Baker, Depositor } from '../../interfaces';
+import { Depositor } from '../../interfaces';
 import { useWallet } from '../../wallet/hooks';
 import FormikTextField from '../../components/TextField';
 import { TezosIcon } from '../../components/TezosIcon';
@@ -23,6 +20,7 @@ import {
 } from '../../components/MultiInputTextField/MultiInputTextField';
 import { FormikRadioGroup } from '../../components/FormikRadioGroup/FormikRadioGroup';
 import { logger } from '../../utils/logger';
+import { useDelegates } from '../../api/queries';
 
 interface CreateVaultForm {
   delegate: string;
@@ -36,9 +34,7 @@ const PaperStyled = styled(Paper)`
 `;
 
 const CreateOvenComponent: React.FC<WithTranslation> = ({ t }) => {
-  const { data: delegates } = useQuery<Baker[], AxiosError, Baker[]>(['delegates'], () => {
-    return getDelegates();
-  });
+  const { data: delegates } = useDelegates();
   const [{ pkh: userAddress }] = useWallet();
   const [delegate, setDelegate] = useState('');
   const { addToast } = useToasts();

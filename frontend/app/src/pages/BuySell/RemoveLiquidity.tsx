@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import { AxiosError } from 'axios';
-import { useQuery } from 'react-query';
 import * as Yup from 'yup';
 import { addMinutes } from 'date-fns';
 import { validateAddress } from '@taquito/utils';
@@ -13,9 +11,10 @@ import { useHistory } from 'react-router-dom';
 import Page from '../../components/Page';
 import FormikTextField from '../../components/TextField';
 import { useWallet } from '../../wallet/hooks';
-import { CfmmStorage, RemoveLiquidityParams } from '../../interfaces';
-import { cfmmError, getCfmmStorage, removeLiquidity } from '../../contracts/cfmm';
+import { RemoveLiquidityParams } from '../../interfaces';
+import { cfmmError, removeLiquidity } from '../../contracts/cfmm';
 import { DEFAULT_SLIPPAGE } from '../../utils/globals';
+import { useCfmmStorage } from '../../api/queries';
 
 const PaperStyled = styled(Paper)`
   padding: 2em;
@@ -36,16 +35,7 @@ const RemoveLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
   });
   const { addToast } = useToasts();
   const history = useHistory();
-  const { data: cfmmStorage } = useQuery<CfmmStorage, AxiosError, CfmmStorage>(
-    ['cfmmStorage'],
-    async () => {
-      return getCfmmStorage();
-    },
-    {
-      refetchInterval: 30000,
-      staleTime: 3000,
-    },
-  );
+  const { data: cfmmStorage } = useCfmmStorage();
 
   const calcMinValues = (slippage: number, lqtBurned: number) => {
     if (cfmmStorage) {

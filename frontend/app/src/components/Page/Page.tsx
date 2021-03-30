@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Container, IconButton } from '@material-ui/core';
 import { ArrowBack } from '@material-ui/icons';
-import { AxiosError } from 'axios';
-import { useQuery } from 'react-query';
 import { useDispatch } from 'react-redux';
 import styled from '@emotion/styled';
 import { Helmet } from 'react-helmet-async';
@@ -12,11 +10,9 @@ import { DEFAULT_LANGUAGE } from '../../i18n';
 import { APP_NAME, NETWORK } from '../../utils/globals';
 import { Header } from '../Header';
 import { Typography } from '../Typography';
-
-import { getBaseStats } from '../../api/contracts';
-import { BaseStats } from '../../interfaces';
 import { StatsSlice } from '../../redux/slices/StatsSlice';
 import { StatItem } from '../Header/Header';
+import { useCtezBaseStats } from '../../api/queries';
 
 const ContainerStyled = styled(Container)`
   padding-top: 1em;
@@ -51,12 +47,7 @@ export const Page: React.FC<PageProps> = ({ title, children, description, showSt
 
   const [statsData, setStatsData] = useState<StatItem[]>([]);
   const dispatch = useDispatch();
-  const { data: stats, isLoading } = useQuery<BaseStats, AxiosError, BaseStats>(
-    ['baseStats'],
-    async () => {
-      return getBaseStats();
-    },
-  );
+  const { data: stats } = useCtezBaseStats();
 
   useEffect(() => {
     if (stats) {

@@ -12,6 +12,7 @@ export interface BaseStats {
   currentAnnualDrift: string;
   annualDriftPastWeek: string;
   totalLiquidity: string;
+  drift: number;
   [key: string]: string | number;
 }
 
