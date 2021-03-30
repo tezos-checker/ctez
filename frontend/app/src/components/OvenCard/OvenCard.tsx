@@ -51,17 +51,14 @@ export const OvenCard: React.FC<OvenCardProps> = ({
   const maxMintableCtez = maxCtez < 0 ? 0 : maxCtez;
   const outStandingCtez = ctez_outstanding?.shiftedBy(-6).toNumber() ?? 0;
   const ovenBalance = tez_balance?.shiftedBy(-6).toNumber() ?? 0;
+  const circleColor = !isMonthAway ? '#028004' : 'secondary.main';
   return (
     <Card className={classes.root}>
       <CardHeader
         avatar={
-          isMonthAway ? (
-            <Box borderColor="secondary.main" border={2} borderRadius="50%" color="secondary.main">
-              <Identicon seed={address} type="tzKtCat" />
-            </Box>
-          ) : (
+          <Box borderColor={circleColor} border={2} borderRadius="50%" color={circleColor}>
             <Identicon seed={address} type="tzKtCat" />
-          )
+          </Box>
         }
         title={<Address address={address} trimSize="medium" trim />}
         subheader={`${t('ovenBalance')}: ${ovenBalance}`}
