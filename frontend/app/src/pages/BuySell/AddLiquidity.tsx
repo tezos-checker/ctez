@@ -82,7 +82,7 @@ const AddLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
   const validationSchema = Yup.object().shape({
     slippage: Yup.number().min(0).optional(),
     deadline: Yup.number().min(0).optional(),
-    amount: Yup.number().required(t('required')),
+    amount: Yup.number().min(0.000001).required(t('required')),
   });
 
   const handleFormSubmit = async (formData: AddLiquidityForm) => {
@@ -121,6 +121,7 @@ const AddLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={handleFormSubmit}
+        validateOnMount
       >
         {({ isSubmitting, isValid, values }) => (
           <PaperStyled>

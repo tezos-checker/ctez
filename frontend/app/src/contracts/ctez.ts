@@ -1,5 +1,4 @@
 import { WalletContract } from '@taquito/taquito';
-import BigNumber from 'bignumber.js';
 import {
   CTezStorage,
   Depositor,
@@ -77,11 +76,7 @@ export const deposit = async (ovenAddress: string, amount: number): Promise<stri
 };
 
 export const withdraw = async (ovenId: number, amount: number, to: string): Promise<string> => {
-  const hash = await executeMethod(cTez, 'withdraw', [
-    ovenId,
-    new BigNumber(amount).shiftedBy(6),
-    to,
-  ]);
+  const hash = await executeMethod(cTez, 'withdraw', [ovenId, amount * 1e6, to]);
   return hash;
 };
 
@@ -91,20 +86,12 @@ export const liquidate = async (
   amount: number,
   to: string,
 ): Promise<string> => {
-  const hash = await executeMethod(cTez, 'liquidate', [
-    ovenId,
-    overOwner,
-    new BigNumber(amount).shiftedBy(6),
-    to,
-  ]);
+  const hash = await executeMethod(cTez, 'liquidate', [ovenId, overOwner, amount * 1e6, to]);
   return hash;
 };
 
 export const mintOrBurn = async (ovenId: number, quantity: number): Promise<string> => {
-  const hash = await executeMethod(cTez, 'mint_or_burn', [
-    ovenId,
-    new BigNumber(quantity).shiftedBy(6),
-  ]);
+  const hash = await executeMethod(cTez, 'mint_or_burn', [ovenId, quantity * 1e6]);
   return hash;
 };
 
