@@ -15,6 +15,7 @@ import FormikTextField from '../../components/TextField';
 import { useWallet } from '../../wallet/hooks';
 import { CfmmStorage, RemoveLiquidityParams } from '../../interfaces';
 import { cfmmError, getCfmmStorage, removeLiquidity } from '../../contracts/cfmm';
+import { DEFAULT_SLIPPAGE } from '../../utils/globals';
 
 const PaperStyled = styled(Paper)`
   padding: 2em;
@@ -64,7 +65,7 @@ const RemoveLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
     to: userAddress ?? '',
     lqtBurned: 0,
     deadline: 20,
-    slippage: 0,
+    slippage: DEFAULT_SLIPPAGE,
   };
 
   const validationSchema = Yup.object().shape({
