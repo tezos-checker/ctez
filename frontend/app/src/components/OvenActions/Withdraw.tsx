@@ -27,8 +27,8 @@ export const Withdraw: React.FC = () => {
   const [{ pkh: userAddress }] = useWallet();
   const { addToast } = useToasts();
   const ovenId = useSelector((state: RootState) => state.oven.oven?.ovenId);
-  const initialValues: WithdrawForm = {
-    amount: 0,
+  const initialValues: any = {
+    amount: null,
     to: userAddress ?? '',
   };
 
@@ -86,6 +86,7 @@ export const Withdraw: React.FC = () => {
                   <Field
                     component={FormikTextField}
                     name="amount"
+                    placeholder="0.8"
                     id="amount"
                     label={t('amountXtz')}
                     className="amount"

@@ -73,10 +73,10 @@ const AddLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
     }
   };
 
-  const initialValues: AddLiquidityForm = {
+  const initialValues: any = {
     slippage: DEFAULT_SLIPPAGE,
     deadline: 20,
-    amount: 0,
+    amount: null,
   };
 
   const validationSchema = Yup.object().shape({
@@ -140,6 +140,7 @@ const AddLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
                     id="amount"
                     label={t('xtzToDeposit')}
                     className="amount"
+                    placeholder="0.8"
                     type="number"
                     fullWidth
                     InputProps={{

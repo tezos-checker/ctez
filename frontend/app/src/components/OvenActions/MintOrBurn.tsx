@@ -45,8 +45,8 @@ export const MintOrBurn: React.FC<MintOrBurnProps> = ({ type }) => {
   const validationSchema = Yup.object().shape({
     amount: Yup.number().min(0.000001).required(t('required')),
   });
-  const initialValues: MintBurnForm = {
-    amount: 0,
+  const initialValues: any = {
+    amount: null,
   };
 
   const handleFormSubmit = async (data: MintBurnForm) => {
@@ -109,6 +109,7 @@ export const MintOrBurn: React.FC<MintOrBurnProps> = ({ type }) => {
                     component={FormikTextField}
                     name="amount"
                     id="amount"
+                    placeholder="0.8"
                     label={t('amountCtez')}
                     className="amount"
                     InputProps={{

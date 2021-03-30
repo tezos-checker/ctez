@@ -61,9 +61,9 @@ const RemoveLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
     }
   };
 
-  const initialValues: RemoveLiquidityForm = {
+  const initialValues: any = {
     to: userAddress ?? '',
-    lqtBurned: 0,
+    lqtBurned: null,
     deadline: 20,
     slippage: DEFAULT_SLIPPAGE,
   };
@@ -144,6 +144,7 @@ const RemoveLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
                     label={t('lqtBurned')}
                     className="lqtBurned"
                     type="number"
+                    placeholder="1"
                     fullWidth
                     handleChange={(
                       e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
