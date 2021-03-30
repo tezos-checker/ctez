@@ -368,8 +368,8 @@ let remove_liquidity (param : remove_liquidity) (storage : storage) : result =
     else if Tezos.amount > 0mutez then
         (failwith error_AMOUNT_MUST_BE_ZERO : result)
     else begin
-        let cash_withdrawn : nat = (lqtBurned * storage.cashPool) / storage.lqtTotal in
-        let tokens_withdrawn : nat = (lqtBurned * storage.tokenPool) / storage.lqtTotal in
+        let cash_withdrawn : nat = (lqtBurned * 1000000n * storage.cashPool) / storage.lqtTotal in
+        let tokens_withdrawn : nat = (lqtBurned * 1000000n * storage.tokenPool) / storage.lqtTotal in
 
         (* Check that minimum withdrawal conditions are met *)
         if cash_withdrawn < minCashWithdrawn then
