@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { validateAddress } from '@taquito/utils';
 import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import styled from '@emotion/styled';
@@ -58,11 +59,16 @@ export const EditDepositor: React.FC = () => {
       .oneOf([EditDepositorOps.AllowAny, EditDepositorOps.AllowAccount])
       .required(t('required')),
     enable: Yup.string().required(t('required')),
-    address: Yup.string().when('op', {
-      is: EditDepositorOps.AllowAccount,
-      then: (addr) => addr.required(t('required')),
-      otherwise: (addr) => addr.optional(),
-    }),
+    address: Yup.string()
+      .test({
+        test: (value) => validateAddress(value) === 3,
+        message: t('invalidAddress'),
+      })
+      .when('op', {
+        is: EditDepositorOps.AllowAccount,
+        then: (addr) => addr.required(t('required')),
+        otherwise: (addr) => addr.optional(),
+      }),
   });
 
   const handleFormSubmit = async (data: EditDepositorForm) => {

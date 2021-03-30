@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import { validateAddress } from '@taquito/utils';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import styled from '@emotion/styled';
 import { Field, Form, Formik } from 'formik';
@@ -31,7 +32,11 @@ const RemoveLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
   };
 
   const validationSchema = Yup.object().shape({
-    to: Yup.string().required(t('required')),
+    to: Yup.string()
+      .test({
+        test: (value) => validateAddress(value) === 3,
+      })
+      .required(t('required')),
     lqtBurned: Yup.number().required(t('required')),
     minCashWithdrawn: Yup.number().required(t('required')),
     minTokensWithdrawn: Yup.number().required(t('required')),

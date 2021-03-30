@@ -66,9 +66,10 @@
   "transactionTimeout": "Transaction timeout",
   "slippage": "Max slippage (%)",
   "minutes": "Minutes",
-  "advanceOptions": "Advance Options",
+  "advanceOptions": "Advanced options",
   "txSubmitted": "Transaction Submitted",
   "txFailed": "Transaction Failed",
-  "minLqtPoolShare": "Min LQT pool share",
-  "maxCtezDeposited": "Max ctez to be deposited (approx.)"
+  "minLqtPoolShare": "Expected pool share",
+  "maxCtezDeposited": "Max ctez to be deposited (approx.)",
+  "invalidAddress": "Invalid address"
 }

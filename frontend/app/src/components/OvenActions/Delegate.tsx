@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { validateAddress } from '@taquito/utils';
 import * as Yup from 'yup';
 import { useSelector } from 'react-redux';
 import styled from '@emotion/styled';
@@ -33,7 +34,12 @@ export const Delegate: React.FC = () => {
   };
 
   const validationSchema = Yup.object().shape({
-    delegate: Yup.string().required(t('required')),
+    delegate: Yup.string()
+      .test({
+        test: (value) => validateAddress(value) === 3,
+        message: t('invalidAddress'),
+      })
+      .required(t('required')),
   });
 
   const handleFormSubmit = async (data: DelegateForm) => {
