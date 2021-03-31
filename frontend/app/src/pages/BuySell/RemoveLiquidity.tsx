@@ -5,7 +5,17 @@ import { validateAddress } from '@taquito/utils';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import styled from '@emotion/styled';
 import { Field, Form, Formik } from 'formik';
-import { Button, Grid, Paper, InputAdornment, Typography } from '@material-ui/core';
+import {
+  Button,
+  Grid,
+  Paper,
+  InputAdornment,
+  Typography,
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+} from '@material-ui/core';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { useToasts } from 'react-toast-notifications';
 import { useHistory } from 'react-router-dom';
 import Page from '../../components/Page';
@@ -149,51 +159,69 @@ const RemoveLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
                   />
                 </Grid>
                 <Grid item>
-                  <Field
-                    component={FormikTextField}
-                    name="slippage"
-                    id="slippage"
-                    label={t('slippage')}
-                    type="number"
-                    fullWidth
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <Typography>%</Typography>
-                        </InputAdornment>
-                      ),
-                    }}
-                    handleChange={(
-                      e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
-                    ) => {
-                      const { lqtBurned } = formValues;
-                      calcMinValues(Number(e.target.value), lqtBurned);
-                    }}
-                  />
-                </Grid>
-                <Grid item>
                   <Typography>{`${t('minCashWithdrawn')}: ${values.cashWithdraw}`}</Typography>
                 </Grid>
                 <Grid item>
                   <Typography>{`${t('minTokensWithdrawn')}: ${values.tokenWithdraw}`}</Typography>
                 </Grid>
                 <Grid item>
-                  <Field
-                    component={FormikTextField}
-                    name="deadline"
-                    id="deadline"
-                    label={t('transactionTimeout')}
-                    className="deadline"
-                    type="number"
-                    fullWidth
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <Typography>{t('minutes')}</Typography>
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
+                  <Accordion>
+                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                      {t('advanceOptions')}
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <Grid
+                        container
+                        spacing={4}
+                        direction="column"
+                        alignContent="center"
+                        justifyContent="center"
+                      >
+                        <Grid item>
+                          <Field
+                            component={FormikTextField}
+                            name="slippage"
+                            id="slippage"
+                            label={t('slippage')}
+                            type="number"
+                            fullWidth
+                            InputProps={{
+                              endAdornment: (
+                                <InputAdornment position="end">
+                                  <Typography>%</Typography>
+                                </InputAdornment>
+                              ),
+                            }}
+                            handleChange={(
+                              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+                            ) => {
+                              const { lqtBurned } = formValues;
+                              calcMinValues(Number(e.target.value), lqtBurned);
+                            }}
+                          />
+                        </Grid>
+
+                        <Grid item>
+                          <Field
+                            component={FormikTextField}
+                            name="deadline"
+                            id="deadline"
+                            label={t('transactionTimeout')}
+                            className="deadline"
+                            type="number"
+                            fullWidth
+                            InputProps={{
+                              endAdornment: (
+                                <InputAdornment position="end">
+                                  <Typography>{t('minutes')}</Typography>
+                                </InputAdornment>
+                              ),
+                            }}
+                          />
+                        </Grid>
+                      </Grid>
+                    </AccordionDetails>
+                  </Accordion>
                 </Grid>
                 <Grid item>
                   <Button

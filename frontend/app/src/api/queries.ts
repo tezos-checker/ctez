@@ -48,7 +48,6 @@ export const useOvenData = (userAddress?: string) => {
     async () => {
       if (userAddress) {
         const ovens = await getOvens(userAddress);
-        console.log(ovens);
         const result =
           typeof ovens !== 'undefined'
             ? ovens.filter((data: Oven) => {

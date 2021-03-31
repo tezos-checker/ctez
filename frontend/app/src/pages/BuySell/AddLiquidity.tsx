@@ -2,9 +2,19 @@ import React, { useState } from 'react';
 import * as Yup from 'yup';
 import { addMinutes } from 'date-fns';
 import { withTranslation, WithTranslation } from 'react-i18next';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import styled from '@emotion/styled';
 import { Field, Form, Formik } from 'formik';
-import { Button, Grid, Paper, InputAdornment, Typography } from '@material-ui/core';
+import {
+  Button,
+  Grid,
+  Paper,
+  InputAdornment,
+  Typography,
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+} from '@material-ui/core';
 import { useToasts } from 'react-toast-notifications';
 import { useHistory } from 'react-router-dom';
 import Page from '../../components/Page';
@@ -151,58 +161,77 @@ const AddLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
                     }}
                   />
                 </Grid>
-                <Grid item>
-                  <Field
-                    component={FormikTextField}
-                    name="slippage"
-                    id="slippage"
-                    label={t('slippage')}
-                    type="number"
-                    fullWidth
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <Typography>%</Typography>
-                        </InputAdornment>
-                      ),
-                    }}
-                    handleChange={(
-                      e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
-                    ) => {
-                      const { amount } = values;
-                      calcMaxToken(Number(e.target.value), amount);
-                      calcMinPoolPercent(Number(e.target.value), amount);
-                    }}
-                  />
-                </Grid>
                 {maxTokens > -1 && (
                   <Grid item>
                     <Typography>{`${t('maxCtezDeposited')}: ${maxTokens}`}</Typography>
                   </Grid>
                 )}
-                {minPoolPercent > -1 && (
-                  <Grid item>
-                    <Typography>{`${t('minLqtPoolShare')}: ${minPoolPercent}%`}</Typography>
-                  </Grid>
-                )}
-                <Grid item>
-                  <Field
-                    component={FormikTextField}
-                    name="deadline"
-                    id="deadline"
-                    label={t('transactionTimeout')}
-                    className="deadline"
-                    type="number"
-                    fullWidth
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <Typography>{t('minutes')}</Typography>
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
+                <Grid item spacing={3}>
+                  <Accordion>
+                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                      {t('advanceOptions')}
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <Grid
+                        container
+                        spacing={4}
+                        direction="column"
+                        alignContent="center"
+                        justifyContent="center"
+                      >
+                        <Grid item>
+                          <Field
+                            component={FormikTextField}
+                            name="slippage"
+                            id="slippage"
+                            label={t('slippage')}
+                            type="number"
+                            fullWidth
+                            InputProps={{
+                              endAdornment: (
+                                <InputAdornment position="end">
+                                  <Typography>%</Typography>
+                                </InputAdornment>
+                              ),
+                            }}
+                            handleChange={(
+                              e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+                            ) => {
+                              const { amount } = values;
+                              calcMaxToken(Number(e.target.value), amount);
+                              calcMinPoolPercent(Number(e.target.value), amount);
+                            }}
+                          />
+                        </Grid>
+
+                        {minPoolPercent > -1 && (
+                          <Grid item>
+                            <Typography>{`${t('minLqtPoolShare')}: ${minPoolPercent}%`}</Typography>
+                          </Grid>
+                        )}
+                        <Grid item>
+                          <Field
+                            component={FormikTextField}
+                            name="deadline"
+                            id="deadline"
+                            label={t('transactionTimeout')}
+                            className="deadline"
+                            type="number"
+                            fullWidth
+                            InputProps={{
+                              endAdornment: (
+                                <InputAdornment position="end">
+                                  <Typography>{t('minutes')}</Typography>
+                                </InputAdornment>
+                              ),
+                            }}
+                          />
+                        </Grid>
+                      </Grid>
+                    </AccordionDetails>
+                  </Accordion>
                 </Grid>
+
                 <Grid item>
                   <Button
                     variant="contained"
