@@ -76,7 +76,7 @@ const AddLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
   const initialValues: any = {
     slippage: DEFAULT_SLIPPAGE,
     deadline: 20,
-    amount: null,
+    amount: '',
   };
 
   const validationSchema = Yup.object().shape({
@@ -166,7 +166,7 @@ const AddLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
                     <Typography>{`${t('maxCtezDeposited')}: ${maxTokens}`}</Typography>
                   </Grid>
                 )}
-                <Grid item spacing={3}>
+                <Grid item>
                   <Accordion>
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                       {t('advanceOptions')}

@@ -25,7 +25,7 @@ export const Deposit: React.FC = () => {
   const ovenAddress = useSelector((state: RootState) => state.oven.oven?.address);
   const { t } = useTranslation(['common']);
   const initialValues: any = {
-    amount: null,
+    amount: '',
   };
 
   const validationSchema = Yup.object().shape({

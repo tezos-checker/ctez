@@ -63,7 +63,7 @@ const RemoveLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
 
   const initialValues: any = {
     to: userAddress ?? '',
-    lqtBurned: null,
+    lqtBurned: '',
     deadline: 20,
     slippage: DEFAULT_SLIPPAGE,
   };

@@ -31,7 +31,7 @@ export const Liquidate: React.FC = () => {
   const ovenId = useSelector((state: RootState) => state.oven.oven?.ovenId);
   const initialValues: any = {
     ovenOwner: userAddress ?? '',
-    amount: null,
+    amount: '',
     to: userAddress ?? '',
   };
 

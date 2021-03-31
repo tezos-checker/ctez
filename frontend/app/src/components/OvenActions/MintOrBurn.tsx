@@ -47,7 +47,7 @@ export const MintOrBurn: React.FC<MintOrBurnProps> = ({ type }) => {
     amount: Yup.number().min(0.000001).required(t('required')),
   });
   const initialValues: any = {
-    amount: null,
+    amount: '',
   };
 
   const handleFormSubmit = async (data: MintBurnForm) => {

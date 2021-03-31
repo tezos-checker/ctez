@@ -28,7 +28,7 @@ export const Withdraw: React.FC = () => {
   const { addToast } = useToasts();
   const ovenId = useSelector((state: RootState) => state.oven.oven?.ovenId);
   const initialValues: any = {
-    amount: null,
+    amount: '',
     to: userAddress ?? '',
   };
 
