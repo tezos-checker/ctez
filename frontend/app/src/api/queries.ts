@@ -1,8 +1,10 @@
 import { AxiosError } from 'axios';
 import { useQuery } from 'react-query';
 import { getCfmmStorage } from '../contracts/cfmm';
-import { getOvens } from '../contracts/ctez';
+import { getExternalOvenData, getOvens } from '../contracts/ctez';
 import { Baker, BaseStats, CfmmStorage, Oven, UserBalance } from '../interfaces';
+import { CTEZ_ADDRESS } from '../utils/globals';
+import { getExternalOvens } from '../utils/ovenUtils';
 import { getBaseStats } from './contracts';
 import { getDelegates } from './tzkt';
 import { getUserBalance } from './user';
@@ -46,8 +48,17 @@ export const useOvenData = (userAddress?: string) => {
   return useQuery<Oven[], AxiosError, Oven[]>(
     ['ovenData', userAddress],
     async () => {
-      if (userAddress) {
-        const ovens = await getOvens(userAddress);
+      if (userAddress && CTEZ_ADDRESS) {
+        const externalOvens = getExternalOvens(userAddress, CTEZ_ADDRESS);
+        const externals = await getExternalOvenData(externalOvens, userAddress);
+        const userOvens = await getOvens(userAddress);
+        const ovens: Oven[] = [];
+        if (userOvens) {
+          ovens.push(...userOvens);
+        }
+        if (externals) {
+          ovens.push(...externals);
+        }
         const result =
           typeof ovens !== 'undefined'
             ? ovens.filter((data: Oven) => {

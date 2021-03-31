@@ -1,6 +1,7 @@
 import React from 'react';
-import { Box, Button, Grid } from '@material-ui/core';
+import { Box, Button, Chip, Grid } from '@material-ui/core';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
+import { FcImport, FcExport } from 'react-icons/fc';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
@@ -17,6 +18,8 @@ interface OvenCardProps extends Oven {
   imageId: number;
   maxCtez: number;
   isMonthAway?: boolean;
+  isExternal?: boolean;
+  isImported?: boolean;
   action?: () => void | Promise<void>;
 }
 
@@ -45,6 +48,8 @@ export const OvenCard: React.FC<OvenCardProps> = ({
   action,
   maxCtez,
   isMonthAway = false,
+  isExternal = false,
+  isImported = false,
 }) => {
   const classes = useStyles();
   const { t } = useTranslation(['common']);
@@ -61,7 +66,39 @@ export const OvenCard: React.FC<OvenCardProps> = ({
           </Box>
         }
         title={<Address address={address} trimSize="medium" trim />}
-        subheader={`${t('ovenBalance')}: ${ovenBalance}`}
+        subheader={
+          <Grid container direction="column">
+            <Grid item>
+              <Typography size="body1" component="span" color="textSecondary">
+                {`${t('ovenBalance')}: ${ovenBalance}`}
+              </Typography>
+            </Grid>
+            <Grid item>
+              <Chip
+                variant="outlined"
+                size="small"
+                icon={<FcImport />}
+                label={
+                  <Typography size="caption" component="span" color="textSecondary">
+                    {t('imported')}
+                  </Typography>
+                }
+                sx={{ visibility: isImported ? 'visible' : 'hidden' }}
+              />
+              <Chip
+                variant="outlined"
+                size="small"
+                icon={<FcExport />}
+                label={
+                  <Typography size="caption" component="span" color="textSecondary">
+                    {t('external')}
+                  </Typography>
+                }
+                sx={{ visibility: isExternal ? 'visible' : 'hidden', marginLeft: '0.4rem' }}
+              />
+            </Grid>
+          </Grid>
+        }
       />
       <CardMedia className={classes.media} image={`/img/ovens/${imageId}.jpeg`} title="My Oven" />
       <CardContent>

@@ -5,6 +5,7 @@ import { AddLiquidityPage } from '../pages/BuySell/AddLiquidity';
 import { ConversionPage } from '../pages/BuySell/Conversion';
 import { CreateOvenPage } from '../pages/CreateOven/CreateOven';
 import { RemoveLiquidityPage } from '../pages/BuySell/RemoveLiquidity';
+import { TrackOven } from '../pages/TrackOven/TrackOven';
 
 export const routes: ComponentRoute[] = [
   {
@@ -36,6 +37,10 @@ export const routes: ComponentRoute[] = [
   {
     component: BuySell,
     path: '/buy-sell',
+  },
+  {
+    component: TrackOven,
+    path: '/track-oven',
   },
   {
     component: MyOvenPage,

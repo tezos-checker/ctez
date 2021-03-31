@@ -1,4 +1,5 @@
 import { WalletContract } from '@taquito/taquito';
+import { BigNumber } from 'bignumber.js';
 import {
   CTezStorage,
   Depositor,
@@ -103,7 +104,7 @@ export const getOvenDelegate = async (userOven: Oven): Promise<string | null> =>
 
 export const prepareOvenCall = async (
   storage: any,
-  ovenId: number,
+  ovenId: number | BigNumber,
   userAddress: string,
 ): Promise<Oven> => {
   const userOven = await storage.ovens.get({
@@ -112,6 +113,19 @@ export const prepareOvenCall = async (
   });
   const baker = userOven ? await getOvenDelegate(userOven) : null;
   return { ...userOven, baker, ovenId };
+};
+
+export const prepareExternalOvenCall = async (
+  storage: any,
+  ovenAddress: string,
+  userAddress: string,
+): Promise<Oven> => {
+  const ovenContract = await initContract(ovenAddress);
+  const {
+    handle: { id, owner },
+  } = await ovenContract.storage<oven>();
+  const ovenData = await prepareOvenCall(storage, id, owner);
+  return { ...ovenData, isImported: true, isExternal: owner !== userAddress };
 };
 
 export const getOvens = async (userAddress: string): Promise<Oven[] | undefined> => {
@@ -126,6 +140,24 @@ export const getOvens = async (userAddress: string): Promise<Oven[] | undefined>
       ovens.push(prepareOvenCall(storage, i, userAddress));
     }
     const allOvenData = await Promise.all(ovens);
+    return allOvenData;
+  } catch (error) {
+    logger.error(error);
+  }
+};
+
+export const getExternalOvenData = async (
+  externalOvens: string[],
+  userAddress: string,
+): Promise<Oven[] | undefined> => {
+  try {
+    if (!cTez && CTEZ_ADDRESS) {
+      await initCTez(CTEZ_ADDRESS);
+    }
+    const storage: any = await cTez.storage();
+    const allOvenData = await Promise.all(
+      externalOvens.map((item) => prepareExternalOvenCall(storage, item, userAddress)),
+    );
     return allOvenData;
   } catch (error) {
     logger.error(error);

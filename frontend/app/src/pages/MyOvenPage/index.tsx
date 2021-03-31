@@ -18,7 +18,7 @@ export const MyOvenPage: React.FC = () => {
   const { t } = useTranslation(['common', 'header']);
   const dispatch = useDispatch();
   const currentTarget = useSelector((state: RootState) => state.stats.baseStats?.originalTarget);
-  const { showActions, userOvenData } = useSelector((state: RootState) => state.oven);
+  const { showActions } = useSelector((state: RootState) => state.oven);
   const [{ pkh: userAddress }] = useWallet();
   const { data: ovenData, isLoading } = useOvenData(userAddress);
   const { data: baseStats } = useCtezBaseStats();
@@ -26,8 +26,11 @@ export const MyOvenPage: React.FC = () => {
     if (ovenData && ovenData.length > 0) {
       const ovenUserData: UserOvenStats = ovenData.reduce(
         (acc, item) => {
-          acc.ctez += item.ctez_outstanding.shiftedBy(-6).toNumber();
-          acc.xtz += item.tez_balance.shiftedBy(-6).toNumber();
+          if (!item.isExternal) {
+            acc.ctez += item.ctez_outstanding.shiftedBy(-6).toNumber();
+            acc.xtz += item.tez_balance.shiftedBy(-6).toNumber();
+            return acc;
+          }
           return acc;
         },
         { xtz: 0, ctez: 0, totalOvens: ovenData.length },
@@ -51,15 +54,14 @@ export const MyOvenPage: React.FC = () => {
             ovenData
               .sort((a, b) => b.ovenId - a.ovenId)
               .map((ovenValue, index) => {
-                const isMonthAway =
-                  baseStats && userOvenData
-                    ? isMonthFromLiquidation(
-                        userOvenData.ctez,
-                        Number(baseStats?.currentTarget),
-                        userOvenData.xtz,
-                        baseStats?.drift,
-                      )
-                    : false;
+                const isMonthAway = baseStats
+                  ? isMonthFromLiquidation(
+                      ovenValue.ctez_outstanding.toNumber(),
+                      Number(baseStats?.currentTarget),
+                      ovenValue.tez_balance.toNumber(),
+                      baseStats?.drift,
+                    )
+                  : false;
                 const { max } = currentTarget
                   ? getOvenMaxCtez(
                       ovenValue.tez_balance.toString(),
