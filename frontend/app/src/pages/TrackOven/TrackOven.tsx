@@ -12,6 +12,7 @@ import FormikTextField from '../../components/TextField';
 import { useWallet } from '../../wallet/hooks';
 import { addExternalOven, getExternalOvens } from '../../utils/ovenUtils';
 import { CTEZ_ADDRESS } from '../../utils/globals';
+import { isOven } from '../../contracts/ctez';
 
 const PaperStyled = styled(Paper)`
   padding: 2em;
@@ -46,7 +47,14 @@ const TrackOvenComponent: React.FC<WithTranslation> = ({ t }) => {
   });
 
   const handleFormSubmit = async ({ ovenAddress }: AddOvenForm) => {
-    if (userAddress && CTEZ_ADDRESS) {
+    const isValidAddress = await isOven(ovenAddress);
+    if (!isValidAddress) {
+      addToast(t('invalidOvenAddress'), {
+        appearance: 'error',
+        autoDismiss: true,
+      });
+    }
+    if (userAddress && CTEZ_ADDRESS && isValidAddress) {
       addExternalOven(userAddress, CTEZ_ADDRESS, ovenAddress);
       if (!prevOvens.includes(ovenAddress)) {
         addToast(t('ovenAddedSuccess'), {

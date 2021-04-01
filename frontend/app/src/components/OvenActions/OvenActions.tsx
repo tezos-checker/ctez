@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from '@emotion/styled';
+import { useSelector } from 'react-redux';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import AppBar from '@material-ui/core/AppBar';
@@ -21,6 +22,7 @@ import { MintOrBurn } from './MintOrBurn';
 import { Delegate } from './Delegate';
 import { Liquidate } from './Liquidate';
 import { EditDepositor } from './EditDepositor';
+import { RootState } from '../../redux/rootReducer';
 
 interface TabPanelProps {
   index: number;
@@ -67,7 +69,7 @@ export const OvenActions: React.FC = () => {
   const classes = useStyles();
   const { t } = useTranslation(['common']);
   const [value, setValue] = React.useState(0);
-
+  const oven = useSelector((state: RootState) => state.oven.oven);
   const handleChange = (event: React.SyntheticEvent<Element, Event>, newValue: number) => {
     setValue(newValue);
   };
@@ -96,24 +98,28 @@ export const OvenActions: React.FC = () => {
             label={t('withdraw')}
             icon={<FcMoneyTransfer />}
             {...a11yProps(1)}
+            disabled={oven?.isExternal}
           />
           <StyledTab
             className={classes.tab}
             label={t('mint')}
             icon={<FcPrint />}
             {...a11yProps(2)}
+            disabled={oven?.isExternal}
           />
           <StyledTab
             className={classes.tab}
             label={t('repay')}
             icon={<FcPaid />}
             {...a11yProps(3)}
+            disabled={oven?.isExternal}
           />
           <StyledTab
             className={classes.tab}
             label={t('delegate')}
             icon={<FcConferenceCall />}
             {...a11yProps(4)}
+            disabled={oven?.isExternal}
           />
           <StyledTab
             className={classes.tab}
@@ -127,6 +133,7 @@ export const OvenActions: React.FC = () => {
             icon={<FcDecision />}
             {...a11yProps(6)}
             autoCapitalize="false"
+            disabled={oven?.isExternal}
           />
         </Tabs>
       </AppBar>

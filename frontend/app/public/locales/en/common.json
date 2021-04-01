@@ -80,5 +80,6 @@
   "trackOven": "Track oven",
   "ovenAddress": "Oven address",
   "ovenAlreadyExits": "Oven already exists",
-  "ovenAddedSuccess": "Oven added successfully"
+  "ovenAddedSuccess": "Oven added successfully",
+  "invalidOvenAddress": "Invalid oven address"
 }

@@ -17,6 +17,8 @@ export interface OvenSerializable {
   ctez_outstanding: string;
   tez_balance: string;
   baker: string | null;
+  isExternal?: boolean;
+  isImported?: boolean;
 }
 
 export enum EditDepositorOps {

@@ -170,6 +170,17 @@ export const getOvenDepositor = async (ovenAddress: string): Promise<depositors>
   return ovenStorage.depositors;
 };
 
+export const isOven = async (ovenAddress: string): Promise<boolean> => {
+  try {
+    const ovenContract = await initContract(ovenAddress);
+    const ovenStorage: oven = await ovenContract.storage();
+    return typeof ovenStorage?.handle !== 'undefined' && typeof ovenStorage?.admin !== 'undefined';
+  } catch (error) {
+    logger.error(error);
+  }
+  return false;
+};
+
 export const cTezError: ErrorType = {
   0: 'OVEN ALREADY EXISTS',
   1: 'OVEN CAN ONLY BE CALLED FROM MAIN CONTRACT',
