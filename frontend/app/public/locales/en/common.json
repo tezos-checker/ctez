@@ -81,5 +81,6 @@
   "ovenAddress": "Oven address",
   "ovenAlreadyExits": "Oven already exists",
   "ovenAddedSuccess": "Oven added successfully",
-  "invalidOvenAddress": "Invalid oven address"
+  "invalidOvenAddress": "Invalid oven address",
+  "signInToSeeOvens": "Sign-in to see your ovens...."
 }
