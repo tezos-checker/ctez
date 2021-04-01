@@ -86,8 +86,9 @@ export const MyOvenPage: React.FC = () => {
               })}
         </Grid>
       )}
+      {!isLoading && !userAddress && <Box p={3}>{t('signInToSeeOvens')}</Box>}
       {!isLoading && userAddress && ovenData?.length === 0 && <Box p={3}>{t('noOvens')}</Box>}
-      {!isLoading && ovenData && ovenData.length > 0 && (
+      {!isLoading && userAddress && ovenData && ovenData.length > 0 && (
         <Drawer
           open={showActions}
           onClose={() => {
