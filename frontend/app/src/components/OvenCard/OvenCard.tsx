@@ -1,6 +1,6 @@
 import React from 'react';
+import styled from '@emotion/styled';
 import { Box, Button, Chip, Grid } from '@material-ui/core';
-import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import { FcImport, FcExport } from 'react-icons/fc';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -23,21 +23,21 @@ interface OvenCardProps extends Oven {
   action?: () => void | Promise<void>;
 }
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      maxWidth: '20rem',
-      marginLeft: '3rem',
-      [theme.breakpoints.down('sm')]: {
-        marginLeft: '1.5rem',
-      },
-    },
-    media: {
-      height: 0,
-      paddingTop: '12rem',
-    },
-  }),
-);
+export const StyledCard = styled(Card)`
+  max-width: 20rem;
+  margin-left: 3rem;
+  border-radius: 1rem;
+  &.with-border {
+    border-color: rgba(242, 36, 19, 1);
+    border-style: solid;
+    border-width: 0.13rem;
+  }
+`;
+
+export const StyledCardMedia = styled(CardMedia)`
+  height: 0;
+  padding-top: 12rem;
+`;
 
 export const OvenCard: React.FC<OvenCardProps> = ({
   address,
@@ -51,17 +51,15 @@ export const OvenCard: React.FC<OvenCardProps> = ({
   isExternal = false,
   isImported = false,
 }) => {
-  const classes = useStyles();
   const { t } = useTranslation(['common']);
   const maxMintableCtez = maxCtez < 0 ? 0 : maxCtez;
   const outStandingCtez = ctez_outstanding?.shiftedBy(-6).toNumber() ?? 0;
   const ovenBalance = tez_balance?.shiftedBy(-6).toNumber() ?? 0;
-  const circleColor = !isMonthAway ? '#028004' : 'secondary.main';
   return (
-    <Card className={classes.root}>
+    <StyledCard className={isMonthAway ? 'with-border' : undefined}>
       <CardHeader
         avatar={
-          <Box borderColor={circleColor} border={2} borderRadius="50%" color={circleColor}>
+          <Box>
             <Identicon seed={address} type="tzKtCat" />
           </Box>
         }
@@ -100,7 +98,7 @@ export const OvenCard: React.FC<OvenCardProps> = ({
           </Grid>
         }
       />
-      <CardMedia className={classes.media} image={`/img/ovens/${imageId}.jpeg`} title="My Oven" />
+      <StyledCardMedia image={`/img/ovens/${imageId}.jpeg`} />
       <CardContent>
         <Grid container direction="column">
           {baker && (
@@ -119,6 +117,11 @@ export const OvenCard: React.FC<OvenCardProps> = ({
             <Grid item>
               <Typography size="body1" component="span" color="textSecondary">
                 {t('currentUtilization')}: {((outStandingCtez / maxMintableCtez) * 100).toFixed(2)}%
+                {isMonthAway && (
+                  <span role="img" aria-label="alert">
+                    ⚠️
+                  </span>
+                )}
               </Typography>
             </Grid>
           )}
@@ -138,6 +141,6 @@ export const OvenCard: React.FC<OvenCardProps> = ({
           </Typography>
         </Button>
       </CardActions>
-    </Card>
+    </StyledCard>
   );
 };

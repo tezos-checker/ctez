@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, IconButton } from '@material-ui/core';
+import { CircularProgress, Container, IconButton } from '@material-ui/core';
 import { ArrowBack } from '@material-ui/icons';
 import { useDispatch } from 'react-redux';
 import styled from '@emotion/styled';
@@ -16,6 +16,7 @@ import { useCtezBaseStats } from '../../api/queries';
 
 const ContainerStyled = styled(Container)`
   padding-top: 1em;
+  padding-bottom: 2rem;
 `;
 
 const BUY_SELL_STATS = ['totalLiquidity'];
@@ -47,7 +48,7 @@ export const Page: React.FC<PageProps> = ({ title, children, description, showSt
 
   const [statsData, setStatsData] = useState<StatItem[]>([]);
   const dispatch = useDispatch();
-  const { data: stats } = useCtezBaseStats();
+  const { data: stats, isLoading } = useCtezBaseStats();
 
   useEffect(() => {
     if (stats) {
@@ -72,22 +73,28 @@ export const Page: React.FC<PageProps> = ({ title, children, description, showSt
         <title>{pageTitle}</title>
         {description && <meta name="description" content={description} />}
       </Helmet>
-      <Header onClick={() => history.push('/')} stats={statsData} />
-      {title && (
-        <ContainerStyled>
-          <IconButton
-            onClick={() => {
-              state?.backPath ? history.push(state.backPath) : history.goBack();
-            }}
-          >
-            <ArrowBack />
-          </IconButton>
-          <Typography size="2rem" component="h1">
-            {title}
-          </Typography>
-        </ContainerStyled>
+      {!isLoading ? (
+        <>
+          <Header onClick={() => history.push('/')} stats={statsData} />
+          {title && (
+            <ContainerStyled>
+              <IconButton
+                onClick={() => {
+                  state?.backPath ? history.push(state.backPath) : history.goBack();
+                }}
+              >
+                <ArrowBack />
+              </IconButton>
+              <Typography size="2rem" component="h1">
+                {title}
+              </Typography>
+            </ContainerStyled>
+          )}
+          <ContainerStyled>{!isLoading ? children : <CircularProgress />}</ContainerStyled>
+        </>
+      ) : (
+        <CircularProgress />
       )}
-      <ContainerStyled>{children}</ContainerStyled>
     </>
   );
 };

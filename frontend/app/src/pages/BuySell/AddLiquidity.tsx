@@ -166,6 +166,11 @@ const AddLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
                     <Typography>{`${t('maxCtezDeposited')}: ${maxTokens}`}</Typography>
                   </Grid>
                 )}
+                {minPoolPercent > -1 && (
+                  <Grid item>
+                    <Typography>{`${t('minLqtPoolShare')}: ${minPoolPercent}%`}</Typography>
+                  </Grid>
+                )}
                 <Grid item>
                   <Accordion>
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -204,11 +209,6 @@ const AddLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
                           />
                         </Grid>
 
-                        {minPoolPercent > -1 && (
-                          <Grid item>
-                            <Typography>{`${t('minLqtPoolShare')}: ${minPoolPercent}%`}</Typography>
-                          </Grid>
-                        )}
                         <Grid item>
                           <Field
                             component={FormikTextField}
