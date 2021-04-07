@@ -3,7 +3,7 @@ import { validateContractAddress } from '@taquito/utils';
 import * as Yup from 'yup';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import styled from '@emotion/styled';
-import { Field, Form, Formik } from 'formik';
+import { Field, Form, Formik, FormikHelpers } from 'formik';
 import { Button, Grid, Paper } from '@material-ui/core';
 import { useToasts } from 'react-toast-notifications';
 import { useHistory } from 'react-router-dom';
@@ -48,7 +48,10 @@ const TrackOvenComponent: React.FC<WithTranslation> = ({ t }) => {
       .required(t('required')),
   });
 
-  const handleFormSubmit = async ({ ovenAddress }: AddOvenForm) => {
+  const handleFormSubmit = async (
+    { ovenAddress }: AddOvenForm,
+    formHelper: FormikHelpers<AddOvenForm>,
+  ) => {
     const isValidAddress = await isOven(ovenAddress);
     if (!isValidAddress) {
       addToast(t('invalidOvenAddress'), {
@@ -59,11 +62,12 @@ const TrackOvenComponent: React.FC<WithTranslation> = ({ t }) => {
     if (userAddress && CTEZ_ADDRESS && isValidAddress) {
       addExternalOven(userAddress, CTEZ_ADDRESS, ovenAddress);
       if (!prevOvens.includes(ovenAddress)) {
+        formHelper.resetForm();
         addToast(t('ovenAddedSuccess'), {
           appearance: 'success',
           autoDismiss: true,
-          onDismiss: () => history.push('/'),
         });
+        history.push('/');
       }
     }
   };
@@ -76,7 +80,7 @@ const TrackOvenComponent: React.FC<WithTranslation> = ({ t }) => {
         onSubmit={handleFormSubmit}
         validateOnMount
       >
-        {({ isSubmitting, isValid, values }) => (
+        {({ isSubmitting, isValid }) => (
           <PaperStyled>
             <Form>
               <Grid

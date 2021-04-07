@@ -78,25 +78,25 @@ const OvenCardComponent: React.FC<OvenCardProps> = ({
               <Chip
                 variant="outlined"
                 size="small"
-                icon={<FcImport />}
-                label={
-                  <Typography size="caption" component="span" color="textSecondary">
-                    {t('imported')}
-                  </Typography>
-                }
-                sx={{ visibility: isImported ? 'visible' : 'hidden' }}
-                onDelete={removeExternalAction}
-              />
-              <Chip
-                variant="outlined"
-                size="small"
                 icon={<FcExport />}
                 label={
                   <Typography size="caption" component="span" color="textSecondary">
                     {t('external')}
                   </Typography>
                 }
-                sx={{ visibility: isExternal ? 'visible' : 'hidden', marginLeft: '0.4rem' }}
+                sx={{ visibility: isExternal ? 'visible' : 'hidden' }}
+              />
+              <Chip
+                variant="outlined"
+                size="small"
+                icon={<FcImport />}
+                label={
+                  <Typography size="caption" component="span" color="textSecondary">
+                    {t('imported')}
+                  </Typography>
+                }
+                sx={{ visibility: isImported ? 'visible' : 'hidden', marginLeft: '0.4rem' }}
+                onDelete={removeExternalAction}
               />
             </Grid>
           </Grid>
@@ -133,9 +133,7 @@ const OvenCardComponent: React.FC<OvenCardProps> = ({
       </CardContent>
       <CardActions disableSpacing>
         <Button
-          onClick={() => {
-            action && action();
-          }}
+          onClick={action}
           disableRipple
           disableFocusRipple
           endIcon={<ExpandMoreIcon color="action" />}
