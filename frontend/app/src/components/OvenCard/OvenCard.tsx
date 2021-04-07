@@ -21,10 +21,12 @@ interface OvenCardProps extends Oven {
   isExternal?: boolean;
   isImported?: boolean;
   action?: () => void | Promise<void>;
+  removeExternalAction?: () => void | Promise<void>;
 }
 
 export const StyledCard = styled(Card)`
   max-width: 20rem;
+  min-width: 20rem
   margin-left: 3rem;
   border-radius: 1rem;
   &.with-border {
@@ -39,7 +41,7 @@ export const StyledCardMedia = styled(CardMedia)`
   padding-top: 12rem;
 `;
 
-export const OvenCard: React.FC<OvenCardProps> = ({
+const OvenCardComponent: React.FC<OvenCardProps> = ({
   address,
   baker,
   ctez_outstanding,
@@ -50,6 +52,7 @@ export const OvenCard: React.FC<OvenCardProps> = ({
   isMonthAway = false,
   isExternal = false,
   isImported = false,
+  removeExternalAction,
 }) => {
   const { t } = useTranslation(['common']);
   const maxMintableCtez = maxCtez < 0 ? 0 : maxCtez;
@@ -82,6 +85,7 @@ export const OvenCard: React.FC<OvenCardProps> = ({
                   </Typography>
                 }
                 sx={{ visibility: isImported ? 'visible' : 'hidden' }}
+                onDelete={removeExternalAction}
               />
               <Chip
                 variant="outlined"
@@ -144,3 +148,5 @@ export const OvenCard: React.FC<OvenCardProps> = ({
     </StyledCard>
   );
 };
+
+export const OvenCard = React.memo(OvenCardComponent);

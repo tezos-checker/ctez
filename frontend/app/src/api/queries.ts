@@ -3,8 +3,6 @@ import { useQuery } from 'react-query';
 import { getCfmmStorage } from '../contracts/cfmm';
 import { getExternalOvenData, getOvens } from '../contracts/ctez';
 import { Baker, BaseStats, CfmmStorage, Oven, UserBalance } from '../interfaces';
-import { CTEZ_ADDRESS } from '../utils/globals';
-import { getExternalOvens } from '../utils/ovenUtils';
 import { getBaseStats } from './contracts';
 import { getDelegates } from './tzkt';
 import { getUserBalance } from './user';
@@ -44,12 +42,11 @@ export const useCfmmStorage = () => {
   );
 };
 
-export const useOvenData = (userAddress?: string) => {
+export const useOvenData = (userAddress?: string, externalOvens: string[] = []) => {
   return useQuery<Oven[], AxiosError, Oven[]>(
-    ['ovenData', userAddress],
+    ['ovenData', userAddress, externalOvens.join()],
     async () => {
-      if (userAddress && CTEZ_ADDRESS) {
-        const externalOvens = getExternalOvens(userAddress, CTEZ_ADDRESS);
+      if (userAddress) {
         const externals = await getExternalOvenData(externalOvens, userAddress);
         const userOvens = await getOvens(userAddress);
         const ovens: Oven[] = [];

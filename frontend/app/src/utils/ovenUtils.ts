@@ -29,6 +29,17 @@ export const addExternalOven = (
   localStorage.setItem(`extOven:${userAddress}:${cTezAddress}`, prevOvens.join(','));
 };
 
+export const removeExternalOven = (
+  userAddress: string,
+  cTezAddress: string,
+  ovenAddress: string,
+): string[] => {
+  const prevOvens = getExternalOvens(userAddress, cTezAddress);
+  const newList = prevOvens.filter((o) => o !== ovenAddress);
+  localStorage.setItem(`extOven:${userAddress}:${cTezAddress}`, newList.join(','));
+  return newList;
+};
+
 export const toSerializeableOven = (oven: Oven): OvenSerializable => {
   return {
     ...oven,
