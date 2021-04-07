@@ -47,13 +47,15 @@ export const useOvenData = (userAddress?: string, externalOvens: string[] = []) 
     ['ovenData', userAddress, externalOvens.join()],
     async () => {
       if (userAddress) {
-        const externals = await getExternalOvenData(externalOvens, userAddress);
         const userOvens = await getOvens(userAddress);
         const ovens: Oven[] = [];
-        if (userOvens) {
+        if (userOvens && userOvens.length > 0) {
           ovens.push(...userOvens);
         }
-        if (externals) {
+        const currentOvens = userOvens?.map((o) => o.address) ?? [];
+        const filteredOvens = externalOvens.filter((o) => !currentOvens.includes(o));
+        const externals = await getExternalOvenData(filteredOvens, userAddress);
+        if (externals && externals.length > 0) {
           ovens.push(...externals);
         }
         const result =

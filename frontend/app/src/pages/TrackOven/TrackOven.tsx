@@ -13,6 +13,7 @@ import { useWallet } from '../../wallet/hooks';
 import { addExternalOven, getExternalOvens } from '../../utils/ovenUtils';
 import { CTEZ_ADDRESS } from '../../utils/globals';
 import { isOven } from '../../contracts/ctez';
+import { useOvenData } from '../../api/queries';
 
 const PaperStyled = styled(Paper)`
   padding: 2em;
@@ -31,7 +32,8 @@ const TrackOvenComponent: React.FC<WithTranslation> = ({ t }) => {
     ovenAddress: '',
   };
 
-  const prevOvens = userAddress && CTEZ_ADDRESS ? getExternalOvens(userAddress, CTEZ_ADDRESS) : [];
+  const ovenData = useOvenData(userAddress);
+  const prevOvens = ovenData.data?.map((o) => o.address) ?? [];
 
   const validationSchema = Yup.object().shape({
     ovenAddress: Yup.string()
