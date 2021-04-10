@@ -29,9 +29,9 @@ export const Liquidate: React.FC = () => {
   const { addToast } = useToasts();
   const history = useHistory();
   const ovenId = useSelector((state: RootState) => state.oven.oven?.ovenId);
-  const initialValues: LiquidateForm = {
+  const initialValues: any = {
     ovenOwner: userAddress ?? '',
-    amount: 0,
+    amount: '',
     to: userAddress ?? '',
   };
 
@@ -114,6 +114,7 @@ export const Liquidate: React.FC = () => {
                     component={FormikTextField}
                     name="amount"
                     id="amount"
+                    placeholder="0.8"
                     label={t('amountCtez')}
                     className="amount"
                     type="number"

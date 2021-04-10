@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Container, IconButton } from '@material-ui/core';
+import { CircularProgress, Container, IconButton } from '@material-ui/core';
 import { ArrowBack } from '@material-ui/icons';
-import { AxiosError } from 'axios';
-import { useQuery } from 'react-query';
 import { useDispatch } from 'react-redux';
 import styled from '@emotion/styled';
 import { Helmet } from 'react-helmet-async';
@@ -12,14 +10,13 @@ import { DEFAULT_LANGUAGE } from '../../i18n';
 import { APP_NAME, NETWORK } from '../../utils/globals';
 import { Header } from '../Header';
 import { Typography } from '../Typography';
-
-import { getBaseStats } from '../../api/contracts';
-import { BaseStats } from '../../interfaces';
 import { StatsSlice } from '../../redux/slices/StatsSlice';
 import { StatItem } from '../Header/Header';
+import { useCtezBaseStats } from '../../api/queries';
 
 const ContainerStyled = styled(Container)`
   padding-top: 1em;
+  padding-bottom: 2rem;
 `;
 
 const BUY_SELL_STATS = ['totalLiquidity'];
@@ -51,12 +48,7 @@ export const Page: React.FC<PageProps> = ({ title, children, description, showSt
 
   const [statsData, setStatsData] = useState<StatItem[]>([]);
   const dispatch = useDispatch();
-  const { data: stats, isLoading } = useQuery<BaseStats, AxiosError, BaseStats>(
-    ['baseStats'],
-    async () => {
-      return getBaseStats();
-    },
-  );
+  const { data: stats, isLoading } = useCtezBaseStats();
 
   useEffect(() => {
     if (stats) {
@@ -81,22 +73,28 @@ export const Page: React.FC<PageProps> = ({ title, children, description, showSt
         <title>{pageTitle}</title>
         {description && <meta name="description" content={description} />}
       </Helmet>
-      <Header onClick={() => history.push('/')} stats={statsData} />
-      {title && (
-        <ContainerStyled>
-          <IconButton
-            onClick={() => {
-              state?.backPath ? history.push(state.backPath) : history.goBack();
-            }}
-          >
-            <ArrowBack />
-          </IconButton>
-          <Typography size="2rem" component="h1">
-            {title}
-          </Typography>
-        </ContainerStyled>
+      {!isLoading ? (
+        <>
+          <Header onClick={() => history.push('/')} stats={statsData} />
+          {title && (
+            <ContainerStyled>
+              <IconButton
+                onClick={() => {
+                  state?.backPath ? history.push(state.backPath) : history.goBack();
+                }}
+              >
+                <ArrowBack />
+              </IconButton>
+              <Typography size="2rem" component="h1">
+                {title}
+              </Typography>
+            </ContainerStyled>
+          )}
+          <ContainerStyled>{!isLoading ? children : <CircularProgress />}</ContainerStyled>
+        </>
+      ) : (
+        <CircularProgress />
       )}
-      <ContainerStyled>{children}</ContainerStyled>
     </>
   );
 };

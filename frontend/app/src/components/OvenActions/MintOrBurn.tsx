@@ -12,6 +12,7 @@ import FormikTextField from '../TextField';
 import { CTezIcon } from '../CTezIcon/CTezIcon';
 import { getOvenMaxCtez } from '../../utils/ovenUtils';
 import Typography from '../Typography';
+import { logger } from '../../utils/logger';
 
 interface MintOrBurnProps {
   type: 'mint' | 'repay';
@@ -45,8 +46,8 @@ export const MintOrBurn: React.FC<MintOrBurnProps> = ({ type }) => {
   const validationSchema = Yup.object().shape({
     amount: Yup.number().min(0.000001).required(t('required')),
   });
-  const initialValues: MintBurnForm = {
-    amount: 0,
+  const initialValues: any = {
+    amount: '',
   };
 
   const handleFormSubmit = async (data: MintBurnForm) => {
@@ -61,6 +62,7 @@ export const MintOrBurn: React.FC<MintOrBurnProps> = ({ type }) => {
           });
         }
       } catch (error) {
+        logger.warn(error);
         const errorText = cTezError[error.data[1].with.int as number] || t('txFailed');
         addToast(errorText, {
           appearance: 'error',
@@ -109,6 +111,7 @@ export const MintOrBurn: React.FC<MintOrBurnProps> = ({ type }) => {
                     component={FormikTextField}
                     name="amount"
                     id="amount"
+                    placeholder="0.8"
                     label={t('amountCtez')}
                     className="amount"
                     InputProps={{

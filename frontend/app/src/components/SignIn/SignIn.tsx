@@ -1,9 +1,7 @@
 import { Box, Button, Grid } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from '@emotion/styled';
-import { AxiosError } from 'axios';
-import { useQuery } from 'react-query';
-import { GiChickenOven } from 'react-icons/gi';
+import { GiChickenOven, GiDeerTrack, GiWallet } from 'react-icons/gi';
 import React, { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -13,10 +11,9 @@ import { getBeaconInstance } from '../../wallet';
 import { useWallet } from '../../wallet/hooks';
 import Identicon from '../Identicon';
 import ProfilePopover from '../ProfilePopover';
-import { UserBalance } from '../../interfaces';
-import { getUserBalance } from '../../api/user';
 import { OvenSlice } from '../../redux/slices/OvenSlice';
 import { RootState } from '../../redux/rootReducer';
+import { useUserBalance } from '../../api/queries';
 
 const SignedInBoxStyled = styled(Box)`
   cursor: pointer;
@@ -28,14 +25,7 @@ export const SignIn: React.FC = () => {
   const [{ wallet, pkh: userAddress, network }, setWallet, disconnectWallet] = useWallet();
   const [isOpen, setOpen] = useState(false);
   const userOvenData = useSelector((state: RootState) => state.oven.userOvenData);
-  const { data: balance } = useQuery<UserBalance | undefined, AxiosError, UserBalance | undefined>(
-    [`user-balance-${userAddress}`],
-    () => {
-      if (userAddress) {
-        return getUserBalance(userAddress);
-      }
-    },
-  );
+  const { data: balance } = useUserBalance(userAddress);
   const connectWallet = async () => {
     const newWallet = await getBeaconInstance(APP_NAME, true, NETWORK);
     newWallet?.wallet && setWalletProvider(newWallet.wallet);
@@ -49,8 +39,19 @@ export const SignIn: React.FC = () => {
 
   return (
     <div>
-      <Grid container direction="row" style={{ flexWrap: 'nowrap' }}>
-        <Box component="span" pr={1}>
+      <Grid container direction="row" style={{ flexWrap: 'nowrap' }} spacing={1}>
+        <Grid item>
+          <Button
+            variant="outlined"
+            component={RouterLink}
+            to="/track-oven"
+            endIcon={<GiDeerTrack />}
+            sx={{ textTransform: 'none' }}
+          >
+            {t('trackOven')}
+          </Button>
+        </Grid>
+        <Grid item>
           <Button
             variant="outlined"
             component={RouterLink}
@@ -60,13 +61,18 @@ export const SignIn: React.FC = () => {
           >
             {t('createOven')}
           </Button>
-        </Box>
+        </Grid>
         {!wallet ? (
-          <Box component="span">
-            <Button variant="outlined" onClick={connectWallet} sx={{ textTransform: 'none' }}>
+          <Grid item>
+            <Button
+              variant="outlined"
+              onClick={connectWallet}
+              sx={{ textTransform: 'none' }}
+              endIcon={<GiWallet />}
+            >
               {t('signIn')}
             </Button>
-          </Box>
+          </Grid>
         ) : (
           <Grid item>
             <SignedInBoxStyled>

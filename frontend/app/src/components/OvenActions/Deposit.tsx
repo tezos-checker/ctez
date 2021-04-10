@@ -24,8 +24,8 @@ export const Deposit: React.FC = () => {
   const { addToast } = useToasts();
   const ovenAddress = useSelector((state: RootState) => state.oven.oven?.address);
   const { t } = useTranslation(['common']);
-  const initialValues: DepositForm = {
-    amount: 0,
+  const initialValues: any = {
+    amount: '',
   };
 
   const validationSchema = Yup.object().shape({
@@ -75,6 +75,7 @@ export const Deposit: React.FC = () => {
                     component={FormikTextField}
                     name="amount"
                     id="amount"
+                    placeholder="0.8"
                     label={t('amountXtz')}
                     className="amount"
                     InputProps={{

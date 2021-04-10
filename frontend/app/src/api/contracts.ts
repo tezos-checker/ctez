@@ -34,5 +34,20 @@ export const getBaseStats = async (): Promise<BaseStats> => {
     currentAnnualDrift: (currentAnnualDrift * 100).toFixed(2),
     annualDriftPastWeek: (annualDriftPastWeek * 100).toFixed(2),
     totalLiquidity: totalLiquidity.toFixed(2),
+    drift,
   };
+};
+
+export const isMonthFromLiquidation = (
+  outstandingCtez: number,
+  target: number,
+  tezBalance: number,
+  currentDrift: number,
+): boolean => {
+  return (
+    outstandingCtez *
+      target ** (((1 + currentDrift / 2 ** 48) * 365.25 * 24 * 3600) / 12) *
+      (16 / 15) >=
+    tezBalance
+  );
 };

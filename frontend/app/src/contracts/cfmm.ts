@@ -34,8 +34,7 @@ export const getTokenAllowanceOps = async (
   tokenType: FA12TokenType = 'ctez',
 ): Promise<WalletParamsWithKind[]> => {
   const batchOps: WalletParamsWithKind[] = [];
-  const maxTokensDeposited =
-    tokenType === 'ctez' ? new BigNumber(newAllowance).shiftedBy(6) : new BigNumber(newAllowance);
+  const maxTokensDeposited = tokenType === 'ctez' ? newAllowance * 1e6 : newAllowance;
   const storage: any = await tokenContract.storage();
   const currentAllowance = new BigNumber(
     (await storage.allowances.get({ owner: userAddress, spender: CFMM_ADDRESS })) ?? 0,
@@ -108,8 +107,8 @@ export const removeLiquidity = async (
         .removeLiquidity(
           args.to,
           args.lqtBurned,
-          new BigNumber(args.minCashWithdrawn).shiftedBy(6),
-          new BigNumber(args.minTokensWithdrawn).shiftedBy(6),
+          args.minCashWithdrawn * 1e6,
+          args.minTokensWithdrawn * 1e6,
           args.deadline.toISOString(),
         )
         .toTransferParams(),
@@ -127,9 +126,9 @@ export const cashToToken = async (args: CashToTokenParams): Promise<string> => {
   const hash = await executeMethod(
     cfmm,
     'cashToToken',
-    [args.to, new BigNumber(args.minTokensBought).shiftedBy(6), args.deadline.toISOString()],
+    [args.to, args.minTokensBought * 1e6, args.deadline.toISOString()],
     undefined,
-    new BigNumber(args.amount).shiftedBy(6).toNumber(),
+    args.amount * 1e6,
     true,
   );
   return hash;
@@ -154,8 +153,8 @@ export const tokenToCash = async (
       ...cfmm.methods
         .tokenToCash(
           args.to,
-          new BigNumber(args.tokensSold).shiftedBy(6),
-          new BigNumber(args.minCashBought).shiftedBy(6),
+          args.tokensSold * 1e6,
+          args.minCashBought * 1e6,
           args.deadline.toISOString(),
         )
         .toTransferParams(),
@@ -172,9 +171,9 @@ export const tokenToCash = async (
 export const tokenToToken = async (args: TokenToTokenParams): Promise<string> => {
   const hash = await executeMethod(cfmm, 'tokenToToken', [
     args.outputCfmmContract,
-    new BigNumber(args.minTokensBought).shiftedBy(6),
+    args.minTokensBought * 1e6,
     args.to,
-    new BigNumber(args.tokensSold).shiftedBy(6),
+    args.tokensSold * 1e6,
     args.deadline.toISOString(),
   ]);
   return hash;

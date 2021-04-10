@@ -4,8 +4,6 @@ import * as Yup from 'yup';
 import { addMinutes } from 'date-fns';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import styled from '@emotion/styled';
-import { useQuery } from 'react-query';
-import { AxiosError } from 'axios';
 import { Field, Form, Formik } from 'formik';
 import {
   Button,
@@ -23,12 +21,12 @@ import { useHistory } from 'react-router-dom';
 import Page from '../../components/Page';
 import FormikTextField from '../../components/TextField';
 import { useWallet } from '../../wallet/hooks';
-import { CfmmStorage } from '../../interfaces';
-import { cashToToken, cfmmError, getCfmmStorage, tokenToCash } from '../../contracts/cfmm';
+import { cashToToken, cfmmError, tokenToCash } from '../../contracts/cfmm';
 import { TezosIcon } from '../../components/TezosIcon';
 import { CTezIcon } from '../../components/CTezIcon/CTezIcon';
 import { logger } from '../../utils/logger';
 import { DEFAULT_SLIPPAGE } from '../../utils/globals';
+import { useCfmmStorage } from '../../api/queries';
 
 interface ConversionParams extends WithTranslation {
   formType: 'tezToCtez' | 'ctezToTez';
@@ -51,16 +49,7 @@ const ConvertComponent: React.FC<ConversionParams> = ({ t, formType }) => {
   const history = useHistory();
   const [minBuyValue, setMinBuyValue] = useState(0);
   const [minWithoutSlippage, setWithoutSlippage] = useState(0);
-  const { data: cfmmStorage } = useQuery<CfmmStorage, AxiosError, CfmmStorage>(
-    ['cfmmStorage'],
-    async () => {
-      return getCfmmStorage();
-    },
-    {
-      refetchInterval: 30000,
-      staleTime: 3000,
-    },
-  );
+  const { data: cfmmStorage } = useCfmmStorage();
 
   const calcMinBuyValue = (slippage: number, amount: number) => {
     if (cfmmStorage) {
@@ -93,7 +82,10 @@ const ConvertComponent: React.FC<ConversionParams> = ({ t, formType }) => {
       .required(t('required')),
     slippage: Yup.number().min(0).optional(),
     deadline: Yup.number().min(0).required(t('required')),
-    amount: Yup.number().min(0.000001).required(t('required')),
+    amount: Yup.number()
+      .min(0.000001, `${t('shouldMinimum')} 0.000001`)
+      .positive(t('shouldPositive'))
+      .required(t('required')),
   });
 
   const handleFormSubmit = async (formData: ConversionFormParams) => {

@@ -7,6 +7,8 @@ export interface Oven {
   ctez_outstanding: BigNumber;
   tez_balance: BigNumber;
   baker: string | null;
+  isExternal?: boolean;
+  isImported?: boolean;
 }
 
 export interface OvenSerializable {
@@ -15,6 +17,8 @@ export interface OvenSerializable {
   ctez_outstanding: string;
   tez_balance: string;
   baker: string | null;
+  isExternal?: boolean;
+  isImported?: boolean;
 }
 
 export enum EditDepositorOps {

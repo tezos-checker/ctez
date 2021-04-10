@@ -12,9 +12,11 @@ $TZC create mockup
 deployment_key="bootstrap1"
 deployment_key_address=`$TZC show address ${deployment_key} | head -n 1 | awk '{print $2}'`
 
+DEPLOYMENT_DATE=$(date '+%Y-%m-%d')
+
 # Build and deploy ctez
 ligo compile-contract ctez.mligo main > _build/ctez.tz
-ligo compile-storage ctez.mligo main "$(<ctez_initial_storage.mligo)" > _build/ctez_storage.tz
+ligo compile-storage ctez.mligo main "$(sed s/DEPLOYMENT_DATE/${DEPLOYMENT_DATE}/ < ctez_initial_storage.mligo)" > _build/ctez_storage.tz
 $TZC originate contract ctez transferring 0 from $deployment_key running 'file:_build/ctez.tz' --init "$(<_build/ctez_storage.tz)" --burn-cap 10
 CTEZ_ADDRESS=`$TZC show known contract ctez`
 

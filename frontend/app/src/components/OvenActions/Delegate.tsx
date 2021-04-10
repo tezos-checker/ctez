@@ -3,16 +3,13 @@ import { validateAddress } from '@taquito/utils';
 import * as Yup from 'yup';
 import { useSelector } from 'react-redux';
 import styled from '@emotion/styled';
-import { AxiosError } from 'axios';
-import { useQuery } from 'react-query';
 import { Field, Form, Formik } from 'formik';
 import { Button, Grid, Paper } from '@material-ui/core';
 import { useToasts } from 'react-toast-notifications';
-import { getDelegates } from '../../api/tzkt';
 import { cTezError, delegate } from '../../contracts/ctez';
 import { FormikAutocomplete } from '../Autocomplete';
-import { Baker } from '../../interfaces';
 import { RootState } from '../../redux/rootReducer';
+import { useDelegates } from '../../api/queries';
 
 interface DelegateForm {
   delegate: string;
@@ -24,9 +21,7 @@ const PaperStyled = styled(Paper)`
 
 export const Delegate: React.FC = () => {
   const { t } = useTranslation(['common']);
-  const { data: delegates } = useQuery<Baker[], AxiosError, Baker[]>(['delegates'], () => {
-    return getDelegates();
-  });
+  const { data: delegates } = useDelegates();
   const ovenAddress = useSelector((state: RootState) => state.oven.oven?.address);
   const { addToast } = useToasts();
   const initialValues: DelegateForm = {
