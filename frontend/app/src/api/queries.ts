@@ -7,15 +7,15 @@ import { getBaseStats } from './contracts';
 import { getDelegates } from './tzkt';
 import { getUserBalance } from './user';
 
-export const useDelegates = () => {
+export const useDelegates = (userAddress?: string) => {
   return useQuery<Baker[], AxiosError, Baker[]>(['delegates'], () => {
-    return getDelegates();
+    return getDelegates(userAddress);
   });
 };
 
-export const useCtezBaseStats = () => {
+export const useCtezBaseStats = (userAddress?: string) => {
   return useQuery<BaseStats, AxiosError, BaseStats>(['baseStats'], async () => {
-    return getBaseStats();
+    return getBaseStats(userAddress);
   });
 };
 

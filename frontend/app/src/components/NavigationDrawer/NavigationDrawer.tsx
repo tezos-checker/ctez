@@ -82,9 +82,14 @@ const useStyles = makeStyles((theme: Theme) =>
 interface NavigationDrawerProps {
   open?: boolean;
   handleDrawerClose: () => void | Promise<void>;
+  showSettings?: boolean;
 }
 
-export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({ open, handleDrawerClose }) => {
+export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({
+  open,
+  handleDrawerClose,
+  showSettings,
+}) => {
   const classes = useStyles();
   const theme = useTheme();
   const history = useHistory();
@@ -119,6 +124,14 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({ open, handle
           </ListItemIcon>
           <ListItemText primary={t('buyOrSell')} />
         </ListItem>
+        {showSettings && (
+          <ListItem button onClick={() => history.push('/settings')}>
+            <ListItemIcon>
+              <GiSwapBag />
+            </ListItemIcon>
+            <ListItemText primary={t('settings')} />
+          </ListItem>
+        )}
       </List>
     </Drawer>
   );

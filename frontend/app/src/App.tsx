@@ -13,6 +13,7 @@ import { AppRouter } from './router';
 import { initCTez } from './contracts/ctez';
 import { initCfmm } from './contracts/cfmm';
 import { logger } from './utils/logger';
+import { getNodePort, getNodeURL } from './utils/settingUtils';
 
 const queryClient = new QueryClient();
 
@@ -35,10 +36,14 @@ const App: React.FC = () => {
     }
   };
 
+  const nodeUrl = wallet.pkh ? getNodeURL(wallet.pkh) : RPC_URL;
+  const nodePort = wallet.pkh ? getNodePort(wallet.pkh) : RPC_PORT;
+
   useEffect(() => {
     const setup = async () => {
       try {
-        initTezos(RPC_URL, RPC_PORT);
+        console.log(nodeUrl ?? RPC_URL, nodePort ?? RPC_PORT);
+        initTezos(nodeUrl ?? RPC_URL, nodePort ?? RPC_PORT);
         await checkWalletConnection();
         CTEZ_ADDRESS && (await initCTez(CTEZ_ADDRESS));
         CFMM_ADDRESS && (await initCfmm(CFMM_ADDRESS));
@@ -47,7 +52,7 @@ const App: React.FC = () => {
       }
     };
     setup();
-  }, []);
+  }, [wallet.pkh, nodeUrl, nodePort]);
 
   return (
     <Suspense fallback="Loading...">
