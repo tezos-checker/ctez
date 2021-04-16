@@ -1,7 +1,8 @@
+import BigNumber from 'bignumber.js';
 import { sub, format, differenceInDays } from 'date-fns';
-import { getCfmmStorage } from '../contracts/cfmm';
+import { getCfmmStorage, getLQTContractStorage } from '../contracts/cfmm';
 import { getCtezStorage } from '../contracts/ctez';
-import { BaseStats, CTezTzktStorage } from '../interfaces';
+import { BaseStats, CTezTzktStorage, UserLQTData } from '../interfaces';
 import { CONTRACT_DEPLOYMENT_DATE } from '../utils/globals';
 import { getCTezTzktStorage, getLastBlockOfTheDay } from './tzkt';
 
@@ -35,6 +36,19 @@ export const getBaseStats = async (): Promise<BaseStats> => {
     annualDriftPastWeek: (annualDriftPastWeek * 100).toFixed(2),
     totalLiquidity: totalLiquidity.toFixed(2),
     drift,
+  };
+};
+
+export const getUserLQTData = async (userAddress: string): Promise<UserLQTData> => {
+  const cfmmStorage = await getCfmmStorage();
+  const lqtTokenStorage = await getLQTContractStorage();
+  const userLqtBalance: BigNumber =
+    (await lqtTokenStorage.tokens.get(userAddress)) ?? new BigNumber(0);
+  return {
+    lqt: userLqtBalance.toNumber(),
+    lqtShare: Number(
+      ((userLqtBalance.toNumber() / cfmmStorage.lqtTotal.toNumber()) * 100).toFixed(2),
+    ),
   };
 };
 

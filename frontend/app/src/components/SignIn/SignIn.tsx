@@ -13,7 +13,7 @@ import Identicon from '../Identicon';
 import ProfilePopover from '../ProfilePopover';
 import { OvenSlice } from '../../redux/slices/OvenSlice';
 import { RootState } from '../../redux/rootReducer';
-import { useUserBalance } from '../../api/queries';
+import { useUserBalance, useUserLqtData } from '../../api/queries';
 
 const SignedInBoxStyled = styled(Box)`
   cursor: pointer;
@@ -26,6 +26,7 @@ export const SignIn: React.FC = () => {
   const [isOpen, setOpen] = useState(false);
   const userOvenData = useSelector((state: RootState) => state.oven.userOvenData);
   const { data: balance } = useUserBalance(userAddress);
+  const { data: userLqtData } = useUserLqtData(userAddress);
   const connectWallet = async () => {
     const newWallet = await getBeaconInstance(APP_NAME, true, NETWORK);
     newWallet?.wallet && setWalletProvider(newWallet.wallet);
@@ -86,6 +87,8 @@ export const SignIn: React.FC = () => {
                 actionText={t('signOut')}
                 balance={balance}
                 ovenDetails={userOvenData}
+                lqt={userLqtData?.lqt || 0}
+                lqtShare={userLqtData?.lqtShare || 0}
               />
             </SignedInBoxStyled>
           </Grid>

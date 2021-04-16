@@ -47,6 +47,8 @@ export interface ProfilePopoverProps {
   handleAction: () => void | Promise<void>;
   balance?: UserBalance;
   ovenDetails?: UserOvenStats;
+  lqt?: number;
+  lqtShare?: number;
 }
 
 export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
@@ -58,6 +60,8 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
   actionText,
   balance,
   ovenDetails,
+  lqt,
+  lqtShare,
 }) => {
   const classes = useStyles();
   const id = isOpen ? 'profile-popover' : undefined;
@@ -102,6 +106,16 @@ export const ProfilePopover: React.FC<ProfilePopoverProps> = ({
                   {`cꜩ outstanding: ${ovenDetails.ctez}`}
                 </Typography>
               </>
+            )}
+            {typeof lqt !== 'undefined' && (
+              <Typography size="subtitle2" component="span" color="textSecondary">
+                {`LQT: ${lqt}`}
+              </Typography>
+            )}
+            {typeof lqtShare !== 'undefined' && (
+              <Typography size="subtitle2" component="span" color="textSecondary">
+                {`LQT Pool share: ${lqtShare}%`}
+              </Typography>
             )}
             <Typography size="caption" component="span" color="textSecondary">
               {network}
