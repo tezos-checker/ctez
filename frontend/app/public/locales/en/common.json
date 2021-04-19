@@ -89,5 +89,12 @@
   "allowEveryone": "Allow anyone to deposit",
   "updateWhitelist": "Update Whitelist",
   "excessiveMintingError": "Excessive minting not permitted",
-  "excessiveBurnError": "Can not burn more than outstanding"
+  "excessiveBurnError": "Can not burn more than outstanding",
+  "settings": "Settings",
+  "nodeUrl": "Node URL",
+  "nodePort": "Node Port (Default: 443)",
+  "tzktUrl": "Tzkt URL",
+  "tzktPort": "Tzkt Port (Default: 443)",
+  "invalidPort": "Invalid port. Allowed ports 1 - 65535",
+  "invalidUrl": "Invalid URL"
 }
