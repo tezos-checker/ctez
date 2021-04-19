@@ -26,7 +26,7 @@ interface OvenCardProps extends Oven {
 
 export const StyledCard = styled(Card)`
   max-width: 20rem;
-  min-width: 20rem
+  min-width: 20rem;
   margin-left: 3rem;
   border-radius: 1rem;
   &.with-border {

@@ -13,6 +13,7 @@ import { CTezIcon } from '../CTezIcon/CTezIcon';
 import { getOvenMaxCtez } from '../../utils/ovenUtils';
 import Typography from '../Typography';
 import { logger } from '../../utils/logger';
+import { isMonthFromLiquidation } from '../../api/contracts';
 
 interface MintOrBurnProps {
   type: 'mint' | 'repay';
@@ -36,6 +37,7 @@ export const MintOrBurn: React.FC<MintOrBurnProps> = ({ type }) => {
     ctez_outstanding: '0',
   };
   const currentTarget = useSelector((state: RootState) => state.stats.baseStats?.originalTarget);
+  const drift = useSelector((state: RootState) => state.stats.baseStats?.drift);
   const { max, remaining } = currentTarget
     ? getOvenMaxCtez(tez_balance, ctez_outstanding, currentTarget)
     : { max: 0, remaining: 0 };
@@ -44,7 +46,25 @@ export const MintOrBurn: React.FC<MintOrBurnProps> = ({ type }) => {
   const maxMintableCtez = max < 0 ? 0 : max;
   const remainingMintableCtez = remaining < 0 ? 0 : remaining;
   const validationSchema = Yup.object().shape({
-    amount: Yup.number().min(0.000001).required(t('required')),
+    amount: Yup.number()
+      .min(0.000001)
+      .test({
+        test: (value) => {
+          if (value && drift && currentTarget && type === 'mint') {
+            const newOutstanding = Number(ctez_outstanding) + value * 1e6;
+            const tez = Number(tez_balance);
+            const result = isMonthFromLiquidation(newOutstanding, currentTarget, tez, drift);
+            return !result;
+          }
+          if (value && type === 'repay') {
+            const ctezOutstanding = Number(ctez_outstanding) / 1e6;
+            return value <= ctezOutstanding;
+          }
+          return false;
+        },
+        message: t(type === 'mint' ? 'excessiveMintingError' : 'excessiveBurnError'),
+      })
+      .required(t('required')),
   });
   const initialValues: any = {
     amount: '',

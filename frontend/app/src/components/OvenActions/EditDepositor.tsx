@@ -153,7 +153,7 @@ export const EditDepositor: React.FC = () => {
             onSubmit={handleFormSubmit}
             enableReinitialize
           >
-            {({ isSubmitting, isValid, dirty, values, errors }) => (
+            {({ isSubmitting, isValid, dirty }) => (
               <Form>
                 <Grid
                   container
@@ -180,7 +180,7 @@ export const EditDepositor: React.FC = () => {
                     <Button
                       variant="contained"
                       type="submit"
-                      disabled={isSubmitting || !isValid || !dirty}
+                      disabled={isSubmitting || !isValid}
                       fullWidth
                     >
                       {t('updateWhitelist')}
