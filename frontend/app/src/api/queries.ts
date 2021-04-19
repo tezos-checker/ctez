@@ -2,20 +2,20 @@ import { AxiosError } from 'axios';
 import { useQuery } from 'react-query';
 import { getCfmmStorage } from '../contracts/cfmm';
 import { getExternalOvenData, getOvens } from '../contracts/ctez';
-import { Baker, BaseStats, CfmmStorage, Oven, UserBalance } from '../interfaces';
-import { getBaseStats } from './contracts';
+import { Baker, BaseStats, CfmmStorage, Oven, UserBalance, UserLQTData } from '../interfaces';
+import { getBaseStats, getUserLQTData } from './contracts';
 import { getDelegates } from './tzkt';
 import { getUserBalance } from './user';
 
-export const useDelegates = () => {
+export const useDelegates = (userAddress?: string) => {
   return useQuery<Baker[], AxiosError, Baker[]>(['delegates'], () => {
-    return getDelegates();
+    return getDelegates(userAddress);
   });
 };
 
-export const useCtezBaseStats = () => {
+export const useCtezBaseStats = (userAddress?: string) => {
   return useQuery<BaseStats, AxiosError, BaseStats>(['baseStats'], async () => {
-    return getBaseStats();
+    return getBaseStats(userAddress);
   });
 };
 
@@ -67,6 +67,21 @@ export const useOvenData = (userAddress?: string, externalOvens: string[] = []) 
         return result;
       }
       return [];
+    },
+    {
+      refetchInterval: 30000,
+      staleTime: 3000,
+    },
+  );
+};
+
+export const useUserLqtData = (userAddress?: string) => {
+  return useQuery<UserLQTData | undefined, AxiosError, UserLQTData | undefined>(
+    ['userLqtData', userAddress],
+    async () => {
+      if (userAddress) {
+        return getUserLQTData(userAddress);
+      }
     },
     {
       refetchInterval: 30000,

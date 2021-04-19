@@ -34,8 +34,8 @@ const PaperStyled = styled(Paper)`
 `;
 
 const CreateOvenComponent: React.FC<WithTranslation> = ({ t }) => {
-  const { data: delegates } = useDelegates();
   const [{ pkh: userAddress }] = useWallet();
+  const { data: delegates } = useDelegates(userAddress);
   const [delegate, setDelegate] = useState('');
   const { addToast } = useToasts();
   const history = useHistory();
