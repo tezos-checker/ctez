@@ -96,5 +96,6 @@
   "tzktUrl": "Tzkt URL",
   "tzktPort": "Tzkt Port (Default: 443)",
   "invalidPort": "Invalid port. Allowed ports 1 - 65535",
-  "invalidUrl": "Invalid URL"
+  "invalidUrl": "Invalid URL",
+  "lastOvenId": "Last oven ID"
 }
