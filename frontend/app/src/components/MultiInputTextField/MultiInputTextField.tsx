@@ -14,6 +14,7 @@ interface MultiInputTextFieldProps {
   disabled?: boolean;
   defaultValue?: MultiInputTextFieldOption[];
   isAddressField?: boolean;
+  handleChange?: (value: any) => void | Promise<void>;
 }
 
 export type FormikMultiTextFieldProps = MultiInputTextFieldProps & FieldProps;
@@ -58,6 +59,7 @@ export const MultiInputTextField: React.FC<FormikMultiTextFieldProps> = ({
   defaultValue,
   isAddressField,
   disabled,
+  handleChange,
   ...rest
 }) => {
   const renderTags = isAddressField ? renderAddressTag : undefined;
@@ -73,9 +75,13 @@ export const MultiInputTextField: React.FC<FormikMultiTextFieldProps> = ({
       defaultValue={innerDefaultVal}
       value={value}
       freeSolo
+      disableClearable
       renderTags={renderTags}
       disabled={disabled}
-      onChange={(_, v: any) => setFieldValue(name, v)}
+      onChange={(_, v: any) => {
+        setFieldValue(name, v);
+        handleChange && handleChange(v);
+      }}
       renderInput={(params: any) => (
         <TextField
           disabled={disabled}

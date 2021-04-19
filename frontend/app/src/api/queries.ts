@@ -1,8 +1,8 @@
 import { AxiosError } from 'axios';
 import { useQuery } from 'react-query';
 import { getCfmmStorage } from '../contracts/cfmm';
-import { getExternalOvenData, getOvens } from '../contracts/ctez';
-import { Baker, BaseStats, CfmmStorage, Oven, UserBalance } from '../interfaces';
+import { getExternalOvenData, getOvenDelegate, getOvens, getOvenStorage } from '../contracts/ctez';
+import { Baker, BaseStats, CfmmStorage, Oven, OvenStorage, UserBalance } from '../interfaces';
 import { getBaseStats } from './contracts';
 import { getDelegates } from './tzkt';
 import { getUserBalance } from './user';
@@ -71,6 +71,28 @@ export const useOvenData = (userAddress?: string, externalOvens: string[] = []) 
     {
       refetchInterval: 30000,
       staleTime: 3000,
+    },
+  );
+};
+
+export const useOvenStorage = (ovenAddress?: string) => {
+  return useQuery<OvenStorage | undefined, AxiosError, OvenStorage | undefined>(
+    ['ovenStorage', ovenAddress],
+    async () => {
+      if (ovenAddress) {
+        return getOvenStorage(ovenAddress);
+      }
+    },
+  );
+};
+
+export const useOvenDelegate = (ovenAddress?: string) => {
+  return useQuery<string | null | undefined, AxiosError, string | null | undefined>(
+    ['ovenDelegate', ovenAddress],
+    async () => {
+      if (ovenAddress) {
+        return getOvenDelegate(ovenAddress);
+      }
     },
   );
 };

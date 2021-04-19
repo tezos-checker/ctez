@@ -82,5 +82,10 @@
   "ovenAlreadyExits": "Oven already exists",
   "ovenAddedSuccess": "Oven added successfully",
   "invalidOvenAddress": "Invalid oven address",
-  "signInToSeeOvens": "Sign-in to see your ovens...."
+  "signInToSeeOvens": "Sign-in to see your ovens....",
+  "everyoneAllowed": "Currently, anyone can deposit in this oven",
+  "or": "Or",
+  "useWhiteList": "Use a whitelist",
+  "allowEveryone": "Allow anyone to deposit",
+  "updateWhitelist": "Update Whitelist"
 }

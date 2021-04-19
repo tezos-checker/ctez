@@ -2,7 +2,7 @@ import { MichelsonMap } from '@taquito/taquito';
 import BigNumber from 'bignumber.js';
 
 export interface Oven {
-  ovenId: number;
+  ovenId: BigNumber;
   address: string;
   ctez_outstanding: BigNumber;
   tez_balance: BigNumber;
@@ -40,14 +40,14 @@ export interface oven_handle {
   owner: string;
 }
 
-export interface oven {
+export interface OvenStorage {
   admin: string;
   handle: oven_handle;
   depositors: depositors;
 }
 
 export interface CTezStorage {
-  ovens: MichelsonMap<oven_handle, oven>;
+  ovens: MichelsonMap<oven_handle, OvenStorage>;
   target: BigNumber;
   drift: BigNumber;
   last_drift_update: Date;
