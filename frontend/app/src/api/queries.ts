@@ -2,8 +2,16 @@ import { AxiosError } from 'axios';
 import { useQuery } from 'react-query';
 import { getCfmmStorage } from '../contracts/cfmm';
 import { getExternalOvenData, getOvenDelegate, getOvens, getOvenStorage } from '../contracts/ctez';
-import { Baker, BaseStats, CfmmStorage, Oven, OvenStorage, UserBalance } from '../interfaces';
-import { getBaseStats } from './contracts';
+import {
+  Baker,
+  BaseStats,
+  CfmmStorage,
+  Oven,
+  OvenStorage,
+  UserBalance,
+  UserLQTData,
+} from '../interfaces';
+import { getBaseStats, getUserLQTData } from './contracts';
 import { getDelegates } from './tzkt';
 import { getUserBalance } from './user';
 
@@ -93,6 +101,21 @@ export const useOvenDelegate = (ovenAddress?: string) => {
       if (ovenAddress) {
         return getOvenDelegate(ovenAddress);
       }
+    },
+  );
+};
+
+export const useUserLqtData = (userAddress?: string) => {
+  return useQuery<UserLQTData | undefined, AxiosError, UserLQTData | undefined>(
+    ['userLqtData', userAddress],
+    async () => {
+      if (userAddress) {
+        return getUserLQTData(userAddress);
+      }
+    },
+    {
+      refetchInterval: 30000,
+      staleTime: 3000,
     },
   );
 };

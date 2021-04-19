@@ -49,3 +49,8 @@ export interface CfmmStorage {
   consumerEntrypoint: string;
   lqtTotal: BigNumber;
 }
+
+export interface UserLQTData {
+  lqt: number;
+  lqtShare: number;
+}

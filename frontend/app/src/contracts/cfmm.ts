@@ -27,6 +27,12 @@ export const getCfmmStorage = async (): Promise<CfmmStorage> => {
   return storage;
 };
 
+export const getLQTContractStorage = async (): Promise<any> => {
+  const lqtContract = await getLQTContract();
+  const storage: any = await lqtContract.storage();
+  return storage;
+};
+
 export const getTokenAllowanceOps = async (
   tokenContract: WalletContract,
   userAddress: string,
