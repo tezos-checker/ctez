@@ -66,7 +66,7 @@ const AddLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
       const minLQTMinted =
         ((cash * lqtTotal.toNumber()) / cashPool.toNumber()) * (1 - slippage * 0.01);
       const minPool = (minLQTMinted / (lqtTotal.toNumber() + minLQTMinted)) * 100;
-      setMinLQT(Number((minLQTMinted / 1e6).toFixed()));
+      setMinLQT(Number(Math.floor(minLQTMinted).toFixed()));
       setMinPoolPercent(Number(minPool.toFixed(6)));
     } else {
       setMinPoolPercent(-1);
