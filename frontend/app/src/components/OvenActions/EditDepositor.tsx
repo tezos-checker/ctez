@@ -1,21 +1,25 @@
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { validateAddress } from '@taquito/utils';
 import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
 import styled from '@emotion/styled';
 import { Field, Form, Formik } from 'formik';
-import { Button, Grid, Paper } from '@material-ui/core';
+import { Button, Divider, Grid, Paper, Typography } from '@material-ui/core';
 import { useToasts } from 'react-toast-notifications';
-import { editDepositor, cTezError } from '../../contracts/ctez';
-import { EditDepositorOps } from '../../interfaces';
+import { cTezError, addRemoveDepositorList, enableDisableAnyDepositor } from '../../contracts/ctez';
 import { RootState } from '../../redux/rootReducer';
-import { FormikRadioGroup } from '../FormikRadioGroup/FormikRadioGroup';
-import { FormikTextField } from '../TextField';
+import { useOvenDelegate, useOvenStorage } from '../../api/queries';
+import {
+  MultiInputTextField,
+  MultiInputTextFieldOption,
+} from '../MultiInputTextField/MultiInputTextField';
+import { useWallet } from '../../wallet/hooks';
+import { logger } from '../../utils/logger';
 
+type DepositorList = MultiInputTextFieldOption[];
 interface EditDepositorForm {
-  op: EditDepositorOps;
-  enable: string;
-  address: string;
+  depositors: string[] | DepositorList;
 }
 
 const PaperStyled = styled(Paper)`
@@ -24,61 +28,95 @@ const PaperStyled = styled(Paper)`
 
 export const EditDepositor: React.FC = () => {
   const { t } = useTranslation(['common']);
+  const [{ pkh: userAddress }] = useWallet();
   const { addToast } = useToasts();
   const ovenAddress = useSelector((state: RootState) => state.oven.oven?.address);
+  const { data: ovenData } = useOvenStorage(ovenAddress);
+  const { data: delegate } = useOvenDelegate(ovenAddress);
+  const [depositors, setDepositors] = useState<DepositorList>([]);
+  const isAny =
+    ovenData &&
+    !Array.isArray(ovenData.depositors) &&
+    Object.keys(ovenData.depositors).includes('any');
+
+  useEffect(() => {
+    const newList: DepositorList = [];
+    if (userAddress) {
+      newList.push({
+        value: userAddress,
+        label: 'You',
+        noDelete: true,
+      });
+    }
+    if (ovenData) {
+      if (!isAny && Array.isArray(ovenData.depositors)) {
+        let ovenDepositors = [...ovenData.depositors];
+        if (delegate && ovenData.depositors.includes(delegate)) {
+          newList.push({
+            value: delegate,
+            label: 'Delegate',
+            noDelete: true,
+          });
+          ovenDepositors = ovenData.depositors.filter((o) => o !== userAddress);
+        }
+        newList.push(...ovenDepositors.map((addr) => ({ value: addr })));
+      }
+      setDepositors(newList);
+    }
+  }, [ovenData, delegate, userAddress]);
   const initialValues: EditDepositorForm = {
-    op: EditDepositorOps.AllowAccount,
-    enable: 'true',
-    address: '',
+    depositors,
   };
 
-  const opSelectionList = [
-    {
-      label: t(EditDepositorOps.AllowAny),
-      value: EditDepositorOps.AllowAny,
-    },
-    {
-      label: t(EditDepositorOps.AllowAccount),
-      value: EditDepositorOps.AllowAccount,
-    },
-  ];
-
-  const enableDisableList = [
-    {
-      label: t('allow'),
-      value: 'true',
-    },
-    {
-      label: t('deny'),
-      value: 'false',
-    },
-  ];
-
   const validationSchema = Yup.object().shape({
-    op: Yup.string()
-      .oneOf([EditDepositorOps.AllowAny, EditDepositorOps.AllowAccount])
-      .required(t('required')),
-    enable: Yup.string().required(t('required')),
-    address: Yup.string()
+    depositors: Yup.array()
       .test({
-        test: (value) => validateAddress(value) === 3,
-        message: t('invalidAddress'),
+        test: (value) => {
+          return (
+            value?.reduce((acc, item: any) => {
+              return acc && validateAddress(item?.value ?? item) === 3;
+            }, true) ?? false
+          );
+        },
       })
-      .when('op', {
-        is: EditDepositorOps.AllowAccount,
-        then: (addr) => addr.required(t('required')),
-        otherwise: (addr) => addr.optional(),
-      }),
+      .required(t('required')),
   });
 
-  const handleFormSubmit = async (data: EditDepositorForm) => {
-    if (ovenAddress) {
+  const handleAllowAnyone = async () => {
+    if (ovenAddress && userAddress) {
       try {
-        const result = await editDepositor(
+        const result = await enableDisableAnyDepositor(ovenAddress, true);
+        if (result) {
+          addToast(t('txSubmitted'), {
+            appearance: 'success',
+            autoDismiss: true,
+          });
+        }
+      } catch (error) {
+        logger.error(error);
+        const errorText = cTezError[error.data[1].with.int as number] || t('txFailed');
+        addToast(errorText, {
+          appearance: 'error',
+          autoDismiss: true,
+        });
+      }
+    }
+  };
+
+  const handleFormSubmit = async (data: EditDepositorForm) => {
+    if (ovenAddress && ovenData && userAddress) {
+      try {
+        const userWhiteList = data.depositors
+          .map((item: any) => item?.value ?? item)
+          .filter((o) => o !== userAddress);
+        const userDenyList = !isAny
+          ? (ovenData.depositors as string[]).filter((o) => !userWhiteList.includes(o))
+          : undefined;
+        const result = await addRemoveDepositorList(
           ovenAddress,
-          data.op,
-          data.enable === 'true',
-          data.address,
+          ovenData,
+          userWhiteList,
+          userDenyList,
         );
         if (result) {
           addToast(t('txSubmitted'), {
@@ -87,6 +125,7 @@ export const EditDepositor: React.FC = () => {
           });
         }
       } catch (error) {
+        logger.error(error);
         const errorText = cTezError[error.data[1].with.int as number] || t('txFailed');
         addToast(errorText, {
           appearance: 'error',
@@ -97,65 +136,62 @@ export const EditDepositor: React.FC = () => {
   };
 
   return (
-    <div>
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={handleFormSubmit}
-      >
-        {({ isSubmitting, isValid, dirty, values }) => (
-          <PaperStyled>
-            <Form>
-              <Grid
-                container
-                spacing={3}
-                direction="column"
-                alignContent="center"
-                justifyContent="center"
-              >
-                <Grid item style={{ width: '40%' }}>
-                  <Field
-                    component={FormikRadioGroup}
-                    name="op"
-                    id="op"
-                    groupLabel={t('operation')}
-                    options={opSelectionList}
-                  />
+    <PaperStyled>
+      <Grid container spacing={3} direction="column" alignContent="center" justifyContent="center">
+        <Grid item style={{ width: '100%' }}>
+          <Button variant="contained" fullWidth disabled={isAny} onClick={handleAllowAnyone}>
+            {t(isAny ? 'everyoneAllowed' : 'allowEveryone')}
+          </Button>
+        </Grid>
+        <Grid item>
+          <Divider>{t('or')}</Divider>
+        </Grid>
+        <Grid item>
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={handleFormSubmit}
+            enableReinitialize
+          >
+            {({ isSubmitting, isValid, dirty, values, errors }) => (
+              <Form>
+                <Grid
+                  container
+                  spacing={3}
+                  direction="column"
+                  alignContent="center"
+                  justifyContent="center"
+                >
+                  <Grid item>
+                    <Typography>{t('useWhiteList')}</Typography>
+                  </Grid>
+                  <Grid item style={{ width: '100%' }}>
+                    <Field
+                      component={MultiInputTextField}
+                      id="depositors"
+                      name="depositors"
+                      placeholder="e.g. tz3d1ZjAkd9zCGMoRTMYNaeZhFurS65U2U1J"
+                      label={t('allowedDepositors')}
+                      isAddressField
+                      defaultValue={depositors}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Button
+                      variant="contained"
+                      type="submit"
+                      disabled={isSubmitting || !isValid || !dirty}
+                      fullWidth
+                    >
+                      {t('updateWhitelist')}
+                    </Button>
+                  </Grid>
                 </Grid>
-                <Grid item style={{ width: '40%' }}>
-                  <Field
-                    component={FormikRadioGroup}
-                    name="enable"
-                    id="enable"
-                    groupLabel={t('action')}
-                    options={enableDisableList}
-                  />
-                </Grid>
-                <Grid item style={{ width: '40%' }}>
-                  <Field
-                    component={FormikTextField}
-                    name="address"
-                    id="address"
-                    label={t('address')}
-                    disabled={values.op === EditDepositorOps.AllowAny}
-                    fullWidth
-                  />
-                </Grid>
-                <Grid item>
-                  <Button
-                    variant="contained"
-                    type="submit"
-                    disabled={isSubmitting || !isValid || !dirty}
-                    fullWidth
-                  >
-                    {t('submit')}
-                  </Button>
-                </Grid>
-              </Grid>
-            </Form>
-          </PaperStyled>
-        )}
-      </Formik>
-    </div>
+              </Form>
+            )}
+          </Formik>
+        </Grid>
+      </Grid>
+    </PaperStyled>
   );
 };

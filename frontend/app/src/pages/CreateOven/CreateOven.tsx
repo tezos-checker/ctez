@@ -51,8 +51,8 @@ const CreateOvenComponent: React.FC<WithTranslation> = ({ t }) => {
         test: (value) => {
           return (
             value?.reduce((acc, item: any) => {
-              return acc && validateAddress(item?.value) === 3;
-            }, true) ?? true
+              return acc && validateAddress(item?.value ?? item) === 3;
+            }, true) ?? false
           );
         },
       })
@@ -112,7 +112,9 @@ const CreateOvenComponent: React.FC<WithTranslation> = ({ t }) => {
       try {
         const depositors =
           data.depositors.length > 0 && data.depositorOp === Depositor.whitelist
-            ? data.depositors.map((item: any) => item?.value ?? item)
+            ? data.depositors
+                .map((item: any) => item?.value ?? item)
+                .filter((o) => o !== userAddress)
             : undefined;
         const result = await create(
           userAddress,
@@ -148,7 +150,7 @@ const CreateOvenComponent: React.FC<WithTranslation> = ({ t }) => {
         validationSchema={validationSchema}
         onSubmit={handleFormSubmit}
       >
-        {({ isSubmitting, isValid, values }) => (
+        {({ isSubmitting, isValid, values, setFieldValue }) => (
           <PaperStyled>
             <Form>
               <Grid
@@ -208,6 +210,13 @@ const CreateOvenComponent: React.FC<WithTranslation> = ({ t }) => {
                     disabled={values.depositorOp === Depositor.any}
                     isAddressField
                     defaultValue={defaultDepositorList}
+                    handleChange={(v: any) => {
+                      const delegateValue = v.filter((o: any) => o?.value === delegate);
+                      if (delegateValue.length === 0) {
+                        setDelegate('');
+                        setFieldValue('delegate', '');
+                      }
+                    }}
                   />
                 </Grid>
                 <Grid item>

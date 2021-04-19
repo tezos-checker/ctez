@@ -43,6 +43,7 @@ export const removeExternalOven = (
 export const toSerializeableOven = (oven: Oven): OvenSerializable => {
   return {
     ...oven,
+    ovenId: oven.ovenId.toNumber(),
     tez_balance: oven.tez_balance.toString(),
     ctez_outstanding: oven.ctez_outstanding.toString(),
   };
@@ -53,6 +54,7 @@ export const toOven = (oven: OvenSerializable): Oven => {
     ...oven,
     tez_balance: new BigNumber(oven.tez_balance),
     ctez_outstanding: new BigNumber(oven.ctez_outstanding),
+    ovenId: new BigNumber(oven.ovenId),
   };
 };
 

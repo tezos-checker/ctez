@@ -67,7 +67,7 @@ export const MyOvenPage: React.FC = () => {
           {ovenData &&
             ovenData.length > 0 &&
             ovenData
-              .sort((a, b) => b.ovenId - a.ovenId)
+              .sort((a, b) => b.ovenId.toNumber() - a.ovenId.toNumber())
               .map((ovenValue, index) => {
                 const isMonthAway = baseStats
                   ? isMonthFromLiquidation(
@@ -90,7 +90,7 @@ export const MyOvenPage: React.FC = () => {
                       {...ovenValue}
                       isMonthAway={isMonthAway}
                       maxCtez={max}
-                      imageId={getOvenImageId(ovenValue.ovenId, ovenData.length)}
+                      imageId={getOvenImageId(ovenValue.ovenId.toNumber(), ovenData.length)}
                       action={() => {
                         dispatch(OvenSlice.actions.setOven(toSerializeableOven(ovenValue)));
                         dispatch(OvenSlice.actions.toggleActions(true));

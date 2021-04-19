@@ -83,11 +83,9 @@
   "ovenAddedSuccess": "Oven added successfully",
   "invalidOvenAddress": "Invalid oven address",
   "signInToSeeOvens": "Sign-in to see your ovens....",
-  "settings": "Settings",
-  "nodeUrl": "Node URL",
-  "nodePort": "Node Port (Default: 443)",
-  "tzktUrl": "Tzkt URL",
-  "tzktPort": "Tzkt Port (Default: 443)",
-  "invalidPort": "Invalid port. Allowed ports 1 - 65535",
-  "invalidUrl": "Invalid URL"
+  "everyoneAllowed": "Currently, anyone can deposit in this oven",
+  "or": "Or",
+  "useWhiteList": "Use a whitelist",
+  "allowEveryone": "Allow anyone to deposit",
+  "updateWhitelist": "Update Whitelist"
 }
