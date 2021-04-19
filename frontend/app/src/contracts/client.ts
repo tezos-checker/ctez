@@ -1,6 +1,5 @@
 import { BeaconWallet } from '@taquito/beacon-wallet';
 import { TezosToolkit, MichelCodecPacker } from '@taquito/taquito';
-import { RPC_URL, RPC_PORT } from '../utils/globals';
 
 let tezos: TezosToolkit;
 
@@ -13,7 +12,6 @@ export const initTezos = (url: string, port: string | number): void => {
   tezos.setPackerProvider(new MichelCodecPacker());
 };
 
-export const getTezosInstance = (url = RPC_URL, port: string | number = RPC_PORT): TezosToolkit => {
-  !tezos && initTezos(url, port);
+export const getTezosInstance = (): TezosToolkit => {
   return tezos;
 };

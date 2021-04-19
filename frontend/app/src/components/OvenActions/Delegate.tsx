@@ -10,6 +10,7 @@ import { cTezError, delegate } from '../../contracts/ctez';
 import { FormikAutocomplete } from '../Autocomplete';
 import { RootState } from '../../redux/rootReducer';
 import { useDelegates } from '../../api/queries';
+import { useWallet } from '../../wallet/hooks';
 
 interface DelegateForm {
   delegate: string;
@@ -21,7 +22,8 @@ const PaperStyled = styled(Paper)`
 
 export const Delegate: React.FC = () => {
   const { t } = useTranslation(['common']);
-  const { data: delegates } = useDelegates();
+  const [{ pkh: userAddress }] = useWallet();
+  const { data: delegates } = useDelegates(userAddress);
   const ovenAddress = useSelector((state: RootState) => state.oven.oven?.address);
   const { addToast } = useToasts();
   const initialValues: DelegateForm = {

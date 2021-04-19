@@ -6,19 +6,22 @@ import { BaseStats, CTezTzktStorage, UserLQTData } from '../interfaces';
 import { CONTRACT_DEPLOYMENT_DATE } from '../utils/globals';
 import { getCTezTzktStorage, getLastBlockOfTheDay } from './tzkt';
 
-export const getPrevCTezStorage = async (days = 7): Promise<CTezTzktStorage> => {
+export const getPrevCTezStorage = async (
+  days = 7,
+  userAddress?: string,
+): Promise<CTezTzktStorage> => {
   const prevDate = format(sub(new Date(), { days }), 'yyyy-MM-dd');
-  const lastBlock = await getLastBlockOfTheDay(prevDate);
-  const storage = await getCTezTzktStorage(lastBlock.level);
+  const lastBlock = await getLastBlockOfTheDay(prevDate, userAddress);
+  const storage = await getCTezTzktStorage(lastBlock.level, userAddress);
   return storage;
 };
 
-export const getBaseStats = async (): Promise<BaseStats> => {
+export const getBaseStats = async (userAddress?: string): Promise<BaseStats> => {
   const diffInDays = differenceInDays(new Date(), new Date(CONTRACT_DEPLOYMENT_DATE));
   const prevStorageDays = diffInDays >= 7 ? 7 : diffInDays;
   const cTezStorage = await getCtezStorage();
   const cfmmStorage = await getCfmmStorage();
-  const cTez7dayStorage = await getPrevCTezStorage(prevStorageDays);
+  const cTez7dayStorage = await getPrevCTezStorage(prevStorageDays, userAddress);
   const prevTarget = Number(cTez7dayStorage.target) / 2 ** 48;
   const currentTarget = cTezStorage.target.toNumber() / 2 ** 48;
   const currentPrice = cfmmStorage.cashPool.toNumber() / cfmmStorage.tokenPool.toNumber();
