@@ -29,7 +29,7 @@ export const MyOvenPage: React.FC = () => {
   const { showActions } = useSelector((state: RootState) => state.oven);
   const [{ pkh: userAddress }] = useWallet();
   const { data: ovenData, isLoading } = useOvenData(userAddress, extOvens);
-  const { data: baseStats } = useCtezBaseStats();
+  const { data: baseStats } = useCtezBaseStats(userAddress);
 
   useEffect(() => {
     if (userAddress && CTEZ_ADDRESS) {

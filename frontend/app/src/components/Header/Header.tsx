@@ -17,6 +17,7 @@ export interface StatsBarProps {
 
 export interface HeaderProps extends StatsBarProps {
   onClick?: () => void | Promise<void>;
+  loggedIn?: boolean;
 }
 
 const HeaderActionBox = styled(Box)`
@@ -50,7 +51,7 @@ export const StatsBar: React.FC<StatsBarProps> = ({ stats }) => {
   );
 };
 
-export const Header: React.FC<HeaderProps> = ({ onClick, stats }) => {
+export const Header: React.FC<HeaderProps> = ({ onClick, stats, loggedIn }) => {
   const [navDrawer, setNavDrawer] = useState(false);
   const handleNavDrawerClose = () => setNavDrawer(false);
   return (
@@ -79,7 +80,11 @@ export const Header: React.FC<HeaderProps> = ({ onClick, stats }) => {
         </HeaderActionBox>
         {stats.length > 0 && <StatsBar stats={stats} />}
       </header>
-      <NavigationDrawer open={navDrawer} handleDrawerClose={handleNavDrawerClose} />
+      <NavigationDrawer
+        open={navDrawer}
+        handleDrawerClose={handleNavDrawerClose}
+        showSettings={loggedIn}
+      />
     </HeaderContainer>
   );
 };

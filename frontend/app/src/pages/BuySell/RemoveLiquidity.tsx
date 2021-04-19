@@ -55,8 +55,8 @@ const RemoveLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
       const tokenWithdraw =
         ((lqtBurned * tokenPool.toNumber()) / lqtTotal.toNumber()) * (1 - slippage * 0.01);
       setValues({
-        cashWithdraw: Number(cashWithdraw.toFixed(6)),
-        tokenWithdraw: Number(tokenWithdraw.toFixed(6)),
+        cashWithdraw: Number((cashWithdraw / 1e6).toFixed(6)),
+        tokenWithdraw: Number((tokenWithdraw / 1e6).toFixed(6)),
       });
     }
   };

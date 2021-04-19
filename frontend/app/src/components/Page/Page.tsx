@@ -13,6 +13,7 @@ import { Typography } from '../Typography';
 import { StatsSlice } from '../../redux/slices/StatsSlice';
 import { StatItem } from '../Header/Header';
 import { useCtezBaseStats } from '../../api/queries';
+import { useWallet } from '../../wallet/hooks';
 
 const ContainerStyled = styled(Container)`
   padding-top: 1em;
@@ -45,10 +46,10 @@ export const Page: React.FC<PageProps> = ({ title, children, description, showSt
   const { i18n, t } = useTranslation(['common']);
   const lang = i18n.language || window.localStorage.i18nextLng || DEFAULT_LANGUAGE;
   const pageTitle = title ? `${title} - ${APP_NAME} - ${NETWORK}` : `${APP_NAME} - ${NETWORK}`;
-
+  const [{ pkh }] = useWallet();
   const [statsData, setStatsData] = useState<StatItem[]>([]);
   const dispatch = useDispatch();
-  const { data: stats, isLoading } = useCtezBaseStats();
+  const { data: stats, isLoading } = useCtezBaseStats(pkh);
 
   useEffect(() => {
     if (stats) {
@@ -75,7 +76,7 @@ export const Page: React.FC<PageProps> = ({ title, children, description, showSt
       </Helmet>
       {!isLoading ? (
         <>
-          <Header onClick={() => history.push('/')} stats={statsData} />
+          <Header onClick={() => history.push('/')} stats={statsData} loggedIn={!!pkh} />
           {title && (
             <ContainerStyled>
               <IconButton
