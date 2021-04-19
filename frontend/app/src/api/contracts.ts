@@ -31,7 +31,7 @@ export const getBaseStats = async (userAddress?: string): Promise<BaseStats> => 
   const annualDriftPastWeek = (currentTarget / prevTarget) ** 52.1786 - 1.0;
   const totalLiquidity = (cfmmStorage.cashPool.toNumber() * 2) / 1e6;
   return {
-    originalTarget: currentTarget,
+    originalTarget: cTezStorage.target.toNumber(),
     currentTarget: currentTarget.toFixed(6),
     currentPrice: currentPrice.toFixed(6),
     premium: (premium * 100).toFixed(2),
@@ -63,8 +63,9 @@ export const isMonthFromLiquidation = (
 ): boolean => {
   return (
     outstandingCtez *
-      target ** (((1 + currentDrift / 2 ** 48) * 365.25 * 24 * 3600) / 12) *
-      (16 / 15) >=
+      (target / 2 ** 48) *
+      (1 + currentDrift / 2 ** 48) ** ((365.25 * 24 * 3600) / 12) *
+      (16 / 15) >
     tezBalance
   );
 };

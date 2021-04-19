@@ -87,5 +87,7 @@
   "or": "Or",
   "useWhiteList": "Use a whitelist",
   "allowEveryone": "Allow anyone to deposit",
-  "updateWhitelist": "Update Whitelist"
+  "updateWhitelist": "Update Whitelist",
+  "excessiveMintingError": "Excessive minting not permitted",
+  "excessiveBurnError": "Can not burn more than outstanding"
 }

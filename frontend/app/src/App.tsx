@@ -42,7 +42,6 @@ const App: React.FC = () => {
   useEffect(() => {
     const setup = async () => {
       try {
-        console.log(nodeUrl ?? RPC_URL, nodePort ?? RPC_PORT);
         initTezos(nodeUrl ?? RPC_URL, nodePort ?? RPC_PORT);
         await checkWalletConnection();
         CTEZ_ADDRESS && (await initCTez(CTEZ_ADDRESS));

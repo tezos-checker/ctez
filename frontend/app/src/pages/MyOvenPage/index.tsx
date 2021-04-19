@@ -25,7 +25,9 @@ export const MyOvenPage: React.FC = () => {
   const { t } = useTranslation(['common', 'header']);
   const dispatch = useDispatch();
   const [extOvens, setExtOvens] = useState<string[]>();
-  const currentTarget = useSelector((state: RootState) => state.stats.baseStats?.originalTarget);
+  const originalTarget = useSelector((state: RootState) =>
+    Number(state.stats.baseStats?.originalTarget),
+  );
   const { showActions } = useSelector((state: RootState) => state.oven);
   const [{ pkh: userAddress }] = useWallet();
   const { data: ovenData, isLoading } = useOvenData(userAddress, extOvens);
@@ -72,16 +74,16 @@ export const MyOvenPage: React.FC = () => {
                 const isMonthAway = baseStats
                   ? isMonthFromLiquidation(
                       ovenValue.ctez_outstanding.toNumber(),
-                      Number(baseStats?.currentTarget),
+                      Number(baseStats?.originalTarget),
                       ovenValue.tez_balance.toNumber(),
                       baseStats?.drift,
                     )
                   : false;
-                const { max } = currentTarget
+                const { max } = originalTarget
                   ? getOvenMaxCtez(
                       ovenValue.tez_balance.toString(),
                       ovenValue.ctez_outstanding.toString(),
-                      currentTarget,
+                      originalTarget,
                     )
                   : { max: 0 };
                 return (
