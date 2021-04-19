@@ -180,7 +180,7 @@ export const EditDepositor: React.FC = () => {
                     <Button
                       variant="contained"
                       type="submit"
-                      disabled={isSubmitting || !isValid || !dirty}
+                      disabled={isSubmitting || !isValid}
                       fullWidth
                     >
                       {t('updateWhitelist')}
