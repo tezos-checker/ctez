@@ -12,6 +12,7 @@
 #include "oven_types.mligo"
 (* End of oven types *)
 
+
 type set_addresses = [@layout:comb] {cfmm_address : address ; ctez_fa12_address : address }
 type liquidate = [@layout:comb] { handle : oven_handle ; quantity : nat ; [@annot:to] to_ : unit contract }
 type withdraw = [@layout:comb] { id : nat ; amount : tez ;  [@annot:to] to_ : unit contract }
@@ -56,18 +57,16 @@ type result = (operation list) * storage
 [@inline] let error_EXCESSIVE_CTEZ_MINTING = 12n
 [@inline] let error_CALLER_MUST_BE_CFMM = 13n
 
+
+#include "oven.mligo"
+
 let create (s : storage) (create : create) : result =
   let handle = { id = create.id ; owner = Tezos.sender } in
   if Big_map.mem handle s.ovens then
     (failwith error_OVEN_ALREADY_EXISTS : result)
   else
-    let (origination_op, oven_address) : operation * address  = Tezos.create_contract
-        (* Contract code for an oven *)
-#include "oven.mligo"
-        (* End of contract code for an oven *)
-        create.delegate
-        Tezos.amount
-        { admin = Tezos.self_address ; handle = handle ; depositors = create.depositors } in
+    let (origination_op, oven_address) : operation * address =
+    create_oven create.delegate Tezos.amount { admin = Tezos.self_address ; handle = handle ; depositors = create.depositors } in
     let oven = {tez_balance = Tezos.amount ; ctez_outstanding = 0n ; address = oven_address}  in
     let ovens = Big_map.update handle (Some oven) s.ovens in
     ([origination_op], {s with ovens = ovens})
