@@ -14,7 +14,7 @@ export const isWalletConnected = (): boolean => {
 
 const connectBeacon = async (
   wallet: BeaconWallet,
-  network: NetworkType = NetworkType.EDONET,
+  network: NetworkType = NetworkType.FLORENCENET,
 ): Promise<boolean> => {
   try {
     await wallet.requestPermissions({ network: { type: network } });

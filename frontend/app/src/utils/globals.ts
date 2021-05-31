@@ -2,7 +2,7 @@ import { NetworkType } from '../interfaces';
 import { getNodeURL } from './settingUtils';
 
 export const APP_NAME = process.env.REACT_APP_APP_NAME || 'CTez';
-export const NETWORK = (process.env.REACT_APP_NETWORK_TYPE || 'edonet') as NetworkType;
+export const NETWORK = (process.env.REACT_APP_NETWORK_TYPE || 'florencenet') as NetworkType;
 export const CFMM_ADDRESS = process.env.REACT_APP_CFMM_CONTRACT;
 export const CTEZ_ADDRESS = process.env.REACT_APP_CTEZ_CONTRACT;
 export const CTEZ_FA12_ADDRESS = process.env.REACT_APP_CTEZ_FA12_CONTRACT;
