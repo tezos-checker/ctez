@@ -50,7 +50,12 @@ export const MintOrBurn: React.FC<MintOrBurnProps> = ({ type }) => {
       .min(0.000001)
       .test({
         test: (value) => {
-          if (value && drift && currentTarget && type === 'mint') {
+          if (
+            value !== undefined &&
+            drift !== undefined &&
+            currentTarget !== undefined &&
+            type === 'mint'
+          ) {
             const newOutstanding = Number(ctez_outstanding) + value * 1e6;
             const tez = Number(tez_balance);
             const result = isMonthFromLiquidation(newOutstanding, currentTarget, tez, drift);
