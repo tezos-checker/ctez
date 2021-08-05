@@ -293,6 +293,38 @@ let cash_transfer (storage : storage) (from : address) (to_ : address) (cash_amo
 #endif
 #endif
 
+// Returns 
+let price_x_to_y (x : nat) (y : nat) : nat = 
+    let x2 = x * x in
+    let y2 = y * y in
+    let num = y * (3n * x2 + y2) in
+    let denom = x * (x2 + 3n * y2) in
+    num/denom
+
+// A function to transfer assets along a curve in https://hackmd.io/MkPSYXDsTf-giBprcDrc3w
+// In our case: a, b = 1 and dy = (price_x_to_y x y) * dx
+// TODO : Transaction fees 
+let rec newton_x_to_y (a:nat) (b:nat) (x:nat) (y:nat) (dx:nat) (dy_approx:nat) = 
+    let ax = a * x and by = b * y  in
+    let ax2 = ax * ax and by2 = by * by in
+    (* todo yp could be negative *)
+    let xp = x + dx and yp = y - dy_approx in
+    let axp = a * xp and byp = b * yp in       
+    let num = x * y * (ax2 + by2) - xp * yp * (axp2 + byp2)
+    and denom = xp * (axp2 + 3n * byp2) in
+    let adjust = num / denom in
+    (* todo: check if condition always met *)
+    if (abs adjust) <= 1 then
+        dy_approx - 1 (* better to be a bit stingy *) 
+    else
+        newton_x_to_y a b x y dx (dy - adjust)
+
+// A function that outputs dy given x, y, and dx
+let trade_x_for_y (x:nat) (y:nat) (dx:nat) = 
+    let current_price = price_x_to_y x y in
+    let dy_approx = current_price * cashSold in
+    newton_x_to_y 1n 1n x y dx dy_approx
+
 (* =============================================================================
  * Entrypoint Functions
  * ============================================================================= *)
@@ -423,7 +455,8 @@ let cash_to_token (param : cash_to_token) (storage : storage) =
            unless all liquidity has been removed. *)
         let cashPool = storage.cashPool in
         let tokens_bought =
-            (let bought = (cashSold * const_fee * storage.tokenPool) / (cashPool * const_fee_denom + (cashSold * const_fee)) in
+            // cash -> token calculation; *includes a fee*
+            (bought = trade_x_for_y cashPool storage.tokenPool cashSold in
             if bought < minTokensBought then
                 (failwith error_TOKENS_BOUGHT_MUST_BE_GREATER_THAN_OR_EQUAL_TO_MIN_TOKENS_BOUGHT : nat)
             else
@@ -465,8 +498,9 @@ let token_to_cash (param : token_to_cash) (storage : storage) =
     else
         (* We don't check that tokenPool > 0, because that is impossible
            unless all liquidity has been removed. *)
+        // token -> cash calculation; *includes a fee*
         let cash_bought =
-            let bought = ((tokensSold * const_fee * storage.cashPool) / (storage.tokenPool * const_fee_denom + (tokensSold * const_fee)))  in
+            let bought = trade_x_for_y storage.tokenPool storage.cashPool tokensSold in
                 if bought < minCashBought then (failwith error_CASH_BOUGHT_MUST_BE_GREATER_THAN_OR_EQUAL_TO_MIN_CASH_BOUGHT : nat) else bought in
 
         let op_token = token_transfer storage Tezos.sender Tezos.self_address tokensSold in
