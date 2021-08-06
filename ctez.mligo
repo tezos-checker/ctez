@@ -41,6 +41,7 @@ type storage = {
 }
 type result = (operation list) * storage
 
+(* Errors *)
 
 [@inline] let error_OVEN_ALREADY_EXISTS = 0n
 [@inline] let error_INVALID_CALLER_FOR_OVEN_OWNER = 1n
@@ -60,24 +61,7 @@ type result = (operation list) * storage
 
 #include "oven.mligo"
 
-let create (s : storage) (create : create) : result =
-  let handle = { id = create.id ; owner = Tezos.sender } in
-  if Big_map.mem handle s.ovens then
-    (failwith error_OVEN_ALREADY_EXISTS : result)
-  else
-    let (origination_op, oven_address) : operation * address =
-    create_oven create.delegate Tezos.amount { admin = Tezos.self_address ; handle = handle ; depositors = create.depositors } in
-    let oven = {tez_balance = Tezos.amount ; ctez_outstanding = 0n ; address = oven_address}  in
-    let ovens = Big_map.update handle (Some oven) s.ovens in
-    ([origination_op], {s with ovens = ovens})
-
-let set_addresses (s : storage) (addresses : set_addresses) : result =
-  if s.ctez_fa12_address <> ("tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU" : address) then
-    (failwith error_CTEZ_FA12_ADDRESS_ALREADY_SET : result)
-  else if  s.cfmm_address <> ("tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU" : address) then
-    (failwith error_CFMM_ADDRESS_ALREADY_SET : result)
-  else
-    (([] : operation list), {s with ctez_fa12_address = addresses.ctez_fa12_address ; cfmm_address = addresses.cfmm_address})
+(* Functions *)
 
 let get_oven (handle : oven_handle) (s : storage) : oven =
   match Big_map.find_opt handle s.ovens with
@@ -96,6 +80,33 @@ let get_oven_delegate (oven_address : address) : (key_hash option) contract =
   match (Tezos.get_entrypoint_opt "%oven_delegate" oven_address : (key_hash option) contract option) with
   | None -> (failwith error_OVEN_MISSING_DELEGATE_ENTRYPOINT : (key_hash option) contract)
   | Some c -> c
+
+let get_ctez_mint_or_burn (fa12_address : address) : (int * address) contract =
+  match (Tezos.get_entrypoint_opt  "%mintOrBurn"  fa12_address : ((int * address) contract) option) with
+  | None -> (failwith error_CTEZ_FA12_CONTRACT_MISSING_MINT_OR_BURN_ENTRYPOINT : (int * address) contract)
+  | Some c -> c
+
+
+(* Entrypoint Functions *)
+
+let create (s : storage) (create : create) : result =
+  let handle = { id = create.id ; owner = Tezos.sender } in
+  if Big_map.mem handle s.ovens then
+    (failwith error_OVEN_ALREADY_EXISTS : result)
+  else
+    let (origination_op, oven_address) : operation * address =
+    create_oven create.delegate Tezos.amount { admin = Tezos.self_address ; handle = handle ; depositors = create.depositors } in
+    let oven = {tez_balance = Tezos.amount ; ctez_outstanding = 0n ; address = oven_address}  in
+    let ovens = Big_map.update handle (Some oven) s.ovens in
+    ([origination_op], {s with ovens = ovens})
+
+let set_addresses (s : storage) (addresses : set_addresses) : result =
+  if s.ctez_fa12_address <> ("tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU" : address) then
+    (failwith error_CTEZ_FA12_ADDRESS_ALREADY_SET : result)
+  else if  s.cfmm_address <> ("tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU" : address) then
+    (failwith error_CFMM_ADDRESS_ALREADY_SET : result)
+  else
+    (([] : operation list), {s with ctez_fa12_address = addresses.ctez_fa12_address ; cfmm_address = addresses.cfmm_address})
 
 let withdraw (s : storage) (p : withdraw)   : result =
   let handle = {id = p.id ; owner = Tezos.sender} in
@@ -122,11 +133,6 @@ let register_deposit (s : storage) (p : register_deposit) : result =
       let oven = {oven with tez_balance = oven.tez_balance + p.amount} in
       let ovens = Big_map.update p.handle (Some oven) s.ovens in
       (([] : operation list), {s with ovens = ovens})
-
-let get_ctez_mint_or_burn (fa12_address : address) : (int * address) contract =
-  match (Tezos.get_entrypoint_opt  "%mintOrBurn"  fa12_address : ((int * address) contract) option) with
-  | None -> (failwith error_CTEZ_FA12_CONTRACT_MISSING_MINT_OR_BURN_ENTRYPOINT : (int * address) contract)
-  | Some c -> c
 
 (* liquidate the oven by burning "quantity" ctez *)
 let liquidate (s: storage) (p : liquidate) : result  =
