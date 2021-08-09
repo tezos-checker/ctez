@@ -71,6 +71,8 @@ type set_baker =
   }
 #endif
 
+type ctez_target = nat
+
 (* getbalance update types for fa12 and fa2 *)
 type update_fa12_pool = nat
 type update_fa2_pool = ((address * nat)  * nat) list
@@ -92,6 +94,7 @@ type update_cash_pool_internal = update_fa12_pool
 type entrypoint =
 | AddLiquidity    of add_liquidity
 | RemoveLiquidity of remove_liquidity
+| Ctez_target     of ctez_target
 | CashToToken     of cash_to_token
 | TokenToCash     of token_to_cash
 | TokenToToken    of token_to_token
@@ -118,6 +121,8 @@ type storage =
   { tokenPool : nat ;
     cashPool : nat ;
     lqtTotal : nat ;
+    target : ctez_target ;
+    ctez_address : address ;
     pendingPoolUpdates : nat ;
 #if HAS_BAKER
     freezeBaker : bool ;
@@ -200,7 +205,7 @@ type mintOrBurn =
 [@inline] let error_BAKER_PERMANENTLY_FROZEN = 22n
 [@inline] let error_LQT_ADDRESS_ALREADY_SET = 24n
 [@inline] let error_CALL_NOT_FROM_AN_IMPLICIT_ACCOUNT = 25n
-(* 26n *)
+[@inline] let error_CALLER_MUST_BE_CTEZ = 26n
 (* 27n *)
 #if TOKEN_IS_FA2
 [@inline] let error_INVALID_FA2_TOKEN_CONTRACT_MISSING_BALANCE_OF = 28n
@@ -293,7 +298,7 @@ let cash_transfer (storage : storage) (from : address) (to_ : address) (cash_amo
 #endif
 #endif
 
-// Returns 
+// Returns the price ∆y/∆x at a given point (x,y)
 let price_x_to_y (x : nat) (y : nat) : nat = 
     let x2 = x * x in
     let y2 = y * y in
@@ -322,7 +327,7 @@ let rec newton_x_to_y (a:nat) (b:nat) (x:nat) (y:nat) (dx:nat) (dy_approx:nat) =
 // A function that outputs dy given x, y, and dx
 let trade_x_for_y (x:nat) (y:nat) (dx:nat) = 
     let current_price = price_x_to_y x y in
-    let dy_approx = current_price * cashSold in
+    let dy_approx = current_price * dx in
     newton_x_to_y 1n 1n x y dx dy_approx
 
 (* =============================================================================
@@ -433,6 +438,14 @@ let remove_liquidity (param : remove_liquidity) (storage : storage) : result =
             ([op_lqt; op_token; op_cash], storage)
         end
     end
+
+let ctez_target (param : ctez_target) (storage : storage) = 
+    if Tezos.sender <> storage.ctez_address then
+        (failwith error_CALLER_MUST_BE_CTEZ : result)
+    else
+        let updated_target = param in 
+        let storage = {storage with target = updated_target} in
+        (([] : operation list), storage)
 
 
 let cash_to_token (param : cash_to_token) (storage : storage) =
@@ -745,6 +758,8 @@ let main ((entrypoint, storage) : entrypoint * storage) : result =
         add_liquidity param storage
     | RemoveLiquidity param ->
         remove_liquidity param storage
+    | Ctez_target param ->
+        ctez_target param storage
 #if HAS_BAKER
     | SetBaker param ->
         set_baker param storage
