@@ -18,7 +18,7 @@
 type add_liquidity =
   [@layout:comb]
   { owner : address ; (* address that will own the minted lqt *)
-    minLqtMinted : nat ; (* minimum number of lqt that must be minter *)
+    minLqtMinted : nat ; (* minimum number of lqt that must be minted *)
     maxTokensDeposited : nat ; (* maximum number of tokens that may be deposited *)
 #if !CASH_IS_TEZ
     cashDeposited : nat ; (* if cash isn't tez, specifiy the amount to be deposited *)
@@ -123,6 +123,7 @@ type storage =
     cashPool : nat ;
     lqtTotal : nat ;
     target : ctez_target ;
+    const_fee : nat * nat ;
     ctez_address : address ;
     pendingPoolUpdates : nat ;
 #if HAS_BAKER
@@ -299,8 +300,9 @@ let cash_transfer (storage : storage) (from : address) (to_ : address) (cash_amo
 #endif
 #endif
 
+(* In all the following calculations, cash is x, tokens are y *)
 // Returns the price dy/dx, i.e. a map by multiplication ∆x => ∆y, at a given point (x,y)
-let price_x_to_y (target : nat * nat) (target_b : nat) (x : nat) (y : nat) : nat = 
+let price_cash_to_token (target : nat * nat) (target_b : nat) (x : nat) (y : nat) : nat = 
     let (a,b) = target in 
     let ax2 = x * x * a * a in
     let by2 = y * y * b * b in
@@ -309,7 +311,6 @@ let price_x_to_y (target : nat * nat) (target_b : nat) (x : nat) (y : nat) : nat
     num/denom
 
 // A function to transfer assets along a curve in https://hackmd.io/MkPSYXDsTf-giBprcDrc3w
-// TODO : Transaction fees 
 let rec newton_x_to_y (target : nat * nat) (x:nat) (y:nat) (dx:nat) (dy_approx:nat) = 
     let (a,b) = target in
     let ax = a * x and by = b * y  in
@@ -326,14 +327,14 @@ let rec newton_x_to_y (target : nat * nat) (x:nat) (y:nat) (dx:nat) (dy_approx:n
     else
         newton_x_to_y a b x y dx (dy - adjust)
 
-// A function that outputs dy given x, y, and dx
-let trade_dx_for_dy (target : nat * nat) (x : nat) (y : nat) (dx : nat) = 
+// A function that outputs dy (diff_token) given x, y, and dx
+let trade_dcash_for_dtoken (target : nat * nat) (x : nat) (y : nat) (dx : nat) = 
     let current_price = price_x_to_y target x y in
     let dy_approx = current_price * dx in
     newton_x_to_y target x y dx dy_approx
 
-// A function that outputs dx given target, x, y, and dy
-let trade_dy_for_dx (target : nat * nat) (x : nat) (y : nat) (dy : nat) = 
+// A function that outputs dx (diff_cash) given target, x, y, and dy
+let trade_dtoken_for_dcash (target : nat * nat) (x : nat) (y : nat) (dy : nat) = 
     let (a,b) = target in 
     let target_inv = (b,a) in
     let current_price = price_x_to_y target_inv y x in
@@ -479,11 +480,13 @@ let cash_to_token (param : cash_to_token) (storage : storage) =
         let cashPool = storage.cashPool in
         let tokens_bought =
             // cash -> token calculation; *includes a fee*
-            (bought = trade_x_for_y cashPool storage.tokenPool cashSold in
-            if bought < minTokensBought then
+            let bought = trade_dcash_for_dtoken storage.target cashPool storage.tokenPool cashSold in
+            let (fee_num, fee_denom) = storage.const_fee in
+            let bought_after_fee = bought * fee_num / fee_denom in
+            if bought_after_fee < minTokensBought then
                 (failwith error_TOKENS_BOUGHT_MUST_BE_GREATER_THAN_OR_EQUAL_TO_MIN_TOKENS_BOUGHT : nat)
             else
-                bought)
+                bought_after_fee
         in
         let new_tokenPool = (match is_nat (storage.tokenPool - tokens_bought) with
             | None -> (failwith error_TOKEN_POOL_MINUS_TOKENS_BOUGHT_IS_NEGATIVE : nat)
@@ -523,8 +526,14 @@ let token_to_cash (param : token_to_cash) (storage : storage) =
            unless all liquidity has been removed. *)
         // token -> cash calculation; *includes a fee*
         let cash_bought =
-            let bought = trade_x_for_y storage.tokenPool storage.cashPool tokensSold in
-                if bought < minCashBought then (failwith error_CASH_BOUGHT_MUST_BE_GREATER_THAN_OR_EQUAL_TO_MIN_CASH_BOUGHT : nat) else bought in
+            let bought = trade_dtoken_for_dcash storage.target storage.cashPool storage.tokenPool tokensSold in
+            let (fee_num, fee_denom) = storage.const_fee in
+            let bought_after_fee = bought * fee_num / fee_denom in
+                if bought_after_fee < minCashBought then 
+                    (failwith error_CASH_BOUGHT_MUST_BE_GREATER_THAN_OR_EQUAL_TO_MIN_CASH_BOUGHT : nat) 
+                else 
+                    bought_after_fee
+        in
 
         let op_token = token_transfer storage Tezos.sender Tezos.self_address tokensSold in
 #if CASH_IS_TEZ
