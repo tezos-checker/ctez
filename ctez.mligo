@@ -27,7 +27,7 @@ type parameter =
   | Mint_or_burn of mint_or_burn
   | Cfmm_price of nat * nat
   | Set_addresses of set_addresses
-  | Get_target of nat contract
+  | Get_target of (nat * nat) contract
 
 type oven = {tez_balance : tez ; ctez_outstanding : nat ; address : address}
 
@@ -181,8 +181,8 @@ let mint_or_burn (s : storage) (p : mint_or_burn) : result =
     let ctez_mint_or_burn = get_ctez_mint_or_burn s.ctez_fa12_address in
     ([Tezos.transaction (p.quantity, Tezos.sender) 0mutez ctez_mint_or_burn], s)
 
-let get_target (storage : storage) (callback : nat contract) : result =
-  ([Tezos.transaction storage.target 0mutez callback], storage)
+let get_target (storage : storage) (callback : (nat * nat) contract) : result =
+  ([Tezos.transaction (storage.target, 1n) 0mutez callback], storage)
 
 (* todo: restore when ligo interpret is fixed
    let cfmm_price (storage : storage) (tez : tez) (token : nat) : result =      *)
