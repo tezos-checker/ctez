@@ -86,7 +86,17 @@ let get_ctez_mint_or_burn (fa12_address : address) : (int * address) contract =
   | None -> (failwith error_CTEZ_FA12_CONTRACT_MISSING_MINT_OR_BURN_ENTRYPOINT : (int * address) contract)
   | Some c -> c
 
-
+// Returns the price dy/dx, i.e. a map by multiplication ∆x => ∆y, at a given point (x,y)
+let price_cash_to_token (target : nat * nat) (cash : nat) (token : nat) : nat = 
+    let (a,b) = target in 
+    let x = cash in
+    let y = token in
+    let ax2 = x * x * a * a in
+    let by2 = y * y * b * b in
+    let num = y * (3n * ax2 + by2) in
+    let denom = x * (ax2 + 3n * by2) in
+    num/denom
+  
 (* Entrypoint Functions *)
 
 let create (s : storage) (create : create) : result =
@@ -194,7 +204,7 @@ let cfmm_price (storage, tez, token : storage * nat * nat) : result =
            for each day over or under the target by more than 1/64th.
         *)
 
-    let price = (Bitwise.shift_left tez 48n) / token in
+    let price = price_cash_to_token (target, 1n) tez token in
     let target_less_price : int = target - price in
     let d_drift =
       let x = Bitwise.shift_left (abs (target_less_price * target_less_price)) 10n in
