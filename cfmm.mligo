@@ -71,7 +71,8 @@ type set_baker =
   }
 #endif
 
-type ctez_target = nat
+(* (a,b) such that a/b is the target price from the ctez contract *)
+type ctez_target = nat * nat
 
 (* getbalance update types for fa12 and fa2 *)
 type update_fa12_pool = nat
@@ -298,18 +299,19 @@ let cash_transfer (storage : storage) (from : address) (to_ : address) (cash_amo
 #endif
 #endif
 
-// Returns the price ∆y/∆x at a given point (x,y)
-let price_x_to_y (x : nat) (y : nat) : nat = 
-    let x2 = x * x in
-    let y2 = y * y in
-    let num = y * (3n * x2 + y2) in
-    let denom = x * (x2 + 3n * y2) in
+// Returns the price dy/dx, i.e. a map by multiplication ∆x => ∆y, at a given point (x,y)
+let price_x_to_y (target : nat * nat) (target_b : nat) (x : nat) (y : nat) : nat = 
+    let (a,b) = target in 
+    let ax2 = x * x * a * a in
+    let by2 = y * y * b * b in
+    let num = y * (3n * ax2 + by2) in
+    let denom = x * (ax2 + 3n * by2) in
     num/denom
 
 // A function to transfer assets along a curve in https://hackmd.io/MkPSYXDsTf-giBprcDrc3w
-// In our case: a, b = 1 and dy = (price_x_to_y x y) * dx
 // TODO : Transaction fees 
-let rec newton_x_to_y (a:nat) (b:nat) (x:nat) (y:nat) (dx:nat) (dy_approx:nat) = 
+let rec newton_x_to_y (target : nat * nat) (x:nat) (y:nat) (dx:nat) (dy_approx:nat) = 
+    let (a,b) = target in
     let ax = a * x and by = b * y  in
     let ax2 = ax * ax and by2 = by * by in
     (* todo yp could be negative *)
@@ -325,10 +327,18 @@ let rec newton_x_to_y (a:nat) (b:nat) (x:nat) (y:nat) (dx:nat) (dy_approx:nat) =
         newton_x_to_y a b x y dx (dy - adjust)
 
 // A function that outputs dy given x, y, and dx
-let trade_x_for_y (x:nat) (y:nat) (dx:nat) = 
-    let current_price = price_x_to_y x y in
+let trade_dx_for_dy (target : nat * nat) (x : nat) (y : nat) (dx : nat) = 
+    let current_price = price_x_to_y target x y in
     let dy_approx = current_price * dx in
-    newton_x_to_y 1n 1n x y dx dy_approx
+    newton_x_to_y target x y dx dy_approx
+
+// A function that outputs dx given target, x, y, and dy
+let trade_dy_for_dx (target : nat * nat) (x : nat) (y : nat) (dy : nat) = 
+    let (a,b) = target in 
+    let target_inv = (b,a) in
+    let current_price = price_x_to_y target_inv y x in
+    let dx_approx = current_price * dy in
+    newton_x_to_y target_inv y x dy dx_approx
 
 (* =============================================================================
  * Entrypoint Functions
