@@ -313,7 +313,7 @@ let isoutility (target, cash, token : (nat * nat) * nat * nat) : nat =
     a * x * b * y * (ax2 + by2) / (2 * a2 * b2)
 
 // A function to transfer assets while maintaining a constant isoutility
-let rec dy_given_dx (target, x, y, dx, dy_est : (nat * nat) * nat * nat * nat * nat * nat) : nat = 
+let rec dy_given_dx (target, x, y, dx, dy_est : (nat * nat) * nat * nat * nat * nat ) : nat = 
     let (a, b) = target in
     let margin_of_error = 1n in
     let U_0 = (isoutility target x y) in 
