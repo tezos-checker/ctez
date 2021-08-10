@@ -311,7 +311,7 @@ let price_cash_to_token (target : nat * nat) (x : nat) (y : nat) : nat =
     num/denom
 
 // A function to transfer assets along a curve in https://hackmd.io/MkPSYXDsTf-giBprcDrc3w
-let rec newton_x_to_y (target : nat * nat) (x:nat) (y:nat) (dx:nat) (dy_approx:nat) = 
+let rec newton_x_to_y (target, x, y, dx, dy_approx : (nat * nat) * nat * nat * nat * nat) : nat = 
     let (a,b) = target in
     let ax = a * x and by = b * y  in
     let ax2 = ax * ax and by2 = by * by in
@@ -325,13 +325,13 @@ let rec newton_x_to_y (target : nat * nat) (x:nat) (y:nat) (dx:nat) (dy_approx:n
     if (abs adjust) <= 1 then
         dy_approx - 1 (* better to be a bit stingy *) 
     else
-        newton_x_to_y a b x y dx (dy - adjust)
+        newton_x_to_y (a, b, x, y, dx, (dy - adjust))
 
 // A function that outputs dy (diff_token) given x, y, and dx
 let trade_dcash_for_dtoken (target : nat * nat) (x : nat) (y : nat) (dx : nat) = 
     let current_price = price_x_to_y target x y in
     let dy_approx = current_price * dx in
-    newton_x_to_y target x y dx dy_approx
+    newton_x_to_y (target, x, y, dx, dy_approx)
 
 // A function that outputs dx (diff_cash) given target, x, y, and dy
 let trade_dtoken_for_dcash (target : nat * nat) (x : nat) (y : nat) (dy : nat) = 
@@ -339,7 +339,7 @@ let trade_dtoken_for_dcash (target : nat * nat) (x : nat) (y : nat) (dy : nat) =
     let target_inv = (b,a) in
     let current_price = price_x_to_y target_inv y x in
     let dx_approx = current_price * dy in
-    newton_x_to_y target_inv y x dy dx_approx
+    newton_x_to_y (target_inv, y, x, dy, dx_approx)
 
 (* =============================================================================
  * Entrypoint Functions
