@@ -302,7 +302,7 @@ let cash_transfer (storage : storage) (from : address) (to_ : address) (cash_amo
 
 (* In all the following calculations, cash is x, tokens are y *)
 // Returns the price dy/dx, i.e. a map by multiplication ∆x => ∆y, at a given point (x,y)
-let price_cash_to_token (target : nat * nat) (target_b : nat) (x : nat) (y : nat) : nat = 
+let price_cash_to_token (target : nat * nat) (x : nat) (y : nat) : nat = 
     let (a,b) = target in 
     let ax2 = x * x * a * a in
     let by2 = y * y * b * b in
