@@ -300,9 +300,36 @@ let cash_transfer (storage : storage) (from : address) (to_ : address) (cash_amo
 #endif
 #endif
 
-(* In all the following calculations, cash is x, tokens are y *)
-// Returns the price dy/dx, i.e. a map by multiplication ∆x => ∆y, at a given point (x,y)
-let price_cash_to_token (target : nat * nat) (x : nat) (y : nat) : nat = 
+(* Isoutility and Difference Equations *)
+// The Isoutility Function in https://hackmd.io/MkPSYXDsTf-giBprcDrc3w  
+let isoutility (target, cash, token : (nat * nat) * nat * nat) : nat = 
+    let x = cash in 
+    let y = token in 
+    let (a,b) = target in 
+    let a2 = a * a in
+    let b2 = b * b in 
+    let ax2 = a2 * x * x in 
+    let by2 = b2 * y * y in
+    a * x * b * y * (ax2 + by2) / (2 * a2 * b2)
+
+// A function to transfer assets while maintaining a constant isoutility
+let rec dy_given_dx (target, x, y, dx, dy_est : (nat * nat) * nat * nat * nat * nat * nat) : nat = 
+    let (a, b) = target in
+    let margin_of_error = 1n in
+    let U_0 = (isoutility target x y) in 
+    let U_1 = (isoutility target (x - dx) (y + dy_est)) in 
+    if (abs(U_1 - U_0) > margin_of_error)
+    then
+        let u_ratio = U_1 / U_0 in 
+        let adjust_scalar = (5 + 7 * u_ratio) / (7 + 5 * r) in //approximating the sixth root 
+        let new_dy_est = adjust_scalar * dy_est in 
+        dy_given_dx (target, x, y, dx, new_dy_est)
+    else
+        let dy = dy_est in dy
+
+// Returns the price dy/dx of the isoutility function, i.e. a map by multiplication ∆x => ∆y, at a given point (x,y)
+let price_cash_to_token (target : nat * nat) (cash : nat) (token : nat) : nat = 
+    let (x,y) = (cash, token) in
     let (a,b) = target in 
     let ax2 = x * x * a * a in
     let by2 = y * y * b * b in
@@ -310,28 +337,11 @@ let price_cash_to_token (target : nat * nat) (x : nat) (y : nat) : nat =
     let denom = x * (ax2 + 3n * by2) in
     num/denom
 
-// A function to transfer assets along a curve in https://hackmd.io/MkPSYXDsTf-giBprcDrc3w
-let rec newton_x_to_y (target, x, y, dx, dy_approx : (nat * nat) * nat * nat * nat * nat) : nat = 
-    let (a,b) = target in
-    let ax = a * x and by = b * y  in
-    let ax2 = ax * ax and by2 = by * by in
-    (* todo yp could be negative *)
-    let xp = x + dx and yp = y - dy_approx in
-    let axp = a * xp and byp = b * yp in       
-    let num = x * y * (ax2 + by2) - xp * yp * (axp2 + byp2)
-    and denom = xp * (axp2 + 3n * byp2) in
-    let adjust = num / denom in
-    (* todo: check if condition always met *)
-    if (abs adjust) <= 1 then
-        dy_approx - 1 (* better to be a bit stingy *) 
-    else
-        newton_x_to_y (a, b, x, y, dx, (dy - adjust))
-
 // A function that outputs dy (diff_token) given x, y, and dx
 let trade_dcash_for_dtoken (target : nat * nat) (x : nat) (y : nat) (dx : nat) = 
     let current_price = price_x_to_y target x y in
     let dy_approx = current_price * dx in
-    newton_x_to_y (target, x, y, dx, dy_approx)
+    dy_given_dx (target, x, y, dx, dy_approx)
 
 // A function that outputs dx (diff_cash) given target, x, y, and dy
 let trade_dtoken_for_dcash (target : nat * nat) (x : nat) (y : nat) (dy : nat) = 
@@ -339,7 +349,7 @@ let trade_dtoken_for_dcash (target : nat * nat) (x : nat) (y : nat) (dy : nat) =
     let target_inv = (b,a) in
     let current_price = price_x_to_y target_inv y x in
     let dx_approx = current_price * dy in
-    newton_x_to_y (target_inv, y, x, dy, dx_approx)
+    dy_given_dx (target_inv, y, x, dy, dx_approx)
 
 (* =============================================================================
  * Entrypoint Functions
