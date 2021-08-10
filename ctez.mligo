@@ -183,7 +183,7 @@ let mint_or_burn (s : storage) (p : mint_or_burn) : result =
 
 let get_target (storage : storage) (callback : (nat * nat) contract) : result =
   // todo: any security on the contract itself?
-  ([Tezos.transaction (storage.target, 1n) 0mutez callback], storage)
+  ([Tezos.transaction (storage.target, (Bitwise.shift_right 2n 48n)) 0mutez callback], storage)
 
 (* todo: restore when ligo interpret is fixed
    let cfmm_price (storage : storage) (tez : tez) (token : nat) : result =      *)
