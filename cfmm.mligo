@@ -312,21 +312,6 @@ let isoutility (target, cash, token : (nat * nat) * nat * nat) : nat =
     let by2 = b2 * y * y in
     a * x * b * y * (ax2 + by2) / (2 * a2 * b2)
 
-// A function to transfer assets while maintaining a constant isoutility
-let rec dy_given_dx (target, x, y, dx, dy_est : (nat * nat) * nat * nat * nat * nat ) : nat = 
-    let (a, b) = target in
-    let margin_of_error = 1n in
-    let U_0 = (isoutility target x y) in 
-    let U_1 = (isoutility target (x - dx) (y + dy_est)) in 
-    if (abs(U_1 - U_0) > margin_of_error)
-    then
-        let u_ratio = U_1 / U_0 in 
-        let adjust_scalar = (5 + 7 * u_ratio) / (7 + 5 * r) in //approximating the sixth root 
-        let new_dy_est = adjust_scalar * dy_est in 
-        dy_given_dx (target, x, y, dx, new_dy_est)
-    else
-        let dy = dy_est in dy
-
 // Returns the price dy/dx of the isoutility function, i.e. a map by multiplication ∆x => ∆y, at a given point (x,y)
 let price_cash_to_token (target : nat * nat) (cash : nat) (token : nat) : nat = 
     let (x,y) = (cash, token) in
@@ -337,19 +322,56 @@ let price_cash_to_token (target : nat * nat) (cash : nat) (token : nat) : nat =
     let denom = x * (ax2 + 3n * by2) in
     num/denom
 
+// A function to transfer assets while maintaining a constant isoutility
+let rec newton_x_to_y (x, y, dx, dy_approx, target : nat * nat * nat * nat * (nat * nat)) : nat = 
+    let (a,b) = target in 
+    let xp = x + dx in
+    let yp = y - dy_approx in 
+    let ax2 = a * a * x * x and by2 = b * b * y * y in 
+    let axp2 = a * a * xp * xp and byp2 = b * b * yp * yp in
+    (* Newton descent formulae *)
+    let num = x * y * (ax2 + by2) - xp * yp * (axp2 + byp2) in 
+    let denom = xp * (axp2 + 3 * byp2) in
+    let adjust = num / denom in 
+    if (abs adjust <= 1n) (* marginal difference calculated is <= 1mutez *)
+    then 
+        let dy = dy_approx - adjust in 
+        if y - dy <= 0 
+        then
+            (failwith error_TOKEN_POOL_MINUS_TOKENS_WITHDRAWN_IS_NEGATIVE : nat)
+        else 
+            abs dy // abs to make it a nat
+    else 
+        let new_dy_approx = dy_approx - adjust in
+        newton_x_to_y (x,y,dx,new_dy_approx,target)
+    (*
+        if denom = 0, then either:
+        1. xp = 0 => x + dx = 0, which we don't allow, or
+        2. a*xp = 0 and b*yp = 0 => a = 0 and (b = 0 or yp = 0), which implies
+           that the price target is 0.
+     *)
+
 // A function that outputs dy (diff_token) given x, y, and dx
-let trade_dcash_for_dtoken (target : nat * nat) (x : nat) (y : nat) (dx : nat) = 
+let trade_dcash_for_dtoken (x : nat) (y : nat) (dx : nat) (target : nat * nat) : nat = 
     let current_price = price_x_to_y target x y in
     let dy_approx = current_price * dx in
-    dy_given_dx (target, x, y, dx, dy_approx)
+    if (y - dy_approx <= 0)
+    then
+        (failwith error_TOKEN_POOL_MINUS_TOKENS_WITHDRAWN_IS_NEGATIVE : nat)
+    else 
+        dy_given_dx (target, x, y, dx, dy_approx)
 
 // A function that outputs dx (diff_cash) given target, x, y, and dy
-let trade_dtoken_for_dcash (target : nat * nat) (x : nat) (y : nat) (dy : nat) = 
+let trade_dtoken_for_dcash (x : nat) (y : nat) (dy : nat) (target : nat * nat) : nat = 
     let (a,b) = target in 
     let target_inv = (b,a) in
     let current_price = price_x_to_y target_inv y x in
     let dx_approx = current_price * dy in
-    dy_given_dx (target_inv, y, x, dy, dx_approx)
+    if (x - dx_approx <= 0)
+    then
+        (failwith error_CASH_POOL_MINUS_CASH_WITHDRAWN_IS_NEGATIVE : nat)
+    else
+        dy_given_dx (target_inv, y, x, dy, dx_approx)
 
 (* =============================================================================
  * Entrypoint Functions
