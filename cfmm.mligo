@@ -364,6 +364,7 @@ let trade_dcash_for_dtoken (x : nat) (y : nat) (dx : nat) (target : nat * nat) :
 // A function that outputs dx (diff_cash) given target, x, y, and dy
 let trade_dtoken_for_dcash (x : nat) (y : nat) (dy : nat) (target : nat * nat) : nat = 
     let (a,b) = target in 
+    (* todo: Problematic if target = (0,b) to begin with *)
     let target_inv = (b,a) in
     let current_price = price_x_to_y target_inv y x in
     let dx_approx = current_price * dy in
