@@ -43,6 +43,7 @@ type cash_to_token =
     cashSold : nat ; (* if cash isn't tez, how much cash is sought to be sold *)
 #endif
     deadline : timestamp ; (* time before which the request must be completed *)
+    rounds : nat ; (* number of iterations in estimating the difference equations. Default should be 4n. *)
   }
 
 type token_to_cash =
@@ -51,6 +52,7 @@ type token_to_cash =
     tokensSold : nat ; (* how many tokens are being sold *)
     minCashBought : nat ; (* minimum amount of cash desired *)
     deadline : timestamp ; (* time before which the request must be completed *)
+    rounds : nat ; (* number of iterations in estimating the difference equations. Default should be 4n. *)
   }
 
 
@@ -61,6 +63,7 @@ type token_to_token =
     [@annot:to] to_ : address ; (* where to send the output tokens *)
     tokensSold : nat ; (* amount of tokens to sell *)
     deadline : timestamp ; (* time before which the request must be completed *)
+    rounds : nat ; (* number of iterations in estimating the difference equations. Default should be 4n. *)
   }
 
 #if HAS_BAKER
@@ -323,7 +326,7 @@ let price_cash_to_token (target : nat * nat) (cash : nat) (token : nat) : nat =
     num/denom
 
 // A function to transfer assets while maintaining a constant isoutility
-let rec newton_dx_to_dy (x, y, dx, dy_approx, target, rounds : nat * nat * nat * nat * (nat * nat) * int) : nat = 
+let rec newton_dx_to_dy (x, y, dx, dy_approx, target, rounds : nat * nat * nat * nat * (nat * nat) * nat) : nat = 
     let (a,b) = target in 
     let xp = x + dx in
     let yp = y - dy_approx in 
@@ -334,7 +337,7 @@ let rec newton_dx_to_dy (x, y, dx, dy_approx, target, rounds : nat * nat * nat *
     let denom = xp * (axp2 + 3 * byp2) in
     let adjust = num / denom in 
     // if (abs adjust <= 1n) (* marginal difference calculated is <= 1mutez *)
-    if (rounds <= 0) (* Newton converges in 4 rounds, so we bound computation there *)
+    if (rounds <= 0n) (* Newton converges in 4 rounds, so we bound computation there *)
     then 
         let dy = dy_approx - adjust in 
         if y - dy <= 0 
@@ -344,7 +347,7 @@ let rec newton_dx_to_dy (x, y, dx, dy_approx, target, rounds : nat * nat * nat *
             abs dy // abs to make it a nat
     else 
         let new_dy_approx = abs (dy_approx - adjust) in
-        let next_round = rounds - 1 in
+        let next_round = abs (rounds - 1n) in
         newton_dx_to_dy (x,y,dx,new_dy_approx,target,next_round)
     (*
         if denom = 0, then either:
@@ -354,10 +357,9 @@ let rec newton_dx_to_dy (x, y, dx, dy_approx, target, rounds : nat * nat * nat *
      *)
 
 // A function that outputs dy (diff_token) given x, y, and dx
-let trade_dcash_for_dtoken (x : nat) (y : nat) (dx : nat) (target : nat * nat) : nat = 
+let trade_dcash_for_dtoken (x : nat) (y : nat) (dx : nat) (target : nat * nat) (rounds : nat) : nat = 
     let current_price = price_cash_to_token target x y in
     let dy_approx = current_price * dx in
-    let rounds = 4 in // Newton converges in about 4 rounds
     if (y - dy_approx <= 0)
     then
         (failwith error_TOKEN_POOL_MINUS_TOKENS_WITHDRAWN_IS_NEGATIVE : nat)
@@ -365,13 +367,12 @@ let trade_dcash_for_dtoken (x : nat) (y : nat) (dx : nat) (target : nat * nat) :
         newton_dx_to_dy (x, y, dx, dy_approx, target, rounds)
 
 // A function that outputs dx (diff_cash) given target, x, y, and dy
-let trade_dtoken_for_dcash (x : nat) (y : nat) (dy : nat) (target : nat * nat) : nat = 
+let trade_dtoken_for_dcash (x : nat) (y : nat) (dy : nat) (target : nat * nat) (rounds : nat) : nat = 
     let (a,b) = target in 
     (* todo: Problematic if target = (0,b) to begin with *)
     let target_inv = (b,a) in
     let current_price = price_cash_to_token target_inv y x in
     let dx_approx = current_price * dy in
-    let rounds = 4 in // Newton converges in about 4 rounds
     if (x - dx_approx <= 0)
     then
         (failwith error_CASH_POOL_MINUS_CASH_WITHDRAWN_IS_NEGATIVE : nat)
@@ -502,7 +503,8 @@ let cash_to_token (param : cash_to_token) (storage : storage) =
 #if !CASH_IS_TEZ
          cashSold = cashSold ;
 #endif
-         deadline = deadline } = param in
+         deadline = deadline ;
+          rounds = rounds } = param in
 
 #if CASH_IS_TEZ
     let cashSold = mutez_to_natural Tezos.amount in
@@ -517,7 +519,7 @@ let cash_to_token (param : cash_to_token) (storage : storage) =
         let cashPool = storage.cashPool in
         let tokens_bought =
             // cash -> token calculation; *includes a fee*
-            let bought = trade_dcash_for_dtoken cashPool storage.tokenPool cashSold storage.target in
+            let bought = trade_dcash_for_dtoken cashPool storage.tokenPool cashSold storage.target rounds in
             let (fee_num, fee_denom) = storage.const_fee in
             let bought_after_fee = bought * fee_num / fee_denom in
             if bought_after_fee < minTokensBought then
@@ -550,7 +552,8 @@ let token_to_cash (param : token_to_cash) (storage : storage) =
     let { to_ = to_ ;
           tokensSold = tokensSold ;
           minCashBought = minCashBought ;
-          deadline = deadline } = param in
+          deadline = deadline ;
+          rounds = rounds } = param in
 
     if storage.pendingPoolUpdates > 0n then
         (failwith error_PENDING_POOL_UPDATES_MUST_BE_ZERO : result)
@@ -563,7 +566,7 @@ let token_to_cash (param : token_to_cash) (storage : storage) =
            unless all liquidity has been removed. *)
         // token -> cash calculation; *includes a fee*
         let cash_bought =
-            let bought = trade_dtoken_for_dcash storage.cashPool storage.tokenPool tokensSold storage.target in
+            let bought = trade_dtoken_for_dcash storage.cashPool storage.tokenPool tokensSold storage.target rounds in
             let (fee_num, fee_denom) = storage.const_fee in
             let bought_after_fee = bought * fee_num / fee_denom in
                 if bought_after_fee < minCashBought then 
@@ -736,7 +739,8 @@ let token_to_token (param : token_to_token) (storage : storage) : result =
           minTokensBought = minTokensBought ;
           to_ = to_ ;
           tokensSold = tokensSold ;
-          deadline = deadline } = param in
+          deadline = deadline ;
+          rounds = rounds } = param in
 
     let outputCfmmContract_contract: cash_to_token contract =
         (match (Tezos.get_entrypoint_opt "%cashToToken" outputCfmmContract : cash_to_token contract option) with
@@ -752,7 +756,7 @@ let token_to_token (param : token_to_token) (storage : storage) : result =
     else
         (* We don't check that tokenPool > 0, because that is impossible unless all liquidity has been removed. *)
         let cash_bought = 
-            (let bought = trade_dtoken_for_dcash storage.cashPool storage.tokenPool tokensSold storage.target in
+           (let bought = trade_dtoken_for_dcash storage.cashPool storage.tokenPool tokensSold storage.target rounds in
             let (fee_num, fee_denom) = storage.const_fee in
             bought * fee_num / fee_denom)
         in
@@ -764,7 +768,7 @@ let token_to_token (param : token_to_token) (storage : storage) : result =
 
 #if CASH_IS_TEZ
         let op_send_cash_to_output = Tezos.transaction { minTokensBought = minTokensBought ;
-                                      deadline = deadline; to_ = to_ }
+                                      deadline = deadline; to_ = to_ ; rounds = rounds}
                                       (natural_to_mutez cash_bought)
                                       outputCfmmContract_contract in
 #else
@@ -784,7 +788,7 @@ let token_to_token (param : token_to_token) (storage : storage) : result =
 #endif
         let op_send_cash_to_output = Tezos.transaction { minTokensBought = minTokensBought ;
                                       cashSold = cash_bought ;
-                                      deadline = deadline ; to_ = to_}
+                                      deadline = deadline ; to_ = to_ ; rounds = rounds}
                                       0mutez
                                       outputCfmmContract_contract in
 #endif
