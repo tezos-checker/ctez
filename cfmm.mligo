@@ -310,7 +310,7 @@ let isoutility (target, cash, token : (nat * nat) * nat * nat) : nat =
     let b2 = b * b in 
     let ax2 = a2 * x * x in 
     let by2 = b2 * y * y in
-    a * x * b * y * (ax2 + by2) / (2 * a2 * b2)
+    abs (a * x * b * y * (ax2 + by2) / (2 * a2 * b2))
 
 // Returns the price dy/dx of the isoutility function, i.e. a map by multiplication ∆x => ∆y, at a given point (x,y)
 let price_cash_to_token (target : nat * nat) (cash : nat) (token : nat) : nat = 
@@ -323,12 +323,12 @@ let price_cash_to_token (target : nat * nat) (cash : nat) (token : nat) : nat =
     num/denom
 
 // A function to transfer assets while maintaining a constant isoutility
-let rec newton_x_to_y (x, y, dx, dy_approx, target : nat * nat * nat * nat * (nat * nat)) : nat = 
+let rec newton_dx_to_dy (x, y, dx, dy_approx, target : nat * nat * nat * nat * (nat * nat)) : nat = 
     let (a,b) = target in 
     let xp = x + dx in
     let yp = y - dy_approx in 
-    let ax2 = a * a * x * x and by2 = b * b * y * y in 
-    let axp2 = a * a * xp * xp and byp2 = b * b * yp * yp in
+    let ax2 = a * a * x * x in let by2 = b * b * y * y in 
+    let axp2 = a * a * xp * xp in let byp2 = b * b * yp * yp in
     (* Newton descent formulae *)
     let num = x * y * (ax2 + by2) - xp * yp * (axp2 + byp2) in 
     let denom = xp * (axp2 + 3 * byp2) in
@@ -342,8 +342,8 @@ let rec newton_x_to_y (x, y, dx, dy_approx, target : nat * nat * nat * nat * (na
         else 
             abs dy // abs to make it a nat
     else 
-        let new_dy_approx = dy_approx - adjust in
-        newton_x_to_y (x,y,dx,new_dy_approx,target)
+        let new_dy_approx = abs (dy_approx - adjust) in
+        newton_dx_to_dy (x,y,dx,new_dy_approx,target)
     (*
         if denom = 0, then either:
         1. xp = 0 => x + dx = 0, which we don't allow, or
@@ -353,26 +353,26 @@ let rec newton_x_to_y (x, y, dx, dy_approx, target : nat * nat * nat * nat * (na
 
 // A function that outputs dy (diff_token) given x, y, and dx
 let trade_dcash_for_dtoken (x : nat) (y : nat) (dx : nat) (target : nat * nat) : nat = 
-    let current_price = price_x_to_y target x y in
+    let current_price = price_cash_to_token target x y in
     let dy_approx = current_price * dx in
     if (y - dy_approx <= 0)
     then
         (failwith error_TOKEN_POOL_MINUS_TOKENS_WITHDRAWN_IS_NEGATIVE : nat)
     else 
-        dy_given_dx (target, x, y, dx, dy_approx)
+        newton_dx_to_dy (x, y, dx, dy_approx, target)
 
 // A function that outputs dx (diff_cash) given target, x, y, and dy
 let trade_dtoken_for_dcash (x : nat) (y : nat) (dy : nat) (target : nat * nat) : nat = 
     let (a,b) = target in 
     (* todo: Problematic if target = (0,b) to begin with *)
     let target_inv = (b,a) in
-    let current_price = price_x_to_y target_inv y x in
+    let current_price = price_cash_to_token target_inv y x in
     let dx_approx = current_price * dy in
     if (x - dx_approx <= 0)
     then
         (failwith error_CASH_POOL_MINUS_CASH_WITHDRAWN_IS_NEGATIVE : nat)
     else
-        dy_given_dx (target_inv, y, x, dy, dx_approx)
+        newton_dx_to_dy (y, x, dy, dx_approx, target_inv)
 
 (* =============================================================================
  * Entrypoint Functions
@@ -513,7 +513,7 @@ let cash_to_token (param : cash_to_token) (storage : storage) =
         let cashPool = storage.cashPool in
         let tokens_bought =
             // cash -> token calculation; *includes a fee*
-            let bought = trade_dcash_for_dtoken storage.target cashPool storage.tokenPool cashSold in
+            let bought = trade_dcash_for_dtoken cashPool storage.tokenPool cashSold storage.target in
             let (fee_num, fee_denom) = storage.const_fee in
             let bought_after_fee = bought * fee_num / fee_denom in
             if bought_after_fee < minTokensBought then
@@ -559,7 +559,7 @@ let token_to_cash (param : token_to_cash) (storage : storage) =
            unless all liquidity has been removed. *)
         // token -> cash calculation; *includes a fee*
         let cash_bought =
-            let bought = trade_dtoken_for_dcash storage.target storage.cashPool storage.tokenPool tokensSold in
+            let bought = trade_dtoken_for_dcash storage.cashPool storage.tokenPool tokensSold storage.target in
             let (fee_num, fee_denom) = storage.const_fee in
             let bought_after_fee = bought * fee_num / fee_denom in
                 if bought_after_fee < minCashBought then 
