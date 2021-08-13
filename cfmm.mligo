@@ -747,7 +747,10 @@ let token_to_token (param : token_to_token) (storage : storage) : result =
       (failwith error_THE_CURRENT_TIME_MUST_BE_LESS_THAN_THE_DEADLINE : result)
     else
         (* We don't check that tokenPool > 0, because that is impossible unless all liquidity has been removed. *)
-        let cash_bought = ((tokensSold * const_fee * storage.cashPool) / (storage.tokenPool * const_fee_denom + (tokensSold * const_fee)))  in
+        let cash_bought = 
+            (let bought = trade_dtoken_for_dcash storage.cashPool storage.tokenPool tokensSold storage.target in
+            let (fee_num, fee_denom) = storage.const_fee in
+            bought * fee_num / fee_denom)
         let new_cashPool = match is_nat (storage.cashPool - cash_bought) with
             | None -> (failwith error_CASH_POOL_MINUS_CASH_BOUGHT_IS_NEGATIVE : nat)
             | Some n -> n in
