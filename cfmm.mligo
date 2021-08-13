@@ -323,7 +323,7 @@ let price_cash_to_token (target : nat * nat) (cash : nat) (token : nat) : nat =
     num/denom
 
 // A function to transfer assets while maintaining a constant isoutility
-let rec newton_dx_to_dy (x, y, dx, dy_approx, target : nat * nat * nat * nat * (nat * nat)) : nat = 
+let rec newton_dx_to_dy (x, y, dx, dy_approx, target, rounds : nat * nat * nat * nat * (nat * nat) * int) : nat = 
     let (a,b) = target in 
     let xp = x + dx in
     let yp = y - dy_approx in 
@@ -333,7 +333,8 @@ let rec newton_dx_to_dy (x, y, dx, dy_approx, target : nat * nat * nat * nat * (
     let num = x * y * (ax2 + by2) - xp * yp * (axp2 + byp2) in 
     let denom = xp * (axp2 + 3 * byp2) in
     let adjust = num / denom in 
-    if (abs adjust <= 1n) (* marginal difference calculated is <= 1mutez *)
+    // if (abs adjust <= 1n) (* marginal difference calculated is <= 1mutez *)
+    if (rounds <= 0) (* Newton converges in 4 rounds, so we bound computation there *)
     then 
         let dy = dy_approx - adjust in 
         if y - dy <= 0 
@@ -343,7 +344,8 @@ let rec newton_dx_to_dy (x, y, dx, dy_approx, target : nat * nat * nat * nat * (
             abs dy // abs to make it a nat
     else 
         let new_dy_approx = abs (dy_approx - adjust) in
-        newton_dx_to_dy (x,y,dx,new_dy_approx,target)
+        let next_round = rounds - 1 in
+        newton_dx_to_dy (x,y,dx,new_dy_approx,target,next_round)
     (*
         if denom = 0, then either:
         1. xp = 0 => x + dx = 0, which we don't allow, or
@@ -355,11 +357,12 @@ let rec newton_dx_to_dy (x, y, dx, dy_approx, target : nat * nat * nat * nat * (
 let trade_dcash_for_dtoken (x : nat) (y : nat) (dx : nat) (target : nat * nat) : nat = 
     let current_price = price_cash_to_token target x y in
     let dy_approx = current_price * dx in
+    let rounds = 4 in // Newton converges in about 4 rounds
     if (y - dy_approx <= 0)
     then
         (failwith error_TOKEN_POOL_MINUS_TOKENS_WITHDRAWN_IS_NEGATIVE : nat)
     else 
-        newton_dx_to_dy (x, y, dx, dy_approx, target)
+        newton_dx_to_dy (x, y, dx, dy_approx, target, rounds)
 
 // A function that outputs dx (diff_cash) given target, x, y, and dy
 let trade_dtoken_for_dcash (x : nat) (y : nat) (dy : nat) (target : nat * nat) : nat = 
@@ -368,11 +371,12 @@ let trade_dtoken_for_dcash (x : nat) (y : nat) (dy : nat) (target : nat * nat) :
     let target_inv = (b,a) in
     let current_price = price_cash_to_token target_inv y x in
     let dx_approx = current_price * dy in
+    let rounds = 4 in // Newton converges in about 4 rounds
     if (x - dx_approx <= 0)
     then
         (failwith error_CASH_POOL_MINUS_CASH_WITHDRAWN_IS_NEGATIVE : nat)
     else
-        newton_dx_to_dy (y, x, dy, dx_approx, target_inv)
+        newton_dx_to_dy (y, x, dy, dx_approx, target_inv, rounds)
 
 (* =============================================================================
  * Entrypoint Functions
@@ -751,6 +755,7 @@ let token_to_token (param : token_to_token) (storage : storage) : result =
             (let bought = trade_dtoken_for_dcash storage.cashPool storage.tokenPool tokensSold storage.target in
             let (fee_num, fee_denom) = storage.const_fee in
             bought * fee_num / fee_denom)
+        in
         let new_cashPool = match is_nat (storage.cashPool - cash_bought) with
             | None -> (failwith error_CASH_POOL_MINUS_CASH_BOUGHT_IS_NEGATIVE : nat)
             | Some n -> n in
