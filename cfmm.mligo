@@ -43,7 +43,7 @@ type cash_to_token =
     cashSold : nat ; (* if cash isn't tez, how much cash is sought to be sold *)
 #endif
     deadline : timestamp ; (* time before which the request must be completed *)
-    rounds : nat ; (* number of iterations in estimating the difference equations. Default should be 4n. *)
+    rounds : nat option ; (* number of iterations in estimating the difference equations. Default should be 4n. *)
   }
 
 type token_to_cash =
@@ -52,7 +52,7 @@ type token_to_cash =
     tokensSold : nat ; (* how many tokens are being sold *)
     minCashBought : nat ; (* minimum amount of cash desired *)
     deadline : timestamp ; (* time before which the request must be completed *)
-    rounds : nat ; (* number of iterations in estimating the difference equations. Default should be 4n. *)
+    rounds : nat option ; (* number of iterations in estimating the difference equations. Default should be 4n. *)
   }
 
 
@@ -63,7 +63,7 @@ type token_to_token =
     [@annot:to] to_ : address ; (* where to send the output tokens *)
     tokensSold : nat ; (* amount of tokens to sell *)
     deadline : timestamp ; (* time before which the request must be completed *)
-    rounds : nat ; (* number of iterations in estimating the difference equations. Default should be 4n. *)
+    rounds : nat option ; (* number of iterations in estimating the difference equations. Default should be 4n. *)
   }
 
 #if HAS_BAKER
@@ -326,7 +326,7 @@ let price_cash_to_token (target : nat * nat) (cash : nat) (token : nat) : nat =
     num/denom
 
 // A function to transfer assets while maintaining a constant isoutility
-let rec newton_dx_to_dy (x, y, dx, dy_approx, target, rounds : nat * nat * nat * nat * (nat * nat) * nat) : nat = 
+let rec newton_dx_to_dy (x, y, dx, dy_approx, target, rounds : nat * nat * nat * nat * (nat * nat) * (nat option)) : nat = 
     let (a,b) = target in 
     let xp = x + dx in
     let yp = y - dy_approx in 
@@ -337,7 +337,12 @@ let rec newton_dx_to_dy (x, y, dx, dy_approx, target, rounds : nat * nat * nat *
     let denom = xp * (axp2 + 3 * byp2) in
     let adjust = num / denom in 
     // if (abs adjust <= 1n) (* marginal difference calculated is <= 1mutez *)
-    if (rounds <= 0n) (* Newton converges in 4 rounds, so we bound computation there *)
+    let n = 
+        (match rounds with
+        | None -> 4n
+        | Some n -> n)
+    in
+    if (n <= 0n) (* Newton converges in 4 rounds, so we bound computation there *)
     then 
         let dy = dy_approx - adjust in 
         if y - dy <= 0 
@@ -347,7 +352,7 @@ let rec newton_dx_to_dy (x, y, dx, dy_approx, target, rounds : nat * nat * nat *
             abs dy // abs to make it a nat
     else 
         let new_dy_approx = abs (dy_approx - adjust) in
-        let next_round = abs (rounds - 1n) in
+        let next_round = Some (abs (n - 1n)) in
         newton_dx_to_dy (x,y,dx,new_dy_approx,target,next_round)
     (*
         if denom = 0, then either:
@@ -357,7 +362,7 @@ let rec newton_dx_to_dy (x, y, dx, dy_approx, target, rounds : nat * nat * nat *
      *)
 
 // A function that outputs dy (diff_token) given x, y, and dx
-let trade_dcash_for_dtoken (x : nat) (y : nat) (dx : nat) (target : nat * nat) (rounds : nat) : nat = 
+let trade_dcash_for_dtoken (x : nat) (y : nat) (dx : nat) (target : nat * nat) (rounds : nat option) : nat = 
     let current_price = price_cash_to_token target x y in
     let dy_approx = current_price * dx in
     if (y - dy_approx <= 0)
@@ -367,7 +372,7 @@ let trade_dcash_for_dtoken (x : nat) (y : nat) (dx : nat) (target : nat * nat) (
         newton_dx_to_dy (x, y, dx, dy_approx, target, rounds)
 
 // A function that outputs dx (diff_cash) given target, x, y, and dy
-let trade_dtoken_for_dcash (x : nat) (y : nat) (dy : nat) (target : nat * nat) (rounds : nat) : nat = 
+let trade_dtoken_for_dcash (x : nat) (y : nat) (dy : nat) (target : nat * nat) (rounds : nat option) : nat = 
     let (a,b) = target in 
     (* todo: Problematic if target = (0,b) to begin with *)
     let target_inv = (b,a) in
