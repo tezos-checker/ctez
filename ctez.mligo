@@ -25,7 +25,7 @@ type parameter =
   | Liquidate of liquidate
   | Register_deposit of register_deposit
   | Mint_or_burn of mint_or_burn
-  | Cfmm_price of nat * nat
+  | Cfmm_price of nat
   | Set_addresses of set_addresses
   | Get_target of (nat * nat) contract
 
@@ -86,17 +86,6 @@ let get_ctez_mint_or_burn (fa12_address : address) : (int * address) contract =
   | None -> (failwith error_CTEZ_FA12_CONTRACT_MISSING_MINT_OR_BURN_ENTRYPOINT : (int * address) contract)
   | Some c -> c
 
-// Returns the price dy/dx, i.e. a map by multiplication ∆x => ∆y, at a given point (x,y)
-let price_cash_to_token (target : nat * nat) (cash : nat) (token : nat) : nat = 
-    let (a,b) = target in 
-    let x = cash in
-    let y = token in
-    let ax2 = x * x * a * a in
-    let by2 = y * y * b * b in
-    let num = y * (3n * ax2 + by2) in
-    let denom = x * (ax2 + 3n * by2) in
-    num/denom
-  
 (* Entrypoint Functions *)
 
 let create (s : storage) (create : create) : result =
@@ -187,7 +176,7 @@ let get_target (storage : storage) (callback : (nat * nat) contract) : result =
 
 (* todo: restore when ligo interpret is fixed
    let cfmm_price (storage : storage) (tez : tez) (token : nat) : result =      *)
-let cfmm_price (storage, tez, token : storage * nat * nat) : result =
+let cfmm_price (storage, price : storage * nat) : result =
   if Tezos.sender <> storage.cfmm_address then
     (failwith error_CALLER_MUST_BE_CFMM : result)
   else
@@ -205,7 +194,6 @@ let cfmm_price (storage, tez, token : storage * nat * nat) : result =
            for each day over or under the target by more than 1/64th.
         *)
 
-    let price = price_cash_to_token (target, (Bitwise.shift_left 2n 48n)) tez token in
     let target_less_price : int = target - price in
     let d_drift =
       let x = Bitwise.shift_left (abs (target_less_price * target_less_price)) 10n in
@@ -227,7 +215,7 @@ let main (p, s : parameter * storage) : result =
   | Create d -> (create s d : result)
   | Liquidate l -> (liquidate s l : result)
   | Mint_or_burn xs -> (mint_or_burn s xs : result)
-  | Cfmm_price xs -> (cfmm_price (s, xs.0, xs.1) : result)
+  | Cfmm_price x -> (cfmm_price (s, x) : result)
   | Set_addresses xs -> (set_addresses s xs : result)
   | Get_target t -> (get_target s t : result)
 
