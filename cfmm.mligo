@@ -340,11 +340,7 @@ let rec newton_dx_to_dy (x, y, dx, dy_approx, target, rounds : nat * nat * nat *
     if (rounds <= 0n) (* Newton converges in 4 rounds, so we bound computation there *)
     then 
         let dy = dy_approx + adjust in 
-        if y - dy <= 0 
-        then
-            (failwith error_TOKEN_POOL_MINUS_TOKENS_WITHDRAWN_IS_NEGATIVE : nat)
-        else 
-            abs dy // abs to make it a nat
+        abs dy // abs to make it a nat
     else 
         let new_dy_approx = abs (dy_approx - adjust) in
         let next_round = abs (rounds - 1n) in
