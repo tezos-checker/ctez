@@ -332,7 +332,7 @@ let rec newton_dx_to_dy (x, y, dx, dy_approx, target, rounds : nat * nat * nat *
     let yp = y - dy_approx in 
     let ax2 = a * a * x * x in let by2 = b * b * y * y in 
     let axp2 = a * a * xp * xp in let byp2 = b * b * yp * yp in
-    (* Newton descent formulae *)
+    (* Newton descent formula *)
     let num = x * y * (ax2 + by2) - xp * yp * (axp2 + byp2) in 
     let denom = xp * (axp2 + 3 * byp2) in
     let adjust = num / denom in 
