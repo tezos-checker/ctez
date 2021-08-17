@@ -205,7 +205,7 @@ let cfmm_price (storage, tez, token : storage * nat * nat) : result =
            for each day over or under the target by more than 1/64th.
         *)
 
-    let price = price_cash_to_token (target, 1n) tez token in
+    let price = price_cash_to_token (target, (Bitwise.shift_left 2n 48n)) tez token in
     let target_less_price : int = target - price in
     let d_drift =
       let x = Bitwise.shift_left (abs (target_less_price * target_less_price)) 10n in
