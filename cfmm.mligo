@@ -335,11 +335,11 @@ let rec newton_dx_to_dy (x, y, dx, dy_approx, target, rounds : nat * nat * nat *
     (* Newton descent formula *)
     let num = x * y * (ax2 + by2) - xp * yp * (axp2 + byp2) in 
     let denom = xp * (axp2 + 3 * byp2) in
-    let adjust = num / denom in 
-    // if (abs adjust <= 1n) (* marginal difference calculated is <= 1mutez *)
+    let adjust = (-num) / denom in 
+    // if (abs adjust = 0n) (* marginal difference calculated is rounded down to 0mutez *)
     if (rounds <= 0n) (* Newton converges in 4 rounds, so we bound computation there *)
     then 
-        let dy = dy_approx - adjust in 
+        let dy = dy_approx + adjust in 
         if y - dy <= 0 
         then
             (failwith error_TOKEN_POOL_MINUS_TOKENS_WITHDRAWN_IS_NEGATIVE : nat)
