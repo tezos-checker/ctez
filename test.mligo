@@ -29,12 +29,12 @@ type cfmm_result = result
 
 
 (* =============================================================================
- * General Setup that Initiates All Contracts
+ * Generic Setup that Initiates All Contracts
  * ============================================================================= *)
 
 let init_contracts (alice_bal : nat option) (bob_bal : nat option) (init_lqt : nat option) (init_total_supply : nat option) 
-                   (init_token_pool : nat option) (init_cash_pool : nat option) (init_target : (nat * nat) option) 
-                   (init_drift : (int * int) option) (last_drift_update : timestamp option) (const_fee : (nat * nat) option) 
+                   (init_token_pool : nat option) (init_cash_pool : nat option) (init_target : nat option) 
+                   (init_drift : int option) (last_drift_update : timestamp option) (const_fee : (nat * nat) option) 
                    (pending_pool_updates : nat option) (init_ovens : (oven_handle, oven) big_map option) = 
     // set defaults for optional args 
     let alice_bal            = match alice_bal            with | None -> 100n        | Some b -> b in 
@@ -43,8 +43,8 @@ let init_contracts (alice_bal : nat option) (bob_bal : nat option) (init_lqt : n
     let init_total_supply    = match init_total_supply    with | None -> 1_000_000n  | Some s -> s in 
     let init_token_pool      = match init_token_pool      with | None -> 10_000n     | Some t -> t in 
     let init_cash_pool       = match init_cash_pool       with | None -> 10_000n     | Some c -> c in 
-    let init_target          = match init_target          with | None -> (103n,100n) | Some t -> t in 
-    let init_drift           = match init_drift           with | None -> (105,100)   | Some d -> d in 
+    let init_target          = match init_target          with | None -> 103n        | Some t -> t in // TODO: this init value is off
+    let init_drift           = match init_drift           with | None -> 105         | Some d -> d in // TODO: this init value is off
     let last_drift_update    = match last_drift_update    with | None -> ("2021-01-01t10:10:10Z" : timestamp) | Some t -> t in 
     let const_fee            = match const_fee            with | None -> (1n, 100n)  | Some f -> f in 
     let pending_pool_updates = match pending_pool_updates with | None -> 0n          | Some p -> p in 
@@ -81,7 +81,7 @@ let init_contracts (alice_bal : nat option) (bob_bal : nat option) (init_lqt : n
     let ctez_init_storage : ctez_storage = {
         ovens = init_ovens;
         target = 103n;//(103n,100n);
-        drift = 105;//(105,100); // TODO should this actually be a pair?
+        drift = init_drift;
         last_drift_update = last_drift_update;
         ctez_fa12_address = null_address;
         cfmm_address = null_address;
@@ -131,8 +131,8 @@ let test_setup =
             (None : nat option) (* init_total_supply *)
             (None : nat option) (* init_token_pool *)
             (None : nat option) (* init_cash_pool *)
-            (None : (nat * nat) option) (* init_target *)
-            (None : (int * int) option) (* init_drift *)
+            (None : nat option) (* init_target *)
+            (None : int option) (* init_drift *)
             (None : timestamp option) (* last_drift_update *)
             (None : (nat * nat) option) (* const_fee *)
             (None : nat option) (* pending_pool_updates *)
