@@ -4,7 +4,7 @@
  * Contract Templates 
  * ============================================================================= *)
 
-#include "../fa12.mligo"
+#include "fa12.mligo"
 let main_fa12 = main
 type fa12_storage = storage 
 type fa12_parameter = parameter 
@@ -15,13 +15,13 @@ type lqt_storage = storage
 type lqt_parameter = parameter 
 type lqt_result = result 
 
-#include "../ctez.mligo"
+#include "ctez.mligo"
 let main_ctez = main 
 type ctez_storage = storage 
 type ctez_parameter = parameter 
 type ctez_result = result 
 
-#include "../cfmm.mligo"
+#include "cfmm.mligo"
 let main_cfmm = main
 type cfmm_storage = storage 
 type cfmm_parameter = parameter 
@@ -102,17 +102,11 @@ let test_setup =
     let implied_ctez_storage = { ctez_init_storage with cfmm_address=untyped_addr_cfmm ; ctez_fa12_address=untyped_addr_fa12 } in 
     let actual_ctez_storage  = Test.get_storage typed_addr_ctez in 
     
-    (* DOESN'T WORK YET DUE TO BUG IN LIGO *)
-    Test.michelson_equal (Test.compile_value implied_ctez_storage) (Test.compile_value actual_ctez_storage) 
-
-    (* ALSO DOESN'T YET WORK
-    let implied_ctez_storage_ligo = { ctez_init_storage with cfmm_address=untyped_addr_cfmm ; ctez_fa12_address=untyped_addr_fa12 } in 
-    let implied_ctez_storage      = Test.compile_value implied_ctez_storage_ligo in
-    let actual_ctez_storage = Test.get_storage_of_address (Tezos.address (Test.to_contract typed_addr_ctez)) in 
-    
-    Test.michelson_equal implied_ctez_storage actual_ctez_storage
-    *)
-
+    // assertions
+    (
+        assert (implied_ctez_storage.cfmm_address      = actual_ctez_storage.cfmm_address),
+        assert (implied_ctez_storage.ctez_fa12_address = actual_ctez_storage.ctez_fa12_address)
+    )
 
 
 (* Test that the difference equations in trades computed as expected *)
@@ -121,7 +115,6 @@ let test_diff_equations = true
 
 (* Tests compilation under different directives (may not be feasible in this framework) *)
 let test_directives = true
-
 
 
 (* Checks that drift and target grew at expected rate after x mins *)
