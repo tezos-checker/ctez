@@ -75,7 +75,7 @@ type set_baker =
 #endif
 
 (* (a,b) such that a/b is the target price from the ctez contract *)
-type ctez_target = nat * nat
+type ctez_target = nat
 
 (* getbalance update types for fa12 and fa2 *)
 type update_fa12_pool = nat
@@ -305,10 +305,11 @@ let cash_transfer (storage : storage) (from : address) (to_ : address) (cash_amo
 
 (* Isoutility and Difference Equations *)
 // The Isoutility Function in https://hackmd.io/MkPSYXDsTf-giBprcDrc3w  
-let isoutility (target, cash, token : (nat * nat) * nat * nat) : nat = 
+let isoutility (target, cash, token : nat * nat * nat) : nat = 
     let x = cash in 
     let y = token in 
-    let (a,b) = target in 
+    let a = target in 
+    let b = (Bitwise.shift_right 2n 48n) in // target is implicitly divided by 2 ** 48
     let a2 = a * a in
     let b2 = b * b in 
     let ax2 = a2 * x * x in 
@@ -316,9 +317,10 @@ let isoutility (target, cash, token : (nat * nat) * nat * nat) : nat =
     abs (a * x * b * y * (ax2 + by2) / (2 * a2 * b2))
 
 // Returns the price dy/dx of the isoutility function, i.e. a map by multiplication ∆x => ∆y, at a given point (x,y)
-let price_cash_to_token (target : nat * nat) (cash : nat) (token : nat) : nat = 
+let price_cash_to_token (target : nat) (cash : nat) (token : nat) : nat = 
     let (x,y) = (cash, token) in
-    let (a,b) = target in 
+    let a = target in 
+    let b = (Bitwise.shift_right 2n 48n) in // target is implicitly divided by 2 ** 48
     let ax2 = x * x * a * a in
     let by2 = y * y * b * b in
     let num = y * (3n * ax2 + by2) in
@@ -326,8 +328,9 @@ let price_cash_to_token (target : nat * nat) (cash : nat) (token : nat) : nat =
     num/denom
 
 // A function to transfer assets while maintaining a constant isoutility
-let rec newton_dx_to_dy (x, y, dx, dy_approx, target, rounds : nat * nat * nat * nat * (nat * nat) * nat) : nat = 
-    let (a,b) = target in 
+let rec newton_dx_to_dy (x, y, dx, dy_approx, target, rounds : nat * nat * nat * nat * nat * nat) : nat = 
+    let a = target in 
+    let b = (Bitwise.shift_right 2n 48n) in // target is implicitly divided by 2 ** 48
     let xp = x + dx in
     let yp = y - dy_approx in 
     let ax2 = a * a * x * x in let by2 = b * b * y * y in 
@@ -353,7 +356,7 @@ let rec newton_dx_to_dy (x, y, dx, dy_approx, target, rounds : nat * nat * nat *
      *)
 
 // A function that outputs dy (diff_token) given x, y, and dx
-let trade_dcash_for_dtoken (x : nat) (y : nat) (dx : nat) (target : nat * nat) (rounds : nat) : nat = 
+let trade_dcash_for_dtoken (x : nat) (y : nat) (dx : nat) (target : nat) (rounds : nat) : nat = 
     let current_price = price_cash_to_token target x y in
     let dy_approx = current_price * dx in
     if (y - dy_approx <= 0)
@@ -363,10 +366,11 @@ let trade_dcash_for_dtoken (x : nat) (y : nat) (dx : nat) (target : nat * nat) (
         newton_dx_to_dy (x, y, dx, dy_approx, target, rounds)
 
 // A function that outputs dx (diff_cash) given target, x, y, and dy
-let trade_dtoken_for_dcash (x : nat) (y : nat) (dy : nat) (target : nat * nat) (rounds : nat) : nat = 
-    let (a,b) = target in 
+let trade_dtoken_for_dcash (x : nat) (y : nat) (dy : nat) (target : nat) (rounds : nat) : nat = 
+    let a = target in 
+    let b = (Bitwise.shift_right 2n 48n) in // target is implicitly divided by 2 ** 48
     (* todo: Problematic if target = (0,b) to begin with *)
-    let target_inv = (b,a) in
+    let target_inv = b * b / a in // when later divided by b, target_inv will be b / a
     let current_price = price_cash_to_token target_inv y x in
     let dx_approx = current_price * dy in
     if (x - dx_approx <= 0)
