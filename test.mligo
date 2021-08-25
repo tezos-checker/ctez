@@ -29,10 +29,27 @@ type cfmm_result = result
 
 
 (* =============================================================================
- * Tests
+ * General Setup that Initiates All Contracts
  * ============================================================================= *)
 
-let test_setup = 
+let init_contracts (alice_bal : nat option) (bob_bal : nat option) (init_lqt : nat option) (init_total_supply : nat option) 
+                   (init_token_pool : nat option) (init_cash_pool : nat option) (init_target : (nat * nat) option) 
+                   (init_drift : (int * int) option) (last_drift_update : timestamp option) (const_fee : (nat * nat) option) 
+                   (pending_pool_updates : nat option) (init_ovens : (oven_handle, oven) big_map option) = 
+    // set defaults for optional args 
+    let alice_bal            = match alice_bal            with | None -> 100n        | Some b -> b in 
+    let bob_bal              = match bob_bal              with | None -> 100n        | Some b -> b in 
+    let init_lqt             = match init_lqt             with | None -> 10n         | Some l -> l in 
+    let init_total_supply    = match init_total_supply    with | None -> 1_000_000n  | Some s -> s in 
+    let init_token_pool      = match init_token_pool      with | None -> 10_000n     | Some t -> t in 
+    let init_cash_pool       = match init_cash_pool       with | None -> 10_000n     | Some c -> c in 
+    let init_target          = match init_target          with | None -> (103n,100n) | Some t -> t in 
+    let init_drift           = match init_drift           with | None -> (105,100)   | Some d -> d in 
+    let last_drift_update    = match last_drift_update    with | None -> ("2021-01-01t10:10:10Z" : timestamp) | Some t -> t in 
+    let const_fee            = match const_fee            with | None -> (1n, 100n)  | Some f -> f in 
+    let pending_pool_updates = match pending_pool_updates with | None -> 0n          | Some p -> p in 
+    let init_ovens           = match init_ovens           with | None -> (Big_map.empty : (oven_handle, oven) big_map) | Some o -> o in
+
     // generate some implicit addresses
     let reset_state_unit = Test.reset_state 5n ([] : nat list) in
     let (addr_alice, addr_bob, addr_lqt, addr_dummy, addr_admin) = 
@@ -44,28 +61,28 @@ let test_setup =
     // ctez fa12 contract 
     let fa12_init_storage : fa12_storage = 
     {
-        tokens = ( Big_map.literal [(addr_alice, 1000n); (addr_bob, 1000n)] : (address, nat) big_map);
+        tokens = ( Big_map.literal [(addr_alice, alice_bal); (addr_bob, bob_bal)] : (address, nat) big_map);
         allowances = (Big_map.empty : allowances); 
         admin = addr_admin;
-        total_supply = 1_000_000n;
+        total_supply = init_total_supply;
     } in
     let (typed_addr_fa12, program_fa12, size_fa12) = Test.originate main_fa12 fa12_init_storage 0tez in 
 
     // lqt fa12 contract
     let lqt_init_storage : fa12_storage = {
-        tokens = ( Big_map.literal [(addr_lqt, 100n);] : (address, nat) big_map);
+        tokens = ( Big_map.literal [(addr_lqt, init_lqt);] : (address, nat) big_map);
         allowances = (Big_map.empty : allowances); 
         admin = addr_admin;
-        total_supply = 1_000_000n;
+        total_supply = init_total_supply;
     } in 
     let (typed_addr_lqt, program_lqt, size_lqt) = Test.originate main_lqt lqt_init_storage 0tez in
     
     // ctez contract
     let ctez_init_storage : ctez_storage = {
-        ovens = (Big_map.empty : (oven_handle, oven) big_map);
-        target = 103n;//(103n,100n); // TODO go up and down 5% in 0.1% increments 
+        ovens = init_ovens;
+        target = 103n;//(103n,100n);
         drift = 105;//(105,100); // TODO should this actually be a pair?
-        last_drift_update = ("2000-01-01t10:10:10Z" : timestamp); // 5 mins (300 sec), this should vary I think
+        last_drift_update = last_drift_update;
         ctez_fa12_address = null_address;
         cfmm_address = null_address;
     } in
@@ -75,11 +92,11 @@ let test_setup =
 
     // initiate the cfmm contract
     let cfmm_init_storage : cfmm_storage = {
-        tokenPool = 10000n ;
-        cashPool = 10000n ;
-        lqtTotal = 100n ;
-        target = (103n,10n) ;
-        const_fee = (1n,100n) ;
+        tokenPool = init_token_pool ;
+        cashPool = init_cash_pool ;
+        lqtTotal = init_lqt ;
+        target = init_target ;
+        const_fee = const_fee;
         ctez_address = Tezos.address (Test.to_contract typed_addr_ctez) ;
         pendingPoolUpdates = 0n ;
         tokenAddress = Tezos.address (Test.to_contract typed_addr_fa12) ;
@@ -98,24 +115,58 @@ let test_setup =
     } in 
     let update_ctez_addresses = Test.transfer_to_contract_exn ctez_entrypoint_set_addresses new_addresses 0tez in 
     
+    (typed_addr_cfmm, typed_addr_ctez, typed_addr_fa12, typed_addr_lqt)
+
+(* =============================================================================
+ * Tests
+ * ============================================================================= *)
+
+(* Run setup with default args; verify ctez storage is as expected *)
+let test_setup = 
+    let (typed_addr_cfmm, typed_addr_ctez, typed_addr_fa12, typed_addr_lqt) = 
+        init_contracts 
+            (None : nat option) (* alice_bal *)
+            (None : nat option) (* bob_bal *)
+            (None : nat option) (* init_lqt *)
+            (None : nat option) (* init_total_supply *)
+            (None : nat option) (* init_token_pool *)
+            (None : nat option) (* init_cash_pool *)
+            (None : (nat * nat) option) (* init_target *)
+            (None : (int * int) option) (* init_drift *)
+            (None : timestamp option) (* last_drift_update *)
+            (None : (nat * nat) option) (* const_fee *)
+            (None : nat option) (* pending_pool_updates *)
+            (None : (oven_handle, oven) big_map option) (* init_ovens *)
+    in 
     // make sure ctez's storage is as expected
-    let implied_ctez_storage = { ctez_init_storage with cfmm_address=untyped_addr_cfmm ; ctez_fa12_address=untyped_addr_fa12 } in 
+    let untyped_addr_fa12 = Tezos.address (Test.to_contract typed_addr_fa12) in
+    let untyped_addr_cfmm = Tezos.address (Test.to_contract typed_addr_cfmm) in 
+    let expected_ctez_storage : ctez_storage = {
+        ovens = (Big_map.empty : (oven_handle, oven) big_map);
+        target = 103n;//(103n,100n); // TODO go up and down 5% in 0.1% increments 
+        drift = 105;//(105,100); // TODO should this actually be a pair?
+        last_drift_update = ("2000-01-01t10:10:10Z" : timestamp); // 5 mins (300 sec), this should vary I think
+        ctez_fa12_address = untyped_addr_fa12;
+        cfmm_address = untyped_addr_cfmm;
+    } in 
     let actual_ctez_storage  = Test.get_storage typed_addr_ctez in 
     
-    // assertions
+    // assertions to verify storage is as expected
     (
-        assert (implied_ctez_storage.cfmm_address      = actual_ctez_storage.cfmm_address),
-        assert (implied_ctez_storage.ctez_fa12_address = actual_ctez_storage.ctez_fa12_address)
+        assert (expected_ctez_storage.cfmm_address      = actual_ctez_storage.cfmm_address),
+        assert (expected_ctez_storage.ctez_fa12_address = actual_ctez_storage.ctez_fa12_address)
     )
 
 
 (* Test that the difference equations in trades computed as expected *)
-let test_diff_equations = true 
+let test_diff_equations = ()
 
 
 (* Tests compilation under different directives (may not be feasible in this framework) *)
-let test_directives = true
+let test_directives = ()
 
 
 (* Checks that drift and target grew at expected rate after x mins *)
-let test_price = true 
+let test_price = () 
+    // 5 mins, or 300 secs will be default 
+    // target should go up and down 5% in 0.1% increments
