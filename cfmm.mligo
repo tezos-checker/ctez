@@ -352,7 +352,6 @@ let rec newton_dx_to_dy (x, y, dx, dy_approx, target, rounds : nat * nat * nat *
 
 // A function that outputs dy (diff_token) given x, y, and dx
 let trade_dcash_for_dtoken (x : nat) (y : nat) (dx : nat) (target : nat) (rounds : int) : nat = 
-    let current_price = price_cash_to_token target x y in
     let dy_approx = 0n in // start at 0n to always be an underestimate
     if (y - dy_approx <= 0)
     then
@@ -363,10 +362,9 @@ let trade_dcash_for_dtoken (x : nat) (y : nat) (dx : nat) (target : nat) (rounds
 // A function that outputs dx (diff_cash) given target, x, y, and dy
 let trade_dtoken_for_dcash (x : nat) (y : nat) (dy : nat) (target : nat) (rounds : int) : nat = 
     let a = target in 
-    let b2 = (Bitwise.shift_left 2n 96n) in // target is implicitly divided by 2 ** 48
+    let b2 = (Bitwise.shift_left 2n 96n) in
     (* Will get error if a = 0 to begin with, but if that's the case we have bigger fish to fry *)
     let target_inv = b2 / a in // when later divided by b, target_inv will be b / a
-    let current_price = price_cash_to_token target_inv y x in
     let dx_approx = 0n in // start at 0n to always be an underestimate
     if (x - dx_approx <= 0)
     then
