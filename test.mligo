@@ -43,8 +43,8 @@ let init_contracts (alice_bal : nat option) (bob_bal : nat option) (init_lqt : n
     let init_total_supply    = match init_total_supply    with | None -> 1_000_000n  | Some s -> s in 
     let init_token_pool      = match init_token_pool      with | None -> 10_000n     | Some t -> t in 
     let init_cash_pool       = match init_cash_pool       with | None -> 10_000n     | Some c -> c in 
-    let init_target          = match init_target          with | None -> 103n        | Some t -> t in // TODO: this init value is off
-    let init_drift           = match init_drift           with | None -> 105         | Some d -> d in // TODO: this init value is off
+    let init_target          = match init_target          with | None -> (Bitwise.shift_left 2n 48n) | Some t -> t in // default target is 1
+    let init_drift           = match init_drift           with | None -> 0           | Some d -> d in 
     let last_drift_update    = match last_drift_update    with | None -> ("2021-01-01t10:10:10Z" : timestamp) | Some t -> t in 
     let const_fee            = match const_fee            with | None -> (1n, 100n)  | Some f -> f in 
     let pending_pool_updates = match pending_pool_updates with | None -> 0n          | Some p -> p in 
@@ -115,7 +115,8 @@ let init_contracts (alice_bal : nat option) (bob_bal : nat option) (init_lqt : n
     } in 
     let update_ctez_addresses = Test.transfer_to_contract_exn ctez_entrypoint_set_addresses new_addresses 0tez in 
     
-    (typed_addr_cfmm, typed_addr_ctez, typed_addr_fa12, typed_addr_lqt)
+    (typed_addr_cfmm, typed_addr_ctez, typed_addr_fa12, typed_addr_lqt,
+     addr_alice, addr_bob, addr_lqt, addr_dummy, addr_admin)
 
 (* =============================================================================
  * Tests
@@ -123,7 +124,8 @@ let init_contracts (alice_bal : nat option) (bob_bal : nat option) (init_lqt : n
 
 (* Run setup with default args; verify ctez storage is as expected *)
 let test_setup = 
-    let (typed_addr_cfmm, typed_addr_ctez, typed_addr_fa12, typed_addr_lqt) = 
+    let (typed_addr_cfmm, typed_addr_ctez, typed_addr_fa12, typed_addr_lqt,
+         addr_alice, addr_bob, addr_lqt, addr_dummy, addr_admin) = 
         init_contracts 
             (None : nat option) (* alice_bal *)
             (None : nat option) (* bob_bal *)
@@ -159,7 +161,40 @@ let test_setup =
 
 
 (* Test that the difference equations in trades computed as expected *)
-let test_diff_equations = ()
+let test_diff_equations = 
+    let (typed_addr_cfmm, typed_addr_ctez, typed_addr_fa12, typed_addr_lqt,
+         addr_alice, addr_bob, addr_lqt, addr_dummy, addr_admin) = 
+        init_contracts 
+            (Some 500n : nat option) (* alice_bal *)
+            (Some 100n : nat option) (* bob_bal *)
+            (None : nat option) (* init_lqt *)
+            (None : nat option) (* init_total_supply *)
+            (None : nat option) (* init_token_pool *)
+            (None : nat option) (* init_cash_pool *)
+            (None : nat option) (* init_target *)
+            (None : int option) (* init_drift *)
+            (None : timestamp option) (* last_drift_update *)
+            (None : (nat * nat) option) (* const_fee *)
+            (None : nat option) (* pending_pool_updates *)
+            (None : (oven_handle, oven) big_map option) (* init_ovens *)
+    in 
+        // get the TokenToCash entrypoint 
+        let alice_source = Test.set_source addr_alice in 
+        let trade_entrypoint : cash_to_token contract = 
+            Test.to_entrypoint "cashToToken" typed_addr_cfmm in 
+        let trade_data : cash_to_token = {
+            to_ = addr_alice;
+            minTokensBought = 1n;
+            deadline = ("3000-01-01t10:10:10Z" : timestamp);
+            rounds = 4; // default 
+        } in 
+        let alice_trade = 
+            (Test.transfer_to_contract_exn trade_entrypoint trade_data 0tez) in () (*
+        // alice should trade 500ctez for tez
+    let ctez_fa12_storage = Test.get_storage typed_addr_fa12 in 
+    let ctez_token_balances = ctez_fa12_storage.tokens in 
+    Big_map.find_opt addr_alice ctez_token_balances *)
+
 
 
 (* Tests compilation under different directives (may not be feasible in this framework) *)
