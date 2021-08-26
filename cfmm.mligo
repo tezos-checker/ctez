@@ -312,15 +312,15 @@ let isoutility (target, cash, token : nat * nat * nat) : nat =
     let a = target in 
     let a2 = a * a in
     let ax2 = a2 * x * x in 
-    let by2 = Bitwise.shift_right (y * y) 96n in
-    (Bitwise.shift_left (abs((a * x * y) * (ax2 + by2) / (2 * a2))) 48n)
+    let by2 = Bitwise.shift_left (y * y) 96n in
+    (Bitwise.shift_right (abs((a * x * y) * (ax2 + by2) / (2 * a2))) 48n)
 
 // Returns the price dy/dx of the isoutility function, i.e. a map by multiplication ∆x => ∆y, at a given point (x,y)
 let price_cash_to_token (target : nat) (cash : nat) (token : nat) : nat = 
     let (x,y) = (cash, token) in
     let a = target in 
     let ax2 = x * x * a * a in
-    let by2 = Bitwise.shift_right (y * y) 96n in
+    let by2 = Bitwise.shift_left (y * y) 96n in
     let num = y * (3n * ax2 + by2) in
     let denom = x * (ax2 + 3n * by2) in
     num/denom
@@ -332,16 +332,15 @@ let rec newton_dx_to_dy (x, y, dx, dy_approx, target, rounds : nat * nat * nat *
         dy_approx
     else 
         let a = target in 
-        // let b = (Bitwise.shift_right 2n 48n) in // target is implicitly divided by 2 ** 48
         let xp = x + dx in
         let yp = y - dy_approx in 
-        let ax2 = a * a * x * x in let by2 = Bitwise.shift_right (y * y) 96n in 
-        let axp2 = a * a * xp * xp in let byp2 = Bitwise.shift_right (abs(yp * yp)) 96n in
+        let ax2 = a * a * x * x in let by2 = Bitwise.shift_left (y * y) 96n in 
+        let axp2 = a * a * xp * xp in let byp2 = Bitwise.shift_left (abs(yp * yp)) 96n in
         (* Newton descent formula *)
         let num = x * y * (ax2 + by2) - xp * yp * (axp2 + byp2) in 
         let denom = xp * (axp2 + 3 * byp2) in
         let adjust = -((-num) / denom) in // double negative so the division rounds down, instead of up
-        let new_dy_approx = abs (dy_approx - adjust) in
+        let new_dy_approx = abs (dy_approx + adjust) in
         let next_round = (rounds - 1) in
         newton_dx_to_dy (x,y,dx,new_dy_approx,target,next_round)
     (*
@@ -364,9 +363,9 @@ let trade_dcash_for_dtoken (x : nat) (y : nat) (dx : nat) (target : nat) (rounds
 // A function that outputs dx (diff_cash) given target, x, y, and dy
 let trade_dtoken_for_dcash (x : nat) (y : nat) (dy : nat) (target : nat) (rounds : int) : nat = 
     let a = target in 
-    let b = (Bitwise.shift_right 2n 48n) in // target is implicitly divided by 2 ** 48
+    let b2 = (Bitwise.shift_left 2n 96n) in // target is implicitly divided by 2 ** 48
     (* Will get error if a = 0 to begin with, but if that's the case we have bigger fish to fry *)
-    let target_inv = b * b / a in // when later divided by b, target_inv will be b / a
+    let target_inv = b2 / a in // when later divided by b, target_inv will be b / a
     let current_price = price_cash_to_token target_inv y x in
     let dx_approx = 0n in // start at 0n to always be an underestimate
     if (x - dx_approx <= 0)
