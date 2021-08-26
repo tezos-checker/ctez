@@ -1,5 +1,5 @@
 (* Pick one of CASH_IS_TEZ, CASH_IS_FA2, CASH_IS_FA12. tokenToToken isn't supported for CASH_IS_FA12 *)
-#define CASH_IS_TEZ
+//#define CASH_IS_TEZ
 //#define CASH_IS_FA2
 //#define CASH_IS_FA12
 
@@ -329,21 +329,20 @@ let price_cash_to_token (target : nat) (cash : nat) (token : nat) : nat =
 
 // A function to transfer assets while maintaining a constant isoutility
 let rec newton_dx_to_dy (x, y, dx, dy_approx, target, rounds : nat * nat * nat * nat * nat * int) : nat = 
-    let a = target in 
-    let b = (Bitwise.shift_right 2n 48n) in // target is implicitly divided by 2 ** 48
-    let xp = x + dx in
-    let yp = y - dy_approx in 
-    let ax2 = a * a * x * x in let by2 = b * b * y * y in 
-    let axp2 = a * a * xp * xp in let byp2 = b * b * yp * yp in
-    (* Newton descent formula *)
-    let num = x * y * (ax2 + by2) - xp * yp * (axp2 + byp2) in 
-    let denom = xp * (axp2 + 3 * byp2) in
-    let adjust = -((-num) / denom) in // double negative so the division rounds down, instead of up
     if (rounds <= 0) (* Newton generally converges in 4 rounds, so we bound computation there *)
     then 
-        let dy = dy_approx + adjust in 
-        abs dy // abs to make it a nat
+        dy_approx
     else 
+        let a = target in 
+        let b = (Bitwise.shift_right 2n 48n) in // target is implicitly divided by 2 ** 48
+        let xp = x + dx in
+        let yp = y - dy_approx in 
+        let ax2 = a * a * x * x in let by2 = b * b * y * y in 
+        let axp2 = a * a * xp * xp in let byp2 = b * b * yp * yp in
+        (* Newton descent formula *)
+        let num = x * y * (ax2 + by2) - xp * yp * (axp2 + byp2) in 
+        let denom = xp * (axp2 + 3 * byp2) in
+        let adjust = -((-num) / denom) in // double negative so the division rounds down, instead of up
         let new_dy_approx = abs (dy_approx - adjust) in
         let next_round = (rounds - 1) in
         newton_dx_to_dy (x,y,dx,new_dy_approx,target,next_round)
