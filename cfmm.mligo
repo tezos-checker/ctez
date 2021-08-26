@@ -305,24 +305,22 @@ let cash_transfer (storage : storage) (from : address) (to_ : address) (cash_amo
 
 (* Isoutility and Difference Equations *)
 // The Isoutility Function in https://hackmd.io/MkPSYXDsTf-giBprcDrc3w  
+// b is 2^48 below, implemented as bitwise shifts
 let isoutility (target, cash, token : nat * nat * nat) : nat = 
     let x = cash in 
     let y = token in 
     let a = target in 
-    let b = (Bitwise.shift_right 2n 48n) in // target is implicitly divided by 2 ** 48
     let a2 = a * a in
-    let b2 = b * b in 
     let ax2 = a2 * x * x in 
-    let by2 = b2 * y * y in
-    abs (a * x * b * y * (ax2 + by2) / (2 * a2 * b2))
+    let by2 = Bitwise.shift_right (y * y) 96n in
+    abs (Bitwise.shift_left ((a * x * y) * (ax2 + by2) / (2 * a2)) 48n)
 
 // Returns the price dy/dx of the isoutility function, i.e. a map by multiplication ∆x => ∆y, at a given point (x,y)
 let price_cash_to_token (target : nat) (cash : nat) (token : nat) : nat = 
     let (x,y) = (cash, token) in
     let a = target in 
-    let b = (Bitwise.shift_right 2n 48n) in // target is implicitly divided by 2 ** 48
     let ax2 = x * x * a * a in
-    let by2 = y * y * b * b in
+    let by2 = Bitwise.shift_right (y * y) 96n in
     let num = y * (3n * ax2 + by2) in
     let denom = x * (ax2 + 3n * by2) in
     num/denom
@@ -334,11 +332,11 @@ let rec newton_dx_to_dy (x, y, dx, dy_approx, target, rounds : nat * nat * nat *
         dy_approx
     else 
         let a = target in 
-        let b = (Bitwise.shift_right 2n 48n) in // target is implicitly divided by 2 ** 48
+        // let b = (Bitwise.shift_right 2n 48n) in // target is implicitly divided by 2 ** 48
         let xp = x + dx in
         let yp = y - dy_approx in 
-        let ax2 = a * a * x * x in let by2 = b * b * y * y in 
-        let axp2 = a * a * xp * xp in let byp2 = b * b * yp * yp in
+        let ax2 = a * a * x * x in let by2 = Bitwise.shift_right (y * y) 96n in 
+        let axp2 = a * a * xp * xp in let byp2 = Bitwise.shift_right (yp * yp) 96n in
         (* Newton descent formula *)
         let num = x * y * (ax2 + by2) - xp * yp * (axp2 + byp2) in 
         let denom = xp * (axp2 + 3 * byp2) in
