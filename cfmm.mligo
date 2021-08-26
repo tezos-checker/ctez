@@ -337,9 +337,9 @@ let rec newton_dx_to_dy (x, y, dx, dy_approx, target, rounds : nat * nat * nat *
         let ax2 = a * a * x * x in let by2 = Bitwise.shift_left (y * y) 96n in 
         let axp2 = a * a * xp * xp in let byp2 = Bitwise.shift_left (abs(yp * yp)) 96n in
         (* Newton descent formula *)
-        let num = x * y * (ax2 + by2) - xp * yp * (axp2 + byp2) in 
+        let num = abs(xp * yp * (axp2 + byp2) - x * y * (ax2 + by2)) in // num is always positive, even without abs
         let denom = xp * (axp2 + 3 * byp2) in
-        let adjust = -((-num) / denom) in // double negative so the division rounds down, instead of up
+        let adjust = (num) / denom in
         let new_dy_approx = abs (dy_approx + adjust) in
         let next_round = (rounds - 1) in
         newton_dx_to_dy (x,y,dx,new_dy_approx,target,next_round)
