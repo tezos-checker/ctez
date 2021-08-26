@@ -313,7 +313,7 @@ let isoutility (target, cash, token : nat * nat * nat) : nat =
     let a2 = a * a in
     let ax2 = a2 * x * x in 
     let by2 = Bitwise.shift_right (y * y) 96n in
-    abs (Bitwise.shift_left ((a * x * y) * (ax2 + by2) / (2 * a2)) 48n)
+    (Bitwise.shift_left (abs((a * x * y) * (ax2 + by2) / (2 * a2))) 48n)
 
 // Returns the price dy/dx of the isoutility function, i.e. a map by multiplication ∆x => ∆y, at a given point (x,y)
 let price_cash_to_token (target : nat) (cash : nat) (token : nat) : nat = 
@@ -336,7 +336,7 @@ let rec newton_dx_to_dy (x, y, dx, dy_approx, target, rounds : nat * nat * nat *
         let xp = x + dx in
         let yp = y - dy_approx in 
         let ax2 = a * a * x * x in let by2 = Bitwise.shift_right (y * y) 96n in 
-        let axp2 = a * a * xp * xp in let byp2 = Bitwise.shift_right (yp * yp) 96n in
+        let axp2 = a * a * xp * xp in let byp2 = Bitwise.shift_right (abs(yp * yp)) 96n in
         (* Newton descent formula *)
         let num = x * y * (ax2 + by2) - xp * yp * (axp2 + byp2) in 
         let denom = xp * (axp2 + 3 * byp2) in
