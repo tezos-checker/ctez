@@ -1,5 +1,5 @@
 (* Pick one of CASH_IS_TEZ, CASH_IS_FA2, CASH_IS_FA12. tokenToToken isn't supported for CASH_IS_FA12 *)
-//#define CASH_IS_TEZ
+#define CASH_IS_TEZ
 //#define CASH_IS_FA2
 //#define CASH_IS_FA12
 
@@ -338,7 +338,7 @@ let rec newton_dx_to_dy (x, y, dx, dy_approx, target, rounds : nat * nat * nat *
     (* Newton descent formula *)
     let num = x * y * (ax2 + by2) - xp * yp * (axp2 + byp2) in 
     let denom = xp * (axp2 + 3 * byp2) in
-    let adjust = (-num) / denom in 
+    let adjust = -((-num) / denom) in // double negative so the division rounds down, instead of up
     // if (abs adjust = 0n) (* marginal difference calculated is rounded down to 0mutez *)
     if (rounds <= 0) (* Newton converges in 4 rounds, so we bound computation there *)
     then 
