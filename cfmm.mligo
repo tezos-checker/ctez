@@ -628,6 +628,7 @@ let update_cash_pool_internal (pool_update : update_cash_pool_internal) (storage
     (([] : operation list), {storage with cashPool = pool ; pendingPoolUpdates = pendingPoolUpdates})
 #endif
 
+
 let token_to_token (param : token_to_token) (storage : storage) : result =
     let { outputCfmmContract = outputCfmmContract ;
           minTokensBought = minTokensBought ;
@@ -687,6 +688,88 @@ let token_to_token (param : token_to_token) (storage : storage) : result =
     allow_output_to_withdraw_cash.0 ; allow_output_to_withdraw_cash.1 ;
 #endif
         op_send_cash_to_output; op_accept_token_from_sender] , storage)
+
+
+#if CTEZ_CONTRACT
+(* For the ctez contract only, accepts tez and calls another cfmm for which cash_is_ctez *)
+
+type tez_to_token =
+  [@layout:comb]
+  { outputCfmmContract : address ; (* other cfmm contract *)
+    minTokensBought : nat ; (* minimum amount of tokens bought *)
+    [@annot:to] to_ : address ; (* where to send the output tokens *)    
+    deadline : timestamp ; (* time before which the request must be completed *)
+  }
+
+type ctez_to_token =
+  [@layout:comb]
+  { [@annot:to] to_ : address ;  (* where to send the tokens *)
+    minTokensBought : nat ; (* minimum amount of tokens that must be bought *)
+    cashSold : nat ;
+    deadline : timestamp ; 
+  }
+
+let tez_to_token (param : tez_to_token) (storage : storage) : result =
+    
+    let { outputCfmmContract = outputCfmmContract ;
+          minTokensBought = minTokensBought ;
+          to_ = to_ ;          
+          deadline = deadline } = param in
+
+    let outputCfmmContract_contract: ctez_to_token contract =
+        (match (Tezos.get_entrypoint_opt "%cashToToken" outputCfmmContract : ctez_to_token contract option) with
+            | None -> (failwith error_INVALID_INTERMEDIATE_CONTRACT :  ctez_to_token contract)
+            | Some c -> c) in
+
+    if storage.pendingPoolUpdates > 0n then
+      (failwith error_PENDING_POOL_UPDATES_MUST_BE_ZERO : result)        
+    else if Tezos.now >= deadline then
+      (failwith error_THE_CURRENT_TIME_MUST_BE_LESS_THAN_THE_DEADLINE : result)
+    else
+        let tezSold = Tezos.amount in
+        (* We don't check that tokenPool > 0, because that is impossible unless all liquidity has been removed. *)
+        let ctez_bought = ((tezSold * const_fee * storage.tokenPool) / (storage.cashPool * const_fee_denom + (tezSold * const_fee)))  in
+        let new_tokenPool = match is_nat (storage.tokenPool - ctez_bought) with
+            | None -> (failwith error_TOKEN_POOL_MINUS_TOKENS_BOUGHT_IS_NEGATIVE : nat)
+            | Some n -> n in
+        let storage = {storage with tokenPool = storage.tokenPool + tokensSold ;
+                                    cashPool = new_cashPool }  in
+
+#if CASH_IS_TEZ
+        let op_send_cash_to_output = Tezos.transaction { minTokensBought = minTokensBought ;
+                                      deadline = deadline; to_ = to_ }
+                                      (natural_to_mutez cash_bought)
+                                      outputCfmmContract_contract in
+#else
+        let allow_output_to_withdraw_cash =
+#if CASH_IS_FA12
+            let cashContract_approve =  (match (Tezos.get_entrypoint_opt "%approve" storage.cashAddress : (address * nat) contract option) with
+                | None -> (failwith error_MISSING_APPROVE_ENTRYPOINT_IN_CASH_CONTRACT : (address * nat) contract)
+                | Some c -> c) in
+            (Tezos.transaction (outputCfmmContract, 0n)
+                          0mutez
+                          cashContract_approve,
+            Tezos.transaction (outputCfmmContract, cash_bought)
+                          0mutez
+                          cashContract_approve) in
+#else
+        (failwith "unsupported" : operation * operation) in (* possible solution: move funds to a dedicated contract with an infinite allowance *)
+#endif
+        let op_send_cash_to_output = Tezos.transaction { minTokensBought = minTokensBought ;
+                                      cashSold = cash_bought ;
+                                      deadline = deadline ; to_ = to_}
+                                      0mutez
+                                      outputCfmmContract_contract in
+#endif
+        let op_accept_token_from_sender = token_transfer storage Tezos.sender Tezos.self_address tokensSold in
+        ([
+#if !CASH_IS_TEZ
+    allow_output_to_withdraw_cash.0 ; allow_output_to_withdraw_cash.1 ;
+#endif
+        op_send_cash_to_output; op_accept_token_from_sender] , storage)
+
+    
+#endif
 
 
 #if ORACLE
