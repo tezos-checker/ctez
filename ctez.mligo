@@ -171,12 +171,9 @@ let mint_or_burn (s : storage) (p : mint_or_burn) : result =
     ([Tezos.transaction (p.quantity, Tezos.sender) 0mutez ctez_mint_or_burn], s)
 
 let get_target (storage : storage) (callback : nat contract) : result =
-  // todo: any security on the contract itself?
   ([Tezos.transaction storage.target 0mutez callback], storage)
 
-(* todo: restore when ligo interpret is fixed
-   let cfmm_price (storage : storage) (tez : tez) (token : nat) : result =      *)
-let cfmm_price (storage, price : storage * nat) : result =
+let cfmm_price (storage : storage) (price : nat) : result =
   if Tezos.sender <> storage.cfmm_address then
     (failwith error_CALLER_MUST_BE_CFMM : result)
   else
@@ -215,7 +212,7 @@ let main (p, s : parameter * storage) : result =
   | Create d -> (create s d : result)
   | Liquidate l -> (liquidate s l : result)
   | Mint_or_burn xs -> (mint_or_burn s xs : result)
-  | Cfmm_price x -> (cfmm_price (s, x) : result)
+  | Cfmm_price x -> (cfmm_price s x : result)
   | Set_addresses xs -> (set_addresses s xs : result)
   | Get_target t -> (get_target s t : result)
 
