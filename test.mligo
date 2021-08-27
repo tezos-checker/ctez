@@ -43,10 +43,10 @@ let init_contracts (alice_bal : nat option) (bob_bal : nat option) (init_lqt : n
     let init_total_supply    = match init_total_supply    with | None -> 1_000_000n  | Some s -> s in 
     let init_token_pool      = match init_token_pool      with | None -> 10_000n     | Some t -> t in 
     let init_cash_pool       = match init_cash_pool       with | None -> 10_000n     | Some c -> c in 
-    let init_target          = match init_target          with | None -> (Bitwise.shift_left 2n 48n) | Some t -> t in // default target is 1
+    let init_target          = match init_target          with | None -> 131072n     | Some t -> t in // default target is 1 (Bitwise.shift_left 2n 48n)
     let init_drift           = match init_drift           with | None -> 0           | Some d -> d in 
     let last_drift_update    = match last_drift_update    with | None -> ("2021-01-01t10:10:10Z" : timestamp) | Some t -> t in 
-    let const_fee            = match const_fee            with | None -> (1n, 100n)  | Some f -> f in 
+    let const_fee            = match const_fee            with | None -> (1n, 1n)  | Some f -> f in // no default fee
     let pending_pool_updates = match pending_pool_updates with | None -> 0n          | Some p -> p in 
     let init_ovens           = match init_ovens           with | None -> (Big_map.empty : (oven_handle, oven) big_map) | Some o -> o in
 
@@ -102,19 +102,26 @@ let init_contracts (alice_bal : nat option) (bob_bal : nat option) (init_lqt : n
         tokenAddress = Tezos.address (Test.to_contract typed_addr_fa12) ;
         lqtAddress = Tezos.address (Test.to_contract typed_addr_lqt) ;
     } in 
-    let (typed_addr_cfmm, program_cfmm, size_cfmm) = Test.originate main_cfmm cfmm_init_storage 0tez in 
+    let (typed_addr_cfmm, program_cfmm, size_cfmm) = Test.originate main_cfmm cfmm_init_storage (1tez * init_cash_pool) in 
     
     // update ctez's storage using its set_addresses entrypoints 
-    let ctez_entrypoint_set_addresses = 
+    let entrypoint_set_addresses = 
         ((Test.to_entrypoint "set_addresses" typed_addr_ctez) : set_addresses contract) in
     let untyped_addr_cfmm = Tezos.address (Test.to_contract typed_addr_cfmm) in 
     let untyped_addr_fa12 = Tezos.address (Test.to_contract typed_addr_fa12) in
-    let new_addresses : set_addresses = { 
+    let txndata_set_addresses : set_addresses = { 
         cfmm_address=untyped_addr_cfmm; 
         ctez_fa12_address=untyped_addr_fa12;
     } in 
-    let update_ctez_addresses = Test.transfer_to_contract_exn ctez_entrypoint_set_addresses new_addresses 0tez in 
-    
+    let update_ctez_addresses = Test.transfer_to_contract_exn entrypoint_set_addresses txndata_set_addresses 0tez in 
+
+    // mint tokens in the amount of init_token_pool for the cfmm contract
+    let admin_source = Test.set_source addr_admin in 
+    let addr_cfmm = Tezos.address (Test.to_contract typed_addr_cfmm) in 
+    let entrypoint_mint : mintOrBurn contract = Test.to_entrypoint "mintOrBurn" typed_addr_fa12 in 
+    let txndata_mint : mintOrBurn = { quantity=int(init_token_pool) ; target=addr_cfmm } in 
+    let txn_mint = Test.transfer_to_contract_exn entrypoint_mint txndata_mint 0tez in 
+
     (typed_addr_cfmm, typed_addr_ctez, typed_addr_fa12, typed_addr_lqt,
      addr_alice, addr_bob, addr_lqt, addr_dummy, addr_admin)
 
@@ -165,8 +172,8 @@ let test_diff_equations =
     let (typed_addr_cfmm, typed_addr_ctez, typed_addr_fa12, typed_addr_lqt,
          addr_alice, addr_bob, addr_lqt, addr_dummy, addr_admin) = 
         init_contracts 
-            (Some 500n : nat option) (* alice_bal *)
-            (Some 100n : nat option) (* bob_bal *)
+            (Some 0n : nat option) (* alice_bal *)
+            (Some 0n : nat option) (* bob_bal *)
             (None : nat option) (* init_lqt *)
             (None : nat option) (* init_total_supply *)
             (None : nat option) (* init_token_pool *)
@@ -188,12 +195,13 @@ let test_diff_equations =
             deadline = ("3000-01-01t10:10:10Z" : timestamp);
             rounds = 4; // default 
         } in 
+        let trade_amt = 10tez in 
         let alice_trade = 
-            (Test.transfer_to_contract_exn trade_entrypoint trade_data 0tez) in () (*
+            (Test.transfer_to_contract_exn trade_entrypoint trade_data trade_amt) in 
         // alice should trade 500ctez for tez
-    let ctez_fa12_storage = Test.get_storage typed_addr_fa12 in 
-    let ctez_token_balances = ctez_fa12_storage.tokens in 
-    Big_map.find_opt addr_alice ctez_token_balances *)
+        let ctez_fa12_storage = Test.get_storage typed_addr_fa12 in 
+        let ctez_token_balances = ctez_fa12_storage.tokens in 
+        Big_map.find_opt addr_alice ctez_token_balances 
 
 
 
