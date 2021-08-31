@@ -2,3 +2,7 @@ _build/*
 *~
 \#*\#
 .\#*
+
+# IDE
+.idea/
+.vscode/
