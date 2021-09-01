@@ -13,11 +13,21 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing('auto', 0),
   },
 
+  infoText: {
+    margin: theme.spacing(2),
+    padding: theme.spacing(2),
+  },
+
   swapLiqCard: {
     height: 410,
     width: 400,
+    margin: theme.spacing(2),
     padding: theme.spacing(2),
     borderRadius: 20,
+  },
+
+  button: {
+    marginRight: theme.spacing(1),
   },
 }));
 
@@ -43,16 +53,23 @@ const HomePage: React.FC = () => {
   return (
     <div className={classes.root}>
       <div className={classes.mainRow}>
-        <div>
-          <Typography>No governance, completely mechanical, straightforward.</Typography>
-          <Typography>Unlock liquidity on Tezos and stay in control</Typography>
+        <div className={classes.infoText}>
+          <Typography variant="body1">
+            No governance, completely mechanical, straightforward.
+          </Typography>
+          <Typography variant="h2">Unlock liquidity on Tezos and stay in control</Typography>
           <Typography>
             ctez can be used directly in smart-contracts that would normally pool tez together
             without the thorny question of "who's baking".
           </Typography>
           <div>
-            <Button>Create Oven</Button>
-            <Button>Learn More</Button>
+            <Button className={classes.button} variant="contained">
+              Create Oven
+            </Button>
+            &ensp;
+            <Button className={classes.button} variant="outlined">
+              Learn More
+            </Button>
           </div>
         </div>
 
@@ -74,7 +91,7 @@ const HomePage: React.FC = () => {
             </TabPanel>
 
             <TabPanel value={tab} index={1}>
-              Item Two
+              Liquidity
             </TabPanel>
           </Paper>
         </div>
