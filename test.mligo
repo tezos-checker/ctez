@@ -27,15 +27,13 @@ type cfmm_storage = storage
 type cfmm_parameter = parameter 
 type cfmm_result = result 
 
+#include "test_params.mligo"
 
 (* =============================================================================
  * Some Aux Functions
  * ============================================================================= *)
 
-let mutez_to_tez (x : tez) = 1mutez * (x / 1_000_000mutez)
 
-
-let test_sanity = mutez_to_tez 1_000_000mutez
 
 (* =============================================================================
  * Generic Setup that Initiates All Contracts
@@ -138,7 +136,7 @@ let init_contracts (alice_bal : nat option) (bob_bal : nat option) (init_lqt : n
  * Tests
  * ============================================================================= *)
 
-(* Run setup with default args; verify ctez storage is as expected *)
+(******** STANDARD SETUP ********)
 let test_setup = 
     let (typed_addr_cfmm, typed_addr_ctez, typed_addr_fa12, typed_addr_lqt,
          addr_alice, addr_bob, addr_lqt, addr_dummy, addr_admin) = 
@@ -169,15 +167,16 @@ let test_setup =
     } in 
     let actual_ctez_storage  = Test.get_storage typed_addr_ctez in 
     
-    // assertions to verify storage is as expected
+    // assertions to verify storage is as expected // TODO : when Bitwise works, send storages to bytes and compare
     (
         assert (expected_ctez_storage.cfmm_address      = actual_ctez_storage.cfmm_address),
         assert (expected_ctez_storage.ctez_fa12_address = actual_ctez_storage.ctez_fa12_address)
     )
 
 
-(* Test that the difference equations in trades computed as expected *)
-let test_cash_to_token = 
+(******** DIFFERENCE EQUATIONS ********)
+(**       cash to token              **)
+let trade_cash_to_token_test (x, y, dx, target, rounds, const_fee : nat * nat * nat * nat * int * (nat * nat)) = 
     let (typed_addr_cfmm, typed_addr_ctez, typed_addr_fa12, typed_addr_lqt,
          addr_alice, addr_bob, addr_lqt, addr_dummy, addr_admin) = 
         init_contracts 
@@ -185,12 +184,12 @@ let test_cash_to_token =
             (Some 0n : nat option) (* bob_bal *)
             (None : nat option) (* init_lqt *)
             (None : nat option) (* init_total_supply *)
-            (None : nat option) (* init_token_pool *)
-            (None : nat option) (* init_cash_pool *)
-            (None : nat option) (* init_target *)
+            (Some y : nat option) (* init_token_pool *)
+            (Some x : nat option) (* init_cash_pool *)
+            (Some target : nat option) (* init_target *)
             (None : int option) (* init_drift *)
             (None : timestamp option) (* last_drift_update *)
-            (Some (1000n,1000n) : (nat * nat) option) (* const_fee *)
+            (Some const_fee : (nat * nat) option) (* const_fee *)
             (None : nat option) (* pending_pool_updates *)
             (None : (oven_handle, oven) big_map option) (* init_ovens *)
     in 
@@ -198,12 +197,12 @@ let test_cash_to_token =
         let alice_source = Test.set_source addr_alice in 
         let trade_entrypoint : cash_to_token contract = 
             Test.to_entrypoint "cashToToken" typed_addr_cfmm in 
-        let trade_amt = 100_000_000mutez in 
+        let trade_amt = (dx * 1mutez) in 
         let trade_data : cash_to_token = {
             to_ = addr_alice;
-            minTokensBought = abs (100_000_000n - 1_000n); // within 0.001ctez of 1:1 trade
+            minTokensBought = 0n;
             deadline = ("3000-01-01t10:10:10Z" : timestamp);
-            rounds = 4; // default 
+            rounds = rounds;
         } in 
         let alice_balance_old = Test.get_balance addr_alice in 
         let alice_trade = 
@@ -211,13 +210,19 @@ let test_cash_to_token =
         // alice should trade 500ctez for tez
         let ctez_fa12_storage = Test.get_storage typed_addr_fa12 in 
         let ctez_token_balances = ctez_fa12_storage.tokens in 
-        let alice_balance = Test.get_balance addr_alice in 
-        ((Big_map.find_opt addr_alice ctez_token_balances), (alice_balance / 1mutez - alice_balance_old / 1mutez))
+        let (fee_num, fee_denom) = const_fee in 
+        match (Big_map.find_opt addr_alice ctez_token_balances) with 
+        | None -> (failwith "Incomplete Cash to Token Transfer" : unit) 
+        | Some bal -> assert (bal = fee_num * (trade_dcash_for_dtoken x y dx target rounds) / fee_denom)
+
+let test_cash_to_token = 
+    let test_result = List.map trade_cash_to_token_test trade_params in 
+    () // if it reaches this, everything passed
 
 
-
-let test_token_to_cash =
-    let alice_initial_bal = 1_000_000_000n in // in muctez; == 1_000 ctez
+(**       token to cash              **)
+let trade_token_to_cash_test (x, y, dy, target, rounds, const_fee : nat * nat * nat * nat * int * (nat * nat)) =
+    let alice_initial_bal = dy in // in muctez; == 1_000 ctez
     let (typed_addr_cfmm, typed_addr_ctez, typed_addr_fa12, typed_addr_lqt,
          addr_alice, addr_bob, addr_lqt, addr_dummy, addr_admin) = 
         init_contracts 
@@ -225,12 +230,12 @@ let test_token_to_cash =
             (Some 0n : nat option) (* bob_bal *)
             (None : nat option) (* init_lqt *)
             (None : nat option) (* init_total_supply *)
-            (None : nat option) (* init_token_pool *)
-            (None : nat option) (* init_cash_pool *)
+            (Some y : nat option) (* init_token_pool *)
+            (Some x : nat option) (* init_cash_pool *)
             (None : nat option) (* init_target *)
             (None : int option) (* init_drift *)
             (None : timestamp option) (* last_drift_update *)
-            (Some (1000n,1000n) : (nat * nat) option) (* const_fee *)
+            (Some const_fee : (nat * nat) option) (* const_fee *)
             (None : nat option) (* pending_pool_updates *)
             (None : (oven_handle, oven) big_map option) (* init_ovens *)
     in 
@@ -242,16 +247,18 @@ let test_token_to_cash =
         let addr_cfmm_balance_old = Test.get_balance addr_cfmm in 
         let bob_balance_old = Test.get_balance addr_bob in 
 
+        // trade entrypoint
         let trade_entrypoint : token_to_cash contract = 
             Test.to_entrypoint "tokenToCash" typed_addr_cfmm in 
         let trade_data : token_to_cash = {
-            to_ = addr_bob;
+            to_ = addr_bob; // send to bob so that gas costs don't factor into the change in balance
             tokensSold = alice_txn_amt; // in muctez
-            minCashBought = abs (alice_txn_amt - 1_000n); // (plus or) minus .1 tez of 1:1 trade
+            minCashBought = 0n;
             deadline = ("3000-01-01t10:10:10Z" : timestamp);
-            rounds = 4; // default 
+            rounds = rounds;
         } in 
 
+        // approve entrypoint
         let approve_entrypoint : approve contract = 
             Test.to_entrypoint "approve" typed_addr_fa12 in 
         let approve_data : approve = {
@@ -259,24 +266,31 @@ let test_token_to_cash =
             value = alice_txn_amt ;
         } in 
         
+        // execute and test
         let alice_approve = 
             (Test.transfer_to_contract_exn approve_entrypoint approve_data 0tez) in         
         let alice_trade = 
             (Test.transfer_to_contract_exn trade_entrypoint trade_data 0tez) in 
 
-        let alice_balance = Test.get_balance addr_alice in 
         let addr_cfmm_balance = Test.get_balance addr_cfmm in 
         let bob_balance = Test.get_balance addr_bob in 
-        ((bob_balance / 1mutez) - (bob_balance_old / 1mutez) , (alice_balance / 1mutez) - (alice_balance_old / 1mutez), (addr_cfmm_balance / 1mutez) - (addr_cfmm_balance_old / 1mutez))
+        let bob_balance_delta = bob_balance / 1mutez - bob_balance_old / 1mutez in 
+        let (fee_num, fee_denom) = const_fee in 
+        assert (abs bob_balance_delta = fee_num * (trade_dtoken_for_dcash x y dy target rounds) / fee_denom)
+
+let test_token_to_cash = 
+    let test_result = List.map trade_token_to_cash_test trade_params in 
+    () // if it reaches this, everything passed
 
 
 
-
-(* Tests compilation under different directives (may not be feasible in this framework) *)
+(******** DIRECTIVES ********)
 let test_directives = ()
+// Tests compilation under different directives (may not be feasible in this framework)
 
 
-(* Checks that drift and target grew at expected rate after x mins *)
+(******** DRIFT ********)
 let test_price = () 
+    // Checks that drift and target grew at expected rate after x mins
     // 5 mins, or 300 secs will be default 
     // target should go up and down 5% in 0.1% increments
