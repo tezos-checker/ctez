@@ -30,7 +30,6 @@
     "react-query": "^3.13.0",
     "react-redux": "^7.2.3",
     "react-router-dom": "^5.2.0",
-    "react-toast-notifications": "^2.4.3",
     "yup": "^0.32.9"
   },
   "devDependencies": {
