@@ -1,4 +1,5 @@
 import { Box, Flex, Stack, Text, Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react';
+import { Swap } from '../../components/Swap';
 
 const HomePage: React.FC = () => {
   return (
@@ -24,7 +25,7 @@ const HomePage: React.FC = () => {
 
             <TabPanels>
               <TabPanel>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                <Swap />
               </TabPanel>
               <TabPanel>
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores, beatae.</p>

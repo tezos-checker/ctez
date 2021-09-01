@@ -1,97 +1,39 @@
-import { Button, TextField, Typography } from '@material-ui/core';
-import { SwapVert as SwapVertIcon } from '@material-ui/icons';
-import { makeStyles } from '@material-ui/core/styles';
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    flexDirection: 'column',
-    padding: theme.spacing(2, 0),
-  },
-  caption: {
-    color: theme.palette.grey[500],
-  },
-  formControl: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  infoTextContainer: {
-    marginTop: theme.spacing(3),
-  },
-  infoText: {
-    display: 'flex',
-    justifyContent: 'space-between',
-  },
-}));
+import { Button, Flex, FormControl, FormLabel, IconButton, Input, Text } from '@chakra-ui/react';
+import { MdSwapVert, MdAdd } from 'react-icons/md';
 
 const Swap: React.FC = () => {
-  const classes = useStyles();
-
   return (
-    <form
-      className={classes.root}
-      noValidate
-      autoComplete="off"
-      onSubmit={(ev) => ev.preventDefault()}
-    >
-      <div className={classes.formControl}>
-        <Typography
-          className={classes.caption}
-          variant="caption"
-          htmlFor="from-input"
-          component="label"
-        >
-          From
-        </Typography>
-        <TextField
-          variant="outlined"
-          placeholder="0.0"
-          inputProps={{ id: 'from-input', 'aria-label': 'swap from amount' }}
+    <form autoComplete="off">
+      <FormControl id="from-input-amount">
+        <FormLabel fontSize="xs">From</FormLabel>
+        <Input type="number" />
+      </FormControl>
+      <Flex justifyContent="center" mt={2}>
+        <IconButton
+          variant="ghost"
+          size="sm"
+          borderRadius="50%"
+          aria-label="Swap Token"
+          icon={<MdSwapVert />}
         />
-      </div>
+      </Flex>
 
-      <div>
-        <SwapVertIcon />
-      </div>
+      <FormControl id="to-input-amount" mt={-4} mb={6}>
+        <FormLabel fontSize="xs">To (estimate)</FormLabel>
+        <Input type="number" />
+      </FormControl>
 
-      <div className={classes.formControl}>
-        <Typography
-          className={classes.caption}
-          variant="caption"
-          htmlFor="to-input"
-          component="label"
-        >
-          To (estimated)
-        </Typography>
-        <TextField
-          variant="outlined"
-          placeholder="0.0"
-          inputProps={{ id: 'to-input', 'aria-label': 'swap from amount' }}
-        />
-      </div>
+      <Flex justifyContent="space-between">
+        <Text fontSize="xs">Rate</Text>
+        <Text fontSize="xs">1 XTZ = 1.01 CTEZ</Text>
+      </Flex>
+      <Flex justifyContent="space-between">
+        <Text fontSize="xs">Price Impact</Text>
+        <Text fontSize="xs">0.0000%</Text>
+      </Flex>
 
-      <div className={classes.infoTextContainer}>
-        <div className={classes.infoText}>
-          <Typography className={classes.caption} variant="caption">
-            Rate
-          </Typography>
-          <Typography className={classes.caption} variant="caption">
-            1 XTZ = 1.01 CTEZ
-          </Typography>
-        </div>
-
-        <div className={classes.infoText}>
-          <Typography className={classes.caption} variant="caption">
-            Price Impact
-          </Typography>
-          <Typography className={classes.caption} variant="caption">
-            0.00000
-          </Typography>
-        </div>
-      </div>
-
-      <Button variant="contained" type="submit">
-        Enter an amount
+      <Button width="100%" mt={4} p={6} leftIcon={<MdAdd />}>
+        Connect wallet
       </Button>
     </form>
   );
