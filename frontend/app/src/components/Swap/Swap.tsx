@@ -1,4 +1,4 @@
-import { Button, FormControl, TextField, Typography } from '@material-ui/core';
+import { Button, TextField, Typography } from '@material-ui/core';
 import { SwapVert as SwapVertIcon } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 
