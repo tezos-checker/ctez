@@ -1,9 +1,7 @@
 import React, { Suspense, useEffect, useState } from 'react';
 import { HelmetProvider } from 'react-helmet-async';
-import { LocalizationProvider } from '@material-ui/pickers';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ToastProvider, DefaultToastContainer } from 'react-toast-notifications';
-import DateFnsUtils from '@material-ui/pickers/adapter/date-fns';
 import { WalletProvider } from './wallet/walletContext';
 import { WalletInterface } from './interfaces';
 import { initTezos, setWalletProvider } from './contracts/client';
@@ -57,16 +55,14 @@ const App: React.FC = () => {
     <Suspense fallback="Loading...">
       <HelmetProvider>
         <QueryClientProvider client={queryClient}>
-          <LocalizationProvider dateAdapter={DateFnsUtils}>
-            <WalletProvider value={{ wallet, setWallet }}>
-              <ToastProvider
-                placement="bottom-right"
-                components={{ ToastContainer: AppToastContainer }}
-              >
-                <AppRouter />
-              </ToastProvider>
-            </WalletProvider>
-          </LocalizationProvider>
+          <WalletProvider value={{ wallet, setWallet }}>
+            <ToastProvider
+              placement="bottom-right"
+              components={{ ToastContainer: AppToastContainer }}
+            >
+              <AppRouter />
+            </ToastProvider>
+          </WalletProvider>
         </QueryClientProvider>
       </HelmetProvider>
     </Suspense>
