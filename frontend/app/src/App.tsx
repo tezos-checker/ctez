@@ -1,7 +1,7 @@
 import React, { Suspense, useEffect, useState } from 'react';
 import { HelmetProvider } from 'react-helmet-async';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import { ToastProvider, DefaultToastContainer } from 'react-toast-notifications';
+import { ChakraProvider } from '@chakra-ui/react';
 import { WalletProvider } from './wallet/walletContext';
 import { WalletInterface } from './interfaces';
 import { initTezos, setWalletProvider } from './contracts/client';
@@ -14,14 +14,6 @@ import { logger } from './utils/logger';
 import { getNodePort, getNodeURL } from './utils/settingUtils';
 
 const queryClient = new QueryClient();
-
-/**
- * Hack to show errors above drawer
- */
-const AppToastContainer: React.FC = (props: any) => {
-  const newProps = { ...props, style: { zIndex: 9999 } };
-  return <DefaultToastContainer {...newProps} />;
-};
 
 const App: React.FC = () => {
   const [wallet, setWallet] = useState<Partial<WalletInterface>>({});
@@ -56,12 +48,9 @@ const App: React.FC = () => {
       <HelmetProvider>
         <QueryClientProvider client={queryClient}>
           <WalletProvider value={{ wallet, setWallet }}>
-            <ToastProvider
-              placement="bottom-right"
-              components={{ ToastContainer: AppToastContainer }}
-            >
+            <ChakraProvider>
               <AppRouter />
-            </ToastProvider>
+            </ChakraProvider>
           </WalletProvider>
         </QueryClientProvider>
       </HelmetProvider>
