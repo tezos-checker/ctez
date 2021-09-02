@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 set -x
 
-mkdir _build
+mkdir -p _build/mockup
 
 # Modify as need to deploy on different networks
-TZC="../Tezos/tezos/tezos-client --mode mockup --protocol PtEdo2ZkT9oKpimTah6x2embF25oss54njMuPzkJTEi5RqfdZFA --base-dir _build/mockup"
+TZC="tezos-client --mode client --protocol PtGRANADsDU8R9daYKAgWnQYAJ64omN1o3KMGVCykShA97vQbvV --endpoint https://granadanet.smartpy.io --base-dir _build/mockup"
 
-rm -rf _build/mockup
-$TZC create mockup
+#rm -rf _build/mockup
+$TZC import secret key alice unencrypted:edsk3QoqBuvdamxouPhin7swCvkQNgq4jP5KZPbwWNnwdZpSpJiEbq
 
-deployment_key="bootstrap1"
+deployment_key="alice"
 deployment_key_address=`$TZC show address ${deployment_key} | head -n 1 | awk '{print $2}'`
 
 DEPLOYMENT_DATE=$(date '+%Y-%m-%d')
