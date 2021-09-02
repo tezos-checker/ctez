@@ -1,1 +1,1 @@
-export { Swap, Swap as default } from './Swap';
+export { Swap as default } from './Swap';

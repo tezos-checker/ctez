@@ -18,7 +18,7 @@ const Swap: React.FC = () => {
         />
       </Flex>
 
-      <FormControl id="to-input-amount" mt={-4} mb={6}>
+      <FormControl id="to-input-amount" mt={-2} mb={6}>
         <FormLabel fontSize="xs">To (estimate)</FormLabel>
         <Input type="number" />
       </FormControl>

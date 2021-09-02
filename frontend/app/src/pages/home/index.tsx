@@ -1,10 +1,11 @@
 import { Box, Flex, Stack, Text, Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react';
-import { Swap } from '../../components/Swap';
+import Swap from '../../components/Swap';
+import Liquidity from '../../components/Liquidity';
 
 const HomePage: React.FC = () => {
   return (
-    <Flex height="100vh" alignItems="center" background="gray.100">
-      <Flex m={24}>
+    <Flex height="100vh" alignItems="center" backgroundColor="gray.100">
+      <Flex alignItems="center" m={24}>
         <Stack spacing={3} m={4}>
           <Text fontSize="sm">No governance, completely mechanical, straightforward.</Text>
           <Text fontSize="6xl" as="strong">
@@ -16,7 +17,14 @@ const HomePage: React.FC = () => {
           </Text>
         </Stack>
 
-        <Box background="white" minWidth="400px" maxWidth="400px" borderRadius={16} p={4} m={4}>
+        <Box
+          backgroundColor="white"
+          minWidth="400px"
+          maxWidth="400px"
+          borderRadius={16}
+          p={4}
+          m={4}
+        >
           <Tabs>
             <TabList>
               <Tab>Swap</Tab>
@@ -28,7 +36,7 @@ const HomePage: React.FC = () => {
                 <Swap />
               </TabPanel>
               <TabPanel>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores, beatae.</p>
+                <Liquidity />
               </TabPanel>
             </TabPanels>
           </Tabs>
