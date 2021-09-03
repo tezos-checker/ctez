@@ -8,7 +8,7 @@
 (* To support baking *)
 //#define HAS_BAKER
 (* To push prices to some consumer contract once per block *)
-#define ORACLE
+//#define ORACLE
 
 
 (* ============================================================================
@@ -98,7 +98,7 @@ type update_cash_pool_internal = update_fa12_pool
 type entrypoint =
 | AddLiquidity    of add_liquidity
 | RemoveLiquidity of remove_liquidity
-| Ctez_target     of ctez_target
+| CtezTarget     of ctez_target
 | CashToToken     of cash_to_token
 | TokenToCash     of token_to_cash
 | TokenToToken    of token_to_token
@@ -800,6 +800,7 @@ let update_consumer (operations, storage : result) : result =
         then (operations, storage)
     else
         let consumer = match (Tezos.get_contract_opt storage.consumerEntrypoint : ((nat * nat) contract) option) with
+// TODO : when ligo is fixed let consumer = match (Tezos.get_entrypoint_opt "cfmm_price" storage.consumerEntrypoint : ((nat * nat) contract) option) with
         | None -> (failwith error_CANNOT_GET_CFMM_PRICE_ENTRYPOINT_FROM_CONSUMER : (nat * nat) contract)
         | Some c -> c in
         ((Tezos.transaction (storage.cashPool, storage.tokenPool) 0mutez consumer) :: operations,
@@ -816,7 +817,7 @@ let main ((entrypoint, storage) : entrypoint * storage) : result =
         add_liquidity param storage
     | RemoveLiquidity param ->
         remove_liquidity param storage
-    | Ctez_target param ->
+    | CtezTarget param ->
         ctez_target param storage
 #if HAS_BAKER
     | SetBaker param ->
