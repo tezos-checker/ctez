@@ -220,6 +220,7 @@ let trade_cash_to_token_test (x, y, dx, target, rounds, const_fee : nat * nat * 
             (None : nat option) (* pending_pool_updates *)
             (None : (oven_handle, oven) big_map option) (* init_ovens *)
     in 
+
         // get the TokenToCash entrypoint 
         let alice_source = Test.set_source addr_alice in 
         let trade_entrypoint : cash_to_token contract = 
@@ -234,10 +235,12 @@ let trade_cash_to_token_test (x, y, dx, target, rounds, const_fee : nat * nat * 
         let alice_balance_old = Test.get_balance addr_alice in 
         let alice_trade = 
             (Test.transfer_to_contract_exn trade_entrypoint trade_data trade_amt) in 
+
         // alice should trade 500ctez for tez
         let ctez_fa12_storage = Test.get_storage typed_addr_fa12 in 
         let ctez_token_balances = ctez_fa12_storage.tokens in 
         let (fee_num, fee_denom) = const_fee in 
+
         match (Big_map.find_opt addr_alice ctez_token_balances) with 
         | None -> (failwith "Incomplete Cash to Token Transfer" : unit) 
         | Some bal -> assert (bal = fee_num * (trade_dcash_for_dtoken x y dx target rounds) / fee_denom)
@@ -312,8 +315,6 @@ let test_token_to_cash =
     () // if it reaches this, everything passed
     //(*debug mode*) test_result
 
-(**       test lists of each         **)
-let test_txn_lists = ()
 
 (******** DIRECTIVES ********)
 let test_directives = ()
@@ -324,6 +325,7 @@ let test_directives = ()
     (* This is a minimal e.g., as timestamp arithmetic does not currently work in ligo test *)
 // TODO : When time works, 
 // let test_drift (init_cash : nat) (init_token : nat) (init_target : nat) (time_delta : int) = 
+#if ORACLE
 let test_drift (init_cash : nat) (init_token : nat) (init_target : nat) (now : timestamp) (later : timestamp) = 
     // some failing conditions
     (* if (time_delta < 0) then (failwith "time_delta MUST BE NONNEGATIVE" : unit) else *)
@@ -346,30 +348,33 @@ let test_drift (init_cash : nat) (init_token : nat) (init_target : nat) (now : t
             (None : (oven_handle, oven) big_map option) (* init_ovens *)
     in 
     
-    
     // update time 
     let time_has_elapsed = Test.set_now later in 
 
-    // calculate current price 
-    let current_price = price_cash_to_token init_target init_cash init_token in 
-    () (*
-    // call cfmm_price, updating the drift 
-    // TODO : implicit account must trigger 
-    let cfmm_source = Test.set_source addr_cfmm in 
-    let txndata_cfmm_price = current_price in 
-    let entrypoint_cfmm_price = 
-        (Test.to_entrypoint "cfmm_price" typed_addr_ctez) in 
-    let txn_cfmm_price = 
-        (Test.transfer_to_contract_exn entrypoint_cfmm_price txndata_cfmm_price) in 
+    // execute a transaction, which will trigger a drift update 
+    let alice_source = Test.set_source addr_alice in 
+    let trade_entrypoint : cash_to_token contract = 
+        Test.to_entrypoint "cashToToken" typed_addr_cfmm in 
+    let trade_amt = 100_000_000mutez in // could be anything
+    let trade_data : cash_to_token = {
+        to_ = addr_alice;
+        minTokensBought = 0n;
+        deadline = ("3000-01-01t10:10:10Z" : timestamp);
+        rounds = 4;
+    } in 
+    let alice_trade = 
+        (Test.transfer_to_contract_exn trade_entrypoint trade_data trade_amt) in 
 
     // check the drift
     let ctez_storage = Test.get_storage typed_addr_ctez in 
     let actual_drift = ctez_storage.drift in 
 
     // compute expected drift 
-    let expected_drift = ... 
+    let expected_drift = 0n (* TODO: calculation here *) in 
 
-    assert (actual_drift = expected_drift) *)
+    assert (actual_drift = expected_drift)
+
     // Checks that drift and target grew at expected rate after x mins
     // 5 mins, or 300 secs will be default 
     // target should go up and down 5% in 0.1% increments
+#endif
