@@ -1,5 +1,5 @@
 (* Pick one of CASH_IS_TEZ, CASH_IS_FA2, CASH_IS_FA12. tokenToToken isn't supported for CASH_IS_FA12 *)
-//#define CASH_IS_TEZ
+#define CASH_IS_TEZ
 //#define CASH_IS_FA2
 //#define CASH_IS_FA12
 
@@ -8,7 +8,7 @@
 (* To support baking *)
 //#define HAS_BAKER
 (* To push prices to some consumer contract once per block *)
-//#define ORACLE
+#define ORACLE
 
 
 (* ============================================================================
@@ -74,7 +74,7 @@ type set_baker =
   }
 #endif
 
-(* (a,b) such that a/b is the target price from the ctez contract *)
+(* a such that (Bitwise.shift_right a 48n) is the target price from the ctez contract *)
 type ctez_target = nat
 
 (* getbalance update types for fa12 and fa2 *)
@@ -303,8 +303,9 @@ let cash_transfer (storage : storage) (from : address) (to_ : address) (cash_amo
 #endif
 #endif
 
-(* Isoutility and Difference Equations *)
+(* Difference Equations *)
 // The Isoutility Function in https://hackmd.io/MkPSYXDsTf-giBprcDrc3w  
+(*
 // b is 2^48 below, implemented as bitwise shifts
 let isoutility (target, cash, token : nat * nat * nat) : nat = 
     let x = cash in 
@@ -324,7 +325,7 @@ let price_cash_to_token (target : nat) (cash : nat) (token : nat) : nat =
     let num = y * (3n * ax2 + by2) in
     let denom = x * (ax2 + 3n * by2) in
     num/denom
-
+*)
 // A function to transfer assets while maintaining a constant isoutility
 let rec newton_dx_to_dy (x, y, dx, dy_approx, target, rounds : nat * nat * nat * nat * nat * int) : nat = 
     if (rounds <= 0) (* Newton generally converges in 4 rounds, so we bound computation there *)
@@ -334,12 +335,12 @@ let rec newton_dx_to_dy (x, y, dx, dy_approx, target, rounds : nat * nat * nat *
         let a = target in 
         let xp = x + dx in
         let yp = y - dy_approx in 
-        let ax2 = a * a * x * x in let by2 = Bitwise.shift_left (y * y) 96n in 
-        let axp2 = a * a * xp * xp in let byp2 = Bitwise.shift_left (abs(yp * yp)) 96n in
+        let ax2 = a * a * x * x in let by2 = Bitwise.shift_left (y * y) 96n in // (y * y) * b * b
+        let axp2 = a * a * xp * xp in let byp2 = Bitwise.shift_left (abs(yp * yp)) 96n in // (abs(yp * yp)) * b * b
         (* Newton descent formula *)
-        let num = abs(xp * yp * (axp2 + byp2) - x * y * (ax2 + by2)) in // num is always positive, even without abs
+        let num = abs (xp * yp * (axp2 + byp2) - x * y * (ax2 + by2)) in // num is always positive, even without abs
         let denom = xp * (axp2 + 3 * byp2) in
-        let adjust = (num) / denom in
+        let adjust = num / denom in
         let new_dy_approx = abs (dy_approx + adjust) in
         let next_round = (rounds - 1) in
         newton_dx_to_dy (x,y,dx,new_dy_approx,target,next_round)
@@ -353,6 +354,7 @@ let rec newton_dx_to_dy (x, y, dx, dy_approx, target, rounds : nat * nat * nat *
 // A function that outputs dy (diff_token) given x, y, and dx
 let trade_dcash_for_dtoken (x : nat) (y : nat) (dx : nat) (target : nat) (rounds : int) : nat = 
     let dy_approx = 0n in // start at 0n to always be an underestimate
+
     if (y - dy_approx <= 0)
     then
         (failwith error_TOKEN_POOL_MINUS_TOKENS_WITHDRAWN_IS_NEGATIVE : nat)
@@ -361,11 +363,10 @@ let trade_dcash_for_dtoken (x : nat) (y : nat) (dx : nat) (target : nat) (rounds
 
 // A function that outputs dx (diff_cash) given target, x, y, and dy
 let trade_dtoken_for_dcash (x : nat) (y : nat) (dy : nat) (target : nat) (rounds : int) : nat = 
-    let a = target in 
-    let b2 = (Bitwise.shift_left 2n 96n) in
-    (* Will get error if a = 0 to begin with, but if that's the case we have bigger fish to fry *)
-    let target_inv = b2 / a in // when later divided by b, target_inv will be b / a
     let dx_approx = 0n in // start at 0n to always be an underestimate
+    let target_inv = (Bitwise.shift_left 1n 96n) / target in // b^2 / a
+    (* Will get error if a = 0 to begin with, but if that's the case we have bigger fish to fry *)
+
     if (x - dx_approx <= 0)
     then
         (failwith error_CASH_POOL_MINUS_CASH_WITHDRAWN_IS_NEGATIVE : nat)
@@ -497,7 +498,7 @@ let cash_to_token (param : cash_to_token) (storage : storage) =
          cashSold = cashSold ;
 #endif
          deadline = deadline ;
-          rounds = rounds } = param in
+         rounds = rounds } = param in
 
 #if CASH_IS_TEZ
     let cashSold = mutez_to_natural Tezos.amount in
@@ -570,9 +571,9 @@ let token_to_cash (param : token_to_cash) (storage : storage) =
 
         let op_token = token_transfer storage Tezos.sender Tezos.self_address tokensSold in
 #if CASH_IS_TEZ
-        let op_cash = cash_transfer to_  cash_bought in
+        let op_cash = cash_transfer to_ cash_bought in
 #else
-        let op_cash = cash_transfer storage Tezos.self_address  to_ cash_bought in
+        let op_cash = cash_transfer storage Tezos.self_address to_ cash_bought in
 #endif
         let new_cashPool = match is_nat (storage.cashPool - cash_bought) with
             | None -> (failwith error_ASSERTION_VIOLATED_CASH_BOUGHT_SHOULD_BE_LESS_THAN_CASHPOOL : nat)

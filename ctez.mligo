@@ -25,7 +25,7 @@ type parameter =
   | Liquidate of liquidate
   | Register_deposit of register_deposit
   | Mint_or_burn of mint_or_burn
-  | Cfmm_price of nat
+  | Cfmm_price of nat * nat
   | Set_addresses of set_addresses
   | Get_target of nat contract
 
@@ -85,6 +85,15 @@ let get_ctez_mint_or_burn (fa12_address : address) : (int * address) contract =
   match (Tezos.get_entrypoint_opt  "%mintOrBurn"  fa12_address : ((int * address) contract) option) with
   | None -> (failwith error_CTEZ_FA12_CONTRACT_MISSING_MINT_OR_BURN_ENTRYPOINT : (int * address) contract)
   | Some c -> c
+
+let get_price (target : nat) (cash : nat) (token : nat) : nat = 
+    let (x,y) = (cash, token) in
+    let a = target in 
+    let ax2 = x * x * a * a in
+    let by2 = Bitwise.shift_left (y * y) 96n in
+    let num = y * (3n * ax2 + by2) in
+    let denom = x * (ax2 + 3n * by2) in
+    num/denom
 
 (* Entrypoint Functions *)
 
@@ -173,7 +182,7 @@ let mint_or_burn (s : storage) (p : mint_or_burn) : result =
 let get_target (storage : storage) (callback : nat contract) : result =
   ([Tezos.transaction storage.target 0mutez callback], storage)
 
-let cfmm_price (storage : storage) (price : nat) : result =
+let cfmm_price (storage : storage) (tez : nat) (token : nat) : result =
   if Tezos.sender <> storage.cfmm_address then
     (failwith error_CALLER_MUST_BE_CFMM : result)
   else
@@ -191,6 +200,7 @@ let cfmm_price (storage : storage) (price : nat) : result =
            for each day over or under the target by more than 1/64th.
         *)
 
+    let price : nat = get_price target tez token in
     let target_less_price : int = target - price in
     let d_drift =
       let x = Bitwise.shift_left (abs (target_less_price * target_less_price)) 10n in
@@ -212,7 +222,7 @@ let main (p, s : parameter * storage) : result =
   | Create d -> (create s d : result)
   | Liquidate l -> (liquidate s l : result)
   | Mint_or_burn xs -> (mint_or_burn s xs : result)
-  | Cfmm_price x -> (cfmm_price s x : result)
+  | Cfmm_price (x,y) -> (cfmm_price s x y : result)
   | Set_addresses xs -> (set_addresses s xs : result)
   | Get_target t -> (get_target s t : result)
 

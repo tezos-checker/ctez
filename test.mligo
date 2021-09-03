@@ -33,6 +33,25 @@ type cfmm_result = result
  * Some Aux Functions
  * ============================================================================= *)
 
+// Returns the price dy/dx of the isoutility function, i.e. a map by multiplication ∆x => ∆y, at a given point (x,y)
+let price_cash_to_token (target : nat) (cash : nat) (token : nat) : nat = 
+    let (x,y) = (cash, token) in
+    let a = target in 
+    let ax2 = x * x * a * a in
+    let by2 = Bitwise.shift_left (y * y) 96n in
+    let num = y * (3n * ax2 + by2) in
+    let denom = x * (ax2 + 3n * by2) in
+    num/denom
+
+// The isoutility function used
+let isoutility (target, cash, token : nat * nat * nat) : nat = 
+    let x = cash in 
+    let y = token in 
+    let a = target in 
+    let a2 = a * a in
+    let ax2 = a2 * x * x in 
+    let by2 = Bitwise.shift_left (y * y) 96n in
+    (Bitwise.shift_right (abs((a * x * y) * (ax2 + by2) / (2 * a2))) 48n)
 
 
 (* =============================================================================
@@ -43,6 +62,9 @@ let init_contracts (alice_bal : nat option) (bob_bal : nat option) (init_lqt : n
                    (init_token_pool : nat option) (init_cash_pool : nat option) (init_target : nat option) 
                    (init_drift : int option) (last_drift_update : timestamp option) (const_fee : (nat * nat) option) 
                    (pending_pool_updates : nat option) (init_ovens : (oven_handle, oven) big_map option) = 
+    // set time 
+    let now = ("2000-01-01t10:10:10Z" : timestamp) in 
+    
     // set defaults for optional args 
     let alice_bal            = match alice_bal            with | None -> 100n          | Some b -> b in 
     let bob_bal              = match bob_bal              with | None -> 100n          | Some b -> b in 
@@ -50,9 +72,9 @@ let init_contracts (alice_bal : nat option) (bob_bal : nat option) (init_lqt : n
     let init_total_supply    = match init_total_supply    with | None -> 1_000_000_000_000_000n | Some s -> s in 
     let init_token_pool      = match init_token_pool      with | None -> 1_000_000_000_000n     | Some t -> t in // muctez, e.g. 1_000_000 ctez
     let init_cash_pool       = match init_cash_pool       with | None -> 1_000_000_000_000n     | Some c -> c in // mutez, e.g. 1_000_000 tez
-    let init_target          = match init_target          with | None -> 1_000n        | Some t -> t in // default target is 1 (Bitwise.shift_left 1n 48n)
+    let init_target          = match init_target          with | None -> (Bitwise.shift_left 1n 48n) | Some t -> t in // default target is 1 (Bitwise.shift_left 1n 48n)
     let init_drift           = match init_drift           with | None -> 0             | Some d -> d in 
-    let last_drift_update    = match last_drift_update    with | None -> ("2000-01-01t10:10:10Z" : timestamp) | Some t -> t in 
+    let last_drift_update    = match last_drift_update    with | None -> now           | Some t -> t in 
     let const_fee            = match const_fee            with | None -> (1000n, 1000n)| Some f -> f in // no default fee
     let pending_pool_updates = match pending_pool_updates with | None -> 0n            | Some p -> p in 
     let init_ovens           = match init_ovens           with | None -> (Big_map.empty : (oven_handle, oven) big_map) | Some o -> o in
@@ -108,6 +130,10 @@ let init_contracts (alice_bal : nat option) (bob_bal : nat option) (init_lqt : n
         pendingPoolUpdates = 0n ;
         tokenAddress = Tezos.address (Test.to_contract typed_addr_fa12) ;
         lqtAddress = Tezos.address (Test.to_contract typed_addr_lqt) ;
+#if ORACLE
+        lastOracleUpdate = now ;
+        consumerEntrypoint = Tezos.address (Test.to_entrypoint "cfmm_price" typed_addr_ctez : (nat * nat) contract) ;
+#endif
     } in 
     let (typed_addr_cfmm, program_cfmm, size_cfmm) = Test.originate main_cfmm cfmm_init_storage (1mutez * init_cash_pool) in 
     
@@ -138,6 +164,7 @@ let init_contracts (alice_bal : nat option) (bob_bal : nat option) (init_lqt : n
 
 (******** STANDARD SETUP ********)
 let test_setup = 
+    // default init setup
     let (typed_addr_cfmm, typed_addr_ctez, typed_addr_fa12, typed_addr_lqt,
          addr_alice, addr_bob, addr_lqt, addr_dummy, addr_admin) = 
         init_contracts 
@@ -166,12 +193,12 @@ let test_setup =
         cfmm_address = untyped_addr_cfmm;
     } in 
     let actual_ctez_storage  = Test.get_storage typed_addr_ctez in 
-    
-    // assertions to verify storage is as expected // TODO : when Bitwise works, send storages to bytes and compare
+    // assertions to verify storage is as expected
     (
         assert (expected_ctez_storage.cfmm_address      = actual_ctez_storage.cfmm_address),
         assert (expected_ctez_storage.ctez_fa12_address = actual_ctez_storage.ctez_fa12_address)
     )
+    // (* when Bytes works in test *) assert (Bytes.pack expected_ctez_storage = Bytes.pack actual_ctez_storage )
 
 
 (******** DIFFERENCE EQUATIONS ********)
@@ -214,15 +241,17 @@ let trade_cash_to_token_test (x, y, dx, target, rounds, const_fee : nat * nat * 
         match (Big_map.find_opt addr_alice ctez_token_balances) with 
         | None -> (failwith "Incomplete Cash to Token Transfer" : unit) 
         | Some bal -> assert (bal = fee_num * (trade_dcash_for_dtoken x y dx target rounds) / fee_denom)
+        // (*debug mode*) | None -> (failwith "Incomplete Cash to Token Transfer" : nat * nat) 
+        // (*debug mode*) | Some bal -> (bal, fee_num * (trade_dcash_for_dtoken x y dx target rounds) / fee_denom)
 
 let test_cash_to_token = 
     let test_result = List.map trade_cash_to_token_test trade_params in 
     () // if it reaches this, everything passed
-
+    // (*debug mode*) test_result 
 
 (**       token to cash              **)
 let trade_token_to_cash_test (x, y, dy, target, rounds, const_fee : nat * nat * nat * nat * int * (nat * nat)) =
-    let alice_initial_bal = dy in // in muctez; == 1_000 ctez
+    let alice_initial_bal = dy in // in muctez
     let (typed_addr_cfmm, typed_addr_ctez, typed_addr_fa12, typed_addr_lqt,
          addr_alice, addr_bob, addr_lqt, addr_dummy, addr_admin) = 
         init_contracts 
@@ -232,7 +261,7 @@ let trade_token_to_cash_test (x, y, dy, target, rounds, const_fee : nat * nat * 
             (None : nat option) (* init_total_supply *)
             (Some y : nat option) (* init_token_pool *)
             (Some x : nat option) (* init_cash_pool *)
-            (None : nat option) (* init_target *)
+            (Some target : nat option) (* init_target *)
             (None : int option) (* init_drift *)
             (None : timestamp option) (* last_drift_update *)
             (Some const_fee : (nat * nat) option) (* const_fee *)
@@ -243,7 +272,6 @@ let trade_token_to_cash_test (x, y, dy, target, rounds, const_fee : nat * nat * 
         let alice_source = Test.set_source addr_alice in 
         let alice_txn_amt = alice_initial_bal in 
         let addr_cfmm = Tezos.address (Test.to_contract typed_addr_cfmm) in
-        let alice_balance_old = Test.get_balance addr_alice in 
         let addr_cfmm_balance_old = Test.get_balance addr_cfmm in 
         let bob_balance_old = Test.get_balance addr_bob in 
 
@@ -277,12 +305,15 @@ let trade_token_to_cash_test (x, y, dy, target, rounds, const_fee : nat * nat * 
         let bob_balance_delta = bob_balance / 1mutez - bob_balance_old / 1mutez in 
         let (fee_num, fee_denom) = const_fee in 
         assert (abs bob_balance_delta = fee_num * (trade_dtoken_for_dcash x y dy target rounds) / fee_denom)
+        // (*debug mode*) (abs bob_balance_delta, fee_num * (trade_dtoken_for_dcash x y dy target rounds) / fee_denom)
 
 let test_token_to_cash = 
     let test_result = List.map trade_token_to_cash_test trade_params in 
     () // if it reaches this, everything passed
+    //(*debug mode*) test_result
 
-
+(**       test lists of each         **)
+let test_txn_lists = ()
 
 (******** DIRECTIVES ********)
 let test_directives = ()
@@ -290,7 +321,55 @@ let test_directives = ()
 
 
 (******** DRIFT ********)
-let test_price = () 
+    (* This is a minimal e.g., as timestamp arithmetic does not currently work in ligo test *)
+// TODO : When time works, 
+// let test_drift (init_cash : nat) (init_token : nat) (init_target : nat) (time_delta : int) = 
+let test_drift (init_cash : nat) (init_token : nat) (init_target : nat) (now : timestamp) (later : timestamp) = 
+    // some failing conditions
+    (* if (time_delta < 0) then (failwith "time_delta MUST BE NONNEGATIVE" : unit) else *)
+    
+    // init contracts    
+    let (typed_addr_cfmm, typed_addr_ctez, typed_addr_fa12, typed_addr_lqt,
+         addr_alice, addr_bob, addr_lqt, addr_dummy, addr_admin) = 
+        init_contracts 
+            (None : nat option) (* alice_bal *)
+            (None : nat option) (* bob_bal *)
+            (None : nat option) (* init_lqt *)
+            (None : nat option) (* init_total_supply *)
+            (Some init_token  : nat option) (* init_token_pool *)
+            (Some init_cash   : nat option) (* init_cash_pool *)
+            (Some init_target : nat option) (* init_target *)
+            (None : int option) (* init_drift *)
+            (Some now : timestamp option) (* last_drift_update *)
+            (None : (nat * nat) option) (* const_fee *)
+            (None : nat option) (* pending_pool_updates *)
+            (None : (oven_handle, oven) big_map option) (* init_ovens *)
+    in 
+    
+    
+    // update time 
+    let time_has_elapsed = Test.set_now later in 
+
+    // calculate current price 
+    let current_price = price_cash_to_token init_target init_cash init_token in 
+    () (*
+    // call cfmm_price, updating the drift 
+    // TODO : implicit account must trigger 
+    let cfmm_source = Test.set_source addr_cfmm in 
+    let txndata_cfmm_price = current_price in 
+    let entrypoint_cfmm_price = 
+        (Test.to_entrypoint "cfmm_price" typed_addr_ctez) in 
+    let txn_cfmm_price = 
+        (Test.transfer_to_contract_exn entrypoint_cfmm_price txndata_cfmm_price) in 
+
+    // check the drift
+    let ctez_storage = Test.get_storage typed_addr_ctez in 
+    let actual_drift = ctez_storage.drift in 
+
+    // compute expected drift 
+    let expected_drift = ... 
+
+    assert (actual_drift = expected_drift) *)
     // Checks that drift and target grew at expected rate after x mins
     // 5 mins, or 300 secs will be default 
     // target should go up and down 5% in 0.1% increments
