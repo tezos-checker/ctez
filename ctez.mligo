@@ -57,7 +57,7 @@ type result = (operation list) * storage
 [@inline] let error_OVEN_NOT_UNDERCOLLATERALIZED = 11n
 [@inline] let error_EXCESSIVE_CTEZ_MINTING = 12n
 [@inline] let error_CALLER_MUST_BE_CFMM = 13n
-
+[@inline] let error_INVALID_CTEZ_TARGET_ENTRYPOINT = 14n
 
 #include "oven.mligo"
 
@@ -213,7 +213,16 @@ let cfmm_price (storage : storage) (tez : nat) (token : nat) : result =
     else
       storage.drift - d_drift in
 
-    (([] : operation list), {storage with drift = drift ; last_drift_update = Tezos.now ; target = target})
+    let cfmm_address = storage.cfmm_address in 
+    let txndata_ctez_target = target in 
+    let entrypoint_ctez_target = 
+        (match (Tezos.get_contract_opt cfmm_address : nat contract option) with 
+// TODO : when ligo is fixed: (match (Tezos.get_entrypoint_opt "ctezTarget" cfmm_address : nat contract option) with 
+        | None -> (failwith error_INVALID_CTEZ_TARGET_ENTRYPOINT : nat contract)
+        | Some c -> c ) in 
+    let op_ctez_target = Tezos.transaction txndata_ctez_target 0tez entrypoint_ctez_target in
+
+    ([op_ctez_target], {storage with drift = drift ; last_drift_update = Tezos.now ; target = target})
 
 let main (p, s : parameter * storage) : result =
   match p with
