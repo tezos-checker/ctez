@@ -1,5 +1,5 @@
 export interface BaseRoute {
-  path: string;
+  path: string | string[];
   props?: unknown;
   Component?: React.ReactNode;
 }

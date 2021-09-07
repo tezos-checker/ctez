@@ -6,7 +6,10 @@ export const AppRouter: React.FC = () => {
     <Router>
       <Switch>
         {routes.map((route) => (
-          <Route key={route.path} path={route.path}>
+          <Route
+            key={typeof route.path === 'string' ? route.path : route.path[0]}
+            path={route.path}
+          >
             {route.Component}
           </Route>
         ))}
