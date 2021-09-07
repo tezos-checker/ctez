@@ -4,7 +4,7 @@
  * Contract Templates 
  * ============================================================================= *)
 
-#include "fa12.mligo"
+#include "../fa12.mligo"
 let main_fa12 = main
 type fa12_storage = storage 
 type fa12_parameter = parameter 
@@ -15,19 +15,19 @@ type lqt_storage = storage
 type lqt_parameter = parameter 
 type lqt_result = result 
 
-#include "ctez.mligo"
+#include "../ctez.mligo"
 let main_ctez = main 
 type ctez_storage = storage 
 type ctez_parameter = parameter 
 type ctez_result = result 
 
-#include "cfmm.mligo"
+#include "../cfmm.mligo"
 let main_cfmm = main
 type cfmm_storage = storage 
 type cfmm_parameter = parameter 
 type cfmm_result = result 
 
-#include "test_params.mligo"
+#include "../test_params.mligo"
 
 (* =============================================================================
  * Some Aux Functions
