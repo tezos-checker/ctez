@@ -3,7 +3,7 @@ import ProgressPill from './ProgressPill';
 
 const OvenInfo: React.FC = () => {
   return (
-    <Stack p={4} spacing={8} backgroundColor="white" borderRadius={16}>
+    <Stack p={8} spacing={4} backgroundColor="white" borderRadius={16}>
       <Flex w="100%" justifyContent="space-between">
         <Stack>
           <Text fontSize="lg">15.5</Text>
