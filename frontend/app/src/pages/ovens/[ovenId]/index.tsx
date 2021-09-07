@@ -1,4 +1,4 @@
-import { Box, Stack, useMediaQuery } from '@chakra-ui/react';
+import { Stack, useMediaQuery } from '@chakra-ui/react';
 import OvenInfo from '../../../components/OvenCard/OvenInfo';
 import OvenStats from '../../../components/OvenCard/OvenStats';
 import OvenOperations from '../../../components/OvenCard/OvenOperations';
@@ -14,8 +14,10 @@ const OvenIdPage: React.FC = () => {
       my={4}
       p={4}
       w="100%"
+      backgroundColor="gray.100"
+      spacing={4}
     >
-      <Stack direction="column" w={largerScreen ? '50%' : '100%'}>
+      <Stack direction="column" w={largerScreen ? '50%' : '100%'} spacing={4}>
         <OvenInfo />
 
         <OvenStats />
