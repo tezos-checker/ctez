@@ -1,5 +1,5 @@
 (* Pick one of CASH_IS_TEZ, CASH_IS_FA2, CASH_IS_FA12. tokenToToken isn't supported for CASH_IS_FA12 *)
-#define CASH_IS_TEZ
+//#define CASH_IS_TEZ
 //#define CASH_IS_FA2
 //#define CASH_IS_FA12
 
@@ -126,7 +126,6 @@ type storage =
     cashPool : nat ;
     lqtTotal : nat ;
     target : ctez_target ;
-    const_fee : nat * nat ;
     ctez_address : address ;
     pendingPoolUpdates : nat ;
 #if HAS_BAKER
@@ -514,8 +513,7 @@ let cash_to_token (param : cash_to_token) (storage : storage) =
         let tokens_bought =
             // cash -> token calculation; *includes a fee*
             let bought = trade_dcash_for_dtoken cashPool storage.tokenPool cashSold storage.target rounds in
-            let (fee_num, fee_denom) = storage.const_fee in
-            let bought_after_fee = bought * fee_num / fee_denom in
+            let bought_after_fee = bought * const_fee / const_fee_denom in
             if bought_after_fee < minTokensBought then
                 (failwith error_TOKENS_BOUGHT_MUST_BE_GREATER_THAN_OR_EQUAL_TO_MIN_TOKENS_BOUGHT : nat)
             else
@@ -561,8 +559,7 @@ let token_to_cash (param : token_to_cash) (storage : storage) =
         // token -> cash calculation; *includes a fee*
         let cash_bought =
             let bought = trade_dtoken_for_dcash storage.cashPool storage.tokenPool tokensSold storage.target rounds in
-            let (fee_num, fee_denom) = storage.const_fee in
-            let bought_after_fee = bought * fee_num / fee_denom in
+            let bought_after_fee = bought * const_fee / const_fee_denom in
                 if bought_after_fee < minCashBought then 
                     (failwith error_CASH_BOUGHT_MUST_BE_GREATER_THAN_OR_EQUAL_TO_MIN_CASH_BOUGHT : nat) 
                 else 
@@ -751,8 +748,7 @@ let token_to_token (param : token_to_token) (storage : storage) : result =
         (* We don't check that tokenPool > 0, because that is impossible unless all liquidity has been removed. *)
         let cash_bought = 
            (let bought = trade_dtoken_for_dcash storage.cashPool storage.tokenPool tokensSold storage.target rounds in
-            let (fee_num, fee_denom) = storage.const_fee in
-            bought * fee_num / fee_denom)
+            bought * const_fee / const_fee_denom)
         in
         let new_cashPool = match is_nat (storage.cashPool - cash_bought) with
             | None -> (failwith error_CASH_POOL_MINUS_CASH_BOUGHT_IS_NEGATIVE : nat)
