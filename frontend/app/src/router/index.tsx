@@ -9,6 +9,7 @@ export const AppRouter: React.FC = () => {
           <Route
             key={typeof route.path === 'string' ? route.path : route.path[0]}
             path={route.path}
+            exact={route.exact}
           >
             {route.Component}
           </Route>

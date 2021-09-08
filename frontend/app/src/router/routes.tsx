@@ -5,12 +5,18 @@ import OvenIdPage from '../pages/ovens/[ovenId]';
 
 export const routes: ComponentRoute[] = [
   {
+    path: ['/ovens/mine', '/ovens/create'],
+    Component: <OvensPage />,
+    exact: true,
+  },
+  {
     path: '/ovens/:id',
     Component: <OvenIdPage />,
   },
   {
-    path: ['/ovens', '/ovens/mine', '/ovens/create'],
+    path: '/ovens',
     Component: <OvensPage />,
+    exact: true,
   },
   // ? Default path must always be at the end
   {

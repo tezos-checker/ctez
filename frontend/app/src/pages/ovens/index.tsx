@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { mockOvens } from './mock';
 import OvenCard from '../../components/OvenCard/OvenCard';
+import MyOvenCard from '../../components/OvenCard/MyOvenCard';
 
 const OvensPage: React.FC = () => {
   const location = useLocation();
@@ -33,9 +34,11 @@ const OvensPage: React.FC = () => {
       </Stack>
 
       <Box d="table" w="100%" mt={16}>
-        {mockOvens.map((oven) => (
-          <OvenCard key={oven.ovenId} oven={oven} isMyOven={isMyOven} />
-        ))}
+        {!isMyOven &&
+          mockOvens.map((oven) => <OvenCard key={oven.ovenId} oven={oven} isMyOven={isMyOven} />)}
+
+        {isMyOven &&
+          mockOvens.map((oven) => <MyOvenCard key={oven.ovenId} oven={oven} isMyOven={isMyOven} />)}
       </Box>
     </Box>
   );

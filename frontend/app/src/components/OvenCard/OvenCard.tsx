@@ -1,6 +1,5 @@
 import { Box, Grid, Text } from '@chakra-ui/react';
-import { useCallback } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { OvenSerializable } from '../../interfaces';
 import ProgressPill from './ProgressPill';
 
@@ -14,7 +13,6 @@ const truncateText = (text: string | null) => {
 };
 
 const OvenCard: React.FC<{ oven: OvenSerializable; isMyOven: boolean }> = ({ oven, isMyOven }) => {
-  const history = useHistory();
   const renderItems = () => {
     const items = [
       { label: 'Oven address', value: truncateText(oven.address) },
@@ -31,12 +29,6 @@ const OvenCard: React.FC<{ oven: OvenSerializable; isMyOven: boolean }> = ({ ove
       </Box>
     ));
   };
-
-  const handleOnClick = useCallback(() => {
-    if (isMyOven) {
-      history.push(`${oven.ovenId}`);
-    }
-  }, [history, oven.ovenId, isMyOven]);
 
   return (
     <Grid
