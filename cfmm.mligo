@@ -305,16 +305,16 @@ let cash_transfer (storage : storage) (from : address) (to_ : address) (cash_amo
 (* Difference Equations *)
 // The Isoutility Function in https://hackmd.io/MkPSYXDsTf-giBprcDrc3w  
 // A function to transfer assets while maintaining a constant isoutility
-let rec newton_dx_to_dy (x, y, dx, dy_approx, target, rounds : nat * nat * nat * nat * nat * int) : nat = 
+let rec newton_dx_to_dy (x, y, dx, dy_approx, target, rounds : nat * nat * nat * nat * (nat * nat) * int) : nat = 
     if (rounds <= 0) (* Newton generally converges in 4 rounds, so we bound computation there *)
     then 
         dy_approx
     else 
-        let a = target in 
+        let (a,b) = target in 
         let xp = x + dx in
         let yp = y - dy_approx in 
-        let ax2 = a * a * x * x in let by2 = Bitwise.shift_left (y * y) 96n in // (y * y) * b * b
-        let axp2 = a * a * xp * xp in let byp2 = Bitwise.shift_left (abs(yp * yp)) 96n in // (abs(yp * yp)) * b * b
+        let ax2 = a * a * x * x in let by2 = (y * y) * b * b in
+        let axp2 = a * a * xp * xp in let byp2 = (abs(yp * yp)) * b * b in
         (* Newton descent formula *)
         let num = abs (xp * yp * (axp2 + byp2) - x * y * (ax2 + by2)) in // num is always positive, even without abs
         let denom = xp * (axp2 + 3 * byp2) in
@@ -332,24 +332,24 @@ let rec newton_dx_to_dy (x, y, dx, dy_approx, target, rounds : nat * nat * nat *
 // A function that outputs dy (diff_token) given x, y, and dx
 let trade_dcash_for_dtoken (x : nat) (y : nat) (dx : nat) (target : nat) (rounds : int) : nat = 
     let dy_approx = 0n in // start at 0n to always be an underestimate
-
+    let target_newton = (target, Bitwise.shift_left 1n 96n) in 
     if (y - dy_approx <= 0)
     then
         (failwith error_TOKEN_POOL_MINUS_TOKENS_WITHDRAWN_IS_NEGATIVE : nat)
     else 
-        newton_dx_to_dy (x, y, dx, dy_approx, target, rounds)
+        newton_dx_to_dy (x, y, dx, dy_approx, target_newton, rounds)
 
 // A function that outputs dx (diff_cash) given target, x, y, and dy
 let trade_dtoken_for_dcash (x : nat) (y : nat) (dy : nat) (target : nat) (rounds : int) : nat = 
     let dx_approx = 0n in // start at 0n to always be an underestimate
-    let target_inv = (Bitwise.shift_left 1n 96n) / target in // b^2 / a
+    let target_newton_inv = (Bitwise.shift_left 1n 96n, target) in 
     (* Will get error if a = 0 to begin with, but if that's the case we have bigger fish to fry *)
 
     if (x - dx_approx <= 0)
     then
         (failwith error_CASH_POOL_MINUS_CASH_WITHDRAWN_IS_NEGATIVE : nat)
     else
-        newton_dx_to_dy (y, x, dy, dx_approx, target_inv, rounds)
+        newton_dx_to_dy (y, x, dy, dx_approx, target_newton_inv, rounds)
 
 (* =============================================================================
  * Entrypoint Functions
