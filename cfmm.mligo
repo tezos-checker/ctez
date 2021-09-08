@@ -313,8 +313,8 @@ let rec newton_dx_to_dy (x, y, dx, dy_approx, target, rounds : nat * nat * nat *
         let (a,b) = target in 
         let xp = x + dx in
         let yp = y - dy_approx in 
-        let ax2 = a * a * x * x in let by2 = (y * y) * b * b in
-        let axp2 = a * a * xp * xp in let byp2 = (abs(yp * yp)) * b * b in
+        let ax2 = a * a * x * x in let by2 = b * b * y * y  in // Bitwise.shift_left (y * y) 96n in // (y * y) * b * b
+        let axp2 = a * a * xp * xp in let byp2 = b * b * yp * yp in // Bitwise.shift_left (abs(yp * yp)) 96n in // (abs(yp * yp)) * b * b
         (* Newton descent formula *)
         let num = abs (xp * yp * (axp2 + byp2) - x * y * (ax2 + by2)) in // num is always positive, even without abs
         let denom = xp * (axp2 + 3 * byp2) in
@@ -332,24 +332,25 @@ let rec newton_dx_to_dy (x, y, dx, dy_approx, target, rounds : nat * nat * nat *
 // A function that outputs dy (diff_token) given x, y, and dx
 let trade_dcash_for_dtoken (x : nat) (y : nat) (dx : nat) (target : nat) (rounds : int) : nat = 
     let dy_approx = 0n in // start at 0n to always be an underestimate
-    let target_newton = (target, Bitwise.shift_left 1n 96n) in 
+    let (a,b) = (target, (Bitwise.shift_left 1n 48n)) in 
     if (y - dy_approx <= 0)
     then
         (failwith error_TOKEN_POOL_MINUS_TOKENS_WITHDRAWN_IS_NEGATIVE : nat)
     else 
-        newton_dx_to_dy (x, y, dx, dy_approx, target_newton, rounds)
+        newton_dx_to_dy (x, y, dx, dy_approx, (a,b), rounds)
 
 // A function that outputs dx (diff_cash) given target, x, y, and dy
 let trade_dtoken_for_dcash (x : nat) (y : nat) (dy : nat) (target : nat) (rounds : int) : nat = 
     let dx_approx = 0n in // start at 0n to always be an underestimate
-    let target_newton_inv = (Bitwise.shift_left 1n 96n, target) in 
+    let (a,b) = (target, (Bitwise.shift_left 1n 48n)) in 
+    //let target_inv = (Bitwise.shift_left 1n 96n) / target in // b^2 / a
     (* Will get error if a = 0 to begin with, but if that's the case we have bigger fish to fry *)
 
     if (x - dx_approx <= 0)
     then
         (failwith error_CASH_POOL_MINUS_CASH_WITHDRAWN_IS_NEGATIVE : nat)
     else
-        newton_dx_to_dy (y, x, dy, dx_approx, target_newton_inv, rounds)
+        newton_dx_to_dy (y, x, dy, dx_approx, (b,a), rounds)
 
 (* =============================================================================
  * Entrypoint Functions
