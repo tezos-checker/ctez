@@ -1,4 +1,4 @@
-// params: x    y     dx    target rounds const_fee  *OR*  y     x    dy     target rounds const_fee
+// params: x    y     dx    target rounds const_fee  *OR*  y     x    dy     target rounds const_fee 
 // params: cash token dcash target rounds const_fee  *OR*  token cash dtoken target rounds const_fee
 let trade_params : (nat * nat * nat * nat * int * (nat * nat)) list = [
     (1_000_000_000_000n, 1_000_000_000_000n, 100_000_000n,    281474976710656n,  4, (9_995n, 10_000n)) ; // defaults
