@@ -11,3 +11,72 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+#sidebar .pro-sidebar-inner .pro-sidebar-layout ul .pro-inner-item .pro-icon-wrapper {
+  background-color: transparent;
+  color: #000;
+  border-radius: 3px;
+}
+
+#sidebar .pro-sidebar-inner {
+  background-color: #081A51;
+}
+
+#sidebar .pro-menu a {
+  color: #CCD2E3;
+}
+
+#sidebar .pro-sidebar-inner .pro-sidebar-layout {
+  overflow: visible;
+}
+
+#sidebar .pro-sidebar-inner .pro-sidebar-layout .pro-sidebar-header {
+  border: none;
+}
+
+.hide {
+  visibility: hidden;
+}
+
+.remove {
+  display: none;
+}
+
+.logo {
+  width: 45px;
+  height: 45px;
+}
+
+.highlight {
+  background: #1B2B65;
+}
+
+.no-cursor > .pro-inner-item {
+  cursor: default !important;
+}
+
+.menu-expand-button {
+  color: #445BFF;
+  padding: 5px;
+  background: white;
+  position: absolute;
+  right: -10px;
+  z-index: 9999;
+  line-height: 20px;
+  border-radius: 50%;
+  border: 1px solid #DADADA;
+  font-weight: bold;
+  font-size: 22px;
+  cursor: pointer;
+  top: 28px;
+  display: none;
+}
+
+@media(min-width:992px){
+  .md-menu {
+    display: none !important;
+  }
+  .menu-expand-button {
+    display: block;
+  }
+}
