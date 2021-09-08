@@ -40,7 +40,7 @@ let rec zip (paired_lists, accum : ((nat list) * (nat list)) * (nat * nat) list)
   | _, _ -> (failwith "oops, the lists seems to have different lengths" : (nat * nat) list)
 
 (* =============================================================================
- * Contract Templates 
+ * Test the Trading Functions against the Python Model
  * ============================================================================= *)
 
 let test_dtoken_to_dcash = 
