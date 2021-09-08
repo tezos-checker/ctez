@@ -4,7 +4,7 @@ import OvenStats from '../../../components/OvenCard/OvenStats';
 import OvenOperations from '../../../components/OvenCard/OvenOperations';
 
 const OvenIdPage: React.FC = () => {
-  const [largerScreen] = useMediaQuery(['(min-width: 600px)']);
+  const [largerScreen] = useMediaQuery(['(min-width: 800px)']);
 
   return (
     <Stack
