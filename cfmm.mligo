@@ -304,27 +304,6 @@ let cash_transfer (storage : storage) (from : address) (to_ : address) (cash_amo
 
 (* Difference Equations *)
 // The Isoutility Function in https://hackmd.io/MkPSYXDsTf-giBprcDrc3w  
-(*
-// b is 2^48 below, implemented as bitwise shifts
-let isoutility (target, cash, token : nat * nat * nat) : nat = 
-    let x = cash in 
-    let y = token in 
-    let a = target in 
-    let a2 = a * a in
-    let ax2 = a2 * x * x in 
-    let by2 = Bitwise.shift_left (y * y) 96n in
-    (Bitwise.shift_right (abs((a * x * y) * (ax2 + by2) / (2 * a2))) 48n)
-
-// Returns the price dy/dx of the isoutility function, i.e. a map by multiplication ∆x => ∆y, at a given point (x,y)
-let price_cash_to_token (target : nat) (cash : nat) (token : nat) : nat = 
-    let (x,y) = (cash, token) in
-    let a = target in 
-    let ax2 = x * x * a * a in
-    let by2 = Bitwise.shift_left (y * y) 96n in
-    let num = y * (3n * ax2 + by2) in
-    let denom = x * (ax2 + 3n * by2) in
-    num/denom
-*)
 // A function to transfer assets while maintaining a constant isoutility
 let rec newton_dx_to_dy (x, y, dx, dy_approx, target, rounds : nat * nat * nat * nat * nat * int) : nat = 
     if (rounds <= 0) (* Newton generally converges in 4 rounds, so we bound computation there *)
