@@ -1,3 +1,5 @@
+#include "errors.mligo"
+
 (* Pick one of CASH_IS_TEZ, CASH_IS_FA2, CASH_IS_FA12. tokenToToken isn't supported for CASH_IS_FA12 *)
 //#define CASH_IS_TEZ
 //#define CASH_IS_FA2
@@ -18,7 +20,7 @@
 type add_liquidity =
   [@layout:comb]
   { owner : address ; (* address that will own the minted lqt *)
-    minLqtMinted : nat ; (* minimum number of lqt that must be minted *)
+    minLqtMinted : nat ; (* minimum number of lqt that must be minter *)
     maxTokensDeposited : nat ; (* maximum number of tokens that may be deposited *)
 #if !CASH_IS_TEZ
     cashDeposited : nat ; (* if cash isn't tez, specifiy the amount to be deposited *)
@@ -43,7 +45,6 @@ type cash_to_token =
     cashSold : nat ; (* if cash isn't tez, how much cash is sought to be sold *)
 #endif
     deadline : timestamp ; (* time before which the request must be completed *)
-    rounds : int ; (* number of iterations in estimating the difference equations. Default should be 4n. *)
   }
 
 type token_to_cash =
@@ -52,7 +53,6 @@ type token_to_cash =
     tokensSold : nat ; (* how many tokens are being sold *)
     minCashBought : nat ; (* minimum amount of cash desired *)
     deadline : timestamp ; (* time before which the request must be completed *)
-    rounds : int ; (* number of iterations in estimating the difference equations. Default should be 4n. *)
   }
 
 
@@ -63,7 +63,6 @@ type token_to_token =
     [@annot:to] to_ : address ; (* where to send the output tokens *)
     tokensSold : nat ; (* amount of tokens to sell *)
     deadline : timestamp ; (* time before which the request must be completed *)
-    rounds : int ; (* number of iterations in estimating the difference equations. Default should be 4n. *)
   }
 
 #if HAS_BAKER
@@ -73,9 +72,6 @@ type set_baker =
     freezeBaker : bool ; (* whether to permanently freeze the baker *)
   }
 #endif
-
-(* a such that (Bitwise.shift_right a 48n) is the target price from the ctez contract *)
-type ctez_target = nat
 
 (* getbalance update types for fa12 and fa2 *)
 type update_fa12_pool = nat
@@ -98,7 +94,6 @@ type update_cash_pool_internal = update_fa12_pool
 type entrypoint =
 | AddLiquidity    of add_liquidity
 | RemoveLiquidity of remove_liquidity
-| CtezTarget     of ctez_target
 | CashToToken     of cash_to_token
 | TokenToCash     of token_to_cash
 | TokenToToken    of token_to_token
@@ -125,8 +120,6 @@ type storage =
   { tokenPool : nat ;
     cashPool : nat ;
     lqtTotal : nat ;
-    target : ctez_target ;
-    ctez_address : address ;
     pendingPoolUpdates : nat ;
 #if HAS_BAKER
     freezeBaker : bool ;
@@ -180,58 +173,6 @@ type mintOrBurn =
   { quantity : int ;
     target : address }
 
-(* =============================================================================
- * Error codes
- * ============================================================================= *)
-
-[@inline] let error_TOKEN_CONTRACT_MUST_HAVE_A_TRANSFER_ENTRYPOINT  = 0n
-[@inline] let error_ASSERTION_VIOLATED_CASH_BOUGHT_SHOULD_BE_LESS_THAN_CASHPOOL = 1n
-[@inline] let error_PENDING_POOL_UPDATES_MUST_BE_ZERO       = 2n
-[@inline] let error_THE_CURRENT_TIME_MUST_BE_LESS_THAN_THE_DEADLINE = 3n
-[@inline] let error_MAX_TOKENS_DEPOSITED_MUST_BE_GREATER_THAN_OR_EQUAL_TO_TOKENS_DEPOSITED = 4n
-[@inline] let error_LQT_MINTED_MUST_BE_GREATER_THAN_MIN_LQT_MINTED = 5n
-(* 6n *)
-[@inline] let error_ONLY_NEW_MANAGER_CAN_ACCEPT = 7n
-[@inline] let error_CASH_BOUGHT_MUST_BE_GREATER_THAN_OR_EQUAL_TO_MIN_CASH_BOUGHT = 8n
-[@inline] let error_INVALID_TO_ADDRESS = 9n
-[@inline] let error_AMOUNT_MUST_BE_ZERO = 10n
-[@inline] let error_THE_AMOUNT_OF_CASH_WITHDRAWN_MUST_BE_GREATER_THAN_OR_EQUAL_TO_MIN_CASH_WITHDRAWN = 11n
-[@inline] let error_LQT_CONTRACT_MUST_HAVE_A_MINT_OR_BURN_ENTRYPOINT = 12n
-[@inline] let error_THE_AMOUNT_OF_TOKENS_WITHDRAWN_MUST_BE_GREATER_THAN_OR_EQUAL_TO_MIN_TOKENS_WITHDRAWN = 13n
-[@inline] let error_CANNOT_BURN_MORE_THAN_THE_TOTAL_AMOUNT_OF_LQT = 14n
-[@inline] let error_TOKEN_POOL_MINUS_TOKENS_WITHDRAWN_IS_NEGATIVE = 15n
-[@inline] let error_CASH_POOL_MINUS_CASH_WITHDRAWN_IS_NEGATIVE = 16n
-[@inline] let error_CASH_POOL_MINUS_CASH_BOUGHT_IS_NEGATIVE = 17n
-[@inline] let error_TOKENS_BOUGHT_MUST_BE_GREATER_THAN_OR_EQUAL_TO_MIN_TOKENS_BOUGHT = 18n
-[@inline] let error_TOKEN_POOL_MINUS_TOKENS_BOUGHT_IS_NEGATIVE = 19n
-[@inline] let error_ONLY_MANAGER_CAN_SET_BAKER = 20n
-[@inline] let error_ONLY_MANAGER_CAN_SET_MANAGER = 21n
-[@inline] let error_BAKER_PERMANENTLY_FROZEN = 22n
-[@inline] let error_LQT_ADDRESS_ALREADY_SET = 24n
-[@inline] let error_CALL_NOT_FROM_AN_IMPLICIT_ACCOUNT = 25n
-[@inline] let error_CALLER_MUST_BE_CTEZ = 26n
-(* 27n *)
-#if TOKEN_IS_FA2
-[@inline] let error_INVALID_FA2_TOKEN_CONTRACT_MISSING_BALANCE_OF = 28n
-#else
-[@inline] let error_INVALID_FA12_TOKEN_CONTRACT_MISSING_GETBALANCE = 28n
-#endif
-[@inline] let error_THIS_ENTRYPOINT_MAY_ONLY_BE_CALLED_BY_GETBALANCE_OF_TOKENADDRESS = 29n
-[@inline] let error_INVALID_FA2_BALANCE_RESPONSE = 30n
-[@inline] let error_INVALID_INTERMEDIATE_CONTRACT = 31n
-#if !CASH_IS_TEZ
-[@inline] let error_THIS_ENTRYPOINT_MAY_ONLY_BE_CALLED_BY_GETBALANCE_OF_CASHADDRESS = 30n
-[@inline] let error_TEZ_DEPOSIT_WOULD_BE_BURNED = 32n
-#if CASH_IS_FA2
-[@inline] let error_INVALID_FA2_CASH_CONTRACT_MISSING_GETBALANCE = 33n
-#else
-[@inline] let error_INVALID_FA12_CASH_CONTRACT_MISSING_GETBALANCE = 33n
-[@inline] let error_MISSING_APPROVE_ENTRYPOINT_IN_CASH_CONTRACT = 34n
-#endif
-#endif
-#if ORACLE
-[@inline] let error_CANNOT_GET_CFMM_PRICE_ENTRYPOINT_FROM_CONSUMER = 35n
-#endif
 
 (* =============================================================================
  * Constants
@@ -301,76 +242,6 @@ let cash_transfer (storage : storage) (from : address) (to_ : address) (cash_amo
     Tezos.transaction (from, (to_, cash_amount)) 0mutez cash_contract
 #endif
 #endif
-
-(* Difference Equations *)
-// The Isoutility Function in https://hackmd.io/MkPSYXDsTf-giBprcDrc3w  
-(*
-// b is 2^48 below, implemented as bitwise shifts
-let isoutility (target, cash, token : nat * nat * nat) : nat = 
-    let x = cash in 
-    let y = token in 
-    let a = target in 
-    let a2 = a * a in
-    let ax2 = a2 * x * x in 
-    let by2 = Bitwise.shift_left (y * y) 96n in
-    (Bitwise.shift_right (abs((a * x * y) * (ax2 + by2) / (2 * a2))) 48n)
-
-// Returns the price dy/dx of the isoutility function, i.e. a map by multiplication ∆x => ∆y, at a given point (x,y)
-let price_cash_to_token (target : nat) (cash : nat) (token : nat) : nat = 
-    let (x,y) = (cash, token) in
-    let a = target in 
-    let ax2 = x * x * a * a in
-    let by2 = Bitwise.shift_left (y * y) 96n in
-    let num = y * (3n * ax2 + by2) in
-    let denom = x * (ax2 + 3n * by2) in
-    num/denom
-*)
-// A function to transfer assets while maintaining a constant isoutility
-let rec newton_dx_to_dy (x, y, dx, dy_approx, target, rounds : nat * nat * nat * nat * nat * int) : nat = 
-    if (rounds <= 0) (* Newton generally converges in 4 rounds, so we bound computation there *)
-    then 
-        dy_approx
-    else 
-        let a = target in 
-        let xp = x + dx in
-        let yp = y - dy_approx in 
-        let ax2 = a * a * x * x in let by2 = Bitwise.shift_left (y * y) 96n in // (y * y) * b * b
-        let axp2 = a * a * xp * xp in let byp2 = Bitwise.shift_left (abs(yp * yp)) 96n in // (abs(yp * yp)) * b * b
-        (* Newton descent formula *)
-        let num = abs (xp * yp * (axp2 + byp2) - x * y * (ax2 + by2)) in // num is always positive, even without abs
-        let denom = xp * (axp2 + 3 * byp2) in
-        let adjust = num / denom in
-        let new_dy_approx = abs (dy_approx + adjust) in
-        let next_round = (rounds - 1) in
-        newton_dx_to_dy (x,y,dx,new_dy_approx,target,next_round)
-    (*
-        if denom = 0, then either:
-        1. xp = 0 => x + dx = 0, which we don't allow, or
-        2. a*xp = 0 and b*yp = 0 => a = 0 and (b = 0 or yp = 0), which implies
-           that the price target is 0.
-     *)
-
-// A function that outputs dy (diff_token) given x, y, and dx
-let trade_dcash_for_dtoken (x : nat) (y : nat) (dx : nat) (target : nat) (rounds : int) : nat = 
-    let dy_approx = 0n in // start at 0n to always be an underestimate
-
-    if (y - dy_approx <= 0)
-    then
-        (failwith error_TOKEN_POOL_MINUS_TOKENS_WITHDRAWN_IS_NEGATIVE : nat)
-    else 
-        newton_dx_to_dy (x, y, dx, dy_approx, target, rounds)
-
-// A function that outputs dx (diff_cash) given target, x, y, and dy
-let trade_dtoken_for_dcash (x : nat) (y : nat) (dy : nat) (target : nat) (rounds : int) : nat = 
-    let dx_approx = 0n in // start at 0n to always be an underestimate
-    let target_inv = (Bitwise.shift_left 1n 96n) / target in // b^2 / a
-    (* Will get error if a = 0 to begin with, but if that's the case we have bigger fish to fry *)
-
-    if (x - dx_approx <= 0)
-    then
-        (failwith error_CASH_POOL_MINUS_CASH_WITHDRAWN_IS_NEGATIVE : nat)
-    else
-        newton_dx_to_dy (y, x, dy, dx_approx, target_inv, rounds)
 
 (* =============================================================================
  * Entrypoint Functions
@@ -481,14 +352,6 @@ let remove_liquidity (param : remove_liquidity) (storage : storage) : result =
         end
     end
 
-let ctez_target (param : ctez_target) (storage : storage) = 
-    if Tezos.sender <> storage.ctez_address then
-        (failwith error_CALLER_MUST_BE_CTEZ : result)
-    else
-        let updated_target = param in 
-        let storage = {storage with target = updated_target} in
-        (([] : operation list), storage)
-
 
 let cash_to_token (param : cash_to_token) (storage : storage) =
    let { to_ = to_ ;
@@ -496,8 +359,7 @@ let cash_to_token (param : cash_to_token) (storage : storage) =
 #if !CASH_IS_TEZ
          cashSold = cashSold ;
 #endif
-         deadline = deadline ;
-         rounds = rounds } = param in
+         deadline = deadline } = param in
 
 #if CASH_IS_TEZ
     let cashSold = mutez_to_natural Tezos.amount in
@@ -511,13 +373,11 @@ let cash_to_token (param : cash_to_token) (storage : storage) =
            unless all liquidity has been removed. *)
         let cashPool = storage.cashPool in
         let tokens_bought =
-            // cash -> token calculation; *includes a fee*
-            let bought = trade_dcash_for_dtoken cashPool storage.tokenPool cashSold storage.target rounds in
-            let bought_after_fee = bought * const_fee / const_fee_denom in
-            if bought_after_fee < minTokensBought then
+            (let bought = (cashSold * const_fee * storage.tokenPool) / (cashPool * const_fee_denom + (cashSold * const_fee)) in
+            if bought < minTokensBought then
                 (failwith error_TOKENS_BOUGHT_MUST_BE_GREATER_THAN_OR_EQUAL_TO_MIN_TOKENS_BOUGHT : nat)
             else
-                bought_after_fee
+                bought)
         in
         let new_tokenPool = (match is_nat (storage.tokenPool - tokens_bought) with
             | None -> (failwith error_TOKEN_POOL_MINUS_TOKENS_BOUGHT_IS_NEGATIVE : nat)
@@ -544,8 +404,7 @@ let token_to_cash (param : token_to_cash) (storage : storage) =
     let { to_ = to_ ;
           tokensSold = tokensSold ;
           minCashBought = minCashBought ;
-          deadline = deadline ;
-          rounds = rounds } = param in
+          deadline = deadline } = param in
 
     if storage.pendingPoolUpdates > 0n then
         (failwith error_PENDING_POOL_UPDATES_MUST_BE_ZERO : result)
@@ -556,21 +415,15 @@ let token_to_cash (param : token_to_cash) (storage : storage) =
     else
         (* We don't check that tokenPool > 0, because that is impossible
            unless all liquidity has been removed. *)
-        // token -> cash calculation; *includes a fee*
         let cash_bought =
-            let bought = trade_dtoken_for_dcash storage.cashPool storage.tokenPool tokensSold storage.target rounds in
-            let bought_after_fee = bought * const_fee / const_fee_denom in
-                if bought_after_fee < minCashBought then 
-                    (failwith error_CASH_BOUGHT_MUST_BE_GREATER_THAN_OR_EQUAL_TO_MIN_CASH_BOUGHT : nat) 
-                else 
-                    bought_after_fee
-        in
+            let bought = ((tokensSold * const_fee * storage.cashPool) / (storage.tokenPool * const_fee_denom + (tokensSold * const_fee)))  in
+                if bought < minCashBought then (failwith error_CASH_BOUGHT_MUST_BE_GREATER_THAN_OR_EQUAL_TO_MIN_CASH_BOUGHT : nat) else bought in
 
         let op_token = token_transfer storage Tezos.sender Tezos.self_address tokensSold in
 #if CASH_IS_TEZ
-        let op_cash = cash_transfer to_ cash_bought in
+        let op_cash = cash_transfer to_  cash_bought in
 #else
-        let op_cash = cash_transfer storage Tezos.self_address to_ cash_bought in
+        let op_cash = cash_transfer storage Tezos.self_address  to_ cash_bought in
 #endif
         let new_cashPool = match is_nat (storage.cashPool - cash_bought) with
             | None -> (failwith error_ASSERTION_VIOLATED_CASH_BOUGHT_SHOULD_BE_LESS_THAN_CASHPOOL : nat)
@@ -730,8 +583,7 @@ let token_to_token (param : token_to_token) (storage : storage) : result =
           minTokensBought = minTokensBought ;
           to_ = to_ ;
           tokensSold = tokensSold ;
-          deadline = deadline ;
-          rounds = rounds } = param in
+          deadline = deadline } = param in
 
     let outputCfmmContract_contract: cash_to_token contract =
         (match (Tezos.get_entrypoint_opt "%cashToToken" outputCfmmContract : cash_to_token contract option) with
@@ -746,10 +598,7 @@ let token_to_token (param : token_to_token) (storage : storage) : result =
       (failwith error_THE_CURRENT_TIME_MUST_BE_LESS_THAN_THE_DEADLINE : result)
     else
         (* We don't check that tokenPool > 0, because that is impossible unless all liquidity has been removed. *)
-        let cash_bought = 
-           (let bought = trade_dtoken_for_dcash storage.cashPool storage.tokenPool tokensSold storage.target rounds in
-            bought * const_fee / const_fee_denom)
-        in
+        let cash_bought = ((tokensSold * const_fee * storage.cashPool) / (storage.tokenPool * const_fee_denom + (tokensSold * const_fee)))  in
         let new_cashPool = match is_nat (storage.cashPool - cash_bought) with
             | None -> (failwith error_CASH_POOL_MINUS_CASH_BOUGHT_IS_NEGATIVE : nat)
             | Some n -> n in
@@ -758,7 +607,7 @@ let token_to_token (param : token_to_token) (storage : storage) : result =
 
 #if CASH_IS_TEZ
         let op_send_cash_to_output = Tezos.transaction { minTokensBought = minTokensBought ;
-                                      deadline = deadline; to_ = to_ ; rounds = rounds}
+                                      deadline = deadline; to_ = to_ }
                                       (natural_to_mutez cash_bought)
                                       outputCfmmContract_contract in
 #else
@@ -778,7 +627,7 @@ let token_to_token (param : token_to_token) (storage : storage) : result =
 #endif
         let op_send_cash_to_output = Tezos.transaction { minTokensBought = minTokensBought ;
                                       cashSold = cash_bought ;
-                                      deadline = deadline ; to_ = to_ ; rounds = rounds}
+                                      deadline = deadline ; to_ = to_}
                                       0mutez
                                       outputCfmmContract_contract in
 #endif
@@ -796,7 +645,6 @@ let update_consumer (operations, storage : result) : result =
         then (operations, storage)
     else
         let consumer = match (Tezos.get_contract_opt storage.consumerEntrypoint : ((nat * nat) contract) option) with
-// TODO : when ligo is fixed let consumer = match (Tezos.get_entrypoint_opt "cfmm_price" storage.consumerEntrypoint : ((nat * nat) contract) option) with
         | None -> (failwith error_CANNOT_GET_CFMM_PRICE_ENTRYPOINT_FROM_CONSUMER : (nat * nat) contract)
         | Some c -> c in
         ((Tezos.transaction (storage.cashPool, storage.tokenPool) 0mutez consumer) :: operations,
@@ -813,8 +661,6 @@ let main ((entrypoint, storage) : entrypoint * storage) : result =
         add_liquidity param storage
     | RemoveLiquidity param ->
         remove_liquidity param storage
-    | CtezTarget param ->
-        ctez_target param storage
 #if HAS_BAKER
     | SetBaker param ->
         set_baker param storage

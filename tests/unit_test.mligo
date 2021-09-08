@@ -27,7 +27,7 @@ type cfmm_storage = storage
 type cfmm_parameter = parameter 
 type cfmm_result = result 
 
-#include "../test_params.mligo"
+#include "test_params.mligo"
 
 (* =============================================================================
  * Contract Templates 
