@@ -198,11 +198,11 @@ let rec newton_dx_to_dy (x, y, dx, rounds : nat * nat * nat * int) : nat =
 
 // A function that outputs dy (diff_cash) given x, y, and dx
 let trade_dtez_for_dcash (tez : nat) (cash : nat) (dtez : nat) (target : nat) (rounds : int) : nat =
-    let x = target * tez in
-    let y = Bitwise.shift_left cash 48n in
-    let dx = target * dtez in
+    let x = Bitwise.shift_left tez 48n in
+    let y = target * cash  in
+    let dx = Bitwise.shift_left dtez 48n in
     let dy_approx = newton_dx_to_dy (x, y, dx, rounds) in
-    let dcash_approx = Bitwise.shift_right dy_approx 48n in
+    let dcash_approx = dy_approx / target in
     if (cash - dcash_approx <= 0)  then
         (failwith error_CASH_POOL_MINUS_CASH_WITHDRAWN_IS_NEGATIVE : nat)
     else
@@ -215,7 +215,7 @@ let trade_dcash_for_dtez (tez : nat) (cash : nat) (dcash : nat) (target : nat) (
     let y = Bitwise.shift_left tez 48n in
     let dx = target * dcash in
     let dy_approx = newton_dx_to_dy (x, y, dx, rounds) in
-    let dtez_approx = dy_approx / target in
+    let dtez_approx = Bitwise.shift_right dy_approx 48n in
     if (tez - dtez_approx <= 0)  then
         (failwith error_TEZ_POOL_MINUS_TEZ_WITHDRAWN_IS_NEGATIVE : nat) (* should never happen *)
     else
