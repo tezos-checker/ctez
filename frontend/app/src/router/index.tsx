@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import { Flex } from '@chakra-ui/react';
+import { Flex, useColorModeValue } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { routes } from './routes';
@@ -14,6 +14,7 @@ import { useWallet } from '../wallet/hooks';
 export const AppRouter: React.FC = () => {
   const dispatch = useDispatch();
   const [{ pkh: userAddress }, setWallet, disconnectWallet] = useWallet();
+  const backgroundColor = useColorModeValue('gray.100', 'gray.800');
   const [toggled, setToggled] = useState(false);
   const [collapsed, setCollapsed] = useState(true);
 
@@ -46,7 +47,7 @@ export const AppRouter: React.FC = () => {
           collapsed={collapsed}
           toggled={toggled}
         />
-        <Flex direction="column" w="100%" backgroundColor="gray.100">
+        <Flex direction="column" w="100%" backgroundColor={backgroundColor}>
           <Header
             walletAddress={userAddress}
             onConnectWallet={connectWallet}

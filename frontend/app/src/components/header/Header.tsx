@@ -1,5 +1,5 @@
-import { Text, Flex, Button, Box } from '@chakra-ui/react';
-import React, { useState } from 'react';
+import { Text, Flex, Button, Box, useColorMode } from '@chakra-ui/react';
+import React from 'react';
 import { FiMoon, FiSun } from 'react-icons/fi';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { trimAddress } from '../../utils/addressUtils';
@@ -19,11 +19,7 @@ export const Header: React.FC<IHeaderProps> = ({
   handleToggled,
   toggled,
 }) => {
-  const [darkMode, setDarkMode] = useState(false);
-
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-  };
+  const { colorMode, toggleColorMode } = useColorMode();
 
   return (
     <div>
@@ -36,8 +32,8 @@ export const Header: React.FC<IHeaderProps> = ({
         >
           <GiHamburgerMenu />
         </Button>
-        <Box marginStart="auto" marginEnd="10px" cursor="pointer" onClick={toggleDarkMode}>
-          {darkMode ? <FiSun size={26} /> : <FiMoon size={26} />}
+        <Box marginStart="auto" marginEnd="10px" cursor="pointer" onClick={toggleColorMode}>
+          {colorMode === 'light' ? <FiSun size={26} /> : <FiMoon size={26} />}
         </Box>
         <Button
           border="1px solid rgba(0, 0, 0, 0.07)"
