@@ -168,30 +168,33 @@ let tez_transfer (to_ : address) (tez_amount : nat) : operation=
 
 (* A function to transfer assets while maintaining a constant* isoutility.
    * ... or slightly increasing due to loss of precision or incomplete convergence *)
-let rec newton_dx_to_dy (x, y, dx, dy_approx, rounds : nat * nat * nat * nat * int) : nat =
+
+let rec newton_dx_to_dy_rec (xp, xp2, x3y_plus_y3x, y, dy_approx, rounds : nat * nat * nat * nat * nat * int) : nat =
     if rounds <= 0 then
         dy_approx
     else
-        let xp = x + dx in
         let yp = y - dy_approx in
-        let x2 = x * x in
-        let y2 = y * y in
-        let xp2 = xp * xp in
         let yp2 = abs (yp * yp) in
-
         (* Newton descent formula *)
         (* num is always positive, even without abs which is only there for casting to nat *)
-        let num = abs (xp * yp * (xp2 + yp2) - x * y * (x2 + y2)) in
+        let num = abs (xp * yp * (xp2 + yp2) - x3y_plus_y3x) in
         let denom  = xp * (xp2 + 3n * yp2) in
         let adjust = num / denom in
         let new_dy_approx = dy_approx + adjust in
-        newton_dx_to_dy (x, y, dx, new_dy_approx, rounds - 1)
+        newton_dx_to_dy_rec (xp, xp2, x3y_plus_y3x, y, new_dy_approx, rounds - 1)
     (*
         if denom = 0, then either:
         1. xp = 0 => x + dx = 0, which we don't allow, or
         2. xp = 0 and yp = 0 => a = 0 and (b = 0 or yp = 0), which implies
            that the price target is 0.
      *)
+
+let rec newton_dx_to_dy (x, y, dx, dy_approx, rounds : nat * nat * nat * nat * int) : nat =
+    let xp = x + dx in
+    let xp2 = xp * xp in
+    let x3y_plus_y3x = x * y * (x * x + y * y) in
+    newton_dx_to_dy_rec (xp, xp2, x3y_plus_y3x, y, dy_approx, rounds)
+
 
 // A function that outputs dy (diff_cash) given x, y, and dx
 let trade_dtez_for_dcash (tez : nat) (cash : nat) (dtez : nat) (target : nat) (rounds : int) : nat =
