@@ -1,17 +1,18 @@
-import { Text, Flex, Button, Box, Icon } from '@chakra-ui/react';
+import { Text, Flex, Button, Box } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { FiMoon, FiSun } from 'react-icons/fi';
 import { GiHamburgerMenu } from 'react-icons/gi';
+import { trimAddress } from '../../utils/addressUtils';
 
-export interface Props {
-  walletAddress: string | null;
+export interface IHeaderProps {
+  walletAddress: string | undefined;
   onConnectWallet: React.MouseEventHandler;
   onDisconnectWallet: React.MouseEventHandler;
   handleToggled: ((value: boolean) => void) | undefined;
   toggled: boolean;
 }
 
-export const Header: React.FC<Props> = ({
+export const Header: React.FC<IHeaderProps> = ({
   walletAddress,
   onConnectWallet,
   onDisconnectWallet,
@@ -29,7 +30,7 @@ export const Header: React.FC<Props> = ({
       <Flex padding="16px" alignItems="center">
         <Button
           border="1px solid rgba(0, 0, 0, 0.07)"
-          background="transparent"
+          backgroundColor="transparent"
           className="md-menu"
           onClick={() => handleToggled && handleToggled(!toggled)}
         >
@@ -40,10 +41,10 @@ export const Header: React.FC<Props> = ({
         </Box>
         <Button
           border="1px solid rgba(0, 0, 0, 0.07)"
-          background="transparent"
+          backgroundColor="transparent"
           onClick={walletAddress ? onDisconnectWallet : onConnectWallet}
         >
-          <Text>{walletAddress || 'Connect wallet'}</Text>
+          <Text>{walletAddress ? trimAddress(walletAddress) : 'Connect wallet'}</Text>
         </Button>
       </Flex>
     </div>
