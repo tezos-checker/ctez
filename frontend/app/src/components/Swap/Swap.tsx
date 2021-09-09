@@ -1,7 +1,23 @@
 import { Button, Flex, FormControl, FormLabel, IconButton, Input, Text } from '@chakra-ui/react';
 import { MdSwapVert, MdAdd } from 'react-icons/md';
+import { useHistory } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useWallet } from '../../wallet/hooks';
+import { useCfmmStorage } from '../../api/queries';
+import { BUTTON_TXT, TButtonText } from '../../constants/swap';
 
 const Swap: React.FC = () => {
+  const [{ pkh: userAddress }] = useWallet();
+  const history = useHistory();
+  const [minBuyValue, setMinBuyValue] = useState(0);
+  const [minWithoutSlippage, setWithoutSlippage] = useState(0);
+  const [buttonText, setButtonText] = useState<TButtonText>(BUTTON_TXT.ENTER_AMT);
+  const { data: cfmmStorage } = useCfmmStorage();
+
+  useEffect(() => {
+    console.log(userAddress);
+  }, [userAddress]);
+
   return (
     <form autoComplete="off">
       <FormControl id="from-input-amount">
@@ -33,7 +49,7 @@ const Swap: React.FC = () => {
       </Flex>
 
       <Button width="100%" mt={4} p={6} leftIcon={<MdAdd />}>
-        Connect wallet
+        {buttonText}
       </Button>
     </form>
   );

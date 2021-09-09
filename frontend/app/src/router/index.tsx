@@ -37,7 +37,7 @@ export const AppRouter: React.FC = () => {
           collapsed={collapsed}
           toggled={toggled}
         />
-        <Flex direction="column">
+        <Flex direction="column" w="100%" backgroundColor="gray.100">
           <Header
             walletAddress={null}
             onConnectWallet={connectWallet}

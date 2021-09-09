@@ -15,7 +15,7 @@ const OvensPage: React.FC = () => {
   }, [location]);
 
   return (
-    <Box m={2} p={8} backgroundColor="gray.100">
+    <Box m={2} p={8}>
       <Stack direction="row">
         <Select placeholder="Sort by:" w={186} backgroundColor="white">
           {/* TODO */}

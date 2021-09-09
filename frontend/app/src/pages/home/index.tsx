@@ -4,7 +4,7 @@ import Liquidity from '../../components/Liquidity';
 
 const HomePage: React.FC = () => {
   return (
-    <Flex height="100vh" alignItems="center" backgroundColor="gray.100">
+    <Flex height="100vh" alignItems="center">
       <Flex alignItems="center" m={24}>
         <Stack spacing={3} m={4}>
           <Text fontSize="sm">No governance, completely mechanical, straightforward.</Text>

@@ -14,7 +14,6 @@ const OvenIdPage: React.FC = () => {
       my={4}
       p={4}
       w="100%"
-      backgroundColor="gray.100"
       spacing={4}
     >
       <Stack direction="column" w={largerScreen ? '50%' : '100%'} spacing={4}>

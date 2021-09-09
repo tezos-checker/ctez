@@ -135,11 +135,11 @@ export const Sidebar: React.FC<Props> = ({
             </MenuItem>
             <MenuItem
               className={clsx({
-                highlight: location.pathname === '/allovens',
+                highlight: location.pathname === '/ovens',
               })}
               icon={<AllOvens />}
             >
-              <Link to="/allovens">All Ovens</Link>
+              <Link to="/ovens">All Ovens</Link>
             </MenuItem>
             <MenuItem
               className={clsx(
@@ -155,11 +155,11 @@ export const Sidebar: React.FC<Props> = ({
             </MenuItem>
             <MenuItem
               className={clsx({
-                highlight: location.pathname === '/myovens',
+                highlight: location.pathname === '/ovens/mine',
               })}
               icon={<MyOvens />}
             >
-              <Link to="/myovens">My Ovens</Link>
+              <Link to="/ovens/mine">My Ovens</Link>
             </MenuItem>
             <MenuItem
               className={clsx({
