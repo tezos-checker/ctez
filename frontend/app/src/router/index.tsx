@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import { Flex, useColorModeValue } from '@chakra-ui/react';
+import { Box, Flex, useColorModeValue } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { routes } from './routes';
@@ -40,7 +40,7 @@ export const AppRouter: React.FC = () => {
 
   return (
     <Router>
-      <Flex>
+      <Flex h="100vh">
         <Sidebar
           handleCollapsed={handleCollapsed}
           handleToggled={handleToggled}
@@ -55,16 +55,18 @@ export const AppRouter: React.FC = () => {
             handleToggled={handleToggled}
             toggled={toggled}
           />
-          <Switch>
-            {routes.map((route) => (
-              <Route
-                key={typeof route.path === 'string' ? route.path : route.path[0]}
-                path={route.path}
-              >
-                {route.Component}
-              </Route>
-            ))}
-          </Switch>
+          <Box height="100vh" overflow="auto">
+            <Switch>
+              {routes.map((route) => (
+                <Route
+                  key={typeof route.path === 'string' ? route.path : route.path[0]}
+                  path={route.path}
+                >
+                  {route.Component}
+                </Route>
+              ))}
+            </Switch>
+          </Box>
         </Flex>
       </Flex>
     </Router>

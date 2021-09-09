@@ -1,15 +1,7 @@
-import {
-  ProSidebar,
-  SidebarHeader,
-  SidebarFooter,
-  SidebarContent,
-  Menu,
-  MenuItem,
-  SubMenu,
-} from 'react-pro-sidebar';
+import { ProSidebar, SidebarHeader, SidebarContent, Menu, MenuItem } from 'react-pro-sidebar';
 import clsx from 'clsx';
 import { Text, Flex, Box } from '@chakra-ui/react';
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { ReactComponent as MyOvens } from '../../assets/images/sidebar/myovens.svg';
 import { ReactComponent as AllOvens } from '../../assets/images/sidebar/allovens.svg';
@@ -68,7 +60,7 @@ export const Sidebar: React.FC<Props> = ({
         </Flex>
         <Flex direction="row">
           <Text color="#CCD2E3" fontSize="xs" cursor="default">
-            Current Anual Drift
+            Current Annual Drift
           </Text>
           <Text marginLeft="auto" color="#CCD2E3" fontSize="xs" cursor="default">
             196.36%
@@ -87,7 +79,7 @@ export const Sidebar: React.FC<Props> = ({
   };
 
   return (
-    <div id="sidebar">
+    <Box id="sidebar" height="100vh">
       <ProSidebar collapsed={collapsed} breakPoint="md" toggled={toggled} onToggle={handleToggled}>
         <SidebarHeader>
           <Flex alignItems="center" padding="16px 35px 16px 20px">
@@ -235,6 +227,6 @@ export const Sidebar: React.FC<Props> = ({
           </Menu>
         </SidebarContent>
       </ProSidebar>
-    </div>
+    </Box>
   );
 };
