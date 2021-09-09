@@ -39,6 +39,7 @@ module.exports = {
         endOfLine: 'auto',
       },
     ],
+    'react/destructuring-assignment': 'off',
     'import/no-extraneous-dependencies': 'off',
     'react/jsx-props-no-spreading': 'off',
     'react/prop-types': 'off',
