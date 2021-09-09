@@ -84,7 +84,7 @@ type storage =
     tezPool : nat ;
     lqtTotal : nat ;
     target : ctez_target ;
-    ctez_address : address ;    
+    ctez_address : address ;
     cashAddress : address ;
     lqtAddress : address ;
     lastOracleUpdate : timestamp ;
@@ -166,22 +166,22 @@ let tez_transfer (to_ : address) (tez_amount : nat) : operation=
       | Some c -> c in
       Tezos.transaction () (natural_to_mutez tez_amount) to_contract
 
-(* A function to transfer assets while maintaining a constant* isoutility. 
+(* A function to transfer assets while maintaining a constant* isoutility.
    * ... or slightly increasing due to loss of precision or incomplete convergence *)
-let rec newton_dx_to_dy (x, y, dx, dy_approx, rounds : nat * nat * nat * nat * int) : nat =     
-    if rounds <= 0 then 
+let rec newton_dx_to_dy (x, y, dx, dy_approx, rounds : nat * nat * nat * nat * int) : nat =
+    if rounds <= 0 then
         dy_approx
-    else         
+    else
         let xp = x + dx in
-        let yp = y - dy_approx in 
+        let yp = y - dy_approx in
         let x2 = x * x in
-        let y2 = y * y in 
+        let y2 = y * y in
         let xp2 = xp * xp in
         let yp2 = abs (yp * yp) in
 
         (* Newton descent formula *)
         (* num is always positive, even without abs which is only there for casting to nat *)
-        let num = abs (xp * yp * (xp2 + yp2) - x * y * (x2 + y2)) in 
+        let num = abs (xp * yp * (xp2 + yp2) - x * y * (x2 + y2)) in
         let denom  = xp * (xp2 + 3n * yp2) in
         let adjust = num / denom in
         let new_dy_approx = dy_approx + adjust in
@@ -194,12 +194,12 @@ let rec newton_dx_to_dy (x, y, dx, dy_approx, rounds : nat * nat * nat * nat * i
      *)
 
 // A function that outputs dy (diff_cash) given x, y, and dx
-let trade_dtez_for_dcash (tez : nat) (cash : nat) (dtez : nat) (target : nat) (rounds : int) : nat = 
+let trade_dtez_for_dcash (tez : nat) (cash : nat) (dtez : nat) (target : nat) (rounds : int) : nat =
     let x = target * tez in
     let y = Bitwise.shift_left cash 48n in
-    let dx = target * dtez in    
+    let dx = target * dtez in
     let dy_approx = newton_dx_to_dy (x, y, dx, 0n, rounds) in
-    let dcash_approx = Bitwise.shift_left dy_approx 48n in    
+    let dcash_approx = Bitwise.shift_right dy_approx 48n in
     if (cash - dcash_approx <= 0)  then
         (failwith error_CASH_POOL_MINUS_CASH_WITHDRAWN_IS_NEGATIVE : nat)
     else
@@ -207,12 +207,12 @@ let trade_dtez_for_dcash (tez : nat) (cash : nat) (dtez : nat) (target : nat) (r
 
 
 // A function that outputs dx (diff_tez) given target, x, y, and dy
-let trade_dcash_for_dtez (tez : nat) (cash : nat) (dcash : nat) (target : nat) (rounds : int) : nat = 
+let trade_dcash_for_dtez (tez : nat) (cash : nat) (dcash : nat) (target : nat) (rounds : int) : nat =
     let x = target * cash in
     let y = Bitwise.shift_left tez 48n in
-    let dx = target * dcash in     
+    let dx = target * dcash in
     let dy_approx = newton_dx_to_dy (x, y, dx, 0n, rounds) in
-    let dtez_approx = dy_approx / target in    
+    let dtez_approx = dy_approx / target in
     if (tez - dtez_approx <= 0)  then
         (failwith error_TEZ_POOL_MINUS_TEZ_WITHDRAWN_IS_NEGATIVE : nat) (* should never happen *)
     else
@@ -236,7 +236,7 @@ let add_liquidity (param : add_liquidity) (storage: storage) : result =
           minLqtMinted = minLqtMinted ;
           maxCashDeposited = maxCashDeposited ;
           deadline = deadline } = param in
-    let tezDeposited = mutez_to_natural Tezos.amount in    
+    let tezDeposited = mutez_to_natural Tezos.amount in
     if Tezos.now >= deadline then
         (failwith error_THE_CURRENT_TIME_MUST_BE_LESS_THAN_THE_DEADLINE : result)
     else
@@ -269,7 +269,7 @@ let remove_liquidity (param : remove_liquidity) (storage : storage) : result =
           minTezWithdrawn = minTezWithdrawn ;
           minCashWithdrawn = minCashWithdrawn ;
           deadline = deadline } = param in
-    
+
     if Tezos.now >= deadline then
       (failwith error_THE_CURRENT_TIME_MUST_BE_LESS_THAN_THE_DEADLINE : result)
     else if Tezos.amount > 0mutez then
@@ -305,11 +305,11 @@ let remove_liquidity (param : remove_liquidity) (storage : storage) : result =
         end
     end
 
-let ctez_target (param : ctez_target) (storage : storage) = 
+let ctez_target (param : ctez_target) (storage : storage) =
     if Tezos.sender <> storage.ctez_address then
         (failwith error_CALLER_MUST_BE_CTEZ : result)
     else
-        let updated_target = param in 
+        let updated_target = param in
         let storage = {storage with target = updated_target} in
         (([] : operation list), storage)
 
@@ -319,7 +319,7 @@ let tez_to_cash (param : tez_to_cash) (storage : storage) =
          minCashBought = minCashBought ;
          deadline = deadline ;
          rounds = rounds } = param in
-    let tezSold = mutez_to_natural Tezos.amount in    
+    let tezSold = mutez_to_natural Tezos.amount in
     if Tezos.now >= deadline then
         (failwith error_THE_CURRENT_TIME_MUST_BE_LESS_THAN_THE_DEADLINE : result)
     else begin
@@ -355,8 +355,8 @@ let cash_to_tez (param : cash_to_tez) (storage : storage) =
           minTezBought = minTezBought ;
           deadline = deadline ;
           rounds = rounds } = param in
-    
-    
+
+
     if Tezos.now >= deadline then
         (failwith error_THE_CURRENT_TIME_MUST_BE_LESS_THAN_THE_DEADLINE : result)
     else if Tezos.amount > 0mutez then
@@ -368,9 +368,9 @@ let cash_to_tez (param : cash_to_tez) (storage : storage) =
         let tez_bought =
             let bought = trade_dcash_for_dtez storage.tezPool storage.cashPool cashSold storage.target rounds in
             let bought_after_fee = bought * const_fee / const_fee_denom in
-                if bought_after_fee < minTezBought then 
-                    (failwith error_TEZ_BOUGHT_MUST_BE_GREATER_THAN_OR_EQUAL_TO_MIN_TEZ_BOUGHT : nat) 
-                else 
+                if bought_after_fee < minTezBought then
+                    (failwith error_TEZ_BOUGHT_MUST_BE_GREATER_THAN_OR_EQUAL_TO_MIN_TEZ_BOUGHT : nat)
+                else
                     bought_after_fee
         in
 
@@ -386,11 +386,11 @@ let cash_to_tez (param : cash_to_tez) (storage : storage) =
 
 let default_ (storage : storage) : result =
 (* Entrypoint to allow depositing tez. *)
-    (* update tezPool *)    
+    (* update tezPool *)
     let storage = {storage with tezPool = storage.tezPool + mutez_to_natural Tezos.amount} in (([] : operation list), storage)
 
 
-let set_lqt_address (lqtAddress : address) (storage : storage) : result =    
+let set_lqt_address (lqtAddress : address) (storage : storage) : result =
     if Tezos.amount > 0mutez then
         (failwith error_AMOUNT_MUST_BE_ZERO : result)
     else if storage.lqtAddress <> null_address then
@@ -411,12 +411,12 @@ let tez_to_token (param : tez_to_token) (storage : storage) : result =
         (match (Tezos.get_entrypoint_opt "%cashToToken" outputCfmmContract : cash_to_token contract option) with
             | None -> (failwith error_INVALID_INTERMEDIATE_CONTRACT :  cash_to_token contract)
             | Some c -> c) in
-        
+
     if Tezos.now >= deadline then
       (failwith error_THE_CURRENT_TIME_MUST_BE_LESS_THAN_THE_DEADLINE : result)
     else
         (* We don't check that cashPool > 0, because that is impossible unless all liquidity has been removed. *)
-        let cash_bought = 
+        let cash_bought =
            (let bought = trade_dtez_for_dcash storage.tezPool storage.cashPool tezSold storage.target rounds in
             bought * const_fee / const_fee_denom)
         in
@@ -439,9 +439,9 @@ let tez_to_token (param : tez_to_token) (storage : storage) : result =
                                       cashSold = cash_bought ;
                                       deadline = deadline ; to_ = to_}
                                       0mutez
-                                      outputCfmmContract_contract in        
+                                      outputCfmmContract_contract in
         ([allow_output_to_withdraw_cash.0 ; allow_output_to_withdraw_cash.1 ; op_send_cash_to_output] , storage)
-        
+
 
 let update_consumer (operations, storage : result) : result =
     if storage.lastOracleUpdate = Tezos.now
@@ -474,6 +474,6 @@ let main ((entrypoint, storage) : entrypoint * storage) : result =
         (cash_to_tez param storage)
     | TezToToken param ->
         update_consumer
-        (tez_to_token param storage)    
+        (tez_to_token param storage)
     | SetLqtAddress param ->
         set_lqt_address param storage
