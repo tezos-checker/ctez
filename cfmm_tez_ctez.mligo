@@ -189,11 +189,11 @@ let rec newton_dx_to_dy_rec (xp, xp2, x3y_plus_y3x, y, dy_approx, rounds : nat *
            that the price target is 0.
      *)
 
-let rec newton_dx_to_dy (x, y, dx, dy_approx, rounds : nat * nat * nat * nat * int) : nat =
+let rec newton_dx_to_dy (x, y, dx, rounds : nat * nat * nat * int) : nat =
     let xp = x + dx in
     let xp2 = xp * xp in
     let x3y_plus_y3x = x * y * (x * x + y * y) in
-    newton_dx_to_dy_rec (xp, xp2, x3y_plus_y3x, y, dy_approx, rounds)
+    newton_dx_to_dy_rec (xp, xp2, x3y_plus_y3x, y, 0n, rounds)
 
 
 // A function that outputs dy (diff_cash) given x, y, and dx
@@ -201,7 +201,7 @@ let trade_dtez_for_dcash (tez : nat) (cash : nat) (dtez : nat) (target : nat) (r
     let x = target * tez in
     let y = Bitwise.shift_left cash 48n in
     let dx = target * dtez in
-    let dy_approx = newton_dx_to_dy (x, y, dx, 0n, rounds) in
+    let dy_approx = newton_dx_to_dy (x, y, dx, rounds) in
     let dcash_approx = Bitwise.shift_right dy_approx 48n in
     if (cash - dcash_approx <= 0)  then
         (failwith error_CASH_POOL_MINUS_CASH_WITHDRAWN_IS_NEGATIVE : nat)
@@ -214,7 +214,7 @@ let trade_dcash_for_dtez (tez : nat) (cash : nat) (dcash : nat) (target : nat) (
     let x = target * cash in
     let y = Bitwise.shift_left tez 48n in
     let dx = target * dcash in
-    let dy_approx = newton_dx_to_dy (x, y, dx, 0n, rounds) in
+    let dy_approx = newton_dx_to_dy (x, y, dx, rounds) in
     let dtez_approx = dy_approx / target in
     if (tez - dtez_approx <= 0)  then
         (failwith error_TEZ_POOL_MINUS_TEZ_WITHDRAWN_IS_NEGATIVE : nat) (* should never happen *)
