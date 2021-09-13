@@ -13,3 +13,18 @@ export const ADD_BTN_TXT = {
 } as const;
 
 export type TAddBtnTxt = ValueOf<typeof ADD_BTN_TXT>;
+
+export interface IRemoveLiquidityForm {
+  to: string;
+  deadline: number;
+  lqtBurned: number;
+  slippage: number;
+}
+
+export const REMOVE_BTN_TXT = {
+  CONNECT: 'Connect Wallet',
+  ENTER_AMT: 'Enter an amount',
+  REMOVE_LIQ: 'Remove Liquidity',
+} as const;
+
+export type TRemoveBtnTxt = ValueOf<typeof REMOVE_BTN_TXT>;

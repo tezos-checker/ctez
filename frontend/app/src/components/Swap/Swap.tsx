@@ -73,7 +73,7 @@ const Swap: React.FC = () => {
   const validationSchema = useMemo(
     () =>
       object().shape({
-        to: string()
+        toBurn: string()
           .test({
             test: (value) => validateAddress(value) === 3,
           })

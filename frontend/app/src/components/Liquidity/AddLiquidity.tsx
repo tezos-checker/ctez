@@ -98,7 +98,7 @@ const AddLiquidity: React.FC = () => {
     }
   };
 
-  const { values, handleChange, handleSubmit } = useFormik({
+  const { values, handleChange, handleSubmit, isSubmitting } = useFormik({
     initialValues,
     validationSchema,
     onSubmit: handleFormSubmit,
@@ -119,7 +119,7 @@ const AddLiquidity: React.FC = () => {
   }, [buttonText, userAddress, values.amount]);
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} id="add-liquidity-form">
       <Stack spacing={2}>
         <Text>Add liquidity</Text>
 
@@ -142,7 +142,7 @@ const AddLiquidity: React.FC = () => {
           </FormControl>
         </Flex>
 
-        <Button variant="outline" type="submit">
+        <Button variant="outline" type="submit" isLoading={isSubmitting}>
           {buttonText}
         </Button>
       </Stack>
