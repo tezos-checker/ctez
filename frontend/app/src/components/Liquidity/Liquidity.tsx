@@ -1,4 +1,5 @@
 import { Flex, Text, Icon, Stack, Box, Collapse, Button, useDisclosure } from '@chakra-ui/react';
+import { FaChevronCircleDown } from 'react-icons/fa';
 import { MdInfo } from 'react-icons/md';
 import AddLiquidity from './AddLiquidity';
 import RemoveLiquidity from './RemoveLiquidity';
@@ -18,7 +19,16 @@ const Liquidity: React.FC = () => {
 
       <AddLiquidity />
 
-      <Button onClick={onToggle}>Remove Liquidity</Button>
+      <Button
+        onClick={onToggle}
+        rightIcon={
+          <FaChevronCircleDown
+            style={{ transform: isOpen ? 'rotate(180deg)' : '', transition: '0.3s' }}
+          />
+        }
+      >
+        Remove Liquidity
+      </Button>
       <Collapse in={isOpen} animateOpacity>
         <Box>
           <RemoveLiquidity />
