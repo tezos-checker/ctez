@@ -128,11 +128,11 @@ export const removeLiquidity = async (
   return hash.opHash;
 };
 
-export const cashToToken = async (args: CashToTokenParams): Promise<string> => {
+export const tezToCash = async (args: CashToTokenParams): Promise<string> => {
   const hash = await executeMethod(
     cfmm,
-    'cashToToken',
-    [args.to, args.minTokensBought * 1e6, args.deadline.toISOString()],
+    'tezToCash',
+    [args.to, args.minTokensBought * 1e6, args.deadline.toISOString(), 4],
     undefined,
     args.amount * 1e6,
     true,
@@ -140,10 +140,7 @@ export const cashToToken = async (args: CashToTokenParams): Promise<string> => {
   return hash;
 };
 
-export const tokenToCash = async (
-  args: TokenToCashParams,
-  userAddress: string,
-): Promise<string> => {
+export const cashToTez = async (args: TokenToCashParams, userAddress: string): Promise<string> => {
   const tezos = getTezosInstance();
   const CTezFa12 = await getCTezFa12Contract();
   const batchOps: WalletParamsWithKind[] = await getTokenAllowanceOps(
@@ -157,7 +154,7 @@ export const tokenToCash = async (
     {
       kind: OpKind.TRANSACTION,
       ...cfmm.methods
-        .tokenToCash(
+        .cashToTez(
           args.to,
           args.tokensSold * 1e6,
           args.minCashBought * 1e6,

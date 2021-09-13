@@ -49,11 +49,11 @@ const RemoveLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
 
   const calcMinValues = (slippage: number, lqtBurned: number) => {
     if (cfmmStorage) {
-      const { cashPool, tokenPool, lqtTotal } = cfmmStorage;
+      const { cashPool, tezPool, lqtTotal } = cfmmStorage;
       const cashWithdraw =
-        ((lqtBurned * cashPool.toNumber()) / lqtTotal.toNumber()) * (1 - slippage * 0.01);
+        ((lqtBurned * tezPool.toNumber()) / lqtTotal.toNumber()) * (1 - slippage * 0.01);
       const tokenWithdraw =
-        ((lqtBurned * tokenPool.toNumber()) / lqtTotal.toNumber()) * (1 - slippage * 0.01);
+        ((lqtBurned * cashPool.toNumber()) / lqtTotal.toNumber()) * (1 - slippage * 0.01);
       setValues({
         cashWithdraw: Number((cashWithdraw / 1e6).toFixed(6)),
         tokenWithdraw: Number((tokenWithdraw / 1e6).toFixed(6)),

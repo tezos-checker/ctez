@@ -21,7 +21,7 @@ import { useHistory } from 'react-router-dom';
 import Page from '../../components/Page';
 import FormikTextField from '../../components/TextField';
 import { useWallet } from '../../wallet/hooks';
-import { cashToToken, cfmmError, tokenToCash } from '../../contracts/cfmm';
+import { tezToCash, cfmmError, cashToTez } from '../../contracts/cfmm';
 import { TezosIcon } from '../../components/TezosIcon';
 import { CTezIcon } from '../../components/CTezIcon/CTezIcon';
 import { logger } from '../../utils/logger';
@@ -53,10 +53,9 @@ const ConvertComponent: React.FC<ConversionParams> = ({ t, formType }) => {
 
   const calcMinBuyValue = (slippage: number, amount: number) => {
     if (cfmmStorage) {
-      const { tokenPool, cashPool } = cfmmStorage;
+      const { tezPool, cashPool } = cfmmStorage;
       const cashSold = amount * 1e6;
-      const [aPool, bPool] =
-        formType === 'tezToCtez' ? [tokenPool, cashPool] : [cashPool, tokenPool];
+      const [aPool, bPool] = formType === 'tezToCtez' ? [cashPool, tezPool] : [tezPool, cashPool];
       const tokWithoutSlippage =
         (cashSold * 997 * aPool.toNumber()) / (bPool.toNumber() * 1000 + cashSold * 997) / 1e6;
       const tok = tokWithoutSlippage * (1 - slippage * 0.01);
@@ -93,13 +92,13 @@ const ConvertComponent: React.FC<ConversionParams> = ({ t, formType }) => {
       const deadline = addMinutes(new Date(), formData.deadline);
       const result =
         formType === 'tezToCtez'
-          ? await cashToToken({
+          ? await tezToCash({
               amount: formData.amount,
               deadline,
               minTokensBought: minBuyValue,
               to: formData.to,
             })
-          : await tokenToCash(
+          : await cashToTez(
               {
                 deadline,
                 minCashBought: minBuyValue,
