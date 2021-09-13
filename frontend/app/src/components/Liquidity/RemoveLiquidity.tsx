@@ -1,11 +1,9 @@
-import { Button, Flex, FormControl, FormLabel, Icon, Input, Stack, Text } from '@chakra-ui/react';
+import { Button, Flex, FormControl, FormLabel, Icon, Input, Stack } from '@chakra-ui/react';
 import { MdAdd } from 'react-icons/md';
 
 const RemoveLiquidity: React.FC = () => {
   return (
     <Stack spacing={2}>
-      <Text>Remove liquidity</Text>
-
       <FormControl id="to-input-amount" mb={6}>
         <FormLabel fontSize="xs">LQT to burn</FormLabel>
         <Input type="number" />
