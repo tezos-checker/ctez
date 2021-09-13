@@ -221,6 +221,13 @@ let trade_dcash_for_dtez (tez : nat) (cash : nat) (dcash : nat) (target : nat) (
     else
         dtez_approx
 
+let marginal_price (tez : nat) (cash : nat) (target : nat) : (nat * nat) =
+    let x = cash * target in
+    let y = Bitwise.shift_left tez 48n in
+    let x2 = x * x in
+    let y2 = y * y in
+    (tez * (3n * x2 + y2), cash * (3n * y2 + x2))
+
 (* =============================================================================
  * Entrypoint Functions
  * ============================================================================= *)
@@ -454,7 +461,7 @@ let update_consumer (operations, storage : result) : result =
 // TODO : when ligo is fixed let consumer = match (Tezos.get_entrypoint_opt "cfmm_price" storage.consumerEntrypoint : ((nat * nat) contract) option) with
         | None -> (failwith error_CANNOT_GET_CFMM_PRICE_ENTRYPOINT_FROM_CONSUMER : (nat * nat) contract)
         | Some c -> c in
-        ((Tezos.transaction (storage.tezPool, storage.cashPool) 0mutez consumer) :: operations,
+        ((Tezos.transaction (marginal_price storage.tezPool storage.cashPool storage.target) 0mutez consumer) :: operations,
         {storage with lastOracleUpdate = Tezos.now})
 
 (* =============================================================================

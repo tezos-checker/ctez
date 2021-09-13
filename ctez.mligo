@@ -86,14 +86,6 @@ let get_ctez_mint_or_burn (fa12_address : address) : (int * address) contract =
   | None -> (failwith error_CTEZ_FA12_CONTRACT_MISSING_MINT_OR_BURN_ENTRYPOINT : (int * address) contract)
   | Some c -> c
 
-let get_price (target : nat) (cash : nat) (token : nat) : nat = 
-    let (x,y) = (cash, token) in
-    let a = target in 
-    let ax2 = x * x * a * a in
-    let by2 = Bitwise.shift_left (y * y) 96n in
-    let num = y * (3n * ax2 + by2) in
-    let denom = x * (ax2 + 3n * by2) in
-    num/denom
 
 (* Entrypoint Functions *)
 
@@ -182,7 +174,7 @@ let mint_or_burn (s : storage) (p : mint_or_burn) : result =
 let get_target (storage : storage) (callback : nat contract) : result =
   ([Tezos.transaction storage.target 0mutez callback], storage)
 
-let cfmm_price (storage : storage) (tez : nat) (token : nat) : result =
+let cfmm_price (storage : storage) (price_numerator : nat) (price_denominator : nat) : result =
   if Tezos.sender <> storage.cfmm_address then
     (failwith error_CALLER_MUST_BE_CFMM : result)
   else
@@ -200,7 +192,7 @@ let cfmm_price (storage : storage) (tez : nat) (token : nat) : result =
            for each day over or under the target by more than 1/64th.
         *)
 
-    let price : nat = get_price target tez token in
+    let price : nat = (Bitwise.shift_left price_numerator 48n) / price_denominator in
     let target_less_price : int = target - price in
     let d_drift =
       let x = Bitwise.shift_left (abs (target_less_price * target_less_price)) 10n in
@@ -213,13 +205,13 @@ let cfmm_price (storage : storage) (tez : nat) (token : nat) : result =
     else
       storage.drift - d_drift in
 
-    let cfmm_address = storage.cfmm_address in 
-    let txndata_ctez_target = target in 
-    let entrypoint_ctez_target = 
-        (match (Tezos.get_contract_opt cfmm_address : nat contract option) with 
-// TODO : when ligo is fixed: (match (Tezos.get_entrypoint_opt "ctezTarget" cfmm_address : nat contract option) with 
+    let cfmm_address = storage.cfmm_address in
+    let txndata_ctez_target = target in
+    let entrypoint_ctez_target =
+        (match (Tezos.get_contract_opt cfmm_address : nat contract option) with
+// TODO : when ligo is fixed: (match (Tezos.get_entrypoint_opt "ctezTarget" cfmm_address : nat contract option) with
         | None -> (failwith error_INVALID_CTEZ_TARGET_ENTRYPOINT : nat contract)
-        | Some c -> c ) in 
+        | Some c -> c ) in
     let op_ctez_target = Tezos.transaction txndata_ctez_target 0tez entrypoint_ctez_target in
 
     ([op_ctez_target], {storage with drift = drift ; last_drift_update = Tezos.now ; target = target})
@@ -234,4 +226,3 @@ let main (p, s : parameter * storage) : result =
   | Cfmm_price (x,y) -> (cfmm_price s x y : result)
   | Set_addresses xs -> (set_addresses s xs : result)
   | Get_target t -> (get_target s t : result)
-
