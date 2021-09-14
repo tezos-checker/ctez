@@ -14,7 +14,7 @@ interface ICreateOvenProps {
   onClose: () => void;
 }
 
-export const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
+const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
@@ -33,3 +33,5 @@ export const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
     </Modal>
   );
 };
+
+export default CreateOven;

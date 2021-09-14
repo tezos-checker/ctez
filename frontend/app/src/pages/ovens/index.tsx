@@ -64,7 +64,11 @@ const OvensPage: React.FC = () => {
         </Select>
 
         <Spacer />
-        <Button rightIcon={<BsArrowRight />} variant="outline">
+        <Button
+          rightIcon={<BsArrowRight />}
+          variant="outline"
+          onClick={() => dispatch(openModal(MODAL_NAMES.TRACK_OVEN))}
+        >
           Track Oven
         </Button>
         <Button
