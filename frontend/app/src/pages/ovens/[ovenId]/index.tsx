@@ -1,7 +1,7 @@
 import { Stack, useMediaQuery } from '@chakra-ui/react';
 import OvenInfo from '../../../components/OvenCard/OvenInfo';
 import OvenStats from '../../../components/OvenCard/OvenStats';
-import OvenOperations from '../../../components/OvenCard/OvenOperations';
+import OvenOperations from '../../../components/OvenOperations/OvenOperations';
 
 const OvenIdPage: React.FC = () => {
   const [largerScreen] = useMediaQuery(['(min-width: 800px)']);

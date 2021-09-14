@@ -7,6 +7,4 @@ const rootReducer = combineReducers({
   stats: StatsSlice.reducer,
 });
 
-export type RootState = ReturnType<typeof rootReducer>;
-
 export default rootReducer;

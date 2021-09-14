@@ -88,7 +88,11 @@ export const getOvenImageId = (ovenId: number, totalOvens: number): number => {
   return ovenId > TOTAL_OVEN_IMAGES ? scaleBetween(ovenId, 1, 5, 6, totalOvens) : ovenId;
 };
 
-export const getOvenMaxCtez = (ovenTez: string, currentCtez: string, target: number) => {
+export const getOvenMaxCtez = (
+  ovenTez: string | number,
+  currentCtez: string | number,
+  target: number,
+) => {
   const max = maxCTez(new BigNumber(ovenTez).shiftedBy(-6).toNumber(), target / 2 ** 48);
   const remaining = max - new BigNumber(currentCtez).shiftedBy(-6).toNumber();
   return { max, remaining: Number(remaining.toFixed(6)) };

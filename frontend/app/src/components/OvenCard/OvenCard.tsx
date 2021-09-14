@@ -1,5 +1,4 @@
 import { Box, Grid, Text } from '@chakra-ui/react';
-import { Link } from 'react-router-dom';
 import { OvenSerializable } from '../../interfaces';
 import ProgressPill from './ProgressPill';
 
@@ -12,7 +11,7 @@ const truncateText = (text: string | null) => {
   return `${text.substr(0, 5)}...${text.substr(len - 5)}`;
 };
 
-const OvenCard: React.FC<{ oven: OvenSerializable; isMyOven: boolean }> = ({ oven, isMyOven }) => {
+const OvenCard: React.FC<{ oven: OvenSerializable }> = ({ oven }) => {
   const renderItems = () => {
     const items = [
       { label: 'Oven address', value: truncateText(oven.address) },
@@ -38,14 +37,6 @@ const OvenCard: React.FC<{ oven: OvenSerializable; isMyOven: boolean }> = ({ ove
       px={10}
       borderRadius={16}
       backgroundColor="white"
-      transition="0.4s"
-      _hover={
-        isMyOven
-          ? { boxShadow: '0 23px 66px 4px rgba(176, 183, 195, 0.25)', cursor: 'pointer' }
-          : {}
-      }
-      as={isMyOven ? Link : undefined}
-      to={`${oven.ovenId}`}
     >
       {renderItems()}
 

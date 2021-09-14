@@ -34,11 +34,9 @@ const OvensPage: React.FC = () => {
       </Stack>
 
       <Box d="table" w="100%" mt={16}>
-        {!isMyOven &&
-          mockOvens.map((oven) => <OvenCard key={oven.ovenId} oven={oven} isMyOven={isMyOven} />)}
+        {!isMyOven && mockOvens.map((oven) => <OvenCard key={oven.ovenId} oven={oven} />)}
 
-        {isMyOven &&
-          mockOvens.map((oven) => <MyOvenCard key={oven.ovenId} oven={oven} isMyOven={isMyOven} />)}
+        {isMyOven && mockOvens.map((oven) => <MyOvenCard key={oven.ovenId} oven={oven} />)}
       </Box>
     </Box>
   );

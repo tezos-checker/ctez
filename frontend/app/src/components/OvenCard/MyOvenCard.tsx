@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { OvenSerializable } from '../../interfaces';
 import ProgressPill from './ProgressPill';
 
-const MyOvenCard: React.FC<{ oven: OvenSerializable; isMyOven: boolean }> = ({ oven }) => {
+const MyOvenCard: React.FC<{ oven: OvenSerializable }> = ({ oven }) => {
   const renderItems = () => {
     const items = [
       { label: 'Num Oven', value: `#${oven.ovenId}` },
