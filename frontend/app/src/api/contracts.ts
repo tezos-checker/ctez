@@ -3,6 +3,7 @@ import { sub, format, differenceInDays } from 'date-fns';
 import { getCfmmStorage, getLQTContractStorage } from '../contracts/cfmm';
 import { getCtezStorage } from '../contracts/ctez';
 import { BaseStats, CTezTzktStorage, UserLQTData } from '../interfaces';
+import { calculateMarginalPrice } from '../utils/cfmmUtils';
 import { CONTRACT_DEPLOYMENT_DATE } from '../utils/globals';
 import { getCTezTzktStorage, getLastBlockOfTheDay } from './tzkt';
 
@@ -14,16 +15,6 @@ export const getPrevCTezStorage = async (
   const lastBlock = await getLastBlockOfTheDay(prevDate, userAddress);
   const storage = await getCTezTzktStorage(lastBlock.level, userAddress);
   return storage;
-};
-
-const calculateMarginalPrice = (tez: number, cash: number, target: number): number => {
-  const x = cash * target;
-  const y = tez * 2 ** 48;
-  const x2 = x * x;
-  const y2 = y * y;
-  const nom = tez * (3 * x2 + y2);
-  const denom = cash * (3 * y2 + x2);
-  return (nom * 2 ** 48) / denom / 2 ** 48;
 };
 
 export const getBaseStats = async (userAddress?: string): Promise<BaseStats> => {
@@ -67,19 +58,4 @@ export const getUserLQTData = async (userAddress: string): Promise<UserLQTData> 
       ((userLqtBalance.toNumber() / cfmmStorage.lqtTotal.toNumber()) * 100).toFixed(2),
     ),
   };
-};
-
-export const isMonthFromLiquidation = (
-  outstandingCtez: number,
-  target: number,
-  tezBalance: number,
-  currentDrift: number,
-): boolean => {
-  return (
-    outstandingCtez *
-      (target / 2 ** 48) *
-      (1 + currentDrift / 2 ** 48) ** ((365.25 * 24 * 3600) / 12) *
-      (16 / 15) >
-    tezBalance
-  );
 };

@@ -13,7 +13,7 @@ import { CTezIcon } from '../CTezIcon/CTezIcon';
 import { getOvenMaxCtez } from '../../utils/ovenUtils';
 import Typography from '../Typography';
 import { logger } from '../../utils/logger';
-import { isMonthFromLiquidation } from '../../api/contracts';
+import { isMonthFromLiquidation } from '../../utils/cfmmUtils';
 
 interface MintOrBurnProps {
   type: 'mint' | 'repay';

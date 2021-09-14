@@ -18,8 +18,8 @@ import {
   toSerializeableOven,
 } from '../../utils/ovenUtils';
 import { useCtezBaseStats, useOvenData } from '../../api/queries';
-import { isMonthFromLiquidation } from '../../api/contracts';
 import { CTEZ_ADDRESS } from '../../utils/globals';
+import { isMonthFromLiquidation } from '../../utils/cfmmUtils';
 
 export const MyOvenPage: React.FC = () => {
   const { t } = useTranslation(['common', 'header']);
