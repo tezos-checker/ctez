@@ -129,7 +129,6 @@ export const removeLiquidity = async (
 };
 
 export const tezToCash = async (args: CashToTokenParams): Promise<string> => {
-  console.log('>>', args.minTokensBought * 1e6, args.amount * 1e6);
   const hash = await executeMethod(
     cfmm,
     'tezToCash',

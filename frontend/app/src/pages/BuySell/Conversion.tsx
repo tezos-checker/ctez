@@ -119,7 +119,6 @@ const ConvertComponent: React.FC<ConversionParams> = ({ t, formType }) => {
     if (cfmmStorage) {
       const { tezPool, cashPool, target } = cfmmStorage;
       const cashSold = amount * 1e6;
-      console.log(tezPool.toNumber(), cashPool.toNumber(), cashSold, 65536);
       const bought =
         formType === 'tezToCtez'
           ? tradeDTezForDCash(
@@ -138,9 +137,7 @@ const ConvertComponent: React.FC<ConversionParams> = ({ t, formType }) => {
             );
 
       const boughtAfterFee = (bought * FEE) / FEE_DENOM;
-      console.log(bought, boughtAfterFee);
       const tok = boughtAfterFee * (1 - slippage * 0.01);
-      console.log(boughtAfterFee);
       setWithoutSlippage(Number((Math.floor(boughtAfterFee) / 1e6).toFixed(6)));
       setMinBuyValue(Number((Math.floor(tok) / 1e6).toFixed(6)));
     } else {
