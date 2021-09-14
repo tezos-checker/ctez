@@ -1,6 +1,6 @@
 { tezPool = 1n ; 
   cashPool = 1n ;
-  target = 1n;
+  target = Bitwise.shift_left 1n 48n;
   lqtTotal = 1n ;
   ctez_address = ("CTEZ_ADDRESS" : address) ;
   cashAddress = ("FA12_CTEZ" : address) ;
