@@ -73,7 +73,7 @@ const Swap: React.FC = () => {
   const validationSchema = useMemo(
     () =>
       object().shape({
-        to: string()
+        toBurn: string()
           .test({
             test: (value) => validateAddress(value) === 3,
           })
@@ -151,9 +151,9 @@ const Swap: React.FC = () => {
   useEffect(() => {
     if (!userAddress) {
       setButtonText(BUTTON_TXT.CONNECT);
-    } else if (values.amount > 0) {
+    } else if (values.amount) {
       setButtonText(BUTTON_TXT.SWAP);
-    } else if (buttonText === BUTTON_TXT.CONNECT) {
+    } else {
       setButtonText(BUTTON_TXT.ENTER_AMT);
     }
   }, [buttonText, userAddress, values.amount]);

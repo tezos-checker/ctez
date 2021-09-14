@@ -1,4 +1,4 @@
-type ValueOf<T> = T[keyof T];
+import { ValueOf } from './helper';
 
 export interface ConversionFormParams {
   to: string;
