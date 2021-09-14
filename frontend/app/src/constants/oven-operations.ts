@@ -5,3 +5,8 @@ export interface IMintRepayForm {
 export interface IDepositForm {
   amount: number;
 }
+
+export interface IWithdrawForm {
+  amount: number;
+  to: string;
+}
