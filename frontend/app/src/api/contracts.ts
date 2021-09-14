@@ -16,6 +16,16 @@ export const getPrevCTezStorage = async (
   return storage;
 };
 
+const calculateMarginalPrice = (tez: number, cash: number, target: number): number => {
+  const x = cash * target;
+  const y = tez * 2 ** 48;
+  const x2 = x * x;
+  const y2 = y * y;
+  const nom = tez * (3 * x2 + y2);
+  const denom = cash * (3 * y2 + x2);
+  return (nom * 2 ** 48) / denom / 2 ** 48;
+};
+
 export const getBaseStats = async (userAddress?: string): Promise<BaseStats> => {
   const diffInDays = differenceInDays(new Date(), new Date(CONTRACT_DEPLOYMENT_DATE));
   const prevStorageDays = diffInDays >= 7 ? 7 : diffInDays;
@@ -24,7 +34,11 @@ export const getBaseStats = async (userAddress?: string): Promise<BaseStats> => 
   const cTez7dayStorage = await getPrevCTezStorage(prevStorageDays, userAddress);
   const prevTarget = Number(cTez7dayStorage.target) / 2 ** 48;
   const currentTarget = cTezStorage.target.toNumber() / 2 ** 48;
-  const currentPrice = cfmmStorage.tezPool.toNumber() / cfmmStorage.cashPool.toNumber();
+  const currentPrice = calculateMarginalPrice(
+    cfmmStorage.tezPool.toNumber(),
+    cfmmStorage.cashPool.toNumber(),
+    cTezStorage.target.toNumber(),
+  );
   const premium = currentPrice === currentTarget ? 0 : currentPrice / currentTarget - 1.0;
   const drift = cTezStorage.drift.toNumber();
   const currentAnnualDrift = (1.0 + drift / 2 ** 48) ** (365.25 * 24 * 3600) - 1.0;
