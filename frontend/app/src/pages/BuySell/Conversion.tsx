@@ -43,6 +43,70 @@ interface ConversionFormParams {
   amount: number;
 }
 
+const FEE = 9995;
+const FEE_DENOM = 10000;
+
+const newtonDxToDyRecursive = (
+  xp: number,
+  xp2: number,
+  x3yPlusY3x: number,
+  y: number,
+  dyApprox: number,
+  rounds: number,
+): number => {
+  if (rounds <= 0) return dyApprox;
+  const yp = y - dyApprox;
+  const yp2 = Math.abs(yp * yp);
+  const num = Math.abs(xp * yp * (xp2 + yp2) - x3yPlusY3x);
+  const denom = xp * (xp2 + 3 * yp2);
+  const adjust = num / denom;
+  const newDyApprox = dyApprox + adjust;
+  return newtonDxToDyRecursive(xp, xp2, x3yPlusY3x, y, newDyApprox, rounds - 1);
+};
+
+const newtonDxToDy = (x: number, y: number, dx: number, rounds: number): number => {
+  const xp = x + dx;
+  const xp2 = xp * xp;
+  const x3yPlusY3x = x * y * (x * x + y * y);
+  return newtonDxToDyRecursive(xp, xp2, x3yPlusY3x, y, 0, rounds);
+};
+
+const tradeDTezForDCash = (
+  tez: number,
+  cash: number,
+  dtez: number,
+  target: number,
+  rounds = 4,
+): number => {
+  const x = tez * 2 ** 48;
+  const y = target * cash;
+  const dx = dtez * 2 ** 48;
+  const dyApprox = newtonDxToDy(x, y, dx, rounds);
+  const dCashApprox = dyApprox / target;
+  if (tez - dCashApprox <= 0) {
+    throw new Error('CASH POOL MINUS CASH WITHDRAWN IS NEGATIVE');
+  }
+  return dCashApprox;
+};
+
+const tradeDCashForDTez = (
+  tez: number,
+  cash: number,
+  dcash: number,
+  target: number,
+  rounds = 4,
+): number => {
+  const y = tez * 2 ** 48;
+  const x = target * cash;
+  const dx = target * dcash;
+  const dyApprox = newtonDxToDy(x, y, dx, rounds);
+  const dtezApprox = dyApprox / 2 ** 48;
+  if (tez - dtezApprox <= 0) {
+    throw new Error('TEZ POOL MINUS TEZ WITHDRAWN IS NEGATIVE');
+  }
+  return dtezApprox;
+};
+
 const ConvertComponent: React.FC<ConversionParams> = ({ t, formType }) => {
   const [{ pkh: userAddress }] = useWallet();
   const { addToast } = useToasts();
@@ -53,14 +117,32 @@ const ConvertComponent: React.FC<ConversionParams> = ({ t, formType }) => {
 
   const calcMinBuyValue = (slippage: number, amount: number) => {
     if (cfmmStorage) {
-      const { tezPool, cashPool } = cfmmStorage;
+      const { tezPool, cashPool, target } = cfmmStorage;
       const cashSold = amount * 1e6;
-      const [aPool, bPool] = formType === 'tezToCtez' ? [cashPool, tezPool] : [tezPool, cashPool];
-      const tokWithoutSlippage =
-        (cashSold * 997 * aPool.toNumber()) / (bPool.toNumber() * 1000 + cashSold * 997) / 1e6;
-      const tok = tokWithoutSlippage * (1 - slippage * 0.01);
-      setWithoutSlippage(Number(tokWithoutSlippage.toFixed(6)));
-      setMinBuyValue(Number(tok.toFixed(6)));
+      console.log(tezPool.toNumber(), cashPool.toNumber(), cashSold, 65536);
+      const bought =
+        formType === 'tezToCtez'
+          ? tradeDTezForDCash(
+              tezPool.toNumber(),
+              cashPool.toNumber(),
+              cashSold,
+              target.toNumber(),
+              4,
+            )
+          : tradeDCashForDTez(
+              tezPool.toNumber(),
+              cashPool.toNumber(),
+              cashSold,
+              target.toNumber(),
+              4,
+            );
+
+      const boughtAfterFee = (bought * FEE) / FEE_DENOM;
+      console.log(bought, boughtAfterFee);
+      const tok = boughtAfterFee * (1 - slippage * 0.01);
+      console.log(boughtAfterFee);
+      setWithoutSlippage(Number((Math.floor(boughtAfterFee) / 1e6).toFixed(6)));
+      setMinBuyValue(Number((Math.floor(tok) / 1e6).toFixed(6)));
     } else {
       setMinBuyValue(-1);
     }

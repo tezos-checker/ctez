@@ -208,8 +208,7 @@ let cfmm_price (storage : storage) (price_numerator : nat) (price_denominator : 
     let cfmm_address = storage.cfmm_address in
     let txndata_ctez_target = target in
     let entrypoint_ctez_target =
-        (match (Tezos.get_contract_opt cfmm_address : nat contract option) with
-// TODO : when ligo is fixed: (match (Tezos.get_entrypoint_opt "ctezTarget" cfmm_address : nat contract option) with
+        (match (Tezos.get_entrypoint_opt "%ctezTarget" cfmm_address : nat contract option) with
         | None -> (failwith error_INVALID_CTEZ_TARGET_ENTRYPOINT : nat contract)
         | Some c -> c ) in
     let op_ctez_target = Tezos.transaction txndata_ctez_target 0tez entrypoint_ctez_target in
