@@ -13,6 +13,8 @@ import { CTEZ_ADDRESS } from '../../utils/globals';
 import { getExternalOvens } from '../../utils/ovenUtils';
 import { UserOvenStats } from '../../interfaces';
 import { OvenSlice } from '../../redux/slices/OvenSlice';
+import { openModal } from '../../redux/slices/UiSlice';
+import { MODAL_NAMES } from '../../constants/modals';
 
 const OvensPage: React.FC = () => {
   const location = useLocation();
@@ -65,7 +67,11 @@ const OvensPage: React.FC = () => {
         <Button rightIcon={<BsArrowRight />} variant="outline">
           Track Oven
         </Button>
-        <Button leftIcon={<MdAdd />} variant="solid">
+        <Button
+          leftIcon={<MdAdd />}
+          variant="solid"
+          onClick={() => dispatch(openModal(MODAL_NAMES.CREATE_OVEN))}
+        >
           Create Oven
         </Button>
       </Stack>
