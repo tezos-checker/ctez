@@ -45,7 +45,7 @@ const MyOvenCard: React.FC<{ oven: Oven }> = ({ oven }) => {
       transition="0.4s"
       _hover={{ boxShadow: '0 23px 66px 4px rgba(176, 183, 195, 0.25)', cursor: 'pointer' }}
       as={Link}
-      to={`${oven.ovenId}`}
+      to={`/myovens/${oven.ovenId}`}
     >
       <Flex direction="column" w="70%">
         <Flex mb={4} mr={16} justifyContent="space-between">
