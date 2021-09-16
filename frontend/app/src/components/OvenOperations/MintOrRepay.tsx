@@ -20,6 +20,7 @@ import { isMonthFromLiquidation } from '../../api/contracts';
 import { IMintRepayForm } from '../../constants/oven-operations';
 import { cTezError, mintOrBurn } from '../../contracts/ctez';
 import { logger } from '../../utils/logger';
+import { useOvenStats } from '../../hooks/utilHooks';
 
 interface IMintOrRepayProps {
   type: 'mint' | 'repay';
@@ -28,9 +29,9 @@ interface IMintOrRepayProps {
 const MintOrRepay: React.FC<IMintOrRepayProps> = ({ type }) => {
   const { t } = useTranslation(['common']);
   const toast = useToast();
+  const { oven, stats, ovenId } = useOvenStats();
 
-  const oven = useAppSelector((state) => state.oven.oven);
-  const { ovenId, tez_balance, ctez_outstanding } = useMemo(
+  const { tez_balance, ctez_outstanding } = useMemo(
     () =>
       oven ?? {
         ovenId: 0,
@@ -80,10 +81,10 @@ const MintOrRepay: React.FC<IMintOrRepayProps> = ({ type }) => {
   };
 
   const handleFormSubmit = async (data: IMintRepayForm) => {
-    if (ovenId) {
+    if (oven?.ovenId) {
       try {
         const amount = type === 'repay' ? -data.amount : data.amount;
-        const result = await mintOrBurn(ovenId, amount);
+        const result = await mintOrBurn(Number(ovenId), amount);
         if (result) {
           toast({
             description: t('txSubmitted'),

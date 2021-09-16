@@ -36,7 +36,7 @@ const useOvenStats = () => {
     return { outStandingCtez, maxMintableCtez, remainingMintableCtez };
   }, [currentTarget, oven]);
 
-  return { stats, oven };
+  return { stats, oven, ovenId };
 };
 
 export { useOvenStats };

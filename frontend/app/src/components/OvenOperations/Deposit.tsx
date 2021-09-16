@@ -12,14 +12,23 @@ import { MdInfo } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 import { number, object } from 'yup';
 import { useFormik } from 'formik';
-import { useAppSelector } from '../../redux/store';
+import { useParams } from 'react-router-dom';
+import BigNumber from 'bignumber.js';
 import { IDepositForm } from '../../constants/oven-operations';
 import { cTezError, deposit } from '../../contracts/ctez';
 import { logger } from '../../utils/logger';
+import { useAppSelector } from '../../redux/store';
 
 const Deposit: React.FC = () => {
   const toast = useToast();
-  const ovenAddress = useAppSelector((state) => state.oven.oven?.address);
+  const { ovenId } = useParams<{ ovenId: string }>();
+  const oven = useAppSelector((state) =>
+    state.oven.ovens.find((x) => {
+      const ovenIdFromStore = new BigNumber(x.ovenId);
+      return ovenId === ovenIdFromStore.toString();
+    }),
+  );
+
   const { t } = useTranslation(['common']);
   const initialValues: any = {
     amount: '',
@@ -30,9 +39,9 @@ const Deposit: React.FC = () => {
   });
 
   const handleFormSubmit = async (data: IDepositForm) => {
-    if (ovenAddress) {
+    if (oven?.address) {
       try {
-        const result = await deposit(ovenAddress, data.amount);
+        const result = await deposit(oven.address, data.amount);
         if (result) {
           toast({
             description: t('txSubmitted'),

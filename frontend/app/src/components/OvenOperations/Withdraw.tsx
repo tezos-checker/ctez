@@ -13,8 +13,8 @@ import { useTranslation } from 'react-i18next';
 import { validateAddress } from '@taquito/utils';
 import { number, object, string } from 'yup';
 import { useFormik } from 'formik';
+import { useParams } from 'react-router-dom';
 import { useWallet } from '../../wallet/hooks';
-import { useAppSelector } from '../../redux/store';
 import { IWithdrawForm } from '../../constants/oven-operations';
 import { cTezError, withdraw } from '../../contracts/ctez';
 
@@ -22,7 +22,7 @@ const Withdraw: React.FC = () => {
   const { t } = useTranslation(['common']);
   const [{ pkh: userAddress }] = useWallet();
   const toast = useToast();
-  const ovenId = useAppSelector((state) => state.oven.oven?.ovenId);
+  const { ovenId } = useParams<{ ovenId: string }>();
   const initialValues: any = {
     amount: '',
     to: userAddress ?? '',
@@ -39,9 +39,10 @@ const Withdraw: React.FC = () => {
   });
 
   const handleFormSubmit = async (data: IWithdrawForm) => {
+    console.log({ data, ovenId });
     if (ovenId) {
       try {
-        const result = await withdraw(ovenId, data.amount, data.to);
+        const result = await withdraw(Number(ovenId), data.amount, data.to);
         if (result) {
           toast({
             description: t('txSubmitted'),
@@ -80,7 +81,7 @@ const Withdraw: React.FC = () => {
       </FormControl>
 
       <FormControl id="to-input-amount" mt={2} mb={6} w="100%">
-        <FormLabel fontSize="xs">Deposit Tezos</FormLabel>
+        <FormLabel fontSize="xs">Amount</FormLabel>
         <Input
           type="number"
           name="amount"
