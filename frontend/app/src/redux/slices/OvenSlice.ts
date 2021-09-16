@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { UserOvenStats } from '../../interfaces';
-import { OvenSerializable } from '../../interfaces';
+import { UserOvenStats, OvenSerializable } from '../../interfaces';
 
 interface OvenSliceState {
   oven: OvenSerializable | null;
