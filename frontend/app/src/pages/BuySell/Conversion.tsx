@@ -55,20 +55,19 @@ const ConvertComponent: React.FC<ConversionParams> = ({ t, formType }) => {
   const calcMinBuyValue = (slippage: number, amount: number) => {
     if (cfmmStorage) {
       const { tezPool, cashPool, target } = cfmmStorage;
-      const cashSold = amount * 1e6;
       const bought =
         formType === 'tezToCtez'
           ? tradeDTezForDCash(
               tezPool.toNumber(),
               cashPool.toNumber(),
-              cashSold,
+              amount * 1e6,
               target.toNumber(),
               4,
             )
           : tradeDCashForDTez(
               tezPool.toNumber(),
               cashPool.toNumber(),
-              cashSold,
+              amount * 1e6,
               target.toNumber(),
               4,
             );
