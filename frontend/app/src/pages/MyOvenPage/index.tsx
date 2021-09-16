@@ -1,4 +1,5 @@
 import { CircularProgress, Grid, Box } from '@material-ui/core';
+import BigNumber from 'bignumber.js';
 import { useSelector, useDispatch } from 'react-redux';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -28,6 +29,7 @@ export const MyOvenPage: React.FC = () => {
   const originalTarget = useSelector((state: RootState) =>
     Number(state.stats.baseStats?.originalTarget),
   );
+  const pendingTx = useSelector((state: RootState) => state.stats.transactionPending);
   const { showActions } = useSelector((state: RootState) => state.oven);
   const [{ pkh: userAddress }] = useWallet();
   const { data: ovenData, isLoading } = useOvenData(userAddress, extOvens);
@@ -67,6 +69,20 @@ export const MyOvenPage: React.FC = () => {
           justifyItems="flex-start"
           spacing={3}
         >
+          {pendingTx && (
+            <Grid item>
+              <OvenCard
+                isLoading
+                address=""
+                baker=""
+                ctez_outstanding={new BigNumber(0)}
+                imageId={1}
+                maxCtez={1}
+                ovenId={new BigNumber(0)}
+                tez_balance={new BigNumber(0)}
+              />
+            </Grid>
+          )}
           {ovenData &&
             ovenData.length > 0 &&
             ovenData
@@ -128,7 +144,9 @@ export const MyOvenPage: React.FC = () => {
         </Grid>
       )}
       {!isLoading && !userAddress && <Box p={3}>{t('signInToSeeOvens')}</Box>}
-      {!isLoading && userAddress && ovenData?.length === 0 && <Box p={3}>{t('noOvens')}</Box>}
+      {!isLoading && !pendingTx && userAddress && ovenData?.length === 0 && (
+        <Box p={3}>{t('noOvens')}</Box>
+      )}
       {!isLoading && userAddress && ovenData && ovenData.length > 0 && (
         <Drawer
           open={showActions}

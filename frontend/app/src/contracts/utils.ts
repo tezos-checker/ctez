@@ -8,12 +8,21 @@ export const executeMethod = async (
   confirmation = 0,
   amount = 0,
   mutez = false,
+  onConfirmation?: () => void | Promise<void>,
 ): Promise<string> => {
   const op = await contract.methods[methodName](...args).send({
     amount: amount > 0 ? amount : undefined,
     mutez,
   });
-  confirmation && (await op.confirmation(confirmation));
+  if (confirmation > 0) {
+    op.confirmation(confirmation)
+      .then(() => {
+        onConfirmation && onConfirmation();
+      })
+      .catch(() => {
+        onConfirmation && onConfirmation();
+      });
+  }
   return op.opHash;
 };
 
