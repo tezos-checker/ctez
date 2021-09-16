@@ -40,6 +40,7 @@ interface ICreateVaultForm {
   depositorOp: Depositor;
 }
 
+// TODO Refactor
 const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
   const [{ pkh: userAddress }] = useWallet();
   const { data: delegates } = useDelegates(userAddress);
@@ -55,14 +56,10 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
       })
       .required(t('required')),
     amount: number().optional(),
-    depositors: array()
+    depositors: string()
       .test({
         test: (value) => {
-          return (
-            value?.reduce((acc, item: any) => {
-              return acc && validateAddress(item?.value ?? item) === 3;
-            }, true) ?? false
-          );
+          return value?.split(', ').every((item) => validateAddress(item) === 3) ?? false;
         },
       })
       .required(t('required')),
@@ -105,7 +102,7 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
     if (userAddress) {
       try {
         const depositors =
-          data.depositors.split(', ').length > 0 && data.depositorOp === Depositor.whitelist
+          data.depositors.split(', ').length > 0 && data.depositType === 'Whitelist'
             ? data.depositors
                 .split(', ')
                 .map((item: string) => item)
@@ -114,7 +111,7 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
         const result = await create(
           userAddress,
           data.delegate,
-          data.depositorOp,
+          data.depositType === 'Whitelist' ? Depositor.whitelist : Depositor.any,
           depositors,
           data.amount,
         );
