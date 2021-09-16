@@ -33,6 +33,7 @@ const OvensPage: React.FC = () => {
   }, [userAddress]);
 
   useEffect(() => {
+    console.log({ ovenData });
     if (ovenData && ovenData.length > 0) {
       const ovenUserData: UserOvenStats = ovenData.reduce(
         (acc, item) => {
@@ -83,7 +84,7 @@ const OvensPage: React.FC = () => {
       <Box d="table" w="100%" mt={16}>
         {!isMyOven && mockOvens.map((oven) => <OvenCard key={oven.ovenId} oven={oven} />)}
 
-        {isMyOven && mockOvens.map((oven) => <MyOvenCard key={oven.ovenId} oven={oven} />)}
+        {isMyOven && ovenData?.map((oven) => <MyOvenCard key={oven.address} oven={oven} />)}
       </Box>
     </Box>
   );

@@ -14,8 +14,8 @@ export interface Oven {
 export interface OvenSerializable {
   ovenId: number;
   address: string;
-  ctez_outstanding: string | number;
-  tez_balance: string | number;
+  ctez_outstanding: string;
+  tez_balance: string;
   baker: string | null;
   isExternal?: boolean;
   isImported?: boolean;

@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { UserOvenStats } from '../../interfaces';
-import { OvenSerializable } from '../../interfaces/ctez';
+import { OvenSerializable } from '../../interfaces';
 
 interface OvenSliceState {
   oven: OvenSerializable | null;
@@ -28,7 +28,7 @@ export const OvenSlice = createSlice({
       state.oven = null;
       state.showActions = false;
     },
-    setUserOvenData: (state: OvenSliceState, action: PayloadAction<UserOvenStats>) => {
+    setUserOvenData: (state, action: PayloadAction<UserOvenStats>) => {
       state.userOvenData = action.payload;
     },
   },
