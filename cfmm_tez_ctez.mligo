@@ -1,5 +1,7 @@
 #include "errors.mligo"
 
+(* Check attic/cfmm_tez_ctez.old.preprocessed.mligo to compare with the old version of ctez *)
+
 [@inline] let error_CALLER_MUST_BE_CTEZ = 1000n
 [@inline] let error_ASSERTION_VIOLATED_TEZ_BOUGHT_SHOULD_BE_LESS_THAN_TEZPOOL = 1001n
 
