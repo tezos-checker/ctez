@@ -6,12 +6,29 @@ import { useLocation } from 'react-router-dom';
 import { mockOvens } from './mock';
 import OvenCard from '../../components/OvenCard/OvenCard';
 import MyOvenCard from '../../components/OvenCard/MyOvenCard';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { useWallet } from '../../wallet/hooks';
+import { openModal } from '../../redux/slices/UiSlice';
+import { MODAL_NAMES } from '../../constants/modals';
+import {
+  useSetCtezBaseStatsToStore,
+  useSetExtOvensToStore,
+  useSetOvenDataToStore,
+} from '../../hooks/setApiDataToStore';
 
 const OvensPage: React.FC = () => {
   const location = useLocation();
+  const dispatch = useAppDispatch();
+
+  const originalTarget = useAppSelector((state) => Number(state.stats.baseStats?.originalTarget));
+  const { ovens } = useAppSelector((state) => state.oven);
+  const [{ pkh: userAddress }] = useWallet();
+  useSetCtezBaseStatsToStore(userAddress);
+  useSetOvenDataToStore(userAddress);
+  useSetExtOvensToStore(userAddress);
 
   const isMyOven = useMemo(() => {
-    return location.pathname === '/ovens/mine';
+    return location.pathname === '/myovens';
   }, [location]);
 
   return (
@@ -25,20 +42,26 @@ const OvensPage: React.FC = () => {
         </Select>
 
         <Spacer />
-        <Button rightIcon={<BsArrowRight />} variant="outline">
+        <Button
+          rightIcon={<BsArrowRight />}
+          variant="outline"
+          onClick={() => dispatch(openModal(MODAL_NAMES.TRACK_OVEN))}
+        >
           Track Oven
         </Button>
-        <Button leftIcon={<MdAdd />} variant="solid">
+        <Button
+          leftIcon={<MdAdd />}
+          variant="solid"
+          onClick={() => dispatch(openModal(MODAL_NAMES.CREATE_OVEN))}
+        >
           Create Oven
         </Button>
       </Stack>
 
       <Box d="table" w="100%" mt={16}>
-        {!isMyOven &&
-          mockOvens.map((oven) => <OvenCard key={oven.ovenId} oven={oven} isMyOven={isMyOven} />)}
+        {!isMyOven && mockOvens.map((oven) => <OvenCard key={oven.ovenId} oven={oven} />)}
 
-        {isMyOven &&
-          mockOvens.map((oven) => <MyOvenCard key={oven.ovenId} oven={oven} isMyOven={isMyOven} />)}
+        {isMyOven && ovens?.map((oven) => <MyOvenCard key={oven.address} oven={oven} />)}
       </Box>
     </Box>
   );

@@ -32,6 +32,8 @@ import { DEFAULT_SLIPPAGE } from '../../utils/globals';
 import { CTezIcon, TezIcon } from '../icons';
 import { cashToToken, cfmmError, tokenToCash } from '../../contracts/cfmm';
 import { logger } from '../../utils/logger';
+import { useSetCtezBaseStatsToStore } from '../../hooks/setApiDataToStore';
+import { useAppSelector } from '../../redux/store';
 
 const Swap: React.FC = () => {
   const [{ pkh: userAddress }] = useWallet();
@@ -41,6 +43,8 @@ const Swap: React.FC = () => {
   const { data: cfmmStorage } = useCfmmStorage();
   const { t } = useTranslation(['common', 'header']);
   const toast = useToast();
+  useSetCtezBaseStatsToStore(userAddress);
+  const baseStats = useAppSelector((state) => state.stats?.baseStats);
 
   const getRightElement = useCallback((token: TToken) => {
     if (token === TOKEN.Tez) {
@@ -197,7 +201,9 @@ const Swap: React.FC = () => {
 
       <Flex justifyContent="space-between">
         <Text fontSize="xs">Rate</Text>
-        <Text fontSize="xs">1 XTZ = 1.01 CTEZ</Text>
+        <Text fontSize="xs">
+          1 XTZ = {(1 / Number(baseStats?.currentPrice ?? 1)).toFixed(6)} CTEZ
+        </Text>
       </Flex>
       <Flex justifyContent="space-between">
         <Text fontSize="xs">Price Impact</Text>

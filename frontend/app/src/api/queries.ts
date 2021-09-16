@@ -77,8 +77,8 @@ export const useOvenData = (userAddress?: string, externalOvens: string[] = []) 
       return [];
     },
     {
-      refetchInterval: 30000,
-      staleTime: 3000,
+      refetchInterval: 30_000,
+      staleTime: 3_000,
     },
   );
 };

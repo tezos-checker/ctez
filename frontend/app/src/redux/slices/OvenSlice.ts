@@ -1,16 +1,17 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { UserOvenStats } from '../../interfaces';
-import { OvenSerializable } from '../../interfaces/ctez';
+import { UserOvenStats, OvenSerializable, Oven } from '../../interfaces';
 
 interface OvenSliceState {
   oven: OvenSerializable | null;
-  showActions: boolean;
+  ovens: Oven[];
+  extOvens: string[];
   userOvenData: UserOvenStats;
 }
 
 const initialState: OvenSliceState = {
   oven: null,
-  showActions: false,
+  ovens: [],
+  extOvens: [],
   userOvenData: { xtz: 0, ctez: 0, totalOvens: 0 },
 };
 
@@ -18,18 +19,30 @@ export const OvenSlice = createSlice({
   name: 'oven',
   initialState,
   reducers: {
-    toggleActions: (state, action: PayloadAction<boolean>) => {
-      state.showActions = action.payload;
-    },
     setOven: (state, action: PayloadAction<OvenSerializable>) => {
       state.oven = action.payload;
     },
+    setOvens: (state, action: PayloadAction<Oven[]>) => {
+      state.ovens = action.payload;
+    },
+    setExternalOvens: (state, action: PayloadAction<string[]>) => {
+      state.extOvens = action.payload;
+    },
     clearOven: (state) => {
       state.oven = null;
-      state.showActions = false;
+      state.ovens = [];
     },
-    setUserOvenData: (state: OvenSliceState, action: PayloadAction<UserOvenStats>) => {
+    setUserOvenData: (state, action: PayloadAction<UserOvenStats>) => {
       state.userOvenData = action.payload;
     },
   },
 });
+
+export const {
+  setOven,
+  setOvens,
+  setExternalOvens,
+  clearOven,
+  setUserOvenData,
+} = OvenSlice.actions;
+export default OvenSlice.reducer;

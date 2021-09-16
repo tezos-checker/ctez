@@ -1,16 +1,28 @@
 import { Box, Button, Flex, Text } from '@chakra-ui/react';
 import { MdChevronRight } from 'react-icons/all';
 import { Link } from 'react-router-dom';
-import { OvenSerializable } from '../../interfaces';
+import BigNumber from 'bignumber.js';
+import { Oven } from '../../interfaces';
 import ProgressPill from './ProgressPill';
 
-const MyOvenCard: React.FC<{ oven: OvenSerializable; isMyOven: boolean }> = ({ oven }) => {
+const getNumber = (value: string | BigNumber) => {
+  if (typeof value === 'string') {
+    return value;
+  }
+
+  return value.shiftedBy(-6).toNumber();
+};
+
+const MyOvenCard: React.FC<{ oven: Oven }> = ({ oven }) => {
   const renderItems = () => {
     const items = [
       { label: 'Num Oven', value: `#${oven.ovenId}` },
-      { label: 'Current utilization', value: `${oven.tez_balance}%` },
-      { label: 'Oven Balance', value: `${oven.tez_balance} XTZ` },
-      { label: 'Outstanding ctez', value: `${oven.ctez_outstanding} cTEZ` },
+      { label: 'Current utilization', value: `${getNumber(oven.tez_balance)}%` },
+      { label: 'Oven Balance', value: `${getNumber(oven.tez_balance)} XTZ` },
+      {
+        label: 'Outstanding ctez',
+        value: `${getNumber(oven.ctez_outstanding)} cTEZ`,
+      },
     ];
 
     return items.map((item) => (
@@ -33,7 +45,7 @@ const MyOvenCard: React.FC<{ oven: OvenSerializable; isMyOven: boolean }> = ({ o
       transition="0.4s"
       _hover={{ boxShadow: '0 23px 66px 4px rgba(176, 183, 195, 0.25)', cursor: 'pointer' }}
       as={Link}
-      to={`${oven.ovenId}`}
+      to={`/myovens/${oven.ovenId}`}
     >
       <Flex direction="column" w="70%">
         <Flex mb={4} mr={16} justifyContent="space-between">

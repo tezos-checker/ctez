@@ -6,14 +6,15 @@ import TradePage from '../pages/trade';
 
 export const routes: ComponentRoute[] = [
   {
-    path: ['/ovens/mine', '/ovens/create'],
+    path: '/myovens/:ovenId',
+    Component: <OvenIdPage />,
+  },
+  {
+    path: '/myovens',
     Component: <OvensPage />,
     exact: true,
   },
-  {
-    path: '/ovens/:id',
-    Component: <OvenIdPage />,
-  },
+
   {
     path: '/ovens',
     Component: <OvensPage />,

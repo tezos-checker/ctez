@@ -12,6 +12,7 @@ import { initCTez } from './contracts/ctez';
 import { initCfmm } from './contracts/cfmm';
 import { logger } from './utils/logger';
 import { getNodePort, getNodeURL } from './utils/settingUtils';
+import ModalContainer from './components/modals/ModalContainer';
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,7 @@ const App: React.FC = () => {
           <WalletProvider value={{ wallet, setWallet }}>
             <ChakraProvider>
               <AppRouter />
+              <ModalContainer />
             </ChakraProvider>
           </WalletProvider>
         </QueryClientProvider>

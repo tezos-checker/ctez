@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { Text, Flex, Box } from '@chakra-ui/react';
 import React from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { ReactComponent as MyOvens } from '../../assets/images/sidebar/myovens.svg';
 import { ReactComponent as AllOvens } from '../../assets/images/sidebar/allovens.svg';
 import { ReactComponent as CreateOven } from '../../assets/images/sidebar/createoven.svg';
@@ -15,6 +16,8 @@ import { ReactComponent as ArrowLeft } from '../../assets/images/sidebar/arrowle
 import { ReactComponent as ArrowRight } from '../../assets/images/sidebar/arrowright.svg';
 import { ReactComponent as Logo } from '../../assets/images/sidebar/logo.svg';
 import 'react-pro-sidebar/dist/css/styles.css';
+import { openModal } from '../../redux/slices/UiSlice';
+import { MODAL_NAMES } from '../../constants/modals';
 
 export interface Props {
   handleCollapsed: React.MouseEventHandler;
@@ -30,6 +33,11 @@ export const Sidebar: React.FC<Props> = ({
   toggled,
 }) => {
   const location = useLocation();
+  const dispatch = useDispatch();
+
+  const handleCreateOvenClick = () => {
+    dispatch(openModal(MODAL_NAMES.CREATE_OVEN));
+  };
 
   const stats = () => {
     return (
@@ -123,7 +131,9 @@ export const Sidebar: React.FC<Props> = ({
               })}
               icon={<CreateOven />}
             >
-              <NavLink to="/createoven">Create Oven</NavLink>
+              <NavLink to="/myovens" onClick={handleCreateOvenClick}>
+                Create Oven
+              </NavLink>
             </MenuItem>
             <MenuItem
               className={clsx({
@@ -147,11 +157,11 @@ export const Sidebar: React.FC<Props> = ({
             </MenuItem>
             <MenuItem
               className={clsx({
-                highlight: location.pathname === '/ovens/mine',
+                highlight: location.pathname === '/myovens',
               })}
               icon={<MyOvens />}
             >
-              <Link to="/ovens/mine">My Ovens</Link>
+              <Link to="/myovens">My Ovens</Link>
             </MenuItem>
             <MenuItem
               className={clsx({

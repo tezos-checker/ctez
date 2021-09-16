@@ -1,10 +1,19 @@
 import { Stack, useMediaQuery } from '@chakra-ui/react';
 import OvenInfo from '../../../components/OvenCard/OvenInfo';
 import OvenStats from '../../../components/OvenCard/OvenStats';
-import OvenOperations from '../../../components/OvenCard/OvenOperations';
+import OvenOperations from '../../../components/OvenOperations/OvenOperations';
+import { useWallet } from '../../../wallet/hooks';
+import {
+  useSetCtezBaseStatsToStore,
+  useSetOvenDataToStore,
+} from '../../../hooks/setApiDataToStore';
 
 const OvenIdPage: React.FC = () => {
   const [largerScreen] = useMediaQuery(['(min-width: 800px)']);
+
+  const [{ pkh: userAddress }] = useWallet();
+  useSetCtezBaseStatsToStore(userAddress);
+  useSetOvenDataToStore(userAddress);
 
   return (
     <Stack

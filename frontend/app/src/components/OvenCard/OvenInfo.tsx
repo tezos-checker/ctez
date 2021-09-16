@@ -1,7 +1,10 @@
 import { Button, Divider, Flex, Stack, Text } from '@chakra-ui/react';
 import ProgressPill from './ProgressPill';
+import { useOvenStats } from '../../hooks/utilHooks';
 
 const OvenInfo: React.FC = () => {
+  const { stats, oven } = useOvenStats();
+
   return (
     <Stack p={8} spacing={4} backgroundColor="white" borderRadius={16}>
       <Flex w="100%" justifyContent="space-between">
@@ -24,7 +27,7 @@ const OvenInfo: React.FC = () => {
       <Flex w="100%" justifyContent="space-between" alignItems="center">
         <Text>
           <strong>CBaker:</strong>
-          tz1czaureyspHk1etv1dKV1WmH
+          {oven?.baker}
         </Text>
 
         <Button>Change</Button>
