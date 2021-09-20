@@ -42,14 +42,18 @@ export const create = async (
   op: Depositor,
   allowedDepositors?: string[],
   amount = 0,
+  confirmation = 0,
+  onConfirmation?: () => void | Promise<void>,
 ): Promise<string> => {
   const newOvenId = getLastOvenId(userAddress, cTez.address) + 1;
   const hash = await executeMethod(
     cTez,
     'create',
     [newOvenId, bakerAddress, op, allowedDepositors],
-    undefined,
+    confirmation,
     amount,
+    false,
+    onConfirmation,
   );
   saveLastOven(userAddress, cTez.address, newOvenId);
   return hash;

@@ -48,10 +48,10 @@ const AddLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
 
   const calcMaxToken = (slippage: number, cashDeposited: number) => {
     if (cfmmStorage) {
-      const { tokenPool, cashPool } = cfmmStorage;
+      const { tezPool, cashPool } = cfmmStorage;
       const cash = cashDeposited * 1e6;
       const max =
-        Math.ceil(((cash * tokenPool.toNumber()) / cashPool.toNumber()) * (1 + slippage * 0.01)) /
+        Math.ceil(((cash * cashPool.toNumber()) / tezPool.toNumber()) * (1 + slippage * 0.01)) /
         1e6;
       setMaxToken(Number(max.toFixed(6)));
     } else {
@@ -61,10 +61,10 @@ const AddLiquidityComponent: React.FC<WithTranslation> = ({ t }) => {
 
   const calcMinPoolPercent = (slippage: number, cashDeposited: number) => {
     if (cfmmStorage) {
-      const { cashPool, lqtTotal } = cfmmStorage;
+      const { tezPool, lqtTotal } = cfmmStorage;
       const cash = cashDeposited * 1e6;
       const minLQTMinted =
-        ((cash * lqtTotal.toNumber()) / cashPool.toNumber()) * (1 - slippage * 0.01);
+        ((cash * lqtTotal.toNumber()) / tezPool.toNumber()) * (1 - slippage * 0.01);
       const minPool = (minLQTMinted / (lqtTotal.toNumber() + minLQTMinted)) * 100;
       setMinLQT(Number(Math.floor(minLQTMinted).toFixed()));
       setMinPoolPercent(Number(minPool.toFixed(6)));

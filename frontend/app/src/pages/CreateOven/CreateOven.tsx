@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { validateAddress } from '@taquito/utils';
+import { useQueryClient } from 'react-query';
+import { useDispatch } from 'react-redux';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 import styled from '@emotion/styled';
@@ -21,6 +23,7 @@ import {
 import { FormikRadioGroup } from '../../components/FormikRadioGroup/FormikRadioGroup';
 import { logger } from '../../utils/logger';
 import { useDelegates } from '../../api/queries';
+import { StatsSlice } from '../../redux/slices/StatsSlice';
 
 interface CreateVaultForm {
   delegate: string;
@@ -35,10 +38,12 @@ const PaperStyled = styled(Paper)`
 
 const CreateOvenComponent: React.FC<WithTranslation> = ({ t }) => {
   const [{ pkh: userAddress }] = useWallet();
+  const queryClient = useQueryClient();
   const { data: delegates } = useDelegates(userAddress);
   const [delegate, setDelegate] = useState('');
   const { addToast } = useToasts();
   const history = useHistory();
+  const dispatch = useDispatch();
   const validationSchema = Yup.object().shape({
     delegate: Yup.string()
       .test({
@@ -122,8 +127,15 @@ const CreateOvenComponent: React.FC<WithTranslation> = ({ t }) => {
           data.depositorOp,
           depositors,
           data.amount,
+          1,
+          () => {
+            queryClient.invalidateQueries('ovenData');
+            dispatch(StatsSlice.actions.setPendingTransaction(false));
+          },
         );
         if (result) {
+          console.log(result);
+          dispatch(StatsSlice.actions.setPendingTransaction(true));
           addToast(t('txSubmitted'), {
             appearance: 'success',
             autoDismiss: true,

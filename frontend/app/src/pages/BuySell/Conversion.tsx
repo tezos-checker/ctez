@@ -21,12 +21,13 @@ import { useHistory } from 'react-router-dom';
 import Page from '../../components/Page';
 import FormikTextField from '../../components/TextField';
 import { useWallet } from '../../wallet/hooks';
-import { cashToToken, cfmmError, tokenToCash } from '../../contracts/cfmm';
+import { tezToCash, cfmmError, cashToTez } from '../../contracts/cfmm';
 import { TezosIcon } from '../../components/TezosIcon';
 import { CTezIcon } from '../../components/CTezIcon/CTezIcon';
 import { logger } from '../../utils/logger';
 import { DEFAULT_SLIPPAGE } from '../../utils/globals';
 import { useCfmmStorage } from '../../api/queries';
+import { tradeDTezForDCash, tradeDCashForDTez, FEE, FEE_DENOM } from '../../utils/cfmmUtils';
 
 interface ConversionParams extends WithTranslation {
   formType: 'tezToCtez' | 'ctezToTez';
@@ -53,15 +54,28 @@ const ConvertComponent: React.FC<ConversionParams> = ({ t, formType }) => {
 
   const calcMinBuyValue = (slippage: number, amount: number) => {
     if (cfmmStorage) {
-      const { tokenPool, cashPool } = cfmmStorage;
-      const cashSold = amount * 1e6;
-      const [aPool, bPool] =
-        formType === 'tezToCtez' ? [tokenPool, cashPool] : [cashPool, tokenPool];
-      const tokWithoutSlippage =
-        (cashSold * 997 * aPool.toNumber()) / (bPool.toNumber() * 1000 + cashSold * 997) / 1e6;
-      const tok = tokWithoutSlippage * (1 - slippage * 0.01);
-      setWithoutSlippage(Number(tokWithoutSlippage.toFixed(6)));
-      setMinBuyValue(Number(tok.toFixed(6)));
+      const { tezPool, cashPool, target } = cfmmStorage;
+      const bought =
+        formType === 'tezToCtez'
+          ? tradeDTezForDCash(
+              tezPool.toNumber(),
+              cashPool.toNumber(),
+              amount * 1e6,
+              target.toNumber(),
+              4,
+            )
+          : tradeDCashForDTez(
+              tezPool.toNumber(),
+              cashPool.toNumber(),
+              amount * 1e6,
+              target.toNumber(),
+              4,
+            );
+
+      const boughtAfterFee = (bought * FEE) / FEE_DENOM;
+      const tok = boughtAfterFee * (1 - slippage * 0.01);
+      setWithoutSlippage(Number((Math.floor(boughtAfterFee) / 1e6).toFixed(6)));
+      setMinBuyValue(Number((Math.floor(tok) / 1e6).toFixed(6)));
     } else {
       setMinBuyValue(-1);
     }
@@ -93,13 +107,13 @@ const ConvertComponent: React.FC<ConversionParams> = ({ t, formType }) => {
       const deadline = addMinutes(new Date(), formData.deadline);
       const result =
         formType === 'tezToCtez'
-          ? await cashToToken({
+          ? await tezToCash({
               amount: formData.amount,
               deadline,
               minTokensBought: minBuyValue,
               to: formData.to,
             })
-          : await tokenToCash(
+          : await cashToTez(
               {
                 deadline,
                 minCashBought: minBuyValue,

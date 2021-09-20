@@ -1,12 +1,14 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { BaseStats } from '../../interfaces';
 
-interface OvenSliceState {
+interface IStatsSlice {
   baseStats: BaseStats | null;
+  transactionPending: boolean;
 }
 
-const initialState: OvenSliceState = {
+const initialState: IStatsSlice = {
   baseStats: null,
+  transactionPending: false,
 };
 
 export const StatsSlice = createSlice({
@@ -15,6 +17,10 @@ export const StatsSlice = createSlice({
   reducers: {
     setBaseStats: (state, action: PayloadAction<BaseStats>) => {
       state.baseStats = action.payload;
+    },
+    setPendingTransaction: (state, action: PayloadAction<boolean>) => {
+      state.transactionPending = action.payload;
+      return state;
     },
   },
 });

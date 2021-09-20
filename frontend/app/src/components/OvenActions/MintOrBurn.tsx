@@ -13,7 +13,7 @@ import { CTezIcon } from '../CTezIcon/CTezIcon';
 import { getOvenMaxCtez } from '../../utils/ovenUtils';
 import Typography from '../Typography';
 import { logger } from '../../utils/logger';
-import { isMonthFromLiquidation } from '../../api/contracts';
+import { isMonthFromLiquidation } from '../../utils/cfmmUtils';
 
 interface MintOrBurnProps {
   type: 'mint' | 'repay';
@@ -50,7 +50,12 @@ export const MintOrBurn: React.FC<MintOrBurnProps> = ({ type }) => {
       .min(0.000001)
       .test({
         test: (value) => {
-          if (value && drift && currentTarget && type === 'mint') {
+          if (
+            value !== undefined &&
+            drift !== undefined &&
+            currentTarget !== undefined &&
+            type === 'mint'
+          ) {
             const newOutstanding = Number(ctez_outstanding) + value * 1e6;
             const tez = Number(tez_balance);
             const result = isMonthFromLiquidation(newOutstanding, currentTarget, tez, drift);

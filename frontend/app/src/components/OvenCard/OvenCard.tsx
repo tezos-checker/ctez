@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import { Box, Button, Chip, Grid } from '@material-ui/core';
+import { Avatar, Box, Button, Chip, Grid, Skeleton } from '@material-ui/core';
 import { FcImport, FcExport } from 'react-icons/fc';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
@@ -22,6 +22,7 @@ interface OvenCardProps extends Oven {
   isImported?: boolean;
   action?: () => void | Promise<void>;
   removeExternalAction?: () => void | Promise<void>;
+  isLoading?: boolean;
 }
 
 export const StyledCard = styled(Card)`
@@ -53,6 +54,7 @@ const OvenCardComponent: React.FC<OvenCardProps> = ({
   isExternal = false,
   isImported = false,
   removeExternalAction,
+  isLoading,
 }) => {
   const { t } = useTranslation(['common']);
   const maxMintableCtez = maxCtez < 0 ? 0 : maxCtez;
@@ -62,16 +64,28 @@ const OvenCardComponent: React.FC<OvenCardProps> = ({
     <StyledCard className={isMonthAway ? 'with-border' : undefined}>
       <CardHeader
         avatar={
-          <Box>
-            <Identicon seed={address} type="tzKtCat" />
-          </Box>
+          isLoading ? (
+            <Skeleton variant="circular">
+              <Avatar variant="circular" />
+            </Skeleton>
+          ) : (
+            <Box>
+              <Identicon seed={address} type="tzKtCat" />
+            </Box>
+          )
         }
-        title={<Address address={address} trimSize="medium" trim />}
+        title={
+          isLoading ? (
+            <Skeleton variant="text" animation="pulse" />
+          ) : (
+            <Address address={address} trimSize="medium" trim />
+          )
+        }
         subheader={
           <Grid container direction="column">
             <Grid item>
               <Typography size="body1" component="span" color="textSecondary">
-                {`${t('ovenBalance')}: ${ovenBalance}`}
+                {isLoading ? <Skeleton /> : `${t('ovenBalance')}: ${ovenBalance}`}
               </Typography>
             </Grid>
             <Grid item>
@@ -102,7 +116,11 @@ const OvenCardComponent: React.FC<OvenCardProps> = ({
           </Grid>
         }
       />
-      <StyledCardMedia image={`/img/ovens/${imageId}.jpeg`} />
+      {isLoading ? (
+        <Skeleton variant="rectangular" width="20rem" height="14.375rem" />
+      ) : (
+        <StyledCardMedia image={`/img/ovens/${imageId}.jpeg`} />
+      )}
       <CardContent>
         <Grid container direction="column">
           {baker && (
@@ -114,13 +132,20 @@ const OvenCardComponent: React.FC<OvenCardProps> = ({
           )}
           <Grid item>
             <Typography size="body1" component="span" color="textSecondary">
-              {t('outstandingCTez')}: {outStandingCtez}
+              {isLoading ? <Skeleton /> : `${t('outstandingCTez')} : ${outStandingCtez}`}
             </Typography>
           </Grid>
           {maxMintableCtez > 0 && (
             <Grid item>
               <Typography size="body1" component="span" color="textSecondary">
-                {t('currentUtilization')}: {((outStandingCtez / maxMintableCtez) * 100).toFixed(2)}%
+                {isLoading ? (
+                  <Skeleton />
+                ) : (
+                  `${t('currentUtilization')} : ${(
+                    (outStandingCtez / maxMintableCtez) *
+                    100
+                  ).toFixed(2)}%`
+                )}
                 {isMonthAway && (
                   <span role="img" aria-label="alert">
                     ⚠️
@@ -137,6 +162,7 @@ const OvenCardComponent: React.FC<OvenCardProps> = ({
           disableRipple
           disableFocusRipple
           endIcon={<ExpandMoreIcon color="action" />}
+          disabled={isLoading}
         >
           <Typography size="caption" color="CaptionText">
             {t('actions')}
