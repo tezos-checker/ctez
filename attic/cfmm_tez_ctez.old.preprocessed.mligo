@@ -39,7 +39,6 @@ type cash_to_token =
   [@layout:comb]
   { [@annot:to] to_ : address ;  (* where to send the tokens *)
     minTokensBought : nat ; (* minimum amount of tokens that must be bought *)
-
     deadline : timestamp ; (* time before which the request must be completed *)
   }
 

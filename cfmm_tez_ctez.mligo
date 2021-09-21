@@ -56,7 +56,6 @@ type tez_to_token =
   { outputCfmmContract : address ; (* other cfmm contract *)
     minTokensBought : nat ; (* minimum amount of cash bought *)
     [@annot:to] to_ : address ; (* where to send the output cash *)
-    tezSold : nat ; (* amount of tez to sell *)
     deadline : timestamp ; (* time before which the request must be completed *)
     rounds : int ; (* number of iterations in estimating the difference equations. Default should be 4n. *)
   }
@@ -415,7 +414,6 @@ let tez_to_token (param : tez_to_token) (storage : storage) : result =
     let { outputCfmmContract = outputCfmmContract ;
           minTokensBought = minTokensBought ;
           to_ = to_ ;
-          tezSold = tezSold ;
           deadline = deadline ;
           rounds = rounds } = param in
 
@@ -427,6 +425,7 @@ let tez_to_token (param : tez_to_token) (storage : storage) : result =
     if Tezos.now >= deadline then
       (failwith error_THE_CURRENT_TIME_MUST_BE_LESS_THAN_THE_DEADLINE : result)
     else
+        let tezSold = mutez_to_natural Tezos.amount in
         (* We don't check that cashPool > 0, because that is impossible unless all liquidity has been removed. *)
         let cash_bought =
            (let bought = trade_dtez_for_dcash storage.tezPool storage.cashPool tezSold storage.target rounds in
