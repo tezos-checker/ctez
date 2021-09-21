@@ -1,14 +1,4 @@
-import {
-  Button,
-  Flex,
-  FormControl,
-  FormLabel,
-  Icon,
-  Input,
-  Stack,
-  Text,
-  useToast,
-} from '@chakra-ui/react';
+import { Flex, FormControl, FormLabel, Icon, Input, Stack, Text, useToast } from '@chakra-ui/react';
 import { MdAdd } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 import { useCallback, useEffect, useState } from 'react';
@@ -24,6 +14,7 @@ import { ADD_BTN_TXT, IAddLiquidityForm, TAddBtnTxt } from '../../constants/liqu
 import { addLiquidity, cfmmError } from '../../contracts/cfmm';
 import { logger } from '../../utils/logger';
 import { BUTTON_TXT } from '../../constants/swap';
+import Button from '../button/Button';
 
 const AddLiquidity: React.FC = () => {
   const [{ pkh: userAddress }] = useWallet();
@@ -121,7 +112,7 @@ const AddLiquidity: React.FC = () => {
   return (
     <form onSubmit={handleSubmit} id="add-liquidity-form">
       <Stack spacing={2}>
-        <Text>Add liquidity</Text>
+        <Text color="#4E5D78">Add liquidity</Text>
 
         <Flex alignItems="center" justifyContent="space-between">
           <FormControl id="to-input-amount" mt={-2} mb={6} w="45%">
@@ -142,7 +133,7 @@ const AddLiquidity: React.FC = () => {
           </FormControl>
         </Flex>
 
-        <Button variant="outline" type="submit" isLoading={isSubmitting}>
+        <Button w="100%" variant="outline" type="submit" isLoading={isSubmitting}>
           {buttonText}
         </Button>
       </Stack>

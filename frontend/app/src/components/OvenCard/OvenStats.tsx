@@ -62,19 +62,33 @@ const OvenStats: React.FC = () => {
 
   return (
     <Stack p={8} spacing={4} backgroundColor="white" borderRadius={16}>
-      <Text>Ctez Stats</Text>
+      <Text fontWeight="600" color="#4E5D78">
+        Ctez Stats
+      </Text>
 
       <Divider />
 
       <Flex justifyContent="space-between">
         {stats.map(({ label, value, percentage }) => (
           <Box key={label} textAlign="center">
-            <CircularProgress value={percentage} size="80px" thickness={8} capIsRound>
-              <CircularProgressLabel>{percentage}%</CircularProgressLabel>
+            <CircularProgress
+              color={percentage > 50 ? (percentage > 80 ? '#38CB89' : '#377DFF') : '#FFAB00'}
+              value={percentage}
+              size="80px"
+              thickness={8}
+              capIsRound
+            >
+              <CircularProgressLabel fontWeight="600" fontSize="lg">
+                {percentage}%
+              </CircularProgressLabel>
             </CircularProgress>
 
-            <Text fontSize="lg">{value}</Text>
-            <Text fontSize="xs">{label}</Text>
+            <Text fontWeight="600" color="#4E5D78" fontSize="lg">
+              {value}
+            </Text>
+            <Text fontWeight="500" color="#B0B7C3" fontSize="xs">
+              {label}
+            </Text>
           </Box>
         ))}
       </Flex>

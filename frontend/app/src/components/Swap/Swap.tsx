@@ -1,5 +1,4 @@
 import {
-  Button,
   Flex,
   FormControl,
   FormLabel,
@@ -34,6 +33,7 @@ import { cashToToken, cfmmError, tokenToCash } from '../../contracts/cfmm';
 import { logger } from '../../utils/logger';
 import { useSetCtezBaseStatsToStore } from '../../hooks/setApiDataToStore';
 import { useAppSelector } from '../../redux/store';
+import Button from '../button/Button';
 
 const Swap: React.FC = () => {
   const [{ pkh: userAddress }] = useWallet();
@@ -171,6 +171,8 @@ const Swap: React.FC = () => {
             name="amount"
             id="amount"
             type="number"
+            color="#B0B7C3"
+            bg="#F8F9FF"
             value={values.amount}
             onChange={handleChange}
           />
@@ -194,14 +196,14 @@ const Swap: React.FC = () => {
       <FormControl id="to-input-amount" mt={-2} mb={6}>
         <FormLabel fontSize="xs">To (estimate)</FormLabel>
         <InputGroup>
-          <Input value={minBuyValue} type="number" />
+          <Input color="#B0B7C3" bg="#F8F9FF" value={minBuyValue} type="number" />
           {getRightElement(formType === FORM_TYPE.CTEZ_TEZ ? TOKEN.Tez : TOKEN.CTez)}
         </InputGroup>
       </FormControl>
 
       <Flex justifyContent="space-between">
         <Text fontSize="xs">Rate</Text>
-        <Text fontSize="xs">
+        <Text color="#4E5D78" fontSize="xs">
           1 XTZ = {(1 / Number(baseStats?.currentPrice ?? 1)).toFixed(6)} CTEZ
         </Text>
       </Flex>

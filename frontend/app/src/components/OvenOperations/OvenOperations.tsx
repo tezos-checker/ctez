@@ -44,8 +44,12 @@ const OvenOperations: React.FC<IOvenOperationsProps> = (props) => {
     >
       <Tabs>
         <TabList justifyContent="space-evenly">
-          <Tab>Mint & Deposit</Tab>
-          <Tab>Withdraw & Repay </Tab>
+          <Tab color="#4E5D78" fontWeight="700">
+            Mint & Deposit
+          </Tab>
+          <Tab color="#4E5D78" fontWeight="700">
+            Withdraw & Repay
+          </Tab>
         </TabList>
 
         <TabPanels>

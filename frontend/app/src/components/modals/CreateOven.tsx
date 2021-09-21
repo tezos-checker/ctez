@@ -1,5 +1,4 @@
 import {
-  Button,
   Flex,
   FormControl,
   FormLabel,
@@ -26,6 +25,7 @@ import { create, cTezError } from '../../contracts/ctez';
 import { useWallet } from '../../wallet/hooks';
 import { logger } from '../../utils/logger';
 import RadioCard from '../radio/RadioCard';
+import Button from '../button/Button';
 
 interface ICreateOvenProps {
   isOpen: boolean;
@@ -150,15 +150,21 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
       <ModalOverlay />
       <form onSubmit={handleSubmit}>
         <ModalContent>
-          <ModalHeader>Create an Oven</ModalHeader>
+          <ModalHeader fontWeight="500" color="#323B4B">
+            Create an Oven
+          </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <FormControl w="100%" mb={2}>
-              <FormLabel fontSize="xs">Delegate</FormLabel>
+              <FormLabel color="#4E5D78" fontWeight="500" fontSize="xs">
+                Delegate
+              </FormLabel>
 
               <Select
                 placeholder={t('delegatePlaceholder')}
                 value={values.delegate}
+                color="#B0B7C3"
+                bg="#F8F9FF"
                 onChange={(ev) => {
                   formik.setFieldValue('delegate', ev.target.value);
                 }}
@@ -171,18 +177,24 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
               </Select>
             </FormControl>
             <FormControl w="100%" mb={2}>
-              <FormLabel fontSize="xs">Initial Deposit</FormLabel>
+              <FormLabel color="#4E5D78" fontWeight="500" fontSize="xs">
+                Initial Deposit
+              </FormLabel>
               <Input
                 type="number"
                 name="amount"
                 id="amount"
+                color="#B0B7C3"
+                bg="#F8F9FF"
                 value={values.amount}
                 onChange={handleChange}
               />
             </FormControl>
 
             <FormControl w="100%" mb={2}>
-              <FormLabel fontSize="xs">Who can Deposit?</FormLabel>
+              <FormLabel color="#4E5D78" fontWeight="500" fontSize="xs">
+                Who can Deposit?
+              </FormLabel>
               <Flex {...group} w="100%" justifyContent="space-between">
                 {options.map((value) => {
                   const radio = getRadioProps({ value });
@@ -196,10 +208,14 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
             </FormControl>
 
             <FormControl w="100%" mb={2}>
-              <FormLabel fontSize="xs">Authorised Deposters</FormLabel>
+              <FormLabel color="#4E5D78" fontWeight="500" fontSize="xs">
+                Authorised Deposters
+              </FormLabel>
               <Input
                 name="depositors"
                 id="depositors"
+                color="#B0B7C3"
+                bg="#F8F9FF"
                 value={values.depositors}
                 onChange={handleChange}
               />
@@ -207,7 +223,7 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="blue" w="100%" type="submit">
+            <Button w="100%" type="submit">
               Create Oven
             </Button>
           </ModalFooter>

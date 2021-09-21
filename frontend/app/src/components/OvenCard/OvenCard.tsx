@@ -23,8 +23,12 @@ const OvenCard: React.FC<{ oven: OvenSerializable }> = ({ oven }) => {
 
     return items.map((item) => (
       <Box key={item.label}>
-        <Text>{item.value}</Text>
-        <Text fontSize="xs">{item.label}</Text>
+        <Text fontWeight="600" color="#4E5D78">
+          {item.value}
+        </Text>
+        <Text fontWeight="500" color="#B0B7C3" fontSize="xs">
+          {item.label}
+        </Text>
       </Box>
     ));
   };
@@ -42,7 +46,9 @@ const OvenCard: React.FC<{ oven: OvenSerializable }> = ({ oven }) => {
 
       <Box>
         <ProgressPill value={75} />
-        <Text fontSize="xs">Collateral Utilization</Text>
+        <Text color="#B0B7C3" fontSize="xs">
+          Collateral Utilization
+        </Text>
       </Box>
     </Grid>
   );

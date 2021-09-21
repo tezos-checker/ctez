@@ -1,13 +1,4 @@
-import {
-  Button,
-  Flex,
-  FormControl,
-  FormLabel,
-  Icon,
-  Input,
-  Stack,
-  useToast,
-} from '@chakra-ui/react';
+import { Flex, FormControl, FormLabel, Icon, Input, Stack, useToast } from '@chakra-ui/react';
 import { MdAdd } from 'react-icons/md';
 import { addMinutes } from 'date-fns/fp';
 import { validateAddress } from '@taquito/utils';
@@ -21,6 +12,7 @@ import { IRemoveLiquidityForm, TRemoveBtnTxt, REMOVE_BTN_TXT } from '../../const
 import { useWallet } from '../../wallet/hooks';
 import { useCfmmStorage } from '../../api/queries';
 import { DEFAULT_SLIPPAGE } from '../../utils/globals';
+import Button from '../button/Button';
 
 const RemoveLiquidity: React.FC = () => {
   const [{ pkh: userAddress }] = useWallet();
@@ -125,7 +117,7 @@ const RemoveLiquidity: React.FC = () => {
 
   return (
     <form onSubmit={handleSubmit} id="remove-liquidity-form">
-      <Stack spacing={2}>
+      <Stack colorScheme="gray" spacing={2}>
         <FormControl id="to-input-amount" mb={2}>
           <FormLabel fontSize="xs">LQT to burn</FormLabel>
           <Input

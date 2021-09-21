@@ -16,11 +16,12 @@ const RadioCard: React.FC<UseRadioProps> = (props) => {
         cursor="pointer"
         borderWidth="1px"
         borderRadius="md"
+        color="#647189"
+        borderColor="#6B5BD2"
         boxShadow="md"
         _checked={{
-          bg: 'blue.600',
+          bgGradient: 'linear(90.5deg, #0F62FF 8.62%, #6B5BD2 102.96%)',
           color: 'white',
-          borderColor: 'blue.600',
         }}
         px={5}
         py={3}

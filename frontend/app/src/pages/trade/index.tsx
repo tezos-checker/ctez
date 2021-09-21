@@ -5,7 +5,16 @@ import Liquidity from '../../components/Liquidity';
 const TradePage: React.FC = () => {
   return (
     <Flex height="calc(100vh - 72px)" alignItems="center" justifyContent="center">
-      <Box backgroundColor="white" minWidth="400px" maxWidth="400px" borderRadius={16} p={4} m={4}>
+      <Box
+        fontWeight="500"
+        backgroundColor="white"
+        minWidth="400px"
+        color="gray.500"
+        maxWidth="400px"
+        borderRadius={16}
+        p={4}
+        m={4}
+      >
         <Tabs>
           <TabList>
             <Tab>Swap</Tab>

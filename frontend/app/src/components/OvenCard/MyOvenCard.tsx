@@ -1,9 +1,10 @@
-import { Box, Button, Flex, Text } from '@chakra-ui/react';
+import { Box, Flex, Text } from '@chakra-ui/react';
 import { MdChevronRight } from 'react-icons/all';
 import { Link } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import { Oven } from '../../interfaces';
 import ProgressPill from './ProgressPill';
+import Button from '../button/Button';
 
 const getNumber = (value: string | BigNumber) => {
   if (typeof value === 'string') {
@@ -27,8 +28,12 @@ const MyOvenCard: React.FC<{ oven: Oven }> = ({ oven }) => {
 
     return items.map((item) => (
       <Box key={item.label}>
-        <Text mb={2}>{item.value}</Text>
-        <Text fontSize="xs">{item.label}</Text>
+        <Text fontWeight="600" color="#4E5D78" mb={2}>
+          {item.value}
+        </Text>
+        <Text fontWeight="500" color="#B0B7C3" fontSize="xs">
+          {item.label}
+        </Text>
       </Box>
     ));
   };
@@ -54,7 +59,7 @@ const MyOvenCard: React.FC<{ oven: Oven }> = ({ oven }) => {
         <ProgressPill value={74} />
       </Flex>
       <Flex alignItems="center">
-        <Button variant="outline" rightIcon={<MdChevronRight />}>
+        <Button variant="outline" rightIcon={<MdChevronRight />} w="200px">
           Manage Oven
         </Button>
       </Flex>

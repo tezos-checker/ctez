@@ -8,10 +8,10 @@ const HomePage: React.FC = () => {
       <Flex alignItems="center" m={24}>
         <Stack spacing={3} m={4}>
           <Text fontSize="sm">No governance, completely mechanical, straightforward.</Text>
-          <Text fontSize="6xl" as="strong">
+          <Text color="#62737F" fontSize="6xl" as="strong">
             Unlock liquidity on Tezos and stay in control
           </Text>
-          <Text fontSize="md">
+          <Text color="#62737F" fontSize="md">
             ctez can be used directly in smart-contracts that would normally pool tez together
             without the thorny question of "who's baking".
           </Text>
@@ -19,6 +19,8 @@ const HomePage: React.FC = () => {
 
         <Box
           backgroundColor="white"
+          fontWeight="500"
+          color="gray.500"
           minWidth="400px"
           maxWidth="400px"
           borderRadius={16}
