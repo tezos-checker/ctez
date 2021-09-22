@@ -111,12 +111,10 @@ export const useOvenStorage = (ovenAddress?: string) => {
 };
 
 export const useOvenDelegate = (ovenAddress?: string) => {
-  console.log('useOvenDelegate');
   return useQuery<string | null | undefined, AxiosError, string | null | undefined>(
     ['ovenDelegate', ovenAddress],
     async () => {
       if (ovenAddress) {
-        console.log({ getOvenDelegate: await getOvenDelegate(ovenAddress) });
         return getOvenDelegate(ovenAddress);
       }
     },
@@ -124,12 +122,10 @@ export const useOvenDelegate = (ovenAddress?: string) => {
 };
 
 export const useUserLqtData = (userAddress?: string) => {
-  console.log('useUserLqtData');
   return useQuery<UserLQTData | undefined, AxiosError, UserLQTData | undefined>(
     ['userLqtData', userAddress],
     async () => {
       if (userAddress) {
-        console.log({ getUserLQTData: await getUserLQTData(userAddress) });
         return getUserLQTData(userAddress);
       }
     },

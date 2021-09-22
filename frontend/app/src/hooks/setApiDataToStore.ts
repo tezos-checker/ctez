@@ -57,7 +57,6 @@ const useSetExtOvensToStore = (userAddress: string | undefined) => {
 const useSetAllOvensToStore = () => {
   const dispatch = useAppDispatch();
   const { data, isSuccess, isLoading, isError } = useAllOvenData();
-  console.log({ data, isSuccess, isLoading, isError });
   useEffect(() => {
     if (isSuccess && data != null) {
       dispatch(setAllOvenData({ data, isSuccess, isLoading, isError }));
