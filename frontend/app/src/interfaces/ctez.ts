@@ -63,3 +63,21 @@ export interface CTezTzktStorage {
   ctez_fa12_address: string;
   last_drift_update: string;
 }
+
+export interface AllOvenDatum {
+  id: number;
+  active: boolean;
+  hash: string;
+  key: {
+    id: string;
+    owner: string;
+  };
+  value: {
+    address: string;
+    tez_balance: string;
+    ctez_outstanding: string;
+  };
+  firstLevel: number;
+  lastLevel: number;
+  updates: number;
+}

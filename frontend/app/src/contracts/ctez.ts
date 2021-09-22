@@ -1,19 +1,21 @@
 import { OpKind, WalletContract, WalletParamsWithKind } from '@taquito/taquito';
 import { BigNumber } from 'bignumber.js';
 import {
+  AllOvenDatum,
   CTezStorage,
   Depositor,
   depositors,
   EditDepositorOps,
   ErrorType,
-  OvenStorage,
   Oven,
+  OvenStorage,
 } from '../interfaces';
 import { CTEZ_ADDRESS } from '../utils/globals';
 import { logger } from '../utils/logger';
 import { getLastOvenId, saveLastOven } from '../utils/ovenUtils';
 import { getTezosInstance } from './client';
 import { executeMethod, initContract } from './utils';
+import { getAllOvensAPI } from '../api/tzkt';
 
 let cTez: WalletContract;
 
@@ -210,6 +212,18 @@ export const getOvens = async (userAddress: string): Promise<Oven[] | undefined>
     return allOvenData;
   } catch (error) {
     logger.error(error);
+  }
+};
+
+export const getAllOvens = async (): Promise<AllOvenDatum[] | undefined> => {
+  try {
+    if (!cTez && CTEZ_ADDRESS) {
+      await initCTez(CTEZ_ADDRESS);
+    }
+    return await getAllOvensAPI();
+  } catch (error) {
+    logger.error(error);
+    return undefined;
   }
 };
 

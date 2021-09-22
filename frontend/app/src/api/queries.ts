@@ -1,8 +1,15 @@
 import { AxiosError } from 'axios';
 import { useQuery } from 'react-query';
 import { getCfmmStorage } from '../contracts/cfmm';
-import { getExternalOvenData, getOvenDelegate, getOvens, getOvenStorage } from '../contracts/ctez';
 import {
+  getAllOvens,
+  getExternalOvenData,
+  getOvenDelegate,
+  getOvens,
+  getOvenStorage,
+} from '../contracts/ctez';
+import {
+  AllOvenDatum,
   Baker,
   BaseStats,
   CfmmStorage,
@@ -83,6 +90,15 @@ export const useOvenData = (userAddress?: string, externalOvens: string[] = []) 
   );
 };
 
+export const useAllOvenData = () => {
+  return useQuery<AllOvenDatum[] | undefined, AxiosError, AllOvenDatum[] | undefined>(
+    ['allOvenData'],
+    () => {
+      return getAllOvens();
+    },
+  );
+};
+
 export const useOvenStorage = (ovenAddress?: string) => {
   return useQuery<OvenStorage | undefined, AxiosError, OvenStorage | undefined>(
     ['ovenStorage', ovenAddress],
@@ -95,10 +111,12 @@ export const useOvenStorage = (ovenAddress?: string) => {
 };
 
 export const useOvenDelegate = (ovenAddress?: string) => {
+  console.log('useOvenDelegate');
   return useQuery<string | null | undefined, AxiosError, string | null | undefined>(
     ['ovenDelegate', ovenAddress],
     async () => {
       if (ovenAddress) {
+        console.log({ getOvenDelegate: await getOvenDelegate(ovenAddress) });
         return getOvenDelegate(ovenAddress);
       }
     },
@@ -106,10 +124,12 @@ export const useOvenDelegate = (ovenAddress?: string) => {
 };
 
 export const useUserLqtData = (userAddress?: string) => {
+  console.log('useUserLqtData');
   return useQuery<UserLQTData | undefined, AxiosError, UserLQTData | undefined>(
     ['userLqtData', userAddress],
     async () => {
       if (userAddress) {
+        console.log({ getUserLQTData: await getUserLQTData(userAddress) });
         return getUserLQTData(userAddress);
       }
     },

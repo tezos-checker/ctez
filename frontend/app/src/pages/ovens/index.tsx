@@ -1,4 +1,4 @@
-import { Box, Button, Select, Spacer, Stack } from '@chakra-ui/react';
+import { Box, Button, Select, Spacer, Stack, Text } from '@chakra-ui/react';
 import { MdAdd } from 'react-icons/md';
 import { BsArrowRight } from 'react-icons/bs';
 import { useMemo } from 'react';
@@ -11,16 +11,33 @@ import { useWallet } from '../../wallet/hooks';
 import { openModal } from '../../redux/slices/UiSlice';
 import { MODAL_NAMES } from '../../constants/modals';
 import {
+  useSetAllOvensToStore,
   useSetCtezBaseStatsToStore,
   useSetExtOvensToStore,
   useSetOvenDataToStore,
 } from '../../hooks/setApiDataToStore';
 
+const AllOvensContainer: React.FC = () => {
+  useSetAllOvensToStore();
+  const { data, isLoading } = useAppSelector((state) => state.oven.allOvens);
+
+  if (isLoading) {
+    return <Text>Loading...</Text>;
+  }
+
+  return (
+    <>
+      {data.map((oven) => (
+        <OvenCard key={oven.id} oven={oven} />
+      ))}
+    </>
+  );
+};
+
 const OvensPage: React.FC = () => {
   const location = useLocation();
   const dispatch = useAppDispatch();
 
-  const originalTarget = useAppSelector((state) => Number(state.stats.baseStats?.originalTarget));
   const { ovens } = useAppSelector((state) => state.oven);
   const [{ pkh: userAddress }] = useWallet();
   useSetCtezBaseStatsToStore(userAddress);
@@ -59,7 +76,7 @@ const OvensPage: React.FC = () => {
       </Stack>
 
       <Box d="table" w="100%" mt={16}>
-        {!isMyOven && mockOvens.map((oven) => <OvenCard key={oven.ovenId} oven={oven} />)}
+        {!isMyOven && <AllOvensContainer />}
 
         {isMyOven && ovens?.map((oven) => <MyOvenCard key={oven.address} oven={oven} />)}
       </Box>

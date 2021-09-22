@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
-import { useCtezBaseStats, useOvenData } from '../api/queries';
+import { useAllOvenData, useCtezBaseStats, useOvenData } from '../api/queries';
 import { useAppDispatch, useAppSelector } from '../redux/store';
 import { setBaseStats } from '../redux/slices/StatsSlice';
 import { UserOvenStats } from '../interfaces';
-import { OvenSlice, setExternalOvens } from '../redux/slices/OvenSlice';
+import { OvenSlice, setAllOvenData, setExternalOvens } from '../redux/slices/OvenSlice';
 import { CTEZ_ADDRESS } from '../utils/globals';
 import { getExternalOvens } from '../utils/ovenUtils';
 
@@ -54,4 +54,20 @@ const useSetExtOvensToStore = (userAddress: string | undefined) => {
   }, [userAddress]);
 };
 
-export { useSetCtezBaseStatsToStore, useSetOvenDataToStore, useSetExtOvensToStore };
+const useSetAllOvensToStore = () => {
+  const dispatch = useAppDispatch();
+  const { data, isSuccess, isLoading, isError } = useAllOvenData();
+  console.log({ data, isSuccess, isLoading, isError });
+  useEffect(() => {
+    if (isSuccess && data != null) {
+      dispatch(setAllOvenData({ data, isSuccess, isLoading, isError }));
+    }
+  }, [data, isSuccess, isLoading, isError, dispatch]);
+};
+
+export {
+  useSetCtezBaseStatsToStore,
+  useSetOvenDataToStore,
+  useSetExtOvensToStore,
+  useSetAllOvensToStore,
+};
