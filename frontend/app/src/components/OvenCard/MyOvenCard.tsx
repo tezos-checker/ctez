@@ -1,29 +1,20 @@
 import { Box, Flex, Text, useColorMode } from '@chakra-ui/react';
 import { MdChevronRight } from 'react-icons/all';
 import { Link } from 'react-router-dom';
-import BigNumber from 'bignumber.js';
 import { Oven } from '../../interfaces';
 import ProgressPill from './ProgressPill';
 import Button from '../button/Button';
-
-const getNumber = (value: string | BigNumber) => {
-  if (typeof value === 'string') {
-    return value;
-  }
-
-  return value.shiftedBy(-6).toNumber();
-};
 
 const MyOvenCard: React.FC<{ oven: Oven }> = ({ oven }) => {
   const { colorMode } = useColorMode();
   const renderItems = () => {
     const items = [
       { label: 'Num Oven', value: `#${oven.ovenId}` },
-      { label: 'Current utilization', value: `${getNumber(oven.tez_balance)}%` },
-      { label: 'Oven Balance', value: `${getNumber(oven.tez_balance)} XTZ` },
+      { label: 'Current utilization', value: `${oven.tez_balance}%` },
+      { label: 'Oven Balance', value: `${oven.tez_balance} XTZ` },
       {
         label: 'Outstanding ctez',
-        value: `${getNumber(oven.ctez_outstanding)} cTEZ`,
+        value: `${oven.ctez_outstanding} cTEZ`,
       },
     ];
 

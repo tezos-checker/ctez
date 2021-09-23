@@ -1,8 +1,11 @@
 import {
+  Box,
   Flex,
   FormControl,
   FormLabel,
   Input,
+  InputGroup,
+  InputLeftElement,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -16,7 +19,7 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { validateAddress } from '@taquito/utils';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { array, number, object, string } from 'yup';
 import { useTranslation } from 'react-i18next';
 import { useFormik } from 'formik';
@@ -33,11 +36,18 @@ interface ICreateOvenProps {
   onClose: () => void;
 }
 
+interface IDepositorItem {
+  value: string;
+  label: string;
+  noDelete?: boolean;
+}
+
 interface ICreateVaultForm {
   delegate: string;
   amount: number;
   depositType: 'Whitelist' | 'Everyone';
-  depositors: string;
+  depositors: IDepositorItem[];
+  depositorInput?: string;
   depositorOp: Depositor;
 }
 
@@ -58,58 +68,62 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
       })
       .required(t('required')),
     amount: number().optional(),
-    depositors: string()
+    depositors: array()
       .test({
         test: (value) => {
-          return value?.split(', ').every((item) => validateAddress(item) === 3) ?? false;
+          return (
+            value?.reduce((acc, item: any) => {
+              return acc && validateAddress(item?.value ?? item) === 3;
+            }, true) ?? false
+          );
         },
       })
       .required(t('required')),
   });
 
-  const opSelectionList = [
-    {
-      label: t(Depositor.whitelist),
-      value: Depositor.whitelist,
-    },
-    {
-      label: t(Depositor.any),
-      value: Depositor.any,
-    },
-  ];
+  const getDefaultDepositorList = useCallback(
+    (_delegate: string) =>
+      _delegate !== ''
+        ? [
+            {
+              value: userAddress!,
+              label: 'You',
+              noDelete: true,
+            },
+            {
+              value: _delegate,
+              label: 'Delegate',
+            },
+          ]
+        : [
+            {
+              value: userAddress!,
+              label: 'You',
+              noDelete: true,
+            },
+          ],
+    [userAddress],
+  );
 
-  const defaultDepositorList: string[] = [
-    userAddress,
-    delegate !== '' ? delegate : undefined,
-  ].filter((x): x is string => x !== undefined);
-
-  const [initialValues, setInitialValues] = useState<ICreateVaultForm>({
+  const initialValues: ICreateVaultForm = {
     delegate,
     amount: 0,
-    depositors: (userAddress ? defaultDepositorList : []).join(', '),
     depositType: 'Whitelist',
+    depositors: userAddress ? getDefaultDepositorList(delegate) : [],
+    depositorInput: '',
     depositorOp: Depositor.whitelist,
-  });
-
-  useEffect(() => {
-    const newState: ICreateVaultForm = {
-      ...initialValues,
-      delegate,
-      depositors: (userAddress ? defaultDepositorList : []).join(', '),
-    };
-    setInitialValues(newState);
-  }, [userAddress, delegate]);
+  };
 
   const handleFormSubmit = async (data: ICreateVaultForm) => {
     if (userAddress) {
       try {
         const depositors =
-          data.depositors.split(', ').length > 0 && data.depositType === 'Whitelist'
+          data.depositors.length > 0 && data.depositType === 'Whitelist'
             ? data.depositors
-                .split(', ')
-                .map((item: string) => item)
+                .map((item: IDepositorItem) => item?.value ?? item)
                 .filter((o) => o !== userAddress)
             : undefined;
+
         const result = await create(
           userAddress,
           data.delegate,
@@ -140,6 +154,10 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
     onSubmit: handleFormSubmit,
   });
 
+  useEffect(() => {
+    formik.setFieldValue('depositors', userAddress ? getDefaultDepositorList(values.delegate) : []);
+  }, [userAddress, values.delegate]);
+
   const { getRootProps, getRadioProps } = useRadioGroup({
     name: 'depositType',
     defaultValue: 'Whitelist',
@@ -147,8 +165,24 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
   });
   const group = getRootProps();
 
+  const handleDepositorInput = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = ev.target;
+    const depositors = value.split(' ');
+    if (depositors.length > 1) {
+      formik.setFieldValue('depositors', [...values.depositors, depositors[0]]);
+      formik.setFieldValue('depositorInput', depositors[1]);
+    } else {
+      formik.setFieldValue('depositorInput', depositors[0]);
+    }
+  };
+
+  const handleClose = () => {
+    formik.resetForm();
+    onClose();
+  };
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose} isCentered>
+    <Modal isOpen={isOpen} onClose={handleClose} isCentered>
       <ModalOverlay />
       <form onSubmit={handleSubmit}>
         <ModalContent>
@@ -223,20 +257,29 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
 
             <FormControl w="100%" mb={2}>
               <FormLabel
+                fontSize="xs"
                 color={colorMode === 'light' ? 'text2' : 'darkheading'}
                 fontWeight="500"
-                fontSize="xs"
               >
                 Authorised Deposters
               </FormLabel>
-              <Input
-                name="depositors"
-                id="depositors"
-                color={colorMode === 'light' ? 'text4' : 'darkheading'}
-                bg={colorMode === 'light' ? 'darkheading' : 'textboxbg'}
-                value={values.depositors}
-                onChange={handleChange}
-              />
+              <InputGroup>
+                <InputLeftElement pointerEvents="none" w="" left={2}>
+                  <Box px={2} boxShadow="xs">
+                    {values.depositors[0].label}
+                    {values.depositors.length > 1 ? ` + ${values.depositors.length - 1}` : ''}
+                  </Box>
+                </InputLeftElement>
+                <Input
+                  name="depositorInput"
+                  id="depositorInput"
+                  color={colorMode === 'light' ? 'text4' : 'darkheading'}
+                  bg={colorMode === 'light' ? 'darkheading' : 'textboxbg'}
+                  pl={values.depositors.length > 1 ? '84px' : '56px'}
+                  value={values.depositorInput}
+                  onChange={handleDepositorInput}
+                />
+              </InputGroup>
             </FormControl>
           </ModalBody>
 

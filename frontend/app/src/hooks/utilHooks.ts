@@ -20,8 +20,8 @@ const useOvenStats = () => {
       return null;
     }
 
-    const toNumber = (value: BigNumber) => {
-      return value.shiftedBy(-6).toNumber();
+    const toNumber = (value: string | number) => {
+      return new BigNumber(value).shiftedBy(-6).toNumber();
     };
 
     const { tez_balance, ctez_outstanding } = oven;
@@ -29,7 +29,7 @@ const useOvenStats = () => {
       ? getOvenMaxCtez(toNumber(tez_balance), toNumber(ctez_outstanding), currentTarget)
       : { max: 0, remaining: 0 };
 
-    const outStandingCtez = new BigNumber(ctez_outstanding).shiftedBy(-6).toNumber() ?? 0;
+    const outStandingCtez = toNumber(ctez_outstanding) ?? 0;
     const maxMintableCtez = max < 0 ? 0 : max;
     const remainingMintableCtez = remaining < 0 ? 0 : remaining;
 

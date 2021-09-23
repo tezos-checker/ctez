@@ -1,8 +1,15 @@
 import { AxiosError } from 'axios';
 import { useQuery } from 'react-query';
 import { getCfmmStorage } from '../contracts/cfmm';
-import { getExternalOvenData, getOvenDelegate, getOvens, getOvenStorage } from '../contracts/ctez';
 import {
+  getAllOvens,
+  getExternalOvenData,
+  getOvenDelegate,
+  getOvens,
+  getOvenStorage,
+} from '../contracts/ctez';
+import {
+  AllOvenDatum,
   Baker,
   BaseStats,
   CfmmStorage,
@@ -79,6 +86,15 @@ export const useOvenData = (userAddress?: string, externalOvens: string[] = []) 
     {
       refetchInterval: 30_000,
       staleTime: 3_000,
+    },
+  );
+};
+
+export const useAllOvenData = () => {
+  return useQuery<AllOvenDatum[] | undefined, AxiosError, AllOvenDatum[] | undefined>(
+    ['allOvenData'],
+    () => {
+      return getAllOvens();
     },
   );
 };
