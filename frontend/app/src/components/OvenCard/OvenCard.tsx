@@ -1,7 +1,10 @@
 import { Box, Grid, Text } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
+import { useMemo } from 'react';
 import { AllOvenDatum } from '../../interfaces';
 import ProgressPill from './ProgressPill';
+import { getOvenMaxCtez } from '../../utils/ovenUtils';
+import { useAppSelector } from '../../redux/store';
 
 const truncateText = (text: string | null) => {
   if (text == null) {
@@ -17,13 +20,27 @@ const formatTokenAmt = (value: string | number) => {
 };
 
 const OvenCard: React.FC<{ oven: AllOvenDatum }> = ({ oven }) => {
-  const renderItems = () => {
+  const currentTarget = useAppSelector((state) => state.stats.baseStats?.originalTarget);
+
+  const renderedItems = useMemo(() => {
+    const toNumber = (value: string | number) => {
+      return new BigNumber(value).shiftedBy(-6).toNumber();
+    };
+
+    const { tez_balance, ctez_outstanding } = oven.value;
+
+    const { max } = currentTarget
+      ? getOvenMaxCtez(toNumber(tez_balance), toNumber(ctez_outstanding), currentTarget)
+      : { max: 0 };
+
+    const maxMintableCtez = max < 0 ? 0 : max;
+
     const items = [
       { label: 'Oven address', value: truncateText(oven.value.address) },
       { label: 'Baker', value: truncateText(oven.key.owner) },
-      { label: 'Oven Balance', value: `${formatTokenAmt(oven.value.tez_balance)} XTZ` },
-      { label: 'Outstanding ', value: `${formatTokenAmt(oven.value.ctez_outstanding)} cTEZ` },
-      { label: 'Mintable ', value: `500.41 cTEZ` },
+      { label: 'Oven Balance', value: `${formatTokenAmt(tez_balance)} XTZ` },
+      { label: 'Outstanding ', value: `${formatTokenAmt(ctez_outstanding)} cTEZ` },
+      { label: 'Mintable ', value: `${maxMintableCtez} cTEZ` },
     ];
 
     return items.map((item) => (
@@ -32,7 +49,7 @@ const OvenCard: React.FC<{ oven: AllOvenDatum }> = ({ oven }) => {
         <Text fontSize="xs">{item.label}</Text>
       </Box>
     ));
-  };
+  }, [currentTarget, oven]);
 
   return (
     <Grid
@@ -43,7 +60,7 @@ const OvenCard: React.FC<{ oven: AllOvenDatum }> = ({ oven }) => {
       borderRadius={16}
       backgroundColor="white"
     >
-      {renderItems()}
+      {renderedItems}
 
       <Box>
         <ProgressPill value={75} />
