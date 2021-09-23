@@ -1,4 +1,20 @@
-(* This is a unit testing framework for ctez *)
+(* =============================================================================
+ * Summary:
+ * This file includes unit and mutation testing for the trade_dtez_for_dcash and 
+ * the trade_dcash_for_dtez functions.
+ * The unit testing:
+ *   - verifies that the trade_dtez_for_dcash and trade_dcash_for_dtez functions
+ *     return the expected values as outputs on a randomly generated list of 
+ *     cases. These cases and expected values are generated in generate_test_params.py.
+ * 
+ * The mutation testing:
+ *   - verifies that these cases were sufficiently many to give good coverage 
+ *     on these tests.
+ *   - there are a few mutations that we expect to still pass; these are outlined below,
+ *     along with justification.
+ * 
+ * ============================================================================= *)
+
 
 (* =============================================================================
  * Contract Templates 
@@ -47,7 +63,8 @@ let compare_to_expected_tez_to_cash (f : nat -> nat -> nat -> nat -> int -> nat)
     let trade_with_f = fun (x, y, dy, target, rounds, _ : nat * nat * nat * nat * int * (nat * nat)) -> f x y dy target rounds in 
     let traded = List.map trade_with_f trade_params in 
     let expected = expected_tez_to_cash in
-    let assertion = List.map (fun (a, b : nat * nat) -> assert(a = b)) (zip ((traded, expected), ([] : (nat * nat) list))) in
+    // assert that traded differs from expected by 0.01% or less
+    let assertion = List.map (fun (a, b : nat * nat) -> assert(abs(a - b) <= b / 10_000n)) (zip ((traded, expected), ([] : (nat * nat) list))) in
     () // if it makes it to this, the test has passed
 
 let test_dtez_to_dcash = 
@@ -57,7 +74,8 @@ let compare_to_expected_cash_to_tez (f : nat -> nat -> nat -> nat -> int -> nat)
     let trade_with_f = fun (x, y, dy, target, rounds, _ : nat * nat * nat * nat * int * (nat * nat)) -> f x y dy target rounds in 
     let traded = List.map trade_with_f trade_params in 
     let expected = expected_cash_to_tez in 
-    let assertion = List.map (fun (a, b : nat * nat) -> assert(a = b)) (zip ((traded, expected), ([] : (nat * nat) list))) in
+    // assert that traded differs from expected by 0.01% or less
+    let assertion = List.map (fun (a, b : nat * nat) -> assert(abs(a - b) <= b / 10_000n)) (zip ((traded, expected), ([] : (nat * nat) list))) in
     () // if it makes it to this, the test has passed
 
 let test_dcash_to_dtez = 
@@ -90,6 +108,7 @@ The following tests return the following mutants, which we deem as not a problem
    on initial guesses.
 
 *)
+
 
 let test_mutation_dtez_to_dcash = 
     Test.mutation_test_all trade_dtez_for_dcash compare_to_expected_tez_to_cash
