@@ -39,7 +39,6 @@ const Withdraw: React.FC = () => {
   });
 
   const handleFormSubmit = async (data: IWithdrawForm) => {
-    console.log({ data, ovenId });
     if (ovenId) {
       try {
         const result = await withdraw(Number(ovenId), data.amount, data.to);

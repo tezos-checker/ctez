@@ -1,5 +1,6 @@
 import { Box, Grid, Text } from '@chakra-ui/react';
-import { OvenSerializable } from '../../interfaces';
+import BigNumber from 'bignumber.js';
+import { AllOvenDatum } from '../../interfaces';
 import ProgressPill from './ProgressPill';
 
 const truncateText = (text: string | null) => {
@@ -11,13 +12,17 @@ const truncateText = (text: string | null) => {
   return `${text.substr(0, 5)}...${text.substr(len - 5)}`;
 };
 
-const OvenCard: React.FC<{ oven: OvenSerializable }> = ({ oven }) => {
+const formatTokenAmt = (value: string | number) => {
+  return new BigNumber(value).shiftedBy(-6).toNumber() ?? 0;
+};
+
+const OvenCard: React.FC<{ oven: AllOvenDatum }> = ({ oven }) => {
   const renderItems = () => {
     const items = [
-      { label: 'Oven address', value: truncateText(oven.address) },
-      { label: 'Baker', value: truncateText(oven.baker) },
-      { label: 'Oven Balance', value: `${oven.tez_balance} XTZ` },
-      { label: 'Outstanding ', value: `${oven.ctez_outstanding} cTEZ` },
+      { label: 'Oven address', value: truncateText(oven.value.address) },
+      { label: 'Baker', value: truncateText(oven.key.owner) },
+      { label: 'Oven Balance', value: `${formatTokenAmt(oven.value.tez_balance)} XTZ` },
+      { label: 'Outstanding ', value: `${formatTokenAmt(oven.value.ctez_outstanding)} cTEZ` },
       { label: 'Mintable ', value: `500.41 cTEZ` },
     ];
 

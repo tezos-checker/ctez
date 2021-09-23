@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { Baker, Block, CTezTzktStorage } from '../interfaces';
-import { TZKT_API, CTEZ_ADDRESS, TZKT_PORT } from '../utils/globals';
+import { AllOvenDatum, Baker, Block, CTezTzktStorage } from '../interfaces';
+import { CTEZ_ADDRESS, CTEZ_CONTRACT_BIGMAP, TZKT_API, TZKT_PORT } from '../utils/globals';
 import { getTzKtPort, getTzKtURL } from '../utils/settingUtils';
 
 const get = async <T, P>(endpoint: string, queryParams?: P, userAddress?: string): Promise<T> => {
@@ -41,4 +41,9 @@ export const getCTezTzktStorage = async (
     userAddress,
   );
   return storage;
+};
+
+export const getAllOvensAPI = async (): Promise<AllOvenDatum[]> => {
+  const data = await get<AllOvenDatum[], unknown>(`bigmaps/${CTEZ_CONTRACT_BIGMAP}/keys`);
+  return data;
 };

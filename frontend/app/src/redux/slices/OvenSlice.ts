@@ -1,10 +1,18 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { UserOvenStats, OvenSerializable, Oven } from '../../interfaces';
+import { UserOvenStats, OvenSerializable, Oven, AllOvenDatum } from '../../interfaces';
+
+interface IAllOvenState {
+  data: AllOvenDatum[];
+  isLoading: boolean;
+  isSuccess: boolean;
+  isError: boolean;
+}
 
 interface OvenSliceState {
   oven: OvenSerializable | null;
   ovens: Oven[];
   extOvens: string[];
+  allOvens: IAllOvenState;
   userOvenData: UserOvenStats;
 }
 
@@ -12,6 +20,12 @@ const initialState: OvenSliceState = {
   oven: null,
   ovens: [],
   extOvens: [],
+  allOvens: {
+    data: [],
+    isLoading: true,
+    isSuccess: false,
+    isError: false,
+  },
   userOvenData: { xtz: 0, ctez: 0, totalOvens: 0 },
 };
 
@@ -35,6 +49,9 @@ export const OvenSlice = createSlice({
     setUserOvenData: (state, action: PayloadAction<UserOvenStats>) => {
       state.userOvenData = action.payload;
     },
+    setAllOvenData: (state, action: PayloadAction<IAllOvenState>) => {
+      state.allOvens = action.payload;
+    },
   },
 });
 
@@ -43,6 +60,7 @@ export const {
   setOvens,
   setExternalOvens,
   clearOven,
+  setAllOvenData,
   setUserOvenData,
 } = OvenSlice.actions;
 export default OvenSlice.reducer;
