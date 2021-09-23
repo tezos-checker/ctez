@@ -1,4 +1,14 @@
-import { Flex, FormControl, FormLabel, Icon, Input, Stack, Text, useToast } from '@chakra-ui/react';
+import {
+  Flex,
+  FormControl,
+  FormLabel,
+  Icon,
+  Input,
+  Stack,
+  Text,
+  useColorMode,
+  useToast,
+} from '@chakra-ui/react';
 import { MdAdd } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 import { useCallback, useEffect, useState } from 'react';
@@ -24,6 +34,7 @@ const AddLiquidity: React.FC = () => {
   const { data: cfmmStorage } = useCfmmStorage();
   const { t } = useTranslation();
   const toast = useToast();
+  const { colorMode } = useColorMode();
 
   const calcMaxToken = useCallback(
     (slippage: number, cashDeposited: number) => {
@@ -112,15 +123,19 @@ const AddLiquidity: React.FC = () => {
   return (
     <form onSubmit={handleSubmit} id="add-liquidity-form">
       <Stack spacing={2}>
-        <Text color="#4E5D78">Add liquidity</Text>
+        <Text color={colorMode === 'light' ? 'text2' : 'darkheading'}>Add liquidity</Text>
 
         <Flex alignItems="center" justifyContent="space-between">
           <FormControl id="to-input-amount" mt={-2} mb={6} w="45%">
-            <FormLabel fontSize="xs">tez to deposit</FormLabel>
+            <FormLabel color={colorMode === 'light' ? 'text2' : 'darkheading'} fontSize="xs">
+              tez to deposit
+            </FormLabel>
             <Input
               type="number"
               name="amount"
               id="amount"
+              color={colorMode === 'light' ? 'text4' : 'darkheading'}
+              bg={colorMode === 'light' ? 'darkheading' : 'textboxbg'}
               value={values.amount}
               onChange={handleChange}
             />
@@ -128,8 +143,17 @@ const AddLiquidity: React.FC = () => {
 
           <Icon as={MdAdd} />
           <FormControl id="to-input-amount" mt={-2} mb={6} w="45%">
-            <FormLabel fontSize="xs">ctez to deposit(approx)</FormLabel>
-            <Input value={maxTokens} readOnly border={0} placeholder="0.0" type="number" />
+            <FormLabel color={colorMode === 'light' ? 'text2' : 'darkheading'} fontSize="xs">
+              ctez to deposit(approx)
+            </FormLabel>
+            <Input
+              value={maxTokens}
+              readOnly
+              border={0}
+              color={colorMode === 'light' ? 'text4' : 'darkheading'}
+              placeholder="0.0"
+              type="number"
+            />
           </FormControl>
         </Flex>
 

@@ -7,6 +7,7 @@ import {
   InputGroup,
   InputRightElement,
   Text,
+  useColorMode,
   useToast,
 } from '@chakra-ui/react';
 import { validateAddress } from '@taquito/utils';
@@ -45,6 +46,7 @@ const Swap: React.FC = () => {
   const toast = useToast();
   useSetCtezBaseStatsToStore(userAddress);
   const baseStats = useAppSelector((state) => state.stats?.baseStats);
+  const { colorMode } = useColorMode();
 
   const getRightElement = useCallback((token: TToken) => {
     if (token === TOKEN.Tez) {
@@ -165,14 +167,16 @@ const Swap: React.FC = () => {
   return (
     <form autoComplete="off" onSubmit={handleSubmit}>
       <FormControl id="from-input-amount">
-        <FormLabel fontSize="xs">From</FormLabel>
+        <FormLabel color={colorMode === 'light' ? 'text2' : 'darkheading'} fontSize="xs">
+          From
+        </FormLabel>
         <InputGroup>
           <Input
             name="amount"
             id="amount"
             type="number"
-            color="#B0B7C3"
-            bg="#F8F9FF"
+            color={colorMode === 'light' ? 'text4' : 'darkheading'}
+            bg={colorMode === 'light' ? 'darkheading' : 'textboxbg'}
             value={values.amount}
             onChange={handleChange}
           />
@@ -194,9 +198,16 @@ const Swap: React.FC = () => {
       </Flex>
 
       <FormControl id="to-input-amount" mt={-2} mb={6}>
-        <FormLabel fontSize="xs">To (estimate)</FormLabel>
+        <FormLabel color={colorMode === 'light' ? 'text2' : 'darkheading'} fontSize="xs">
+          To (estimate)
+        </FormLabel>
         <InputGroup>
-          <Input color="#B0B7C3" bg="#F8F9FF" value={minBuyValue} type="number" />
+          <Input
+            color={colorMode === 'light' ? 'text4' : 'darkheading'}
+            bg={colorMode === 'light' ? 'darkheading' : 'textboxbg'}
+            value={minBuyValue}
+            type="number"
+          />
           {getRightElement(formType === FORM_TYPE.CTEZ_TEZ ? TOKEN.Tez : TOKEN.CTez)}
         </InputGroup>
       </FormControl>

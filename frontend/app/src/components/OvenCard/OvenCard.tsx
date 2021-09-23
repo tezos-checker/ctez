@@ -1,4 +1,4 @@
-import { Box, Grid, Text } from '@chakra-ui/react';
+import { Box, Grid, Text, useColorMode } from '@chakra-ui/react';
 import { OvenSerializable } from '../../interfaces';
 import ProgressPill from './ProgressPill';
 
@@ -12,6 +12,7 @@ const truncateText = (text: string | null) => {
 };
 
 const OvenCard: React.FC<{ oven: OvenSerializable }> = ({ oven }) => {
+  const { colorMode } = useColorMode();
   const renderItems = () => {
     const items = [
       { label: 'Oven address', value: truncateText(oven.address) },
@@ -23,7 +24,7 @@ const OvenCard: React.FC<{ oven: OvenSerializable }> = ({ oven }) => {
 
     return items.map((item) => (
       <Box key={item.label}>
-        <Text fontWeight="600" color="#4E5D78">
+        <Text color={colorMode === 'light' ? 'text2' : 'white'} fontWeight="600">
           {item.value}
         </Text>
         <Text fontWeight="500" color="#B0B7C3" fontSize="xs">
@@ -40,7 +41,7 @@ const OvenCard: React.FC<{ oven: OvenSerializable }> = ({ oven }) => {
       py={4}
       px={10}
       borderRadius={16}
-      backgroundColor="white"
+      backgroundColor={colorMode === 'light' ? 'white' : 'cardbgdark'}
     >
       {renderItems()}
 

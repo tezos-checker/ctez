@@ -1,4 +1,13 @@
-import { Flex, FormControl, FormLabel, Icon, Input, Text, useToast } from '@chakra-ui/react';
+import {
+  Flex,
+  FormControl,
+  FormLabel,
+  Icon,
+  Input,
+  Text,
+  useColorMode,
+  useToast,
+} from '@chakra-ui/react';
 import { MdInfo } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 import { validateAddress } from '@taquito/utils';
@@ -12,6 +21,7 @@ import Button from '../button/Button';
 
 const Withdraw: React.FC = () => {
   const { t } = useTranslation(['common']);
+  const { colorMode } = useColorMode();
   const [{ pkh: userAddress }] = useWallet();
   const toast = useToast();
   const { ovenId } = useParams<{ ovenId: string }>();
@@ -59,7 +69,13 @@ const Withdraw: React.FC = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor="gray.50">
+      <Flex
+        mr={-2}
+        ml={-2}
+        p={2}
+        borderRadius={14}
+        backgroundColor={colorMode === 'light' ? 'bg3' : 'darkblue'}
+      >
         <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
         <Text color="gray.500" fontSize="xs" ml={2}>
           By adding liquidity you'll earn 0.2% of all trades on this pair proportional to your share
@@ -68,21 +84,30 @@ const Withdraw: React.FC = () => {
       </Flex>
 
       <FormControl id="to-input-amount" mt={2} mb={6} w="100%">
-        <FormLabel color="#4E5D78" fontSize="xs">
+        <FormLabel color={colorMode === 'light' ? 'text2' : 'darkheading'} fontSize="xs">
           Withdrawl To
         </FormLabel>
-        <Input readOnly name="to" bg="#F8F9FF" id="to" value={values.to} onChange={handleChange} />
+        <Input
+          readOnly
+          name="to"
+          color={colorMode === 'light' ? 'text4' : 'darkheading'}
+          bg={colorMode === 'light' ? 'darkheading' : 'textboxbg'}
+          id="to"
+          value={values.to}
+          onChange={handleChange}
+        />
       </FormControl>
 
       <FormControl id="to-input-amount" mt={2} mb={6} w="100%">
-        <FormLabel color="#4E5D78" fontSize="xs">
+        <FormLabel color={colorMode === 'light' ? 'text2' : 'darkheading'} fontSize="xs">
           Amount
         </FormLabel>
         <Input
           type="number"
           name="amount"
           id="amount"
-          bg="#F8F9FF"
+          color={colorMode === 'light' ? 'text4' : 'darkheading'}
+          bg={colorMode === 'light' ? 'darkheading' : 'textboxbg'}
           value={values.amount}
           onChange={handleChange}
         />

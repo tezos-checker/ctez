@@ -1,4 +1,13 @@
-import { Flex, FormControl, FormLabel, Icon, Input, Stack, useToast } from '@chakra-ui/react';
+import {
+  Flex,
+  FormControl,
+  FormLabel,
+  Icon,
+  Input,
+  Stack,
+  useColorMode,
+  useToast,
+} from '@chakra-ui/react';
 import { MdAdd } from 'react-icons/md';
 import { addMinutes } from 'date-fns/fp';
 import { validateAddress } from '@taquito/utils';
@@ -24,6 +33,7 @@ const RemoveLiquidity: React.FC = () => {
   const { data: cfmmStorage } = useCfmmStorage();
   const { t } = useTranslation(['common']);
   const [buttonText, setButtonText] = useState<TRemoveBtnTxt>(REMOVE_BTN_TXT.ENTER_AMT);
+  const { colorMode } = useColorMode();
 
   const calcMinValues = useCallback(
     (slippage: number, lqtBurned: number) => {
@@ -119,36 +129,47 @@ const RemoveLiquidity: React.FC = () => {
     <form onSubmit={handleSubmit} id="remove-liquidity-form">
       <Stack colorScheme="gray" spacing={2}>
         <FormControl id="to-input-amount" mb={2}>
-          <FormLabel fontSize="xs">LQT to burn</FormLabel>
+          <FormLabel color={colorMode === 'light' ? 'text2' : 'darkheading'} fontSize="xs">
+            LQT to burn
+          </FormLabel>
           <Input
             type="number"
             name="lqtBurned"
             id="lqtBurned"
             value={values.lqtBurned}
+            color={colorMode === 'light' ? 'text4' : 'darkheading'}
+            bg={colorMode === 'light' ? 'darkheading' : 'textboxbg'}
             onChange={handleChange}
           />
         </FormControl>
 
         <Flex alignItems="center" justifyContent="space-between">
           <FormControl id="to-input-amount" w="45%">
-            <FormLabel fontSize="xs">Min. tez to withdraw</FormLabel>
+            <FormLabel color={colorMode === 'light' ? 'text2' : 'darkheading'} fontSize="xs">
+              Min. tez to withdraw
+            </FormLabel>
             <Input
               readOnly
               border={0}
               placeholder="0.0"
               type="number"
+              color={colorMode === 'light' ? 'text4' : 'darkheading'}
+              bg={colorMode === 'light' ? 'darkheading' : 'textboxbg'}
               value={otherValues.cashWithdraw}
             />
           </FormControl>
 
           <Icon as={MdAdd} />
           <FormControl id="to-input-amount" w="45%">
-            <FormLabel fontSize="xs">Min. ctez to withdraw</FormLabel>
+            <FormLabel color={colorMode === 'light' ? 'text2' : 'darkheading'} fontSize="xs">
+              Min. ctez to withdraw
+            </FormLabel>
             <Input
               readOnly
               border={0}
               placeholder="0.0"
               type="number"
+              color={colorMode === 'light' ? 'text4' : 'darkheading'}
               value={otherValues.tokenWithdraw}
             />
           </FormControl>

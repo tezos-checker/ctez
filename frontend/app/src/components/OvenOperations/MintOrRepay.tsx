@@ -1,4 +1,13 @@
-import { Flex, FormControl, FormLabel, Icon, Input, Text, useToast } from '@chakra-ui/react';
+import {
+  Flex,
+  FormControl,
+  FormLabel,
+  Icon,
+  Input,
+  Text,
+  useColorMode,
+  useToast,
+} from '@chakra-ui/react';
 import { MdInfo } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 // import BigNumber from 'bignumber.js';
@@ -22,6 +31,7 @@ const MintOrRepay: React.FC<IMintOrRepayProps> = ({ type }) => {
   const { t } = useTranslation(['common']);
   const toast = useToast();
   const { oven, stats, ovenId } = useOvenStats();
+  const { colorMode } = useColorMode();
 
   const { tez_balance, ctez_outstanding } = useMemo(
     () =>
@@ -102,7 +112,13 @@ const MintOrRepay: React.FC<IMintOrRepayProps> = ({ type }) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor="gray.50">
+      <Flex
+        mr={-2}
+        ml={-2}
+        p={2}
+        borderRadius={14}
+        backgroundColor={colorMode === 'light' ? 'bg3' : 'darkblue'}
+      >
         <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
         <Text fontSize="xs" ml={2}>
           By adding liquidity you'll earn 0.2% of all trades on this pair proportional to your share
@@ -111,14 +127,19 @@ const MintOrRepay: React.FC<IMintOrRepayProps> = ({ type }) => {
       </Flex>
 
       <FormControl id="to-input-amount" mt={2} mb={6} w="100%">
-        <FormLabel fontWeight="500" color="#4E5D78" fontSize="xs">
+        <FormLabel
+          fontWeight="500"
+          color={colorMode === 'light' ? 'text2' : 'darkheading'}
+          fontSize="xs"
+        >
           {type === 'mint' ? 'Mint Ctez' : 'Repay'}
         </FormLabel>
         <Input
           type="number"
           name="amount"
           id="amount"
-          bg="#F8F9FF"
+          color={colorMode === 'light' ? 'text4' : 'darkheading'}
+          bg={colorMode === 'light' ? 'darkheading' : 'textboxbg'}
           value={values.amount}
           onChange={handleChange}
         />

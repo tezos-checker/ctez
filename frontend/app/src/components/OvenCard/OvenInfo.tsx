@@ -1,13 +1,19 @@
-import { Divider, Flex, Stack, Text } from '@chakra-ui/react';
+import { Divider, Flex, Stack, Text, useColorMode } from '@chakra-ui/react';
 import ProgressPill from './ProgressPill';
 import { useOvenStats } from '../../hooks/utilHooks';
 import Button from '../button/Button';
 
 const OvenInfo: React.FC = () => {
   const { stats, oven } = useOvenStats();
+  const { colorMode } = useColorMode();
 
   return (
-    <Stack p={8} spacing={4} backgroundColor="white" borderRadius={16}>
+    <Stack
+      p={8}
+      spacing={4}
+      backgroundColor={colorMode === 'light' ? 'white' : 'cardbgdark'}
+      borderRadius={16}
+    >
       <Flex w="100%" justifyContent="space-between">
         <Stack>
           <Text color="4E5D78" fontWeight="600" fontSize="lg">

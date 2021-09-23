@@ -7,27 +7,30 @@ export interface IButtonProps extends ButtonProps {
 }
 
 const Button: React.FC<IButtonProps> = (props) => {
+  const { colorMode } = useColorMode();
   if (props.variant === 'outline') {
     return (
       <Box
         as={ChakraButton}
         type={props.type}
-        bgGradient="linear(to-r, #0F62FF, #6B5BD2)"
+        className={props.className}
+        bgGradient={colorMode === 'light' ? 'linear(to-r, #0F62FF, #6B5BD2)' : 'transparent'}
         _hover={{
           bgGradient: 'linear(to-r, #0F62FF, #6B5BD2)',
         }}
+        border={colorMode === 'light' ? '' : '1px solid white'}
         p="1px"
         w={props.w}
         onClick={(props.onClick as unknown) as MouseEventHandler<HTMLDivElement>}
       >
         <Box
-          backgroundColor="gray.100"
+          backgroundColor={colorMode === 'light' ? 'white' : 'cardbgdark'}
           w="100%"
           h="100%"
           p={2}
           pr={6}
           pl={6}
-          color="#2761F4"
+          color={colorMode === 'light' ? 'blue' : 'white'}
           borderRadius="5px"
         >
           {props.children}
@@ -39,6 +42,7 @@ const Button: React.FC<IButtonProps> = (props) => {
     <Box
       as={ChakraButton}
       type={props.type}
+      className={props.className}
       p={2}
       width={props.width}
       color="white"

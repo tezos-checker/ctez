@@ -8,6 +8,7 @@ import {
   TabPanels,
   Tabs,
   Text,
+  useColorMode,
 } from '@chakra-ui/react';
 import { useMemo } from 'react';
 import MintOrRepay from './MintOrRepay';
@@ -19,6 +20,7 @@ interface IOvenOperationsProps {
 }
 
 const OvenOperations: React.FC<IOvenOperationsProps> = (props) => {
+  const { colorMode } = useColorMode();
   const dividerEl = useMemo(
     () => (
       <Flex alignItems="center" direction="row">
@@ -39,15 +41,16 @@ const OvenOperations: React.FC<IOvenOperationsProps> = (props) => {
       w={props.largerScreen ? '50%' : '100%'}
       p={8}
       spacing={4}
-      backgroundColor="white"
+      backgroundColor={colorMode === 'light' ? 'white' : 'cardbgdark'}
+      fontWeight="500"
       borderRadius={16}
     >
       <Tabs>
         <TabList justifyContent="space-evenly">
-          <Tab color="#4E5D78" fontWeight="700">
+          <Tab color={colorMode === 'light' ? 'text2' : 'white'} fontWeight="700">
             Mint & Deposit
           </Tab>
-          <Tab color="#4E5D78" fontWeight="700">
+          <Tab color={colorMode === 'light' ? 'text2' : 'white'} fontWeight="700">
             Withdraw & Repay
           </Tab>
         </TabList>

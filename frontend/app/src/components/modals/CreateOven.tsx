@@ -11,6 +11,7 @@ import {
   ModalHeader,
   ModalOverlay,
   Select,
+  useColorMode,
   useRadioGroup,
   useToast,
 } from '@chakra-ui/react';
@@ -48,6 +49,7 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
   const toast = useToast();
   const { t } = useTranslation(['common']);
   const options = ['Whitelist', 'Everyone'];
+  const { colorMode } = useColorMode();
 
   const validationSchema = object().shape({
     delegate: string()
@@ -150,21 +152,25 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
       <ModalOverlay />
       <form onSubmit={handleSubmit}>
         <ModalContent>
-          <ModalHeader fontWeight="500" color="#323B4B">
+          <ModalHeader fontWeight="500" color={colorMode === 'light' ? 'text1' : 'darkheading'}>
             Create an Oven
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <FormControl w="100%" mb={2}>
-              <FormLabel color="#4E5D78" fontWeight="500" fontSize="xs">
+              <FormLabel
+                color={colorMode === 'light' ? 'text2' : 'darkheading'}
+                fontWeight="500"
+                fontSize="xs"
+              >
                 Delegate
               </FormLabel>
 
               <Select
                 placeholder={t('delegatePlaceholder')}
                 value={values.delegate}
-                color="#B0B7C3"
-                bg="#F8F9FF"
+                color={colorMode === 'light' ? 'text4' : 'darkheading'}
+                bg={colorMode === 'light' ? 'darkheading' : 'textboxbg'}
                 onChange={(ev) => {
                   formik.setFieldValue('delegate', ev.target.value);
                 }}
@@ -177,22 +183,30 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
               </Select>
             </FormControl>
             <FormControl w="100%" mb={2}>
-              <FormLabel color="#4E5D78" fontWeight="500" fontSize="xs">
+              <FormLabel
+                color={colorMode === 'light' ? 'text2' : 'darkheading'}
+                fontWeight="500"
+                fontSize="xs"
+              >
                 Initial Deposit
               </FormLabel>
               <Input
                 type="number"
                 name="amount"
                 id="amount"
-                color="#B0B7C3"
-                bg="#F8F9FF"
+                color={colorMode === 'light' ? 'text4' : 'darkheading'}
+                bg={colorMode === 'light' ? 'darkheading' : 'textboxbg'}
                 value={values.amount}
                 onChange={handleChange}
               />
             </FormControl>
 
             <FormControl w="100%" mb={2}>
-              <FormLabel color="#4E5D78" fontWeight="500" fontSize="xs">
+              <FormLabel
+                color={colorMode === 'light' ? 'text2' : 'darkheading'}
+                fontWeight="500"
+                fontSize="xs"
+              >
                 Who can Deposit?
               </FormLabel>
               <Flex {...group} w="100%" justifyContent="space-between">
@@ -208,14 +222,18 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
             </FormControl>
 
             <FormControl w="100%" mb={2}>
-              <FormLabel color="#4E5D78" fontWeight="500" fontSize="xs">
+              <FormLabel
+                color={colorMode === 'light' ? 'text2' : 'darkheading'}
+                fontWeight="500"
+                fontSize="xs"
+              >
                 Authorised Deposters
               </FormLabel>
               <Input
                 name="depositors"
                 id="depositors"
-                color="#B0B7C3"
-                bg="#F8F9FF"
+                color={colorMode === 'light' ? 'text4' : 'darkheading'}
+                bg={colorMode === 'light' ? 'darkheading' : 'textboxbg'}
                 value={values.depositors}
                 onChange={handleChange}
               />

@@ -6,6 +6,7 @@ import {
   Flex,
   Stack,
   Text,
+  useColorMode,
 } from '@chakra-ui/react';
 import { useMemo } from 'react';
 import BigNumber from 'bignumber.js';
@@ -14,6 +15,7 @@ import { useAppSelector } from '../../redux/store';
 import { getOvenMaxCtez } from '../../utils/ovenUtils';
 
 const OvenStats: React.FC = () => {
+  const { colorMode } = useColorMode();
   const { ovenId } = useParams<{ ovenId: string }>();
   const oven = useAppSelector((state) =>
     state.oven.ovens.find((x) => {
@@ -61,8 +63,13 @@ const OvenStats: React.FC = () => {
   }, [currentTarget, oven]);
 
   return (
-    <Stack p={8} spacing={4} backgroundColor="white" borderRadius={16}>
-      <Text fontWeight="600" color="#4E5D78">
+    <Stack
+      p={8}
+      spacing={4}
+      backgroundColor={colorMode === 'light' ? 'white' : 'cardbgdark'}
+      borderRadius={16}
+    >
+      <Text color={colorMode === 'light' ? 'text2' : 'white'} fontWeight="600">
         Ctez Stats
       </Text>
 
@@ -83,7 +90,7 @@ const OvenStats: React.FC = () => {
               </CircularProgressLabel>
             </CircularProgress>
 
-            <Text fontWeight="600" color="#4E5D78" fontSize="lg">
+            <Text fontWeight="600" color={colorMode === 'light' ? 'text2' : 'white'} fontSize="lg">
               {value}
             </Text>
             <Text fontWeight="500" color="#B0B7C3" fontSize="xs">
