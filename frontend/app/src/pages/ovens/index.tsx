@@ -3,7 +3,6 @@ import { MdAdd } from 'react-icons/md';
 import { BsArrowRight } from 'react-icons/bs';
 import { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
-import { mockOvens } from './mock';
 import OvenCard from '../../components/OvenCard/OvenCard';
 import MyOvenCard from '../../components/OvenCard/MyOvenCard';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
