@@ -31,8 +31,8 @@ const useSetOvenDataToStore = (userAddress: string | undefined) => {
       const ovenUserData: UserOvenStats = ovenData.reduce(
         (acc, item) => {
           if (!item.isExternal) {
-            acc.ctez += item.ctez_outstanding.shiftedBy(-6).toNumber();
-            acc.xtz += item.tez_balance.shiftedBy(-6).toNumber();
+            acc.ctez += Number(item.ctez_outstanding);
+            acc.xtz += Number(item.tez_balance);
             return acc;
           }
           return acc;

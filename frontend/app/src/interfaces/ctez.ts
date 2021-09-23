@@ -2,10 +2,10 @@ import { MichelsonMap } from '@taquito/taquito';
 import BigNumber from 'bignumber.js';
 
 export interface Oven {
-  ovenId: BigNumber;
+  ovenId: string | number;
   address: string;
-  ctez_outstanding: BigNumber;
-  tez_balance: BigNumber;
+  ctez_outstanding: string | number;
+  tez_balance: string | number;
   baker: string | null;
   isExternal?: boolean;
   isImported?: boolean;
