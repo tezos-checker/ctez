@@ -1,4 +1,4 @@
-import { Box, Grid, Text } from '@chakra-ui/react';
+import { Box, Grid, Text, useColorMode, useColorModeValue } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
 import { AllOvenDatum } from '../../interfaces';
 import ProgressPill from './ProgressPill';
@@ -17,6 +17,9 @@ const formatTokenAmt = (value: string | number) => {
 };
 
 const OvenCard: React.FC<{ oven: AllOvenDatum }> = ({ oven }) => {
+  const background = useColorModeValue('white', 'cardbgdark');
+  const textcolor = useColorModeValue('text2', 'white');
+
   const renderItems = () => {
     const items = [
       { label: 'Oven address', value: truncateText(oven.value.address) },
@@ -28,8 +31,12 @@ const OvenCard: React.FC<{ oven: AllOvenDatum }> = ({ oven }) => {
 
     return items.map((item) => (
       <Box key={item.label}>
-        <Text>{item.value}</Text>
-        <Text fontSize="xs">{item.label}</Text>
+        <Text color={textcolor} fontWeight="600">
+          {item.value}
+        </Text>
+        <Text fontWeight="500" color="#B0B7C3" fontSize="xs">
+          {item.label}
+        </Text>
       </Box>
     ));
   };
@@ -41,13 +48,15 @@ const OvenCard: React.FC<{ oven: AllOvenDatum }> = ({ oven }) => {
       py={4}
       px={10}
       borderRadius={16}
-      backgroundColor="white"
+      backgroundColor={background}
     >
       {renderItems()}
 
       <Box>
         <ProgressPill value={75} />
-        <Text fontSize="xs">Collateral Utilization</Text>
+        <Text color="#B0B7C3" fontSize="xs">
+          Collateral Utilization
+        </Text>
       </Box>
     </Grid>
   );

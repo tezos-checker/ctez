@@ -92,7 +92,9 @@ export const Sidebar: React.FC<Props> = ({
         <SidebarHeader>
           <Flex alignItems="center" padding="16px 35px 16px 20px">
             <Box marginRight="10px">
-              <Logo />
+              <NavLink to="/">
+                <Logo />
+              </NavLink>
             </Box>
             <Text
               flexGrow={1}
@@ -104,7 +106,7 @@ export const Sidebar: React.FC<Props> = ({
               whiteSpace="nowrap"
               textOverflow="ellipsis"
             >
-              ctez
+              <NavLink to="/">ctez</NavLink>
             </Text>
           </Flex>
           <Box role="button" className="menu-expand-button" onClick={handleCollapsed}>

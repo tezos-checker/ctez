@@ -1,8 +1,9 @@
-import { Text, Flex, Button, Box, useColorMode } from '@chakra-ui/react';
+import { Text, Flex, Box, useColorMode } from '@chakra-ui/react';
 import React from 'react';
 import { FiMoon, FiSun } from 'react-icons/fi';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { trimAddress } from '../../utils/addressUtils';
+import Button from '../button/Button';
 
 export interface IHeaderProps {
   walletAddress: string | undefined;

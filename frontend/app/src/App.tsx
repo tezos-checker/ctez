@@ -13,6 +13,7 @@ import { initCfmm } from './contracts/cfmm';
 import { logger } from './utils/logger';
 import { getNodePort, getNodeURL } from './utils/settingUtils';
 import ModalContainer from './components/modals/ModalContainer';
+import theme from './theme/theme';
 
 const queryClient = new QueryClient();
 
@@ -49,7 +50,7 @@ const App: React.FC = () => {
       <HelmetProvider>
         <QueryClientProvider client={queryClient}>
           <WalletProvider value={{ wallet, setWallet }}>
-            <ChakraProvider>
+            <ChakraProvider theme={theme}>
               <AppRouter />
               <ModalContainer />
             </ChakraProvider>
