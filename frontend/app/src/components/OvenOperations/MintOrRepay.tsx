@@ -1,11 +1,12 @@
 import {
-  Button,
   Flex,
   FormControl,
   FormLabel,
   Icon,
   Input,
   Text,
+  useColorMode,
+  useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
 import { MdInfo } from 'react-icons/md';
@@ -21,6 +22,7 @@ import { IMintRepayForm } from '../../constants/oven-operations';
 import { cTezError, mintOrBurn } from '../../contracts/ctez';
 import { logger } from '../../utils/logger';
 import { useOvenStats } from '../../hooks/utilHooks';
+import Button from '../button/Button';
 
 interface IMintOrRepayProps {
   type: 'mint' | 'repay';
@@ -30,6 +32,10 @@ const MintOrRepay: React.FC<IMintOrRepayProps> = ({ type }) => {
   const { t } = useTranslation(['common']);
   const toast = useToast();
   const { oven, stats, ovenId } = useOvenStats();
+  const text2 = useColorModeValue('text2', 'darkheading');
+  const text4 = useColorModeValue('text4', 'darkheading');
+  const inputbg = useColorModeValue('darkheading', 'textboxbg');
+  const cardbg = useColorModeValue('bg3', 'darkblue');
 
   const { tez_balance, ctez_outstanding } = useMemo(
     () =>
@@ -110,8 +116,8 @@ const MintOrRepay: React.FC<IMintOrRepayProps> = ({ type }) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor="gray.50">
-        <Icon fontSize="2xl" as={MdInfo} m={1} />
+      <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
+        <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
         <Text fontSize="xs" ml={2}>
           By adding liquidity you'll earn 0.2% of all trades on this pair proportional to your share
           of the pool. Fees are added to the
@@ -119,17 +125,21 @@ const MintOrRepay: React.FC<IMintOrRepayProps> = ({ type }) => {
       </Flex>
 
       <FormControl id="to-input-amount" mt={2} mb={6} w="100%">
-        <FormLabel fontSize="xs">{type === 'mint' ? 'Mint Ctez' : 'Repay'}</FormLabel>
+        <FormLabel fontWeight="500" color={text2} fontSize="xs">
+          {type === 'mint' ? 'Mint Ctez' : 'Repay'}
+        </FormLabel>
         <Input
           type="number"
           name="amount"
           id="amount"
+          color={text4}
+          bg={inputbg}
           value={values.amount}
           onChange={handleChange}
         />
       </FormControl>
 
-      <Button w="100%" variant="outline" type="submit">
+      <Button w="100%" variant="solid" type="submit">
         {type === 'mint' ? 'Mint Ctez' : 'Repay'}
       </Button>
     </form>

@@ -1,17 +1,20 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+*:focus {
+  box-shadow: none !important;
 }
 
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+form {
+  color: gray;
+}
 #sidebar .pro-sidebar-inner .pro-sidebar-layout ul .pro-inner-item .pro-icon-wrapper {
   background-color: transparent;
   color: #000;
@@ -19,11 +22,11 @@ code {
 }
 
 #sidebar .pro-sidebar-inner {
-  background-color: #081A51;
+  background-color: #081a51;
 }
 
 #sidebar .pro-menu a {
-  color: #CCD2E3;
+  color: #ccd2e3;
 }
 
 #sidebar .pro-sidebar-inner .pro-sidebar-layout {
@@ -48,7 +51,7 @@ code {
 }
 
 .highlight {
-  background: #1B2B65;
+  background: #1b2b65;
 }
 
 .no-cursor > .pro-inner-item {
@@ -56,7 +59,7 @@ code {
 }
 
 .menu-expand-button {
-  color: #445BFF;
+  color: #445bff;
   padding: 5px;
   background: white;
   position: absolute;
@@ -64,7 +67,7 @@ code {
   z-index: 9999;
   line-height: 20px;
   border-radius: 50%;
-  border: 1px solid #DADADA;
+  border: 1px solid #dadada;
   font-weight: bold;
   font-size: 22px;
   cursor: pointer;
@@ -72,7 +75,7 @@ code {
   display: none;
 }
 
-@media(min-width:992px){
+@media (min-width: 992px) {
   .md-menu {
     display: none !important;
   }

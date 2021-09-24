@@ -1,11 +1,12 @@
 import {
-  Button,
   Flex,
   FormControl,
   FormLabel,
   Icon,
   Input,
   Stack,
+  useColorMode,
+  useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
 import { MdAdd } from 'react-icons/md';
@@ -21,6 +22,7 @@ import { IRemoveLiquidityForm, TRemoveBtnTxt, REMOVE_BTN_TXT } from '../../const
 import { useWallet } from '../../wallet/hooks';
 import { useCfmmStorage } from '../../api/queries';
 import { DEFAULT_SLIPPAGE } from '../../utils/globals';
+import Button from '../button/Button';
 
 const RemoveLiquidity: React.FC = () => {
   const [{ pkh: userAddress }] = useWallet();
@@ -32,6 +34,9 @@ const RemoveLiquidity: React.FC = () => {
   const { data: cfmmStorage } = useCfmmStorage();
   const { t } = useTranslation(['common']);
   const [buttonText, setButtonText] = useState<TRemoveBtnTxt>(REMOVE_BTN_TXT.ENTER_AMT);
+  const text2 = useColorModeValue('text2', 'darkheading');
+  const text4 = useColorModeValue('text4', 'darkheading');
+  const inputbg = useColorModeValue('darkheading', 'textboxbg');
 
   const calcMinValues = useCallback(
     (slippage: number, lqtBurned: number) => {
@@ -125,38 +130,49 @@ const RemoveLiquidity: React.FC = () => {
 
   return (
     <form onSubmit={handleSubmit} id="remove-liquidity-form">
-      <Stack spacing={2}>
+      <Stack colorScheme="gray" spacing={2}>
         <FormControl id="to-input-amount" mb={2}>
-          <FormLabel fontSize="xs">LQT to burn</FormLabel>
+          <FormLabel color={text2} fontSize="xs">
+            LQT to burn
+          </FormLabel>
           <Input
             type="number"
             name="lqtBurned"
             id="lqtBurned"
             value={values.lqtBurned}
+            color={text4}
+            bg={inputbg}
             onChange={handleChange}
           />
         </FormControl>
 
         <Flex alignItems="center" justifyContent="space-between">
           <FormControl id="to-input-amount" w="45%">
-            <FormLabel fontSize="xs">Min. tez to withdraw</FormLabel>
+            <FormLabel color={text2} fontSize="xs">
+              Min. tez to withdraw
+            </FormLabel>
             <Input
               readOnly
               border={0}
               placeholder="0.0"
               type="number"
+              color={text4}
+              bg={inputbg}
               value={otherValues.cashWithdraw}
             />
           </FormControl>
 
           <Icon as={MdAdd} />
           <FormControl id="to-input-amount" w="45%">
-            <FormLabel fontSize="xs">Min. ctez to withdraw</FormLabel>
+            <FormLabel color={text2} fontSize="xs">
+              Min. ctez to withdraw
+            </FormLabel>
             <Input
               readOnly
               border={0}
               placeholder="0.0"
               type="number"
+              color={text4}
               value={otherValues.tokenWithdraw}
             />
           </FormControl>

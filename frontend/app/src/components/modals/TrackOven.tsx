@@ -1,5 +1,4 @@
 import {
-  Button,
   FormControl,
   FormLabel,
   Input,
@@ -10,6 +9,8 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  useColorMode,
+  useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
 import { validateContractAddress } from '@taquito/utils';
@@ -21,6 +22,7 @@ import { useOvenData } from '../../api/queries';
 import { useWallet } from '../../wallet/hooks';
 import { CTEZ_ADDRESS } from '../../utils/globals';
 import { addExternalOven } from '../../utils/ovenUtils';
+import Button from '../button/Button';
 
 interface ITrackOvenProps {
   isOpen: boolean;
@@ -35,6 +37,10 @@ const TrackOven: React.FC<ITrackOvenProps> = ({ isOpen, onClose }) => {
   const [{ pkh: userAddress }] = useWallet();
   const toast = useToast();
   const { t } = useTranslation(['common']);
+  const text2 = useColorModeValue('text2', 'darkheading');
+  const text4 = useColorModeValue('text4', 'darkheading');
+  const inputbg = useColorModeValue('darkheading', 'textboxbg');
+  const tabcolor = useColorModeValue('tabcolor', 'darkheading');
 
   const initialValues: any = {
     ovenAddress: '',
@@ -90,14 +96,20 @@ const TrackOven: React.FC<ITrackOvenProps> = ({ isOpen, onClose }) => {
       <ModalOverlay />
       <ModalContent>
         <form onSubmit={handleSubmit}>
-          <ModalHeader>Track an Oven</ModalHeader>
+          <ModalHeader fontWeight="500" color={tabcolor}>
+            Track an Oven
+          </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <FormControl id="track-oven" w="100%">
-              <FormLabel fontSize="xs">Oven Address</FormLabel>
+              <FormLabel color={text2} fontWeight="500" fontSize="xs">
+                Oven Address
+              </FormLabel>
               <Input
                 name="ovenAddress"
                 id="ovenAddress"
+                color={text4}
+                bg={inputbg}
                 value={values.ovenAddress}
                 onChange={handleChange}
               />
@@ -105,9 +117,7 @@ const TrackOven: React.FC<ITrackOvenProps> = ({ isOpen, onClose }) => {
           </ModalBody>
 
           <ModalFooter py={6}>
-            <Button colorScheme="blue" w="100%">
-              Track Oven
-            </Button>
+            <Button w="100%">Track Oven</Button>
           </ModalFooter>
         </form>
       </ModalContent>

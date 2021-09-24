@@ -1,10 +1,13 @@
-import { Box, Button, Flex, Text } from '@chakra-ui/react';
+import { Box, Flex, Text, useColorMode, useColorModeValue } from '@chakra-ui/react';
 import { MdChevronRight } from 'react-icons/all';
 import { Link } from 'react-router-dom';
 import { Oven } from '../../interfaces';
 import ProgressPill from './ProgressPill';
+import Button from '../button/Button';
 
 const MyOvenCard: React.FC<{ oven: Oven }> = ({ oven }) => {
+  const background = useColorModeValue('white', 'cardbgdark');
+  const textcolor = useColorModeValue('text2', 'white');
   const renderItems = () => {
     const items = [
       { label: 'Num Oven', value: `#${oven.ovenId}` },
@@ -18,8 +21,12 @@ const MyOvenCard: React.FC<{ oven: Oven }> = ({ oven }) => {
 
     return items.map((item) => (
       <Box key={item.label}>
-        <Text mb={2}>{item.value}</Text>
-        <Text fontSize="xs">{item.label}</Text>
+        <Text fontWeight="600" color={textcolor} mb={2}>
+          {item.value}
+        </Text>
+        <Text fontWeight="500" color="#B0B7C3" fontSize="xs">
+          {item.label}
+        </Text>
       </Box>
     ));
   };
@@ -32,7 +39,7 @@ const MyOvenCard: React.FC<{ oven: Oven }> = ({ oven }) => {
       py={4}
       px={10}
       borderRadius={16}
-      backgroundColor="white"
+      backgroundColor={background}
       transition="0.4s"
       _hover={{ boxShadow: '0 23px 66px 4px rgba(176, 183, 195, 0.25)', cursor: 'pointer' }}
       as={Link}
@@ -45,7 +52,7 @@ const MyOvenCard: React.FC<{ oven: Oven }> = ({ oven }) => {
         <ProgressPill value={74} />
       </Flex>
       <Flex alignItems="center">
-        <Button variant="outline" rightIcon={<MdChevronRight />}>
+        <Button variant="outline" rightIcon={<MdChevronRight />} w="200px">
           Manage Oven
         </Button>
       </Flex>

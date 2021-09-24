@@ -1,4 +1,4 @@
-import { Box, Button, Select, Spacer, Stack, Text } from '@chakra-ui/react';
+import { Box, Select, Spacer, Stack, Icon, Text, useColorModeValue } from '@chakra-ui/react';
 import { MdAdd } from 'react-icons/md';
 import { BsArrowRight } from 'react-icons/bs';
 import { useMemo } from 'react';
@@ -15,6 +15,7 @@ import {
   useSetExtOvensToStore,
   useSetOvenDataToStore,
 } from '../../hooks/setApiDataToStore';
+import Button from '../../components/button/Button';
 
 const AllOvensContainer: React.FC = () => {
   useSetAllOvensToStore();
@@ -36,7 +37,7 @@ const AllOvensContainer: React.FC = () => {
 const OvensPage: React.FC = () => {
   const location = useLocation();
   const dispatch = useAppDispatch();
-
+  const background = useColorModeValue('white', 'cardbgdark');
   const { ovens } = useAppSelector((state) => state.oven);
   const [{ pkh: userAddress }] = useWallet();
   useSetCtezBaseStatsToStore(userAddress);
@@ -50,7 +51,7 @@ const OvensPage: React.FC = () => {
   return (
     <Box m={2} p={8}>
       <Stack direction="row">
-        <Select placeholder="Sort by:" w={186} backgroundColor="white">
+        <Select color="#B0B7C3" placeholder="Sort by:" w={186} backgroundColor={background}>
           {/* TODO */}
           <option value="option1">Value</option>
           <option value="option2">Utilization</option>
@@ -61,13 +62,15 @@ const OvensPage: React.FC = () => {
         <Button
           rightIcon={<BsArrowRight />}
           variant="outline"
+          w="20%"
           onClick={() => dispatch(openModal(MODAL_NAMES.TRACK_OVEN))}
         >
           Track Oven
         </Button>
         <Button
-          leftIcon={<MdAdd />}
+          leftIcon={<Icon as={MdAdd} w={6} h={6} />}
           variant="solid"
+          w="20%"
           onClick={() => dispatch(openModal(MODAL_NAMES.CREATE_OVEN))}
         >
           Create Oven

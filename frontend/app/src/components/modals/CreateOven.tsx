@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Flex,
   FormControl,
   FormLabel,
@@ -15,6 +14,8 @@ import {
   ModalHeader,
   ModalOverlay,
   Select,
+  useColorMode,
+  useColorModeValue,
   useRadioGroup,
   useToast,
 } from '@chakra-ui/react';
@@ -29,6 +30,7 @@ import { create, cTezError } from '../../contracts/ctez';
 import { useWallet } from '../../wallet/hooks';
 import { logger } from '../../utils/logger';
 import RadioCard from '../radio/RadioCard';
+import Button from '../button/Button';
 
 interface ICreateOvenProps {
   isOpen: boolean;
@@ -58,6 +60,10 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
   const toast = useToast();
   const { t } = useTranslation(['common']);
   const options = ['Whitelist', 'Everyone'];
+  const text2 = useColorModeValue('text2', 'darkheading');
+  const text4 = useColorModeValue('text4', 'darkheading');
+  const inputbg = useColorModeValue('darkheading', 'textboxbg');
+  const text1 = useColorModeValue('text1', 'darkheading');
 
   const validationSchema = object().shape({
     delegate: string()
@@ -184,15 +190,21 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
       <ModalOverlay />
       <form onSubmit={handleSubmit}>
         <ModalContent>
-          <ModalHeader>Create an Oven</ModalHeader>
+          <ModalHeader fontWeight="500" color={text1}>
+            Create an Oven
+          </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <FormControl w="100%" mb={2}>
-              <FormLabel fontSize="xs">Delegate</FormLabel>
+              <FormLabel color={text2} fontWeight="500" fontSize="xs">
+                Delegate
+              </FormLabel>
 
               <Select
                 placeholder={t('delegatePlaceholder')}
                 value={values.delegate}
+                color={text4}
+                bg={inputbg}
                 onChange={(ev) => {
                   formik.setFieldValue('delegate', ev.target.value);
                 }}
@@ -205,18 +217,24 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
               </Select>
             </FormControl>
             <FormControl w="100%" mb={2}>
-              <FormLabel fontSize="xs">Initial Deposit</FormLabel>
+              <FormLabel color={text2} fontWeight="500" fontSize="xs">
+                Initial Deposit
+              </FormLabel>
               <Input
                 type="number"
                 name="amount"
                 id="amount"
+                color={text4}
+                bg={inputbg}
                 value={values.amount}
                 onChange={handleChange}
               />
             </FormControl>
 
             <FormControl w="100%" mb={2}>
-              <FormLabel fontSize="xs">Who can Deposit?</FormLabel>
+              <FormLabel color={text2} fontWeight="500" fontSize="xs">
+                Who can Deposit?
+              </FormLabel>
               <Flex {...group} w="100%" justifyContent="space-between">
                 {options.map((value) => {
                   const radio = getRadioProps({ value });
@@ -230,17 +248,21 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
             </FormControl>
 
             <FormControl w="100%" mb={2}>
-              <FormLabel fontSize="xs">Authorised Deposters</FormLabel>
+              <FormLabel fontSize="xs" color={text2} fontWeight="500">
+                Authorised Deposters
+              </FormLabel>
               <InputGroup>
                 <InputLeftElement pointerEvents="none" w="" left={2}>
                   <Box px={2} boxShadow="xs">
-                    {values.depositors[0].label}
-                    {values.depositors.length > 1 ? ` + ${values.depositors.length - 1}` : ''}
+                    {values.depositors[0]?.label}
+                    {values.depositors?.length > 1 ? ` + ${values.depositors?.length - 1}` : ''}
                   </Box>
                 </InputLeftElement>
                 <Input
                   name="depositorInput"
                   id="depositorInput"
+                  color={text4}
+                  bg={inputbg}
                   pl={values.depositors.length > 1 ? '84px' : '56px'}
                   value={values.depositorInput}
                   onChange={handleDepositorInput}
@@ -250,7 +272,7 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="blue" w="100%" type="submit">
+            <Button w="100%" type="submit">
               Create Oven
             </Button>
           </ModalFooter>
