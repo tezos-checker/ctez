@@ -61,21 +61,36 @@ let rec zip (paired_lists, accum : ((nat list) * (nat list)) * (nat * nat) list)
 
 let compare_to_expected_tez_to_cash (f : nat -> nat -> nat -> nat -> int -> nat) = 
     let trade_with_f = fun (x, y, dy, target, rounds, _ : nat * nat * nat * nat * int * (nat * nat)) -> f x y dy target rounds in 
+    
+    // assert that traded differs from expected by 0.01% or less
     let traded = List.map trade_with_f trade_params in 
     let expected = expected_tez_to_cash in
-    // assert that traded differs from expected by 0.01% or less
     let assertion = List.map (fun (a, b : nat * nat) -> assert(abs(a - b) <= b / 10_000n)) (zip ((traded, expected), ([] : (nat * nat) list))) in
+    
+    // Do the same for special cases designed from the mutation testing 
+    let traded2 = List.map trade_with_f mutation_special_cases in 
+    let expected2 = mutation_special_cases_tez_to_cash in
+    let assertion2 = List.map (fun (a, b : nat * nat) -> assert(abs(a - b) <= b / 10_000n)) (zip ((traded, expected), ([] : (nat * nat) list))) in
+
     () // if it makes it to this, the test has passed
 
 let test_dtez_to_dcash = 
     compare_to_expected_tez_to_cash trade_dtez_for_dcash
 
+
 let compare_to_expected_cash_to_tez (f : nat -> nat -> nat -> nat -> int -> nat) = 
     let trade_with_f = fun (x, y, dy, target, rounds, _ : nat * nat * nat * nat * int * (nat * nat)) -> f x y dy target rounds in 
+
+    // assert that traded differs from expected by 0.01% or less
     let traded = List.map trade_with_f trade_params in 
     let expected = expected_cash_to_tez in 
-    // assert that traded differs from expected by 0.01% or less
     let assertion = List.map (fun (a, b : nat * nat) -> assert(abs(a - b) <= b / 10_000n)) (zip ((traded, expected), ([] : (nat * nat) list))) in
+    
+    // Do the same for special cases designed from the mutation testing 
+    let traded2 = List.map trade_with_f mutation_special_cases in 
+    let expected2 = mutation_special_cases_cash_to_tez in 
+    let assertion2 = List.map (fun (a, b : nat * nat) -> assert(abs(a - b) <= b / 10_000n)) (zip ((traded, expected), ([] : (nat * nat) list))) in
+
     () // if it makes it to this, the test has passed
 
 let test_dcash_to_dtez = 
@@ -87,6 +102,7 @@ let test_dcash_to_dtez =
 
 (* 
 
+DISCLAIMER: THE FOLLOWING IS TRUE FOR VERSION 0.25.0 OF LIGO, WHICH WAS CURRENT AT TIME OF WRITING
 The following tests return the following mutants, which we deem as not a problem:
 1. Line 206 of cfmm_tez_ctez.mligo, replacing:
     * (cash - dcash_approx <= 0) => (cash - dcash_approx <= -1)
@@ -106,6 +122,16 @@ The following tests return the following mutants, which we deem as not a problem
    by 1n or something so extreme that for low numbers of rounds the end is determined
    by the initial guess. I have yet to find a case that can differentiate between 0n and 1n 
    on initial guesses.
+
+4. Replacing (rounds <= 0) on line 174 with:
+    * (rounds <= 0) => (rounds <= 1)
+    * (rounds <= 0) => (rounds <= -1)
+    * (rounds <= 0) => (rounds < 0)
+   The Newton calculation pretty much always converges within three rounds, so adding 
+   rounds by chaging to (rounds < 0) or (rounds <= -1) won't change anything, nor will 
+   subtracting one round from the default of 4. The default of 4 is there as a safety net,
+   nothing more, for extreme cases. In theory there is a case in which 3 rounds of iterations
+   would be different from 4, but we were unable to find one.
 
 *)
 
