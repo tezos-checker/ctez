@@ -24,7 +24,7 @@ def generate_random_data(n):
         dx = random.randint(0, min(x,y)) # so as to not exceed the supply
         target = random.randint(0, 28147497671065600) # betweeen 0 and 100
         rounds = 4 # constant at 4 rounds
-        const_fee = (995, 1000) # constant at 0.5% fee
+        const_fee = (9995, 10000) # constant at five basis points
         accum = accum + [(x,y,dx,target,rounds,const_fee)]
     return accum
 
