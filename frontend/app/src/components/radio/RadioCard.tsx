@@ -6,7 +6,6 @@ const RadioCard: React.FC<UseRadioProps> = (props) => {
 
   const input = getInputProps();
   const checkbox = getCheckboxProps();
-  const { colorMode } = useColorMode();
   const text2 = useColorModeValue('text2', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
   const bordercolor = useColorModeValue('violet', '');

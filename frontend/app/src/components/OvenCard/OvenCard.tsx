@@ -17,7 +17,6 @@ const formatTokenAmt = (value: string | number) => {
 };
 
 const OvenCard: React.FC<{ oven: AllOvenDatum }> = ({ oven }) => {
-  const { colorMode } = useColorMode();
   const background = useColorModeValue('white', 'cardbgdark');
   const textcolor = useColorModeValue('text2', 'white');
 

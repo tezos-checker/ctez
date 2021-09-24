@@ -6,7 +6,6 @@ import ProgressPill from './ProgressPill';
 import Button from '../button/Button';
 
 const MyOvenCard: React.FC<{ oven: Oven }> = ({ oven }) => {
-  const { colorMode } = useColorMode();
   const background = useColorModeValue('white', 'cardbgdark');
   const textcolor = useColorModeValue('text2', 'white');
   const renderItems = () => {

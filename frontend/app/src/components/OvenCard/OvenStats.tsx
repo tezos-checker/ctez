@@ -14,7 +14,6 @@ import { useOvenStats } from '../../hooks/utilHooks';
 
 const OvenStats: React.FC = () => {
   const { stats: rawStats } = useOvenStats();
-  const { colorMode } = useColorMode();
   const background = useColorModeValue('white', 'cardbgdark');
   const textcolor = useColorModeValue('text2', 'white');
 

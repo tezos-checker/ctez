@@ -23,7 +23,6 @@ import Button from '../button/Button';
 
 const Deposit: React.FC = () => {
   const toast = useToast();
-  const { colorMode } = useColorMode();
   const text2 = useColorModeValue('text2', 'darkheading');
   const text4 = useColorModeValue('text4', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');

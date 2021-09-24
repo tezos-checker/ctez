@@ -15,7 +15,6 @@ import Swap from '../../components/Swap';
 import Liquidity from '../../components/Liquidity';
 
 const HomePage: React.FC = () => {
-  const { colorMode } = useColorMode();
   const tabcolor = useColorModeValue('tabcolor', 'darkheading');
   const background = useColorModeValue('white', 'cardbgdark');
   const textcolor = useColorModeValue('darkgray', 'white');

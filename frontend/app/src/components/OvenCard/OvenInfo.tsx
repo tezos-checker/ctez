@@ -5,7 +5,6 @@ import Button from '../button/Button';
 
 const OvenInfo: React.FC = () => {
   const { stats, oven } = useOvenStats();
-  const { colorMode } = useColorMode();
   const background = useColorModeValue('white', 'cardbgdark');
 
   return (

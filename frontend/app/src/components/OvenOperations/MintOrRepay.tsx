@@ -32,7 +32,6 @@ const MintOrRepay: React.FC<IMintOrRepayProps> = ({ type }) => {
   const { t } = useTranslation(['common']);
   const toast = useToast();
   const { oven, stats, ovenId } = useOvenStats();
-  const { colorMode } = useColorMode();
   const text2 = useColorModeValue('text2', 'darkheading');
   const text4 = useColorModeValue('text4', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');

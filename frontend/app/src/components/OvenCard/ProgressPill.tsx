@@ -5,7 +5,6 @@ interface IProgressPill {
 }
 
 const ProgressPill: React.FC<IProgressPill> = ({ value }) => {
-  const { colorMode } = useColorMode();
   const progresspillbg = useColorModeValue('green', 'darkblue');
   return (
     <Stack direction="row" backgroundColor={progresspillbg} borderRadius={16} px={4}>

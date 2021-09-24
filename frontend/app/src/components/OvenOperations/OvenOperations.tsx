@@ -21,7 +21,6 @@ interface IOvenOperationsProps {
 }
 
 const OvenOperations: React.FC<IOvenOperationsProps> = (props) => {
-  const { colorMode } = useColorMode();
   const text2 = useColorModeValue('text2', 'white');
   const background = useColorModeValue('white', 'cardbgdark');
   const dividerEl = useMemo(

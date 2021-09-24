@@ -17,7 +17,6 @@ import Button from '../button/Button';
 
 const Liquidity: React.FC = () => {
   const { isOpen, onToggle } = useDisclosure();
-  const { colorMode } = useColorMode();
   const cardbg = useColorModeValue('bg3', 'darkblue');
 
   return (
