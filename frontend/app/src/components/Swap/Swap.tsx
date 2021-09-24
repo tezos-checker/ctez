@@ -8,6 +8,7 @@ import {
   InputRightElement,
   Text,
   useColorMode,
+  useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
 import { validateAddress } from '@taquito/utils';
@@ -47,6 +48,9 @@ const Swap: React.FC = () => {
   useSetCtezBaseStatsToStore(userAddress);
   const baseStats = useAppSelector((state) => state.stats?.baseStats);
   const { colorMode } = useColorMode();
+  const text2 = useColorModeValue('text2', 'darkheading');
+  const text4 = useColorModeValue('text4', 'darkheading');
+  const inputbg = useColorModeValue('darkheading', 'textboxbg');
 
   const getRightElement = useCallback((token: TToken) => {
     if (token === TOKEN.Tez) {
@@ -167,7 +171,7 @@ const Swap: React.FC = () => {
   return (
     <form autoComplete="off" onSubmit={handleSubmit}>
       <FormControl id="from-input-amount">
-        <FormLabel color={colorMode === 'light' ? 'text2' : 'darkheading'} fontSize="xs">
+        <FormLabel color={text2} fontSize="xs">
           From
         </FormLabel>
         <InputGroup>
@@ -175,8 +179,8 @@ const Swap: React.FC = () => {
             name="amount"
             id="amount"
             type="number"
-            color={colorMode === 'light' ? 'text4' : 'darkheading'}
-            bg={colorMode === 'light' ? 'darkheading' : 'textboxbg'}
+            color={text4}
+            bg={inputbg}
             value={values.amount}
             onChange={handleChange}
           />
@@ -198,16 +202,11 @@ const Swap: React.FC = () => {
       </Flex>
 
       <FormControl id="to-input-amount" mt={-2} mb={6}>
-        <FormLabel color={colorMode === 'light' ? 'text2' : 'darkheading'} fontSize="xs">
+        <FormLabel color={text2} fontSize="xs">
           To (estimate)
         </FormLabel>
         <InputGroup>
-          <Input
-            color={colorMode === 'light' ? 'text4' : 'darkheading'}
-            bg={colorMode === 'light' ? 'darkheading' : 'textboxbg'}
-            value={minBuyValue}
-            type="number"
-          />
+          <Input color={text4} bg={inputbg} value={minBuyValue} type="number" />
           {getRightElement(formType === FORM_TYPE.CTEZ_TEZ ? TOKEN.Tez : TOKEN.CTez)}
         </InputGroup>
       </FormControl>

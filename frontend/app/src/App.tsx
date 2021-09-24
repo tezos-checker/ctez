@@ -13,7 +13,7 @@ import { initCfmm } from './contracts/cfmm';
 import { logger } from './utils/logger';
 import { getNodePort, getNodeURL } from './utils/settingUtils';
 import ModalContainer from './components/modals/ModalContainer';
-import theme from './components/theme/theme';
+import theme from './theme/theme';
 
 const queryClient = new QueryClient();
 

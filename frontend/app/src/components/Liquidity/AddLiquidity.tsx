@@ -7,6 +7,7 @@ import {
   Stack,
   Text,
   useColorMode,
+  useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
 import { MdAdd } from 'react-icons/md';
@@ -35,6 +36,9 @@ const AddLiquidity: React.FC = () => {
   const { t } = useTranslation();
   const toast = useToast();
   const { colorMode } = useColorMode();
+  const text2 = useColorModeValue('text2', 'darkheading');
+  const text4 = useColorModeValue('text4', 'darkheading');
+  const inputbg = useColorModeValue('darkheading', 'textboxbg');
 
   const calcMaxToken = useCallback(
     (slippage: number, cashDeposited: number) => {
@@ -123,19 +127,19 @@ const AddLiquidity: React.FC = () => {
   return (
     <form onSubmit={handleSubmit} id="add-liquidity-form">
       <Stack spacing={2}>
-        <Text color={colorMode === 'light' ? 'text2' : 'darkheading'}>Add liquidity</Text>
+        <Text color={text2}>Add liquidity</Text>
 
         <Flex alignItems="center" justifyContent="space-between">
           <FormControl id="to-input-amount" mt={-2} mb={6} w="45%">
-            <FormLabel color={colorMode === 'light' ? 'text2' : 'darkheading'} fontSize="xs">
+            <FormLabel color={text2} fontSize="xs">
               tez to deposit
             </FormLabel>
             <Input
               type="number"
               name="amount"
               id="amount"
-              color={colorMode === 'light' ? 'text4' : 'darkheading'}
-              bg={colorMode === 'light' ? 'darkheading' : 'textboxbg'}
+              color={text4}
+              bg={inputbg}
               value={values.amount}
               onChange={handleChange}
             />
@@ -143,14 +147,14 @@ const AddLiquidity: React.FC = () => {
 
           <Icon as={MdAdd} />
           <FormControl id="to-input-amount" mt={-2} mb={6} w="45%">
-            <FormLabel color={colorMode === 'light' ? 'text2' : 'darkheading'} fontSize="xs">
+            <FormLabel color={text2} fontSize="xs">
               ctez to deposit(approx)
             </FormLabel>
             <Input
               value={maxTokens}
               readOnly
               border={0}
-              color={colorMode === 'light' ? 'text4' : 'darkheading'}
+              color={text4}
               placeholder="0.0"
               type="number"
             />

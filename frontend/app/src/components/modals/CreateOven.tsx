@@ -15,6 +15,7 @@ import {
   ModalOverlay,
   Select,
   useColorMode,
+  useColorModeValue,
   useRadioGroup,
   useToast,
 } from '@chakra-ui/react';
@@ -60,6 +61,10 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
   const { t } = useTranslation(['common']);
   const options = ['Whitelist', 'Everyone'];
   const { colorMode } = useColorMode();
+  const text2 = useColorModeValue('text2', 'darkheading');
+  const text4 = useColorModeValue('text4', 'darkheading');
+  const inputbg = useColorModeValue('darkheading', 'textboxbg');
+  const text1 = useColorModeValue('text1', 'darkheading');
 
   const validationSchema = object().shape({
     delegate: string()
@@ -186,25 +191,21 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
       <ModalOverlay />
       <form onSubmit={handleSubmit}>
         <ModalContent>
-          <ModalHeader fontWeight="500" color={colorMode === 'light' ? 'text1' : 'darkheading'}>
+          <ModalHeader fontWeight="500" color={text1}>
             Create an Oven
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <FormControl w="100%" mb={2}>
-              <FormLabel
-                color={colorMode === 'light' ? 'text2' : 'darkheading'}
-                fontWeight="500"
-                fontSize="xs"
-              >
+              <FormLabel color={text2} fontWeight="500" fontSize="xs">
                 Delegate
               </FormLabel>
 
               <Select
                 placeholder={t('delegatePlaceholder')}
                 value={values.delegate}
-                color={colorMode === 'light' ? 'text4' : 'darkheading'}
-                bg={colorMode === 'light' ? 'darkheading' : 'textboxbg'}
+                color={text4}
+                bg={inputbg}
                 onChange={(ev) => {
                   formik.setFieldValue('delegate', ev.target.value);
                 }}
@@ -217,30 +218,22 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
               </Select>
             </FormControl>
             <FormControl w="100%" mb={2}>
-              <FormLabel
-                color={colorMode === 'light' ? 'text2' : 'darkheading'}
-                fontWeight="500"
-                fontSize="xs"
-              >
+              <FormLabel color={text2} fontWeight="500" fontSize="xs">
                 Initial Deposit
               </FormLabel>
               <Input
                 type="number"
                 name="amount"
                 id="amount"
-                color={colorMode === 'light' ? 'text4' : 'darkheading'}
-                bg={colorMode === 'light' ? 'darkheading' : 'textboxbg'}
+                color={text4}
+                bg={inputbg}
                 value={values.amount}
                 onChange={handleChange}
               />
             </FormControl>
 
             <FormControl w="100%" mb={2}>
-              <FormLabel
-                color={colorMode === 'light' ? 'text2' : 'darkheading'}
-                fontWeight="500"
-                fontSize="xs"
-              >
+              <FormLabel color={text2} fontWeight="500" fontSize="xs">
                 Who can Deposit?
               </FormLabel>
               <Flex {...group} w="100%" justifyContent="space-between">
@@ -256,11 +249,7 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
             </FormControl>
 
             <FormControl w="100%" mb={2}>
-              <FormLabel
-                fontSize="xs"
-                color={colorMode === 'light' ? 'text2' : 'darkheading'}
-                fontWeight="500"
-              >
+              <FormLabel fontSize="xs" color={text2} fontWeight="500">
                 Authorised Deposters
               </FormLabel>
               <InputGroup>
@@ -273,8 +262,8 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
                 <Input
                   name="depositorInput"
                   id="depositorInput"
-                  color={colorMode === 'light' ? 'text4' : 'darkheading'}
-                  bg={colorMode === 'light' ? 'darkheading' : 'textboxbg'}
+                  color={text4}
+                  bg={inputbg}
                   pl={values.depositors.length > 1 ? '84px' : '56px'}
                   value={values.depositorInput}
                   onChange={handleDepositorInput}

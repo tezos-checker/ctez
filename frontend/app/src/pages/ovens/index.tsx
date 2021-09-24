@@ -1,4 +1,4 @@
-import { Box, Select, Spacer, Stack, Icon, useColorMode, Text } from '@chakra-ui/react';
+import { Box, Select, Spacer, Stack, Icon, Text, useColorModeValue } from '@chakra-ui/react';
 import { MdAdd } from 'react-icons/md';
 import { BsArrowRight } from 'react-icons/bs';
 import { useMemo } from 'react';
@@ -38,7 +38,7 @@ const AllOvensContainer: React.FC = () => {
 const OvensPage: React.FC = () => {
   const location = useLocation();
   const dispatch = useAppDispatch();
-  const { colorMode } = useColorMode();
+  const background = useColorModeValue('white', 'cardbgdark');
   const { ovens } = useAppSelector((state) => state.oven);
   const [{ pkh: userAddress }] = useWallet();
   useSetCtezBaseStatsToStore(userAddress);
@@ -52,12 +52,7 @@ const OvensPage: React.FC = () => {
   return (
     <Box m={2} p={8}>
       <Stack direction="row">
-        <Select
-          color="#B0B7C3"
-          placeholder="Sort by:"
-          w={186}
-          backgroundColor={colorMode === 'light' ? 'white' : 'cardbgdark'}
-        >
+        <Select color="#B0B7C3" placeholder="Sort by:" w={186} backgroundColor={background}>
           {/* TODO */}
           <option value="option1">Value</option>
           <option value="option2">Utilization</option>

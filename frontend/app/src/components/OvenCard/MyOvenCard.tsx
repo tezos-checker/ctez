@@ -1,4 +1,4 @@
-import { Box, Flex, Text, useColorMode } from '@chakra-ui/react';
+import { Box, Flex, Text, useColorMode, useColorModeValue } from '@chakra-ui/react';
 import { MdChevronRight } from 'react-icons/all';
 import { Link } from 'react-router-dom';
 import { Oven } from '../../interfaces';
@@ -7,6 +7,8 @@ import Button from '../button/Button';
 
 const MyOvenCard: React.FC<{ oven: Oven }> = ({ oven }) => {
   const { colorMode } = useColorMode();
+  const background = useColorModeValue('white', 'cardbgdark');
+  const textcolor = useColorModeValue('text2', 'white');
   const renderItems = () => {
     const items = [
       { label: 'Num Oven', value: `#${oven.ovenId}` },
@@ -20,7 +22,7 @@ const MyOvenCard: React.FC<{ oven: Oven }> = ({ oven }) => {
 
     return items.map((item) => (
       <Box key={item.label}>
-        <Text fontWeight="600" color={colorMode === 'light' ? 'text2' : 'white'} mb={2}>
+        <Text fontWeight="600" color={textcolor} mb={2}>
           {item.value}
         </Text>
         <Text fontWeight="500" color="#B0B7C3" fontSize="xs">
@@ -38,7 +40,7 @@ const MyOvenCard: React.FC<{ oven: Oven }> = ({ oven }) => {
       py={4}
       px={10}
       borderRadius={16}
-      backgroundColor={colorMode === 'light' ? 'white' : 'cardbgdark'}
+      backgroundColor={background}
       transition="0.4s"
       _hover={{ boxShadow: '0 23px 66px 4px rgba(176, 183, 195, 0.25)', cursor: 'pointer' }}
       as={Link}

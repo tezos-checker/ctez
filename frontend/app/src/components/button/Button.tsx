@@ -1,5 +1,12 @@
 import React, { MouseEventHandler } from 'react';
-import { Button as ChakraButton, ButtonGroup, useColorMode, Text, Box } from '@chakra-ui/react';
+import {
+  Button as ChakraButton,
+  ButtonGroup,
+  useColorMode,
+  Text,
+  Box,
+  useColorModeValue,
+} from '@chakra-ui/react';
 import { ButtonProps } from '@chakra-ui/button';
 
 export interface IButtonProps extends ButtonProps {
@@ -8,6 +15,7 @@ export interface IButtonProps extends ButtonProps {
 
 const Button: React.FC<IButtonProps> = (props) => {
   const { colorMode } = useColorMode();
+  const background = useColorModeValue('white', 'cardbgdark');
   if (props.variant === 'outline') {
     return (
       <Box
@@ -24,7 +32,7 @@ const Button: React.FC<IButtonProps> = (props) => {
         onClick={(props.onClick as unknown) as MouseEventHandler<HTMLDivElement>}
       >
         <Box
-          backgroundColor={colorMode === 'light' ? 'white' : 'cardbgdark'}
+          backgroundColor={background}
           w="100%"
           h="100%"
           p={2}

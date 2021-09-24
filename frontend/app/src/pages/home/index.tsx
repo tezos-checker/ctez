@@ -9,32 +9,37 @@ import {
   Tab,
   TabPanel,
   useColorMode,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import Swap from '../../components/Swap';
 import Liquidity from '../../components/Liquidity';
 
 const HomePage: React.FC = () => {
   const { colorMode } = useColorMode();
+  const tabcolor = useColorModeValue('tabcolor', 'darkheading');
+  const background = useColorModeValue('white', 'cardbgdark');
+  const textcolor = useColorModeValue('darkgray', 'white');
+
   return (
     <Flex height="calc(100vh - 72px)" alignItems="center">
       <Flex alignItems="center" m={24}>
         <Stack spacing={3} m={4}>
-          <Text color={colorMode === 'light' ? 'darkgray' : 'white'} fontSize="sm">
+          <Text color={textcolor} fontSize="sm">
             No governance, completely mechanical, straightforward.
           </Text>
-          <Text color={colorMode === 'light' ? 'darkgray' : 'white'} fontSize="6xl" as="strong">
+          <Text color={textcolor} fontSize="6xl" as="strong">
             Unlock liquidity on Tezos and stay in control
           </Text>
-          <Text color={colorMode === 'light' ? 'darkgray' : 'white'} fontSize="md">
+          <Text color={textcolor} fontSize="md">
             ctez can be used directly in smart-contracts that would normally pool tez together
             without the thorny question of "who's baking".
           </Text>
         </Stack>
 
         <Box
-          backgroundColor={colorMode === 'light' ? 'white' : 'cardbgdark'}
+          backgroundColor={background}
           fontWeight="500"
-          color={colorMode === 'light' ? 'tabcolor' : 'darkheading'}
+          color={tabcolor}
           minWidth="400px"
           maxWidth="400px"
           borderRadius={16}

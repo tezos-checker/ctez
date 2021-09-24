@@ -7,6 +7,7 @@ import {
   Stack,
   Text,
   useColorMode,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import { useMemo } from 'react';
 import { useOvenStats } from '../../hooks/utilHooks';
@@ -14,6 +15,8 @@ import { useOvenStats } from '../../hooks/utilHooks';
 const OvenStats: React.FC = () => {
   const { stats: rawStats } = useOvenStats();
   const { colorMode } = useColorMode();
+  const background = useColorModeValue('white', 'cardbgdark');
+  const textcolor = useColorModeValue('text2', 'white');
 
   const stats = useMemo(() => {
     if (!rawStats) {
@@ -41,13 +44,8 @@ const OvenStats: React.FC = () => {
   }, [rawStats]);
 
   return (
-    <Stack
-      p={8}
-      spacing={4}
-      backgroundColor={colorMode === 'light' ? 'white' : 'cardbgdark'}
-      borderRadius={16}
-    >
-      <Text color={colorMode === 'light' ? 'text2' : 'white'} fontWeight="600">
+    <Stack p={8} spacing={4} backgroundColor={background} borderRadius={16}>
+      <Text color={textcolor} fontWeight="600">
         Ctez Stats
       </Text>
 
@@ -68,7 +66,7 @@ const OvenStats: React.FC = () => {
               </CircularProgressLabel>
             </CircularProgress>
 
-            <Text fontWeight="600" color={colorMode === 'light' ? 'text2' : 'white'} fontSize="lg">
+            <Text fontWeight="600" color={textcolor} fontSize="lg">
               {value}
             </Text>
             <Text fontWeight="500" color="#B0B7C3" fontSize="xs">

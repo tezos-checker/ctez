@@ -1,4 +1,4 @@
-import { Box, Grid, Text, useColorMode } from '@chakra-ui/react';
+import { Box, Grid, Text, useColorMode, useColorModeValue } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
 import { AllOvenDatum } from '../../interfaces';
 import ProgressPill from './ProgressPill';
@@ -18,6 +18,8 @@ const formatTokenAmt = (value: string | number) => {
 
 const OvenCard: React.FC<{ oven: AllOvenDatum }> = ({ oven }) => {
   const { colorMode } = useColorMode();
+  const background = useColorModeValue('white', 'cardbgdark');
+  const textcolor = useColorModeValue('text2', 'white');
 
   const renderItems = () => {
     const items = [
@@ -30,7 +32,7 @@ const OvenCard: React.FC<{ oven: AllOvenDatum }> = ({ oven }) => {
 
     return items.map((item) => (
       <Box key={item.label}>
-        <Text color={colorMode === 'light' ? 'text2' : 'white'} fontWeight="600">
+        <Text color={textcolor} fontWeight="600">
           {item.value}
         </Text>
         <Text fontWeight="500" color="#B0B7C3" fontSize="xs">
@@ -47,7 +49,7 @@ const OvenCard: React.FC<{ oven: AllOvenDatum }> = ({ oven }) => {
       py={4}
       px={10}
       borderRadius={16}
-      backgroundColor={colorMode === 'light' ? 'white' : 'cardbgdark'}
+      backgroundColor={background}
     >
       {renderItems()}
 

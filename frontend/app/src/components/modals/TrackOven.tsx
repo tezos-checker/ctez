@@ -10,6 +10,7 @@ import {
   ModalHeader,
   ModalOverlay,
   useColorMode,
+  useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
 import { validateContractAddress } from '@taquito/utils';
@@ -37,6 +38,10 @@ const TrackOven: React.FC<ITrackOvenProps> = ({ isOpen, onClose }) => {
   const toast = useToast();
   const { t } = useTranslation(['common']);
   const { colorMode } = useColorMode();
+  const text2 = useColorModeValue('text2', 'darkheading');
+  const text4 = useColorModeValue('text4', 'darkheading');
+  const inputbg = useColorModeValue('darkheading', 'textboxbg');
+  const tabcolor = useColorModeValue('tabcolor', 'darkheading');
 
   const initialValues: any = {
     ovenAddress: '',
@@ -92,24 +97,20 @@ const TrackOven: React.FC<ITrackOvenProps> = ({ isOpen, onClose }) => {
       <ModalOverlay />
       <ModalContent>
         <form onSubmit={handleSubmit}>
-          <ModalHeader fontWeight="500" color={colorMode === 'light' ? 'tabcolor' : 'darkheading'}>
+          <ModalHeader fontWeight="500" color={tabcolor}>
             Track an Oven
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <FormControl id="track-oven" w="100%">
-              <FormLabel
-                color={colorMode === 'light' ? 'text2' : 'darkheading'}
-                fontWeight="500"
-                fontSize="xs"
-              >
+              <FormLabel color={text2} fontWeight="500" fontSize="xs">
                 Oven Address
               </FormLabel>
               <Input
                 name="ovenAddress"
                 id="ovenAddress"
-                color={colorMode === 'light' ? 'text4' : 'darkheading'}
-                bg={colorMode === 'light' ? 'darkheading' : 'textboxbg'}
+                color={text4}
+                bg={inputbg}
                 value={values.ovenAddress}
                 onChange={handleChange}
               />

@@ -6,6 +6,7 @@ import {
   Input,
   Stack,
   useColorMode,
+  useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
 import { MdAdd } from 'react-icons/md';
@@ -34,6 +35,9 @@ const RemoveLiquidity: React.FC = () => {
   const { t } = useTranslation(['common']);
   const [buttonText, setButtonText] = useState<TRemoveBtnTxt>(REMOVE_BTN_TXT.ENTER_AMT);
   const { colorMode } = useColorMode();
+  const text2 = useColorModeValue('text2', 'darkheading');
+  const text4 = useColorModeValue('text4', 'darkheading');
+  const inputbg = useColorModeValue('darkheading', 'textboxbg');
 
   const calcMinValues = useCallback(
     (slippage: number, lqtBurned: number) => {
@@ -129,7 +133,7 @@ const RemoveLiquidity: React.FC = () => {
     <form onSubmit={handleSubmit} id="remove-liquidity-form">
       <Stack colorScheme="gray" spacing={2}>
         <FormControl id="to-input-amount" mb={2}>
-          <FormLabel color={colorMode === 'light' ? 'text2' : 'darkheading'} fontSize="xs">
+          <FormLabel color={text2} fontSize="xs">
             LQT to burn
           </FormLabel>
           <Input
@@ -137,15 +141,15 @@ const RemoveLiquidity: React.FC = () => {
             name="lqtBurned"
             id="lqtBurned"
             value={values.lqtBurned}
-            color={colorMode === 'light' ? 'text4' : 'darkheading'}
-            bg={colorMode === 'light' ? 'darkheading' : 'textboxbg'}
+            color={text4}
+            bg={inputbg}
             onChange={handleChange}
           />
         </FormControl>
 
         <Flex alignItems="center" justifyContent="space-between">
           <FormControl id="to-input-amount" w="45%">
-            <FormLabel color={colorMode === 'light' ? 'text2' : 'darkheading'} fontSize="xs">
+            <FormLabel color={text2} fontSize="xs">
               Min. tez to withdraw
             </FormLabel>
             <Input
@@ -153,15 +157,15 @@ const RemoveLiquidity: React.FC = () => {
               border={0}
               placeholder="0.0"
               type="number"
-              color={colorMode === 'light' ? 'text4' : 'darkheading'}
-              bg={colorMode === 'light' ? 'darkheading' : 'textboxbg'}
+              color={text4}
+              bg={inputbg}
               value={otherValues.cashWithdraw}
             />
           </FormControl>
 
           <Icon as={MdAdd} />
           <FormControl id="to-input-amount" w="45%">
-            <FormLabel color={colorMode === 'light' ? 'text2' : 'darkheading'} fontSize="xs">
+            <FormLabel color={text2} fontSize="xs">
               Min. ctez to withdraw
             </FormLabel>
             <Input
@@ -169,7 +173,7 @@ const RemoveLiquidity: React.FC = () => {
               border={0}
               placeholder="0.0"
               type="number"
-              color={colorMode === 'light' ? 'text4' : 'darkheading'}
+              color={text4}
               value={otherValues.tokenWithdraw}
             />
           </FormControl>
