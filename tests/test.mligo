@@ -4,8 +4,8 @@
  *   - A bootstrapping test, which initiates the contracts and checks that
  *     the storage bootstraps as expected.
  *   - Two tests that verify the trading mechanism calculates the values of
- *     trades in line with the expected functions, which are the:
- *       - trade_dtez_for_dcash and trade_dcash_for_dtez functions
+ *     trades as a simple formulae of the trade_dtez_for_dcash and 
+ *     trade_dcash_for_dtez functions
  * 
  * The functions trade_dtez_for_dcash and trade_dcash_for_dtez are unit tested
  * in the unit_test.mligo file, ensuring that they calculate the expected values.

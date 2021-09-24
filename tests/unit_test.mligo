@@ -6,6 +6,7 @@
  *   - verifies that the trade_dtez_for_dcash and trade_dcash_for_dtez functions
  *     return the expected values as outputs on a randomly generated list of 
  *     cases. These cases and expected values are generated in generate_test_params.py.
+ *     - The expected values are mathematically derived from the isoutility curve ctez models
  * 
  * The mutation testing:
  *   - verifies that these cases were sufficiently many to give good coverage 
