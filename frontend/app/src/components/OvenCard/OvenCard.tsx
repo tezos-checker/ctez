@@ -1,5 +1,4 @@
 import { Box, Grid, Text, useColorMode } from '@chakra-ui/react';
-import { OvenSerializable } from '../../interfaces';
 import BigNumber from 'bignumber.js';
 import { AllOvenDatum } from '../../interfaces';
 import ProgressPill from './ProgressPill';
@@ -12,7 +11,6 @@ const truncateText = (text: string | null) => {
   const len = text.length;
   return `${text.substr(0, 5)}...${text.substr(len - 5)}`;
 };
-
 
 const formatTokenAmt = (value: string | number) => {
   return new BigNumber(value).shiftedBy(-6).toNumber() ?? 0;

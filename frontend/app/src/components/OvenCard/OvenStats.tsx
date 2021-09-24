@@ -15,7 +15,6 @@ const OvenStats: React.FC = () => {
   const { stats: rawStats } = useOvenStats();
   const { colorMode } = useColorMode();
 
-
   const stats = useMemo(() => {
     if (!rawStats) {
       return [];

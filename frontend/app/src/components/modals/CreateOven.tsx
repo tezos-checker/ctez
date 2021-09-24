@@ -266,8 +266,8 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
               <InputGroup>
                 <InputLeftElement pointerEvents="none" w="" left={2}>
                   <Box px={2} boxShadow="xs">
-                    {values.depositors[0].label}
-                    {values.depositors.length > 1 ? ` + ${values.depositors.length - 1}` : ''}
+                    {values.depositors[0]?.label}
+                    {values.depositors?.length > 1 ? ` + ${values.depositors?.length - 1}` : ''}
                   </Box>
                 </InputLeftElement>
                 <Input
