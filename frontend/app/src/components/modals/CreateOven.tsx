@@ -1,11 +1,8 @@
 import {
-  Box,
   Flex,
   FormControl,
   FormLabel,
   Input,
-  InputGroup,
-  InputLeftElement,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -14,7 +11,6 @@ import {
   ModalHeader,
   ModalOverlay,
   Select,
-  useColorMode,
   useColorModeValue,
   useRadioGroup,
   useToast,
@@ -31,6 +27,7 @@ import { useWallet } from '../../wallet/hooks';
 import { logger } from '../../utils/logger';
 import RadioCard from '../radio/RadioCard';
 import Button from '../button/Button';
+import DepositorsInput from '../input/DepositorsInput';
 
 interface ICreateOvenProps {
   isOpen: boolean;
@@ -48,7 +45,6 @@ interface ICreateVaultForm {
   amount: number;
   depositType: 'Whitelist' | 'Everyone';
   depositors: IDepositorItem[];
-  depositorInput?: string;
   depositorOp: Depositor;
 }
 
@@ -114,7 +110,6 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
     amount: 0,
     depositType: 'Whitelist',
     depositors: userAddress ? getDefaultDepositorList(delegate) : [],
-    depositorInput: '',
     depositorOp: Depositor.whitelist,
   };
 
@@ -140,6 +135,7 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
             description: t('txSubmitted'),
             status: 'success',
           });
+          onClose();
         }
       } catch (error) {
         logger.error(error);
@@ -168,17 +164,6 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
     onChange: (value) => formik.setFieldValue('depositType', value),
   });
   const group = getRootProps();
-
-  const handleDepositorInput = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = ev.target;
-    const depositors = value.split(' ');
-    if (depositors.length > 1) {
-      formik.setFieldValue('depositors', [...values.depositors, depositors[0]]);
-      formik.setFieldValue('depositorInput', depositors[1]);
-    } else {
-      formik.setFieldValue('depositorInput', depositors[0]);
-    }
-  };
 
   const handleClose = () => {
     formik.resetForm();
@@ -247,28 +232,11 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
               </Flex>
             </FormControl>
 
-            <FormControl w="100%" mb={2}>
-              <FormLabel fontSize="xs" color={text2} fontWeight="500">
-                Authorised Deposters
-              </FormLabel>
-              <InputGroup>
-                <InputLeftElement pointerEvents="none" w="" left={2}>
-                  <Box px={2} boxShadow="xs">
-                    {values.depositors[0]?.label}
-                    {values.depositors?.length > 1 ? ` + ${values.depositors?.length - 1}` : ''}
-                  </Box>
-                </InputLeftElement>
-                <Input
-                  name="depositorInput"
-                  id="depositorInput"
-                  color={text4}
-                  bg={inputbg}
-                  pl={values.depositors.length > 1 ? '84px' : '56px'}
-                  value={values.depositorInput}
-                  onChange={handleDepositorInput}
-                />
-              </InputGroup>
-            </FormControl>
+            <DepositorsInput
+              depositors={values.depositors}
+              onChange={(dep) => formik.setFieldValue('depositors', dep)}
+              outerBoxProps={{ mb: 2 }}
+            />
           </ModalBody>
 
           <ModalFooter>
