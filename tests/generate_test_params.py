@@ -22,7 +22,7 @@ def generate_random_data(n):
         x = random.randint(0,100000000000000) # between 0 and 100_000_000 XTZ
         y = random.randint(0,100000000000000) # between 0 and 100_000_000 CTEZ
         dx = random.randint(0, min(x,y)) # so as to not exceed the supply
-        target = random.randint(0, 28147497671065600) # betweeen 0 and 100
+        target = random.randint(0, 100 * 2**48) # betweeen 0 and 100
         rounds = 4 # constant at 4 rounds
         const_fee = (9995, 10000) # constant at five basis points
         accum = accum + [(x,y,dx,target,rounds,const_fee)]
@@ -50,11 +50,11 @@ def generate_expected_values(rand_data, switch):
     for i in range(len(rand_data)):
         if switch:
             (x,y,dy,a,rounds,const_fee) = rand_data[i]
-            b = 281474976710656
+            b = 2**48
             rand_data[i] = x_to_y(y,x,dy,b,a,rounds)
         else:
             (x,y,dx,a,rounds,const_fee) = rand_data[i]
-            b = 281474976710656
+            b = 2**48
             rand_data[i] = x_to_y(x,y,dx,a,b,rounds)
     return rand_data
 
