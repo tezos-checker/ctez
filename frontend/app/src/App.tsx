@@ -14,6 +14,7 @@ import { logger } from './utils/logger';
 import { getNodePort, getNodeURL } from './utils/settingUtils';
 import ModalContainer from './components/modals/ModalContainer';
 import theme from './theme/theme';
+import ErrorBoundary from './components/ErrorBoundary';
 
 const queryClient = new QueryClient();
 
@@ -51,8 +52,10 @@ const App: React.FC = () => {
         <QueryClientProvider client={queryClient}>
           <WalletProvider value={{ wallet, setWallet }}>
             <ChakraProvider theme={theme}>
-              <AppRouter />
-              <ModalContainer />
+              <ErrorBoundary>
+                <AppRouter />
+                <ModalContainer />
+              </ErrorBoundary>
             </ChakraProvider>
           </WalletProvider>
         </QueryClientProvider>

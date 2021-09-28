@@ -3,8 +3,7 @@ import { MdAdd } from 'react-icons/md';
 import { BsArrowRight } from 'react-icons/bs';
 import { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
-import { mockOvens } from './mock';
-import OvenCard from '../../components/OvenCard/OvenCard';
+import AllOvenCard from '../../components/OvenCard/AllOvenCard';
 import MyOvenCard from '../../components/OvenCard/MyOvenCard';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { useWallet } from '../../wallet/hooks';
@@ -29,7 +28,7 @@ const AllOvensContainer: React.FC = () => {
   return (
     <>
       {data.map((oven) => (
-        <OvenCard key={oven.id} oven={oven} />
+        <AllOvenCard key={oven.id} oven={oven} />
       ))}
     </>
   );
