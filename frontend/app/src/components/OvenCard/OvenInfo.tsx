@@ -1,14 +1,26 @@
-import { Divider, Flex, Stack, Text, useColorMode, useColorModeValue } from '@chakra-ui/react';
+import { Divider, Flex, Stack, Text, useColorModeValue, Wrap, WrapItem } from '@chakra-ui/react';
 import { useMemo, useState } from 'react';
 import ProgressPill from './ProgressPill';
 import { useOvenStats } from '../../hooks/utilHooks';
 import Button from '../button/Button';
 import Delegate from '../modals/Delegate';
+import { useOvenStorage } from '../../api/queries';
+import { trimAddress } from '../../utils/addressUtils';
 
 const OvenInfo: React.FC = () => {
-  const { stats, oven } = useOvenStats();
+  const { oven } = useOvenStats();
   const background = useColorModeValue('white', 'cardbgdark');
   const [delegateOpen, setDelegateOpen] = useState<boolean>(false);
+
+  const { data: ovenStorageData } = useOvenStorage(oven?.address);
+
+  const canAnyoneDeposit = useMemo(
+    () =>
+      ovenStorageData &&
+      !Array.isArray(ovenStorageData.depositors) &&
+      Object.keys(ovenStorageData.depositors).includes('any'),
+    [ovenStorageData],
+  );
 
   const modals = useMemo(() => {
     if (!oven) {
@@ -80,8 +92,18 @@ const OvenInfo: React.FC = () => {
 
         <div>
           <Text color="#4E5D78" fontWeight="600" mb={2}>
-            Currently Anyone can deposit
+            {!canAnyoneDeposit ? 'Whitelisted Addresses' : 'Currently Anyone can deposit'}
           </Text>
+
+          {!canAnyoneDeposit && (
+            <Wrap mb={2}>
+              {(ovenStorageData?.depositors as string[])?.map((dep) => (
+                <WrapItem key={dep} border="1px" borderColor="gray.100" borderRadius={16} px={2}>
+                  {trimAddress(dep)}
+                </WrapItem>
+              ))}
+            </Wrap>
+          )}
 
           <Button w={180} variant="outline">
             Change

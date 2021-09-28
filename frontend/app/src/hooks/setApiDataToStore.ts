@@ -9,9 +9,7 @@ import { getExternalOvens } from '../utils/ovenUtils';
 
 const useSetCtezBaseStatsToStore = (userAddress: string | undefined) => {
   const dispatch = useAppDispatch();
-  const { data: baseStats, isLoading: isBaseStatsLoading, isSuccess } = useCtezBaseStats(
-    userAddress,
-  );
+  const { data: baseStats, isSuccess } = useCtezBaseStats(userAddress);
 
   useEffect(() => {
     if (isSuccess && baseStats) {
@@ -24,7 +22,7 @@ const useSetOvenDataToStore = (userAddress: string | undefined) => {
   const dispatch = useAppDispatch();
   const extOvens = useAppSelector((state) => state.oven.extOvens);
 
-  const { data: ovenData, isLoading } = useOvenData(userAddress, extOvens);
+  const { data: ovenData } = useOvenData(userAddress, extOvens);
 
   useEffect(() => {
     if (ovenData && ovenData.length > 0) {
@@ -51,7 +49,7 @@ const useSetExtOvensToStore = (userAddress: string | undefined) => {
     if (userAddress && CTEZ_ADDRESS) {
       dispatch(setExternalOvens(getExternalOvens(userAddress, CTEZ_ADDRESS)));
     }
-  }, [userAddress]);
+  }, [dispatch, userAddress]);
 };
 
 const useSetAllOvensToStore = () => {
