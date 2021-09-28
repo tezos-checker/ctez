@@ -1,4 +1,4 @@
-import { Box, Grid, Text, useColorMode, useColorModeValue } from '@chakra-ui/react';
+import { Box, Grid, Text, useColorModeValue } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
 import { useMemo } from 'react';
 import { AllOvenDatum } from '../../interfaces';
@@ -19,7 +19,7 @@ const formatTokenAmt = (value: string | number) => {
   return new BigNumber(value).shiftedBy(-6).toNumber() ?? 0;
 };
 
-const OvenCard: React.FC<{ oven: AllOvenDatum }> = ({ oven }) => {
+const AllOvenCard: React.FC<{ oven: AllOvenDatum }> = ({ oven }) => {
   const background = useColorModeValue('white', 'cardbgdark');
   const textcolor = useColorModeValue('text2', 'white');
   const currentTarget = useAppSelector((state) => state.stats.baseStats?.originalTarget);
@@ -55,7 +55,7 @@ const OvenCard: React.FC<{ oven: AllOvenDatum }> = ({ oven }) => {
         </Text>
       </Box>
     ));
-  }, [currentTarget, oven]);
+  }, [currentTarget, oven.key.owner, oven.value, textcolor]);
 
   return (
     <Grid
@@ -78,4 +78,4 @@ const OvenCard: React.FC<{ oven: AllOvenDatum }> = ({ oven }) => {
   );
 };
 
-export default OvenCard;
+export default AllOvenCard;
