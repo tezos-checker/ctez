@@ -1,4 +1,4 @@
-import { Box, Flex, Text, useColorMode, useColorModeValue } from '@chakra-ui/react';
+import { Box, Flex, Text, useColorModeValue } from '@chakra-ui/react';
 import { MdChevronRight } from 'react-icons/all';
 import { Link } from 'react-router-dom';
 import { Oven } from '../../interfaces';
@@ -8,6 +8,7 @@ import Button from '../button/Button';
 const MyOvenCard: React.FC<{ oven: Oven }> = ({ oven }) => {
   const background = useColorModeValue('white', 'cardbgdark');
   const textcolor = useColorModeValue('text2', 'white');
+
   const renderItems = () => {
     const items = [
       { label: 'Num Oven', value: `#${oven.ovenId}` },

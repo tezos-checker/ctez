@@ -1,12 +1,5 @@
 import React, { MouseEventHandler } from 'react';
-import {
-  Button as ChakraButton,
-  ButtonGroup,
-  useColorMode,
-  Text,
-  Box,
-  useColorModeValue,
-} from '@chakra-ui/react';
+import { Button as ChakraButton, useColorMode, Box, useColorModeValue } from '@chakra-ui/react';
 import { ButtonProps } from '@chakra-ui/button';
 
 export interface IButtonProps extends ButtonProps {
@@ -19,7 +12,6 @@ const Button: React.FC<IButtonProps> = (props) => {
   if (props.variant === 'outline') {
     return (
       <Box
-        as={ChakraButton}
         type={props.type}
         className={props.className}
         bgGradient={colorMode === 'light' ? 'linear(to-r, #0F62FF, #6B5BD2)' : 'transparent'}
@@ -29,17 +21,19 @@ const Button: React.FC<IButtonProps> = (props) => {
         border={colorMode === 'light' ? '' : '1px solid white'}
         p="1px"
         w={props.w}
-        onClick={(props.onClick as unknown) as MouseEventHandler<HTMLDivElement>}
+        borderRadius="5px"
       >
         <Box
+          as={ChakraButton}
+          {...(props as unknown)}
           backgroundColor={background}
           w="100%"
           h="100%"
-          p={2}
-          pr={6}
-          pl={6}
+          py={2}
+          px={6}
           color={colorMode === 'light' ? 'blue' : 'white'}
           borderRadius="5px"
+          onClick={(props.onClick as unknown) as MouseEventHandler<HTMLDivElement>}
         >
           {props.children}
         </Box>
@@ -49,9 +43,11 @@ const Button: React.FC<IButtonProps> = (props) => {
   return (
     <Box
       as={ChakraButton}
+      {...(props as unknown)}
       type={props.type}
       className={props.className}
-      p={2}
+      py={2}
+      px={6}
       width={props.width}
       color="white"
       fontWeight="bold"
