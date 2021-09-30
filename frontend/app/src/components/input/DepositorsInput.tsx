@@ -66,7 +66,11 @@ const DepositorsInput: React.FC<IDepositorsInputProps> = (props) => {
             <WrapItem key={dep.value}>
               <SlideFade in reverse>
                 <Flex border="1px" borderColor="gray.100" borderRadius={16}>
-                  <Text px={2} onClick={() => handleDepositorClick(dep, idx)} cursor="pointer">
+                  <Text
+                    px={2}
+                    onClick={dep.noDelete ? undefined : () => handleDepositorClick(dep, idx)}
+                    cursor={dep.noDelete ? '' : 'pointer'}
+                  >
                     {dep.label}
                   </Text>
                   {!dep.noDelete && (

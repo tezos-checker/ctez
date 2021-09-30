@@ -6,19 +6,23 @@ import Button from '../button/Button';
 import Delegate from '../modals/Delegate';
 import { useOvenStorage } from '../../api/queries';
 import { trimAddress } from '../../utils/addressUtils';
+import ChangeDepositor from '../modals/ChangeDepositor';
 
 const OvenInfo: React.FC = () => {
   const { oven } = useOvenStats();
   const background = useColorModeValue('white', 'cardbgdark');
   const [delegateOpen, setDelegateOpen] = useState<boolean>(false);
+  const [changeDepositorOpen, setChangeDepositorOpen] = useState<boolean>(false);
 
   const { data: ovenStorageData } = useOvenStorage(oven?.address);
 
   const canAnyoneDeposit = useMemo(
     () =>
-      ovenStorageData &&
-      !Array.isArray(ovenStorageData.depositors) &&
-      Object.keys(ovenStorageData.depositors).includes('any'),
+      !!(
+        ovenStorageData &&
+        !Array.isArray(ovenStorageData.depositors) &&
+        Object.keys(ovenStorageData.depositors).includes('any')
+      ),
     [ovenStorageData],
   );
 
@@ -30,9 +34,16 @@ const OvenInfo: React.FC = () => {
     return (
       <>
         <Delegate isOpen={delegateOpen} onClose={() => setDelegateOpen(false)} oven={oven} />
+        <ChangeDepositor
+          isOpen={changeDepositorOpen}
+          onClose={() => setChangeDepositorOpen(false)}
+          oven={oven}
+          ovenStorage={ovenStorageData}
+          canAnyoneDeposit={canAnyoneDeposit}
+        />
       </>
     );
-  }, [delegateOpen, oven]);
+  }, [canAnyoneDeposit, changeDepositorOpen, delegateOpen, oven, ovenStorageData]);
 
   return (
     <>
@@ -105,7 +116,7 @@ const OvenInfo: React.FC = () => {
             </Wrap>
           )}
 
-          <Button w={180} variant="outline">
+          <Button w={180} variant="outline" onClick={() => setChangeDepositorOpen(true)}>
             Change
           </Button>
         </div>
