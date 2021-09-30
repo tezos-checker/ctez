@@ -108,11 +108,6 @@ const ChangeDepositor: React.FC<IChangeDepositorProps> = (props) => {
 
   const handleDepositorSubmit = async () => {
     if (props.oven.address && props.ovenStorage && userAddress) {
-      console.log({
-        address: props.oven.address,
-        ovenStorage: props.ovenStorage,
-        userAddress,
-      });
       try {
         const userWhiteList = depositors
           .map((item: IDepositorItem) => item?.value ?? item)
