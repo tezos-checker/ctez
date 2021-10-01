@@ -26,6 +26,7 @@ import { addLiquidity, cfmmError } from '../../contracts/cfmm';
 import { logger } from '../../utils/logger';
 import { BUTTON_TXT } from '../../constants/swap';
 import Button from '../button/Button';
+import { useAppSelector } from '../../redux/store';
 
 const AddLiquidity: React.FC = () => {
   const [{ pkh: userAddress }] = useWallet();
@@ -38,9 +39,11 @@ const AddLiquidity: React.FC = () => {
   const text2 = useColorModeValue('text2', 'darkheading');
   const text4 = useColorModeValue('text4', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
+  const slippage = useAppSelector((state) => state.oven.slippage);
+  const deadlineFromSettings = useAppSelector((state) => state.oven.deadline);
 
   const calcMaxToken = useCallback(
-    (slippage: number, cashDeposited: number) => {
+    (cashDeposited: number) => {
       if (cfmmStorage) {
         const { tokenPool, cashPool, lqtTotal } = cfmmStorage;
         const cash = cashDeposited * 1e6;
@@ -60,8 +63,8 @@ const AddLiquidity: React.FC = () => {
   );
 
   const initialValues: any = {
-    slippage: DEFAULT_SLIPPAGE,
-    deadline: 20,
+    slippage: Number(slippage),
+    deadline: Number(deadlineFromSettings),
     amount: '',
   };
 
@@ -77,7 +80,7 @@ const AddLiquidity: React.FC = () => {
   const handleFormSubmit = async (formData: IAddLiquidityForm) => {
     if (userAddress) {
       try {
-        const deadline = addMinutes(formData.deadline)(new Date());
+        const deadline = addMinutes(deadlineFromSettings)(new Date());
         const data: AddLiquidityParams = {
           deadline,
           amount: formData.amount,
@@ -110,7 +113,7 @@ const AddLiquidity: React.FC = () => {
   });
 
   useEffect(() => {
-    calcMaxToken(0, Number(values.amount));
+    calcMaxToken(Number(values.amount));
   }, [calcMaxToken, values.amount]);
 
   useEffect(() => {
