@@ -40,7 +40,7 @@ const AddLiquidity: React.FC = () => {
   const text4 = useColorModeValue('text4', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
   const slippage = useAppSelector((state) => state.oven.slippage);
-  let deadline = useAppSelector((state) => state.oven.deadline);
+  const deadlineFromSettings = useAppSelector((state) => state.oven.deadline);
 
   const calcMaxToken = useCallback(
     (cashDeposited: number) => {
@@ -64,7 +64,7 @@ const AddLiquidity: React.FC = () => {
 
   const initialValues: any = {
     slippage: Number(slippage),
-    deadline: Number(deadline),
+    deadline: Number(deadlineFromSettings),
     amount: '',
   };
 
@@ -80,7 +80,7 @@ const AddLiquidity: React.FC = () => {
   const handleFormSubmit = async (formData: IAddLiquidityForm) => {
     if (userAddress) {
       try {
-        deadline = addMinutes(deadline)(new Date());
+        const deadline = addMinutes(deadlineFromSettings)(new Date());
         const data: AddLiquidityParams = {
           deadline,
           amount: formData.amount,

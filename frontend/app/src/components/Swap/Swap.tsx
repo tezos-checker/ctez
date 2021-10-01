@@ -51,7 +51,7 @@ const Swap: React.FC = () => {
   const text4 = useColorModeValue('text4', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
   const slippage = useAppSelector((state) => state.oven.slippage);
-  let deadline = useAppSelector((state) => state.oven.deadline);
+  const deadlineFromSettings = useAppSelector((state) => state.oven.deadline);
 
   const getRightElement = useCallback((token: TToken) => {
     if (token === TOKEN.Tez) {
@@ -75,7 +75,7 @@ const Swap: React.FC = () => {
     () => ({
       to: userAddress ?? '',
       slippage: Number(slippage),
-      deadline: Number(deadline),
+      deadline: Number(deadlineFromSettings),
       amount: 0,
     }),
     [userAddress],
@@ -100,7 +100,7 @@ const Swap: React.FC = () => {
         if (!userAddress) {
           return;
         }
-        deadline = addMinutes(deadline)(new Date());
+        const deadline = addMinutes(deadlineFromSettings)(new Date());
         const result =
           formType === FORM_TYPE.TEZ_CTEZ
             ? await cashToToken({

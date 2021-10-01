@@ -39,7 +39,7 @@ const RemoveLiquidity: React.FC = () => {
   const text4 = useColorModeValue('text4', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
   const slippage = useAppSelector((state) => state.oven.slippage);
-  let deadline = useAppSelector((state) => state.oven.deadline);
+  const deadlineFromSettings = useAppSelector((state) => state.oven.deadline);
 
   const calcMinValues = useCallback(
     (lqtBurned: number) => {
@@ -66,7 +66,7 @@ const RemoveLiquidity: React.FC = () => {
   const initialValues: any = {
     to: userAddress ?? '',
     lqtBurned: '',
-    deadline: Number(deadline),
+    deadline: Number(deadlineFromSettings),
     slippage: Number(slippage),
   };
 
@@ -86,7 +86,7 @@ const RemoveLiquidity: React.FC = () => {
   const handleFormSubmit = async (formData: IRemoveLiquidityForm) => {
     if (userAddress) {
       try {
-        deadline = addMinutes(deadline)(new Date());
+        const deadline = addMinutes(deadlineFromSettings)(new Date());
         const data: RemoveLiquidityParams = {
           deadline,
           to: formData.to,
