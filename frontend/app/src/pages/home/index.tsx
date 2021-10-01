@@ -8,7 +8,6 @@ import {
   TabPanels,
   Tab,
   TabPanel,
-  useColorMode,
   useColorModeValue,
 } from '@chakra-ui/react';
 import Swap from '../../components/Swap';
