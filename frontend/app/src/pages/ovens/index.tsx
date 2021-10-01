@@ -16,10 +16,26 @@ import {
   useSetOvenDataToStore,
 } from '../../hooks/setApiDataToStore';
 import Button from '../../components/button/Button';
+import { setSortBy } from '../../redux/slices/OvenSlice';
 
 const AllOvensContainer: React.FC = () => {
   useSetAllOvensToStore();
-  const { data, isLoading } = useAppSelector((state) => state.oven.allOvens);
+  let { data } = useAppSelector((state) => state.oven.allOvens);
+  const { isLoading } = useAppSelector((state) => state.oven.allOvens);
+  const sortbyoption = useAppSelector((state) => state.oven.sortByOption);
+
+  if (sortbyoption === 'Oven Balance') {
+    data = data
+      .slice()
+      .sort((a, b) => (Number(a.value.tez_balance) < Number(b.value.tez_balance) ? 1 : -1));
+  }
+  if (sortbyoption === 'Outstanding') {
+    data = data
+      .slice()
+      .sort((a, b) =>
+        Number(a.value.ctez_outstanding) < Number(b.value.ctez_outstanding) ? 1 : -1,
+      );
+  }
 
   if (isLoading) {
     return <Text>Loading...</Text>;
@@ -48,13 +64,23 @@ const OvensPage: React.FC = () => {
     return location.pathname === '/myovens';
   }, [location]);
 
+  const SetSortType = (value: string) => {
+    dispatch(setSortBy(value));
+  };
+
   return (
     <Box m={2} p={8}>
       <Stack direction="row">
-        <Select color="#B0B7C3" placeholder="Sort by:" w={186} backgroundColor={background}>
+        <Select
+          color="#B0B7C3"
+          placeholder="Sort by:"
+          w={186}
+          backgroundColor={background}
+          onChange={(e) => SetSortType(e.target.value)}
+        >
           {/* TODO */}
-          <option value="option1">Value</option>
-          <option value="option2">Utilization</option>
+          <option value="Oven Balance">Value</option>
+          <option value="Outstanding">Utilization</option>
           <option value="option3">Option 3</option>
         </Select>
 

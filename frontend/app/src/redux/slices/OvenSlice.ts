@@ -14,6 +14,9 @@ interface OvenSliceState {
   extOvens: string[];
   allOvens: IAllOvenState;
   userOvenData: UserOvenStats;
+  sortByOption: string | null;
+  slippage: number;
+  deadline: number;
 }
 
 const initialState: OvenSliceState = {
@@ -26,6 +29,9 @@ const initialState: OvenSliceState = {
     isSuccess: false,
     isError: false,
   },
+  sortByOption: 'value',
+  slippage: 0.2,
+  deadline: 20,
   userOvenData: { xtz: 0, ctez: 0, totalOvens: 0 },
 };
 
@@ -52,6 +58,15 @@ export const OvenSlice = createSlice({
     setAllOvenData: (state, action: PayloadAction<IAllOvenState>) => {
       state.allOvens = action.payload;
     },
+    setSortBy: (state, action: PayloadAction<string>) => {
+      state.sortByOption = action.payload;
+    },
+    setSlippage: (state, action: PayloadAction<number>) => {
+      state.slippage = action.payload;
+    },
+    setDeadline: (state, action: PayloadAction<number>) => {
+      state.deadline = action.payload;
+    },
   },
 });
 
@@ -62,5 +77,8 @@ export const {
   clearOven,
   setAllOvenData,
   setUserOvenData,
+  setSortBy,
+  setSlippage,
+  setDeadline,
 } = OvenSlice.actions;
 export default OvenSlice.reducer;

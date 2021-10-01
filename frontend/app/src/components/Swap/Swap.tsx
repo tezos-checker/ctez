@@ -50,6 +50,8 @@ const Swap: React.FC = () => {
   const text2 = useColorModeValue('text2', 'darkheading');
   const text4 = useColorModeValue('text4', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
+  const slippage = useAppSelector((state) => state.oven.slippage);
+  let deadline = useAppSelector((state) => state.oven.deadline);
 
   const getRightElement = useCallback((token: TToken) => {
     if (token === TOKEN.Tez) {
@@ -72,8 +74,8 @@ const Swap: React.FC = () => {
   const initialValues = useMemo<ConversionFormParams>(
     () => ({
       to: userAddress ?? '',
-      slippage: DEFAULT_SLIPPAGE,
-      deadline: 20,
+      slippage: Number(slippage),
+      deadline: Number(deadline),
       amount: 0,
     }),
     [userAddress],
@@ -82,11 +84,6 @@ const Swap: React.FC = () => {
   const validationSchema = useMemo(
     () =>
       object().shape({
-        toBurn: string()
-          .test({
-            test: (value) => validateAddress(value) === 3,
-          })
-          .required(t('required')),
         slippage: number().min(0).optional(),
         deadline: number().min(0).required(t('required')),
         amount: number()
@@ -103,8 +100,7 @@ const Swap: React.FC = () => {
         if (!userAddress) {
           return;
         }
-
-        const deadline = addMinutes(formData.deadline)(new Date());
+        deadline = addMinutes(deadline)(new Date());
         const result =
           formType === FORM_TYPE.TEZ_CTEZ
             ? await cashToToken({

@@ -7,12 +7,15 @@ import {
   Tab,
   TabPanel,
   useColorModeValue,
+  Icon,
 } from '@chakra-ui/react';
 import Swap from '../../components/Swap';
 import Liquidity from '../../components/Liquidity';
+import { ReactComponent as tune } from '../../assets/images/sidebar/tune_settings.svg';
+import { Settings } from '../../components/Settings/Settings';
 
 const TradePage: React.FC = () => {
-  const tabcolor = useColorModeValue('tabcolor', 'darkheading');
+  const tabcolor = useColorModeValue('darkgray', 'darkheading');
   const background = useColorModeValue('white', 'cardbgdark');
   return (
     <Flex height="calc(100vh - 72px)" alignItems="center" justifyContent="center">
@@ -30,6 +33,9 @@ const TradePage: React.FC = () => {
           <TabList>
             <Tab>Swap</Tab>
             <Tab>Liquidity</Tab>
+            <Tab className="settings">
+              <Icon w={6} h={6} color="#62737F" as={tune} />
+            </Tab>
           </TabList>
 
           <TabPanels>
@@ -38,6 +44,9 @@ const TradePage: React.FC = () => {
             </TabPanel>
             <TabPanel>
               <Liquidity />
+            </TabPanel>
+            <TabPanel>
+              <Settings />
             </TabPanel>
           </TabPanels>
         </Tabs>
