@@ -52,7 +52,7 @@ const HomePage: React.FC = () => {
             <TabList>
               <Tab>Swap</Tab>
               <Tab>Liquidity</Tab>
-              <Tab className="settings">
+              <Tab position="relative" left="147">
                 <Icon fontSize="2xl" color="#62737F" as={tune} />
               </Tab>
             </TabList>

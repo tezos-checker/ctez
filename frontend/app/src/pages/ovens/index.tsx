@@ -81,7 +81,6 @@ const OvensPage: React.FC = () => {
           {/* TODO */}
           <option value="Oven Balance">Value</option>
           <option value="Outstanding">Utilization</option>
-          <option value="option3">Option 3</option>
         </Select>
 
         <Spacer />

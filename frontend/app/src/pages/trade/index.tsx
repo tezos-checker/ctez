@@ -33,7 +33,7 @@ const TradePage: React.FC = () => {
           <TabList>
             <Tab>Swap</Tab>
             <Tab>Liquidity</Tab>
-            <Tab className="settings">
+            <Tab position="relative" left="147">
               <Icon w={6} h={6} color="#62737F" as={tune} />
             </Tab>
           </TabList>
