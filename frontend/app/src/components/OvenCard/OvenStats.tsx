@@ -1,16 +1,4 @@
-import {
-  Box,
-  Center,
-  CircularProgress,
-  CircularProgressLabel,
-  Divider,
-  Flex,
-  Stack,
-  Text,
-  useColorMode,
-  useColorModeValue,
-} from '@chakra-ui/react';
-import { useMemo } from 'react';
+import { Center, Divider, Flex, Stack, Text, useColorModeValue } from '@chakra-ui/react';
 import { useOvenStats } from '../../hooks/utilHooks';
 import ProgressPill from './ProgressPill';
 
