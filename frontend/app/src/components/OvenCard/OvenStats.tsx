@@ -1,5 +1,6 @@
 import {
   Box,
+  Center,
   CircularProgress,
   CircularProgressLabel,
   Divider,
@@ -11,68 +12,48 @@ import {
 } from '@chakra-ui/react';
 import { useMemo } from 'react';
 import { useOvenStats } from '../../hooks/utilHooks';
+import ProgressPill from './ProgressPill';
 
 const OvenStats: React.FC = () => {
-  const { stats: rawStats } = useOvenStats();
+  const { oven } = useOvenStats();
   const background = useColorModeValue('white', 'cardbgdark');
   const textcolor = useColorModeValue('text2', 'white');
-
-  const stats = useMemo(() => {
-    if (!rawStats) {
-      return [];
-    }
-
-    const { outStandingCtez, maxMintableCtez, remainingMintableCtez } = rawStats;
-    return [
-      {
-        label: 'Outstanding Ctez',
-        value: outStandingCtez,
-        percentage: 67,
-      },
-      {
-        label: 'Max Mintable Ctez',
-        value: maxMintableCtez,
-        percentage: 84,
-      },
-      {
-        label: 'Remaining Ctez',
-        value: remainingMintableCtez,
-        percentage: 46,
-      },
-    ];
-  }, [rawStats]);
+  const text4color = useColorModeValue('text4', 'white');
 
   return (
     <Stack p={8} spacing={4} backgroundColor={background} borderRadius={16}>
-      <Text color={textcolor} fontWeight="600">
-        Ctez Stats
-      </Text>
+      <div>
+        <Text color={textcolor} fontWeight="600">
+          Oven Stats
+        </Text>
+
+        <Text color={text4color} as="span" fontSize="sm">
+          {oven?.address}
+        </Text>
+      </div>
 
       <Divider />
 
-      <Flex justifyContent="space-between">
-        {stats.map(({ label, value, percentage }) => (
-          <Box key={label} textAlign="center">
-            <CircularProgress
-              color={percentage > 50 ? (percentage > 80 ? '#38CB89' : '#377DFF') : '#FFAB00'}
-              value={percentage}
-              size="80px"
-              thickness={8}
-              capIsRound
-            >
-              <CircularProgressLabel fontWeight="600" fontSize="lg">
-                {percentage}%
-              </CircularProgressLabel>
-            </CircularProgress>
+      <Flex w="100%">
+        <Stack w="30%" alignItems="center">
+          <Text fontSize="lg" fontWeight="600">
+            300%
+          </Text>
+          <Text color={text4color} fontSize="xs">
+            Collateral ratio
+          </Text>
+        </Stack>
 
-            <Text fontWeight="600" color={textcolor} fontSize="lg">
-              {value}
-            </Text>
-            <Text fontWeight="500" color="#B0B7C3" fontSize="xs">
-              {label}
-            </Text>
-          </Box>
-        ))}
+        <Center height="48px" mx={6}>
+          <Divider orientation="vertical" />
+        </Center>
+
+        <Stack w="70%" textAlign="right">
+          <ProgressPill value={75} />
+          <Text color={text4color} fontSize="xs">
+            Collateral utilization
+          </Text>
+        </Stack>
       </Flex>
     </Stack>
   );
