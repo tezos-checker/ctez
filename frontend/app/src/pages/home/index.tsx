@@ -9,9 +9,12 @@ import {
   Tab,
   TabPanel,
   useColorModeValue,
+  Icon,
 } from '@chakra-ui/react';
 import Swap from '../../components/Swap';
 import Liquidity from '../../components/Liquidity';
+import { Settings } from '../../components/Settings/Settings';
+import { ReactComponent as tune } from '../../assets/images/sidebar/tune_settings.svg';
 
 const HomePage: React.FC = () => {
   const tabcolor = useColorModeValue('tabcolor', 'darkheading');
@@ -48,6 +51,9 @@ const HomePage: React.FC = () => {
             <TabList>
               <Tab>Swap</Tab>
               <Tab>Liquidity</Tab>
+              <Tab position="relative" left="147">
+                <Icon fontSize="2xl" color="#62737F" as={tune} />
+              </Tab>
             </TabList>
 
             <TabPanels>
@@ -56,6 +62,9 @@ const HomePage: React.FC = () => {
               </TabPanel>
               <TabPanel>
                 <Liquidity />
+              </TabPanel>
+              <TabPanel>
+                <Settings />
               </TabPanel>
             </TabPanels>
           </Tabs>

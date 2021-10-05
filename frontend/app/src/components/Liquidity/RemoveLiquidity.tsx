@@ -23,6 +23,7 @@ import { useWallet } from '../../wallet/hooks';
 import { useCfmmStorage } from '../../api/queries';
 import { DEFAULT_SLIPPAGE } from '../../utils/globals';
 import Button from '../button/Button';
+import { useAppSelector } from '../../redux/store';
 
 const RemoveLiquidity: React.FC = () => {
   const [{ pkh: userAddress }] = useWallet();
@@ -37,9 +38,11 @@ const RemoveLiquidity: React.FC = () => {
   const text2 = useColorModeValue('text2', 'darkheading');
   const text4 = useColorModeValue('text4', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
+  const slippage = useAppSelector((state) => state.oven.slippage);
+  const deadlineFromSettings = useAppSelector((state) => state.oven.deadline);
 
   const calcMinValues = useCallback(
-    (slippage: number, lqtBurned: number) => {
+    (lqtBurned: number) => {
       if (!lqtBurned) {
         setOtherValues({
           cashWithdraw: 0,
@@ -63,8 +66,8 @@ const RemoveLiquidity: React.FC = () => {
   const initialValues: any = {
     to: userAddress ?? '',
     lqtBurned: '',
-    deadline: 20,
-    slippage: DEFAULT_SLIPPAGE,
+    deadline: Number(deadlineFromSettings),
+    slippage: Number(slippage),
   };
 
   const validationSchema = object().shape({
@@ -83,7 +86,7 @@ const RemoveLiquidity: React.FC = () => {
   const handleFormSubmit = async (formData: IRemoveLiquidityForm) => {
     if (userAddress) {
       try {
-        const deadline = addMinutes(formData.deadline)(new Date());
+        const deadline = addMinutes(deadlineFromSettings)(new Date());
         const data: RemoveLiquidityParams = {
           deadline,
           to: formData.to,
@@ -115,7 +118,7 @@ const RemoveLiquidity: React.FC = () => {
   });
 
   useEffect(() => {
-    calcMinValues(values.slippage, Number(values.lqtBurned));
+    calcMinValues(Number(values.lqtBurned));
   }, [calcMinValues, values.slippage, values.lqtBurned]);
 
   useEffect(() => {
