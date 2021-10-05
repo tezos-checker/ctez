@@ -1,5 +1,4 @@
 import { Divider, Flex, Stack, Tag, Text, useColorModeValue } from '@chakra-ui/react';
-
 import { useMemo, useState } from 'react';
 import { MdAddCircle } from 'react-icons/md';
 import { useOvenStorage } from '../../api/queries';
@@ -35,6 +34,10 @@ const DepositorsInfo: React.FC = () => {
       return [];
     }
 
+    if (canAnyoneDeposit) {
+      return [];
+    }
+
     return [
       {
         value: userAddress,
@@ -45,7 +48,7 @@ const DepositorsInfo: React.FC = () => {
         label: dep === oven?.baker ? 'Baker' : null,
       })),
     ];
-  }, [oven, ovenStorageData, userAddress]);
+  }, [canAnyoneDeposit, oven, ovenStorageData, userAddress]);
 
   return (
     <>
