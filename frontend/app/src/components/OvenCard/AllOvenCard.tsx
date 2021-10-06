@@ -1,4 +1,4 @@
-import { Box, Grid, Icon, Text, useColorModeValue } from '@chakra-ui/react';
+import { Box, Grid, Text, useColorModeValue } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
 import { useMemo } from 'react';
 import { AllOvenDatum } from '../../interfaces';
@@ -37,6 +37,11 @@ const AllOvenCard: React.FC<{ oven: AllOvenDatum }> = ({ oven }) => {
 
     const maxMintableCtez = max < 0 ? 0 : max;
 
+    // TODO: Remove NaN
+    const collateralUtilization = formatTokenAmt(
+      (toNumber(ctez_outstanding) / maxMintableCtez) * 100,
+    ).toFixed(2);
+
     const items = [
       { label: 'Oven address', value: truncateText(oven.value.address) },
       { label: 'Baker', value: truncateText(oven.key.owner) },
@@ -45,27 +50,37 @@ const AllOvenCard: React.FC<{ oven: AllOvenDatum }> = ({ oven }) => {
       { label: 'Mintable ', value: `${maxMintableCtez} cTEZ` },
     ];
 
-    return items.map((item) => (
-      <Box key={item.label}>
-        {item.label === 'Oven address' ? (
-          <Text
-            color={textcolor}
-            onClick={() => navigator.clipboard.writeText(oven.value.address)}
-            _hover={{ cursor: 'pointer' }}
-            fontWeight="600"
-          >
-            {item.value}
+    return (
+      <>
+        {items.map((item) => (
+          <Box key={item.label}>
+            {item.label === 'Oven address' ? (
+              <Text
+                color={textcolor}
+                onClick={() => navigator.clipboard.writeText(oven.value.address)}
+                _hover={{ cursor: 'pointer' }}
+                fontWeight="600"
+              >
+                {item.value}
+              </Text>
+            ) : (
+              <Text color={textcolor} fontWeight="600">
+                {item.value}
+              </Text>
+            )}
+            <Text fontWeight="500" color="#B0B7C3" fontSize="xs">
+              {item.label}
+            </Text>
+          </Box>
+        ))}
+        <Box>
+          <ProgressPill value={Number(collateralUtilization ?? 0)} />
+          <Text color="#B0B7C3" fontSize="xs">
+            Collateral Utilization
           </Text>
-        ) : (
-          <Text color={textcolor} fontWeight="600">
-            {item.value}
-          </Text>
-        )}
-        <Text fontWeight="500" color="#B0B7C3" fontSize="xs">
-          {item.label}
-        </Text>
-      </Box>
-    ));
+        </Box>
+      </>
+    );
   }, [currentTarget, oven.key.owner, oven.value, textcolor]);
 
   return (
@@ -78,13 +93,6 @@ const AllOvenCard: React.FC<{ oven: AllOvenDatum }> = ({ oven }) => {
       backgroundColor={background}
     >
       {renderedItems}
-
-      <Box>
-        <ProgressPill value={75} />
-        <Text color="#B0B7C3" fontSize="xs">
-          Collateral Utilization
-        </Text>
-      </Box>
     </Grid>
   );
 };
