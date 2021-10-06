@@ -6,7 +6,7 @@ import {
   useSetCtezBaseStatsToStore,
   useSetOvenDataToStore,
 } from '../../../hooks/setApiDataToStore';
-import OvenOperations from '../[operations]';
+import OvenOperations from '../operations';
 
 const OvenIdPage: React.FC = () => {
   const [largerScreen] = useMediaQuery(['(min-width: 800px)']);
