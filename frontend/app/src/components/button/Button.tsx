@@ -40,6 +40,11 @@ const Button: React.FC<IButtonProps> = (props) => {
       </Box>
     );
   }
+
+  if (props.variant === 'ghost') {
+    return <ChakraButton {...props}>{props.children}</ChakraButton>;
+  }
+
   return (
     <Box
       as={ChakraButton}
