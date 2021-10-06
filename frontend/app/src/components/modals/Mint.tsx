@@ -4,6 +4,15 @@ import {
   FormLabel,
   Icon,
   Input,
+  InputGroup,
+  InputRightElement,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Text,
   useColorMode,
   useColorModeValue,
@@ -14,7 +23,7 @@ import { useTranslation } from 'react-i18next';
 // import BigNumber from 'bignumber.js';
 import { number, object } from 'yup';
 import { useFormik } from 'formik';
-import { useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAppSelector } from '../../redux/store';
 // import { getOvenMaxCtez } from '../../utils/ovenUtils';
 import { isMonthFromLiquidation } from '../../api/contracts';
@@ -23,19 +32,35 @@ import { cTezError, mintOrBurn } from '../../contracts/ctez';
 import { logger } from '../../utils/logger';
 import { useOvenStats } from '../../hooks/utilHooks';
 import Button from '../button/Button';
+import { BUTTON_TXT, TButtonText, TOKEN, TToken } from '../../constants/swap';
+import { CTezIcon } from '../icons';
 
-interface IMintOrRepayProps {
-  type: 'mint' | 'repay';
+interface IMintProps {
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-const MintOrRepay: React.FC<IMintOrRepayProps> = ({ type }) => {
+const Mint: React.FC<IMintProps> = ({ isOpen, onClose }) => {
   const { t } = useTranslation(['common']);
   const toast = useToast();
+  const [buttonText, setButtonText] = useState<TButtonText>(BUTTON_TXT.ENTER_AMT);
   const { oven, stats, ovenId } = useOvenStats();
   const text2 = useColorModeValue('text2', 'darkheading');
   const text4 = useColorModeValue('text4', 'darkheading');
+  const text1 = useColorModeValue('text1', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
   const cardbg = useColorModeValue('bg3', 'darkblue');
+
+  const getRightElement = useCallback((token: TToken) => {
+    return (
+      <InputRightElement backgroundColor="transparent" w={24} color={text2}>
+        <CTezIcon height={28} width={28} />
+        <Text fontWeight="500" mx={2}>
+          ctez
+        </Text>
+      </InputRightElement>
+    );
+  }, []);
 
   const { tez_balance, ctez_outstanding } = useMemo(
     () =>
@@ -61,24 +86,15 @@ const MintOrRepay: React.FC<IMintOrRepayProps> = ({ type }) => {
       .min(0.000001)
       .test({
         test: (value) => {
-          if (
-            value !== undefined &&
-            drift !== undefined &&
-            currentTarget !== undefined &&
-            type === 'mint'
-          ) {
+          if (value !== undefined && drift !== undefined && currentTarget !== undefined) {
             const newOutstanding = Number(ctez_outstanding) + value * 1e6;
             const tez = Number(tez_balance);
             const result = isMonthFromLiquidation(newOutstanding, currentTarget, tez, drift);
             return !result;
           }
-          if (value && type === 'repay') {
-            const ctezOutstanding = Number(ctez_outstanding) / 1e6;
-            return value <= ctezOutstanding;
-          }
           return false;
         },
-        message: t(type === 'mint' ? 'excessiveMintingError' : 'excessiveBurnError'),
+        message: t('excessiveMintingError'),
       })
       .required(t('required')),
   });
@@ -89,7 +105,7 @@ const MintOrRepay: React.FC<IMintOrRepayProps> = ({ type }) => {
   const handleFormSubmit = async (data: IMintRepayForm) => {
     if (oven?.ovenId) {
       try {
-        const amount = type === 'repay' ? -data.amount : data.amount;
+        const amount = data?.amount;
         const result = await mintOrBurn(Number(ovenId), amount);
         if (result) {
           toast({
@@ -114,36 +130,57 @@ const MintOrRepay: React.FC<IMintOrRepayProps> = ({ type }) => {
     onSubmit: handleFormSubmit,
   });
 
+  useEffect(() => {
+    if (values.amount) {
+      setButtonText(BUTTON_TXT.MINT);
+    } else {
+      setButtonText(BUTTON_TXT.ENTER_AMT);
+    }
+  }, [buttonText, values.amount]);
+
   return (
-    <form onSubmit={handleSubmit}>
-      <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
-        <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
-        <Text fontSize="xs" ml={2}>
-          By adding liquidity you'll earn 0.2% of all trades on this pair proportional to your share
-          of the pool. Fees are added to the
-        </Text>
-      </Flex>
-
-      <FormControl id="to-input-amount" mt={2} mb={6} w="100%">
-        <FormLabel fontWeight="500" color={text2} fontSize="xs">
-          {type === 'mint' ? 'Mint Ctez' : 'Repay'}
-        </FormLabel>
-        <Input
-          type="number"
-          name="amount"
-          id="amount"
-          color={text4}
-          bg={inputbg}
-          value={values.amount}
-          onChange={handleChange}
-        />
-      </FormControl>
-
-      <Button w="100%" variant="solid" type="submit">
-        {type === 'mint' ? 'Mint Ctez' : 'Repay'}
-      </Button>
-    </form>
+    <Modal isOpen={isOpen} onClose={onClose} isCentered>
+      <ModalOverlay />
+      <form onSubmit={handleSubmit}>
+        <ModalContent>
+          <ModalHeader color={text1} fontWeight="500">
+            Mint cTez
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
+              <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
+              <Text fontSize="xs" ml={2}>
+                If the collateral ratio in a vault is observed at or below the emergency collateral
+                ratio, the vault becomes available for liquidation. This applies until the
+                collateralratio is re-established at or above the target collateral ratio.
+              </Text>
+            </Flex>
+            <FormControl id="to-input-amount" mt={2} mb={6} w="100%">
+              <InputGroup>
+                <Input
+                  type="number"
+                  name="amount"
+                  id="amount"
+                  color={text4}
+                  bg={inputbg}
+                  placeholder="0.0"
+                  value={values.amount}
+                  onChange={handleChange}
+                />
+                {getRightElement(TOKEN.Tez)}
+              </InputGroup>
+            </FormControl>
+          </ModalBody>
+          <ModalFooter>
+            <Button w="100%" variant="outline" type="submit">
+              {buttonText}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </form>
+    </Modal>
   );
 };
 
-export default MintOrRepay;
+export default Mint;

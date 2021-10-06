@@ -6,9 +6,10 @@ import {
   useSetCtezBaseStatsToStore,
   useSetOvenDataToStore,
 } from '../../../hooks/setApiDataToStore';
-import OvenOperations from '../[operations]';
+import CollateralOverview from '../../../components/OvenOperations/CollateralOverview';
+import MintableOverview from '../../../components/OvenOperations/MintableOverview';
 
-const OvenIdPage: React.FC = () => {
+const OvenOperations: React.FC = () => {
   const [largerScreen] = useMediaQuery(['(min-width: 800px)']);
 
   const [{ pkh: userAddress }] = useWallet();
@@ -16,24 +17,11 @@ const OvenIdPage: React.FC = () => {
   useSetOvenDataToStore(userAddress);
 
   return (
-    <Stack
-      direction={largerScreen ? 'row' : 'column'}
-      maxWidth={1200}
-      mx="auto"
-      my={4}
-      p={4}
-      w="100%"
-      spacing={4}
-    >
-      <Stack direction="column" w={largerScreen ? '50%' : '100%'} spacing={4}>
-        <OvenInfo />
-
-        <OvenStats />
-      </Stack>
-
-      <OvenOperations />
+    <Stack direction="column" w={largerScreen ? '50%' : '100%'} spacing={4}>
+      <CollateralOverview />
+      <MintableOverview />
     </Stack>
   );
 };
 
-export default OvenIdPage;
+export default OvenOperations;
