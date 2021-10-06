@@ -1,4 +1,4 @@
-import { Box, Grid, Text, useColorModeValue } from '@chakra-ui/react';
+import { Box, Grid, Icon, Text, useColorModeValue } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
 import { useMemo } from 'react';
 import { AllOvenDatum } from '../../interfaces';
@@ -47,9 +47,20 @@ const AllOvenCard: React.FC<{ oven: AllOvenDatum }> = ({ oven }) => {
 
     return items.map((item) => (
       <Box key={item.label}>
-        <Text color={textcolor} fontWeight="600">
-          {item.value}
-        </Text>
+        {item.label === 'Oven address' ? (
+          <Text
+            color={textcolor}
+            onClick={() => navigator.clipboard.writeText(oven.value.address)}
+            _hover={{ cursor: 'pointer' }}
+            fontWeight="600"
+          >
+            {item.value}
+          </Text>
+        ) : (
+          <Text color={textcolor} fontWeight="600">
+            {item.value}
+          </Text>
+        )}
         <Text fontWeight="500" color="#B0B7C3" fontSize="xs">
           {item.label}
         </Text>

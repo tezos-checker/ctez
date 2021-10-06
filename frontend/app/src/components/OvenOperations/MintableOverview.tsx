@@ -22,7 +22,7 @@ const MintableOverview: React.FC = () => {
         <Burn isOpen={burnOpen} onClose={() => setBurnOpen(false)} />
       </>
     );
-  }, [mintOpen, setMintOpen, burnOpen, setBurnOpen]);
+  }, [oven, mintOpen, setMintOpen, burnOpen, setBurnOpen]);
 
   return (
     <>
