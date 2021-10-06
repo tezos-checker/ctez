@@ -9,7 +9,11 @@ import {
 import CollateralOverview from '../../../components/OvenOperations/CollateralOverview';
 import MintableOverview from '../../../components/OvenOperations/MintableOverview';
 
-const OvenOperations: React.FC = () => {
+interface IOvenOperationsProps {
+  largerScreen: boolean;
+}
+
+const OvenOperations: React.FC<IOvenOperationsProps> = (props) => {
   const [largerScreen] = useMediaQuery(['(min-width: 800px)']);
 
   const [{ pkh: userAddress }] = useWallet();
@@ -17,7 +21,7 @@ const OvenOperations: React.FC = () => {
   useSetOvenDataToStore(userAddress);
 
   return (
-    <Stack direction="column" w={largerScreen ? '50%' : '100%'} spacing={4}>
+    <Stack direction="column" w={props.largerScreen ? '50%' : '100%'} spacing={4}>
       <CollateralOverview />
       <MintableOverview />
     </Stack>

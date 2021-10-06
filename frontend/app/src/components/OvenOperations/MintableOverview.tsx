@@ -16,20 +16,12 @@ const MintableOverview: React.FC = () => {
     if (!oven) {
       return null;
     }
-    if (mintOpen) {
-      return (
-        <>
-          <Mint isOpen={mintOpen} onClose={() => setMintOpen(false)} />
-        </>
-      );
-    }
-    if (burnOpen) {
-      return (
-        <>
-          <Burn isOpen={burnOpen} onClose={() => setBurnOpen(false)} />
-        </>
-      );
-    }
+    return (
+      <>
+        <Mint isOpen={mintOpen} onClose={() => setMintOpen(false)} />
+        <Burn isOpen={burnOpen} onClose={() => setBurnOpen(false)} />
+      </>
+    );
   }, [mintOpen, setMintOpen, burnOpen, setBurnOpen]);
 
   return (

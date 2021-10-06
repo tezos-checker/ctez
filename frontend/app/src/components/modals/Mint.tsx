@@ -157,6 +157,9 @@ const Mint: React.FC<IMintProps> = ({ isOpen, onClose }) => {
               </Text>
             </Flex>
             <FormControl id="to-input-amount" mt={2} mb={6} w="100%">
+              <FormLabel fontWeight="500" color={text2} fontSize="xs">
+                Amount
+              </FormLabel>
               <InputGroup>
                 <Input
                   type="number"

@@ -31,7 +31,7 @@ const OvenIdPage: React.FC = () => {
         <OvenStats />
       </Stack>
 
-      <OvenOperations />
+      <OvenOperations largerScreen={largerScreen} />
     </Stack>
   );
 };

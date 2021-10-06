@@ -20,12 +20,10 @@ import {
 } from '@chakra-ui/react';
 import { MdInfo } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
-// import BigNumber from 'bignumber.js';
 import { number, object } from 'yup';
 import { useFormik } from 'formik';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAppSelector } from '../../redux/store';
-// import { getOvenMaxCtez } from '../../utils/ovenUtils';
 import { isMonthFromLiquidation } from '../../api/contracts';
 import { IMintRepayForm } from '../../constants/oven-operations';
 import { cTezError, mintOrBurn } from '../../contracts/ctez';

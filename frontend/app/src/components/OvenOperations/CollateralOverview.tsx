@@ -18,21 +18,14 @@ const CollateralOverview: React.FC = () => {
     if (!oven) {
       return null;
     }
-    if (depositOpen) {
-      return (
-        <>
-          <Deposit isOpen={depositOpen} onClose={() => setDepositOpen(false)} />
-        </>
-      );
-    }
-    if (withdrawOpen) {
-      return (
-        <>
-          <Withdraw isOpen={withdrawOpen} onClose={() => setWithdrawOpen(false)} />
-        </>
-      );
-    }
-  }, [depositOpen, setDepositOpen, withdrawOpen, setWithdrawOpen]);
+
+    return (
+      <>
+        <Deposit isOpen={depositOpen} onClose={() => setDepositOpen(false)} />
+        <Withdraw isOpen={withdrawOpen} onClose={() => setWithdrawOpen(false)} />
+      </>
+    );
+  }, [oven, depositOpen, setDepositOpen, withdrawOpen, setWithdrawOpen]);
 
   return (
     <>
