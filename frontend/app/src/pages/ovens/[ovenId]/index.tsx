@@ -1,5 +1,4 @@
 import { Stack, useMediaQuery } from '@chakra-ui/react';
-import OvenInfo from '../../../components/OvenCard/OvenInfo';
 import OvenStats from '../../../components/OvenCard/OvenStats';
 import { useWallet } from '../../../wallet/hooks';
 import {
@@ -28,8 +27,6 @@ const OvenIdPage: React.FC = () => {
       spacing={4}
     >
       <Stack direction="column" w={largerScreen ? '50%' : '100%'} spacing={4}>
-        <OvenInfo />
-
         <OvenStats />
 
         <BakerInfo />

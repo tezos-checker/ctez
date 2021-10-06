@@ -1,6 +1,4 @@
-import { Stack, useMediaQuery } from '@chakra-ui/react';
-import OvenInfo from '../../../components/OvenCard/OvenInfo';
-import OvenStats from '../../../components/OvenCard/OvenStats';
+import { Stack } from '@chakra-ui/react';
 import { useWallet } from '../../../wallet/hooks';
 import {
   useSetCtezBaseStatsToStore,
@@ -14,8 +12,6 @@ interface IOvenOperationsProps {
 }
 
 const OvenOperations: React.FC<IOvenOperationsProps> = (props) => {
-  const [largerScreen] = useMediaQuery(['(min-width: 800px)']);
-
   const [{ pkh: userAddress }] = useWallet();
   useSetCtezBaseStatsToStore(userAddress);
   useSetOvenDataToStore(userAddress);
