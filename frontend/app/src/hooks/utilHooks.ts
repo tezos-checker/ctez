@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import { getOvenMaxCtez } from '../utils/ovenUtils';
 import { useAppSelector } from '../redux/store';
 
+// TODO: Refactor usage
 const useOvenStats = () => {
   const { ovenId } = useParams<{ ovenId: string }>();
   const oven = useAppSelector((state) =>
@@ -21,7 +22,7 @@ const useOvenStats = () => {
     }
 
     const toNumber = (value: string | number) => {
-      return new BigNumber(value).shiftedBy(-6).toNumber();
+      return new BigNumber(value).shiftedBy(0).toNumber();
     };
 
     const { tez_balance, ctez_outstanding } = oven;

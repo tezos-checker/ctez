@@ -34,7 +34,7 @@ const MintableOverview: React.FC = () => {
         <Flex w="100%" justifyContent="space-between">
           <Stack>
             <Text color="4E5D78" fontWeight="600" fontSize="lg">
-              5 tez
+              {stats?.outStandingCtez ?? 0} tez
             </Text>
             <Text color="#B0B7C3" fontSize="xs">
               Outstanding
@@ -42,7 +42,7 @@ const MintableOverview: React.FC = () => {
           </Stack>
           <Stack>
             <Text color="4E5D78" fontWeight="600" fontSize="lg">
-              5 tez
+              {stats?.maxMintableCtez ?? 0} tez
             </Text>
             <Text color="#B0B7C3" fontSize="xs">
               Maximum Mintable
@@ -50,7 +50,7 @@ const MintableOverview: React.FC = () => {
           </Stack>
           <Stack>
             <Text color="4E5D78" fontWeight="600" fontSize="lg">
-              5 tez
+              {stats?.remainingMintableCtez ?? 0} tez
             </Text>
             <Text color="#B0B7C3" fontSize="xs">
               Remaining Mintable

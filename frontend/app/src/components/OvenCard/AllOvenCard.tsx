@@ -5,6 +5,7 @@ import { AllOvenDatum } from '../../interfaces';
 import ProgressPill from './ProgressPill';
 import { getOvenMaxCtez } from '../../utils/ovenUtils';
 import { useAppSelector } from '../../redux/store';
+import { formatNumber } from '../../utils/numbers';
 
 const truncateText = (text: string | null) => {
   if (text == null) {
@@ -13,10 +14,6 @@ const truncateText = (text: string | null) => {
 
   const len = text.length;
   return `${text.substr(0, 5)}...${text.substr(len - 5)}`;
-};
-
-const formatTokenAmt = (value: string | number) => {
-  return new BigNumber(value).shiftedBy(-6).toNumber() ?? 0;
 };
 
 const AllOvenCard: React.FC<{ oven: AllOvenDatum }> = ({ oven }) => {
@@ -38,16 +35,16 @@ const AllOvenCard: React.FC<{ oven: AllOvenDatum }> = ({ oven }) => {
     const maxMintableCtez = max < 0 ? 0 : max;
 
     // TODO: Remove NaN
-    const collateralUtilization = formatTokenAmt(
+    const collateralUtilization = formatNumber(
       (toNumber(ctez_outstanding) / maxMintableCtez) * 100,
     ).toFixed(2);
 
     const items = [
       { label: 'Oven address', value: truncateText(oven.value.address) },
       { label: 'Baker', value: truncateText(oven.key.owner) },
-      { label: 'Oven Balance', value: `${formatTokenAmt(tez_balance)} XTZ` },
-      { label: 'Outstanding ', value: `${formatTokenAmt(ctez_outstanding)} cTEZ` },
-      { label: 'Mintable ', value: `${maxMintableCtez} cTEZ` },
+      { label: 'Oven Balance', value: `${formatNumber(tez_balance)} XTZ` },
+      { label: 'Outstanding ', value: `${formatNumber(ctez_outstanding)} cTEZ` },
+      { label: 'Mintable ', value: `${formatNumber(maxMintableCtez, 6)} cTEZ` },
     ];
 
     return (
