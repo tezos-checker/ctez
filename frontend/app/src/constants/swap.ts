@@ -11,6 +11,10 @@ export const BUTTON_TXT = {
   CONNECT: 'Connect Wallet',
   ENTER_AMT: 'Enter an amount',
   SWAP: 'Swap',
+  DEPOSIT: 'Deposit',
+  WITHDRAW: 'Withdraw',
+  BURN: 'Burn',
+  MINT: 'Mint',
 } as const;
 
 export type TButtonText = ValueOf<typeof BUTTON_TXT>;

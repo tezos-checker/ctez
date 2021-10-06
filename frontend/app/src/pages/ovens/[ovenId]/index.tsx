@@ -1,12 +1,12 @@
 import { Stack, useMediaQuery } from '@chakra-ui/react';
 import OvenInfo from '../../../components/OvenCard/OvenInfo';
 import OvenStats from '../../../components/OvenCard/OvenStats';
-import OvenOperations from '../../../components/OvenOperations/OvenOperations';
 import { useWallet } from '../../../wallet/hooks';
 import {
   useSetCtezBaseStatsToStore,
   useSetOvenDataToStore,
 } from '../../../hooks/setApiDataToStore';
+import OvenOperations from '../operations';
 import BakerInfo from '../../../components/OvenCard/BakerInfo';
 import DepositorsInfo from '../../../components/OvenCard/DepositorsInfo';
 
