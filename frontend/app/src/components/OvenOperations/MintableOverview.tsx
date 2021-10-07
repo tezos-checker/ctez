@@ -1,4 +1,4 @@
-import { Divider, Flex, HStack, Stack, Text, useColorModeValue } from '@chakra-ui/react';
+import { Center, Divider, Flex, HStack, Stack, Text, useColorModeValue } from '@chakra-ui/react';
 import { useMemo, useState } from 'react';
 import { useOvenStats } from '../../hooks/utilHooks';
 import Button from '../button/Button';
@@ -40,6 +40,9 @@ const MintableOverview: React.FC = () => {
               Outstanding
             </Text>
           </Stack>
+          <Center height="50px">
+            <Divider orientation="vertical" />
+          </Center>
           <Stack>
             <Text color="4E5D78" fontWeight="600" fontSize="lg">
               5 tez
@@ -48,6 +51,9 @@ const MintableOverview: React.FC = () => {
               Maximum Mintable
             </Text>
           </Stack>
+          <Center height="50px">
+            <Divider orientation="vertical" />
+          </Center>
           <Stack>
             <Text color="4E5D78" fontWeight="600" fontSize="lg">
               5 tez

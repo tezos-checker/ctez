@@ -1,4 +1,4 @@
-import { Divider, Flex, HStack, Stack, Text, useColorModeValue } from '@chakra-ui/react';
+import { Center, Divider, Flex, HStack, Stack, Text, useColorModeValue } from '@chakra-ui/react';
 import { useEffect, useMemo, useState } from 'react';
 import { useOvenStats } from '../../hooks/utilHooks';
 import { useAppDispatch } from '../../redux/store';
@@ -43,6 +43,9 @@ const CollateralOverview: React.FC = () => {
               tez collateral
             </Text>
           </Stack>
+          <Center height="50px">
+            <Divider orientation="vertical" />
+          </Center>
           <Stack>
             <Text color="4E5D78" fontWeight="600" fontSize="lg">
               5 tez
@@ -51,6 +54,9 @@ const CollateralOverview: React.FC = () => {
               Required tez collateral
             </Text>
           </Stack>
+          <Center height="50px">
+            <Divider orientation="vertical" />
+          </Center>
           <Stack>
             <Text color="4E5D78" fontWeight="600" fontSize="lg">
               5 tez
@@ -60,7 +66,6 @@ const CollateralOverview: React.FC = () => {
             </Text>
           </Stack>
         </Flex>
-        <Divider />
         <HStack w="100%" justifyContent="space-between" spacing="24px">
           <Button variant="outline" w="95%" onClick={() => setDepositOpen(true)}>
             Deposit
