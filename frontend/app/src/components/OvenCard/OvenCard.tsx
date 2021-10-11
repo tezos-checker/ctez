@@ -27,7 +27,7 @@ const truncateText = (text: string | null) => {
   return `${text.substr(0, 5)}...${text.substr(len - 5)}`;
 };
 
-const AllOvenCard: React.FC<TOvenCardProps> = ({ type, oven }) => {
+const OvenCard: React.FC<TOvenCardProps> = ({ type, oven }) => {
   const background = useColorModeValue('white', 'cardbgdark');
   const textcolor = useColorModeValue('text2', 'white');
   const currentTarget = useAppSelector((state) => state.stats.baseStats?.originalTarget);
@@ -139,4 +139,4 @@ const AllOvenCard: React.FC<TOvenCardProps> = ({ type, oven }) => {
   return content;
 };
 
-export default AllOvenCard;
+export default OvenCard;
