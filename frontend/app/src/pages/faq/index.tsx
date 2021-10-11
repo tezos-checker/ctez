@@ -79,18 +79,20 @@ const FaqPage: React.FC = () => {
         P={8}
       >
         {faq1}
-        {largerScreen ? '' : faq2}
+        {!largerScreen && faq2}
       </Stack>
-      <Stack
-        direction="column"
-        w={largerScreen ? '50%' : '100%'}
-        spacing={4}
-        backgroundColor={background}
-        borderRadius={16}
-        P={8}
-      >
-        {largerScreen ? faq2 : ''}
-      </Stack>
+      {largerScreen && (
+        <Stack
+          direction="column"
+          w={largerScreen ? '50%' : '100%'}
+          spacing={4}
+          backgroundColor={background}
+          borderRadius={16}
+          P={8}
+        >
+          {faq2}
+        </Stack>
+      )}
     </Stack>
   );
 };
