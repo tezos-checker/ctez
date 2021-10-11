@@ -3,7 +3,7 @@ import { useOvenStats } from '../../hooks/utilHooks';
 import ProgressPill from './ProgressPill';
 
 const OvenStats: React.FC = () => {
-  const { oven } = useOvenStats();
+  const { oven, stats } = useOvenStats();
   const background = useColorModeValue('white', 'cardbgdark');
   const textcolor = useColorModeValue('text2', 'white');
   const text4color = useColorModeValue('text4', 'white');
@@ -25,7 +25,7 @@ const OvenStats: React.FC = () => {
       <Flex w="100%">
         <Stack w="30%" alignItems="center">
           <Text fontSize="lg" fontWeight="600">
-            300%
+            {stats?.collateralRatio}%
           </Text>
           <Text color={text4color} fontSize="xs">
             Collateral ratio
@@ -37,7 +37,7 @@ const OvenStats: React.FC = () => {
         </Center>
 
         <Stack w="70%" textAlign="right">
-          <ProgressPill value={75} />
+          <ProgressPill value={Number(stats?.collateralUtilization ?? 0)} />
           <Text color={text4color} fontSize="xs">
             Collateral utilization
           </Text>

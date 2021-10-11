@@ -3,6 +3,7 @@ import BigNumber from 'bignumber.js';
 import { useParams } from 'react-router-dom';
 import { getOvenMaxCtez } from '../utils/ovenUtils';
 import { useAppSelector } from '../redux/store';
+import { formatNumber } from '../utils/numbers';
 
 // TODO: Refactor usage
 const useOvenStats = () => {
@@ -34,7 +35,23 @@ const useOvenStats = () => {
     const maxMintableCtez = max < 0 ? 0 : max;
     const remainingMintableCtez = remaining < 0 ? 0 : remaining;
 
-    return { outStandingCtez, maxMintableCtez, remainingMintableCtez };
+    let collateralUtilization = formatNumber(
+      (toNumber(ctez_outstanding) / maxMintableCtez) * 100,
+    ).toFixed(1);
+
+    if (collateralUtilization === 'NaN') {
+      collateralUtilization = '0';
+    }
+
+    const collateralRatio = (100 * (100 / Number(collateralUtilization))).toFixed(1);
+
+    return {
+      outStandingCtez,
+      maxMintableCtez,
+      remainingMintableCtez,
+      collateralUtilization,
+      collateralRatio,
+    };
   }, [currentTarget, oven]);
 
   return { stats, oven, ovenId };
