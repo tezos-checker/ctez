@@ -1,11 +1,22 @@
 import { Box, Grid, Text, useColorModeValue } from '@chakra-ui/react';
 import BigNumber from 'bignumber.js';
 import { useMemo } from 'react';
-import { AllOvenDatum } from '../../interfaces';
+import { Link } from 'react-router-dom';
+import { AllOvenDatum, Oven } from '../../interfaces';
 import ProgressPill from './ProgressPill';
 import { getOvenMaxCtez } from '../../utils/ovenUtils';
 import { useAppSelector } from '../../redux/store';
 import { formatNumber } from '../../utils/numbers';
+
+type TOvenCardProps =
+  | {
+      type: 'allOvens';
+      oven: AllOvenDatum;
+    }
+  | {
+      type: 'myOvens';
+      oven: Oven;
+    };
 
 const truncateText = (text: string | null) => {
   if (text == null) {
@@ -16,7 +27,7 @@ const truncateText = (text: string | null) => {
   return `${text.substr(0, 5)}...${text.substr(len - 5)}`;
 };
 
-const AllOvenCard: React.FC<{ oven: AllOvenDatum }> = ({ oven }) => {
+const AllOvenCard: React.FC<TOvenCardProps> = ({ type, oven }) => {
   const background = useColorModeValue('white', 'cardbgdark');
   const textcolor = useColorModeValue('text2', 'white');
   const currentTarget = useAppSelector((state) => state.stats.baseStats?.originalTarget);
@@ -26,24 +37,47 @@ const AllOvenCard: React.FC<{ oven: AllOvenDatum }> = ({ oven }) => {
       return new BigNumber(value).shiftedBy(-6).toNumber();
     };
 
-    const { tez_balance, ctez_outstanding } = oven.value;
+    const { address, baker, tezBalance, ctezOutstanding } = (() => {
+      if (type === 'allOvens' && 'value' in oven) {
+        return {
+          address: oven.value.address,
+          baker: oven.key.owner,
+          tezBalance: oven.value.tez_balance,
+          ctezOutstanding: oven.value.ctez_outstanding,
+        };
+      }
+
+      if (type === 'myOvens' && 'tez_balance' in oven) {
+        return {
+          address: oven.address,
+          baker: oven.baker,
+          tezBalance: oven.tez_balance,
+          ctezOutstanding: oven.ctez_outstanding,
+        };
+      }
+
+      return { address: '', baker: '', tezBalance: 0, ctezOutstanding: 0 };
+    })();
 
     const { max } = currentTarget
-      ? getOvenMaxCtez(toNumber(tez_balance), toNumber(ctez_outstanding), currentTarget)
+      ? getOvenMaxCtez(toNumber(tezBalance), toNumber(ctezOutstanding), currentTarget)
       : { max: 0 };
 
     const maxMintableCtez = max < 0 ? 0 : max;
 
-    // TODO: Remove NaN
-    const collateralUtilization = formatNumber(
-      (toNumber(ctez_outstanding) / maxMintableCtez) * 100,
-    ).toFixed(2);
+    let collateralUtilization = formatNumber(
+      (toNumber(ctezOutstanding) / maxMintableCtez) * 100,
+    ).toFixed(1);
+
+    if (collateralUtilization === 'NaN') {
+      collateralUtilization = '0';
+    }
 
     const items = [
-      { label: 'Oven address', value: truncateText(oven.value.address) },
-      { label: 'Baker', value: truncateText(oven.key.owner) },
-      { label: 'Oven Balance', value: `${formatNumber(tez_balance)} XTZ` },
-      { label: 'Outstanding ', value: `${formatNumber(ctez_outstanding)} cTEZ` },
+      { label: 'Oven address', value: truncateText(address) },
+      { label: 'Baker', value: truncateText(baker) },
+      { label: 'Oven Balance', value: `${formatNumber(tezBalance)} XTZ` },
+      { label: 'Outstanding ', value: `${formatNumber(ctezOutstanding)} cTEZ` },
       { label: 'Mintable ', value: `${formatNumber(maxMintableCtez, 6)} cTEZ` },
     ];
 
@@ -54,7 +88,7 @@ const AllOvenCard: React.FC<{ oven: AllOvenDatum }> = ({ oven }) => {
             {item.label === 'Oven address' ? (
               <Text
                 color={textcolor}
-                onClick={() => navigator.clipboard.writeText(oven.value.address)}
+                onClick={() => navigator.clipboard.writeText(address)}
                 _hover={{ cursor: 'pointer' }}
                 fontWeight="600"
               >
@@ -78,9 +112,9 @@ const AllOvenCard: React.FC<{ oven: AllOvenDatum }> = ({ oven }) => {
         </Box>
       </>
     );
-  }, [currentTarget, oven.key.owner, oven.value, textcolor]);
+  }, [currentTarget, oven, textcolor, type]);
 
-  return (
+  const content = (
     <Grid
       gridTemplateColumns="repeat(5, 3fr) 4fr"
       my={6}
@@ -88,10 +122,21 @@ const AllOvenCard: React.FC<{ oven: AllOvenDatum }> = ({ oven }) => {
       px={10}
       borderRadius={16}
       backgroundColor={background}
+      _hover={
+        type === 'myOvens'
+          ? { boxShadow: '0 23px 66px 4px rgba(176, 183, 195, 0.25)', cursor: 'pointer' }
+          : {}
+      }
     >
       {renderedItems}
     </Grid>
   );
+
+  if (type === 'myOvens' && 'ovenId' in oven) {
+    return <Link to={`/myovens/${oven.ovenId}`}>{content}</Link>;
+  }
+
+  return content;
 };
 
 export default AllOvenCard;

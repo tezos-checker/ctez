@@ -11,6 +11,7 @@ interface IOvenOperationsProps {
   largerScreen: boolean;
 }
 
+// TODO: Move to [ovenId].tsx
 const OvenOperations: React.FC<IOvenOperationsProps> = (props) => {
   const [{ pkh: userAddress }] = useWallet();
   useSetCtezBaseStatsToStore(userAddress);

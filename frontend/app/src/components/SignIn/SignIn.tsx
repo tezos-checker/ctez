@@ -129,7 +129,7 @@ const SignIn: React.FC = () => {
                 )}
               </Tbody>
 
-              <TableCaption>{network}</TableCaption>
+              <TableCaption mt={0}>{network}</TableCaption>
             </Table>
           </PopoverBody>
 
