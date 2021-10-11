@@ -37,7 +37,7 @@ const CollateralOverview: React.FC = () => {
         <Flex w="100%" justifyContent="space-between">
           <Stack>
             <Text color="4E5D78" fontWeight="600" fontSize="lg">
-              5 tez
+              {stats?.tezBalance.toFixed(2)} tez
             </Text>
             <Text color="#B0B7C3" fontSize="xs">
               tez collateral
@@ -48,7 +48,7 @@ const CollateralOverview: React.FC = () => {
           </Center>
           <Stack>
             <Text color="4E5D78" fontWeight="600" fontSize="lg">
-              5 tez
+              {stats?.reqTezBalance.toFixed(2)} tez
             </Text>
             <Text color="#B0B7C3" fontSize="xs">
               Required tez collateral
@@ -59,7 +59,7 @@ const CollateralOverview: React.FC = () => {
           </Center>
           <Stack>
             <Text color="4E5D78" fontWeight="600" fontSize="lg">
-              5 tez
+              {Math.abs(stats?.withdrawableTez ?? 0).toFixed(2)} tez
             </Text>
             <Text color="#B0B7C3" fontSize="xs">
               Withdraw tez
