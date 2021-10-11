@@ -5,9 +5,10 @@ import {
   useSetCtezBaseStatsToStore,
   useSetOvenDataToStore,
 } from '../../../hooks/setApiDataToStore';
-import OvenOperations from '../operations';
 import BakerInfo from '../../../components/OvenCard/BakerInfo';
 import DepositorsInfo from '../../../components/OvenCard/DepositorsInfo';
+import CollateralOverview from '../../../components/OvenOperations/CollateralOverview';
+import MintableOverview from '../../../components/OvenOperations/MintableOverview';
 
 const OvenIdPage: React.FC = () => {
   const [largerScreen] = useMediaQuery(['(min-width: 800px)']);
@@ -34,7 +35,11 @@ const OvenIdPage: React.FC = () => {
         <DepositorsInfo />
       </Stack>
 
-      <OvenOperations largerScreen={largerScreen} />
+      <Stack direction="column" w={largerScreen ? '50%' : '100%'} spacing={4}>
+        <CollateralOverview />
+
+        <MintableOverview />
+      </Stack>
     </Stack>
   );
 };
