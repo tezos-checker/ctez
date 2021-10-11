@@ -24,15 +24,19 @@ const useOvenStats = () => {
 
     const { tez_balance, ctez_outstanding } = oven;
     const { max, remaining } = currentTarget
-      ? getOvenMaxCtez(formatNumber(tez_balance), formatNumber(ctez_outstanding), currentTarget)
+      ? getOvenMaxCtez(
+          formatNumber(tez_balance, 0),
+          formatNumber(ctez_outstanding, 0),
+          currentTarget,
+        )
       : { max: 0, remaining: 0 };
 
     const outStandingCtez = formatNumber(ctez_outstanding, -6) ?? 0;
-    const maxMintableCtez = max < 0 ? 0 : max;
+    const maxMintableCtez = formatNumber(max < 0 ? 0 : max, 0);
     const remainingMintableCtez = remaining < 0 ? 0 : remaining;
 
     let collateralUtilization = formatNumber(
-      (formatNumber(ctez_outstanding) / maxMintableCtez) * 100,
+      (formatNumber(ctez_outstanding, 0) / maxMintableCtez) * 100,
     ).toFixed(1);
 
     if (collateralUtilization === 'NaN') {
