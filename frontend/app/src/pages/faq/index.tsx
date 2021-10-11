@@ -23,7 +23,7 @@ const FaqPage: React.FC = () => {
       <Accordion key={item.id} allowMultiple>
         <AccordionItem border="none" mx={5} my={2}>
           <h2>
-            <AccordionButton _hover={{ backgroundColor: 'white' }}>
+            <AccordionButton _hover={{ bg: { background }, color: { text2 } }}>
               <Box fontWeight="600" color={text2} flex="1" textAlign="left">
                 {item.question}
               </Box>
@@ -44,7 +44,7 @@ const FaqPage: React.FC = () => {
       <Accordion key={item.id} allowMultiple>
         <AccordionItem border="none" mx={5} my={2}>
           <h2>
-            <AccordionButton _hover={{ backgroundColor: 'white' }}>
+            <AccordionButton _hover={{ bg: { background }, color: { text2 } }}>
               <Box fontWeight="600" color={text2} flex="1" textAlign="left">
                 {item.question}
               </Box>
