@@ -23,7 +23,7 @@ const FaqPage: React.FC = () => {
       <Accordion key={item.id} allowMultiple>
         <AccordionItem border="none" mx={5} my={2}>
           <h2>
-            <AccordionButton _hover={{ backgroundColor: 'white' }}>
+            <AccordionButton _hover={{ bg: { background }, color: { text2 } }}>
               <Box fontWeight="600" color={text2} flex="1" textAlign="left">
                 {item.question}
               </Box>
@@ -44,7 +44,7 @@ const FaqPage: React.FC = () => {
       <Accordion key={item.id} allowMultiple>
         <AccordionItem border="none" mx={5} my={2}>
           <h2>
-            <AccordionButton _hover={{ backgroundColor: 'white' }}>
+            <AccordionButton _hover={{ bg: { background }, color: { text2 } }}>
               <Box fontWeight="600" color={text2} flex="1" textAlign="left">
                 {item.question}
               </Box>
@@ -79,17 +79,20 @@ const FaqPage: React.FC = () => {
         P={8}
       >
         {faq1}
+        {!largerScreen && faq2}
       </Stack>
-      <Stack
-        direction="column"
-        w={largerScreen ? '50%' : '100%'}
-        spacing={4}
-        backgroundColor={background}
-        borderRadius={16}
-        P={8}
-      >
-        {faq2}
-      </Stack>
+      {largerScreen && (
+        <Stack
+          direction="column"
+          w={largerScreen ? '50%' : '100%'}
+          spacing={4}
+          backgroundColor={background}
+          borderRadius={16}
+          P={8}
+        >
+          {faq2}
+        </Stack>
+      )}
     </Stack>
   );
 };

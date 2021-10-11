@@ -13,8 +13,8 @@ import {
   NumberDecrementStepper,
 } from '@chakra-ui/react';
 import { useCallback, useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '../../redux/store';
-import { setSlippage, setDeadline } from '../../redux/slices/TradeSlice';
+import { useAppDispatch, useAppSelector } from '../../../redux/store';
+import { setSlippage, setDeadline } from '../../../redux/slices/TradeSlice';
 
 const Settings: React.FC = () => {
   const { slippage, deadline } = useAppSelector((state) => state.trade);
@@ -99,9 +99,6 @@ const Settings: React.FC = () => {
             </NumberInputStepper>
           </NumberInput>
         </InputGroup>
-        <button type="button" onClick={setLocalValuesToStore}>
-          Update
-        </button>
       </FormControl>
     </form>
   );

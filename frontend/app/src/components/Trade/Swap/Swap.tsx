@@ -17,8 +17,8 @@ import { number, object } from 'yup';
 import { useTranslation } from 'react-i18next';
 import { useFormik } from 'formik';
 import { addMinutes } from 'date-fns/fp';
-import { useWallet } from '../../wallet/hooks';
-import { useCfmmStorage } from '../../api/queries';
+import { useWallet } from '../../../wallet/hooks';
+import { useCfmmStorage } from '../../../api/queries';
 import {
   BUTTON_TXT,
   ConversionFormParams,
@@ -27,13 +27,13 @@ import {
   TFormType,
   TOKEN,
   TToken,
-} from '../../constants/swap';
-import { CTezIcon, TezIcon } from '../icons';
-import { cashToToken, cfmmError, tokenToCash } from '../../contracts/cfmm';
-import { logger } from '../../utils/logger';
-import { useSetCtezBaseStatsToStore } from '../../hooks/setApiDataToStore';
-import { useAppSelector } from '../../redux/store';
-import Button from '../button/Button';
+} from '../../../constants/swap';
+import { CTezIcon, TezIcon } from '../../icons';
+import { cashToToken, cfmmError, tokenToCash } from '../../../contracts/cfmm';
+import { logger } from '../../../utils/logger';
+import { useSetCtezBaseStatsToStore } from '../../../hooks/setApiDataToStore';
+import { useAppSelector } from '../../../redux/store';
+import Button from '../../button/Button';
 
 const Swap: React.FC = () => {
   const [{ pkh: userAddress }] = useWallet();
