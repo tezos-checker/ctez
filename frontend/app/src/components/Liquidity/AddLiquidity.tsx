@@ -6,7 +6,6 @@ import {
   Input,
   Stack,
   Text,
-  useColorMode,
   useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
@@ -18,7 +17,6 @@ import { addMinutes } from 'date-fns/fp';
 import { useFormik } from 'formik';
 import { useWallet } from '../../wallet/hooks';
 import { useCfmmStorage } from '../../api/queries';
-import { DEFAULT_SLIPPAGE } from '../../utils/globals';
 
 import { AddLiquidityParams } from '../../interfaces';
 import { ADD_BTN_TXT, IAddLiquidityForm, TAddBtnTxt } from '../../constants/liquidity';
@@ -39,8 +37,7 @@ const AddLiquidity: React.FC = () => {
   const text2 = useColorModeValue('text2', 'darkheading');
   const text4 = useColorModeValue('text4', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
-  const slippage = useAppSelector((state) => state.oven.slippage);
-  const deadlineFromSettings = useAppSelector((state) => state.oven.deadline);
+  const { slippage, deadline: deadlineFromStore } = useAppSelector((state) => state.trade);
 
   const calcMaxToken = useCallback(
     (cashDeposited: number) => {
@@ -59,12 +56,12 @@ const AddLiquidity: React.FC = () => {
         setMinLQT(-1);
       }
     },
-    [cfmmStorage],
+    [cfmmStorage, slippage],
   );
 
   const initialValues: any = {
     slippage: Number(slippage),
-    deadline: Number(deadlineFromSettings),
+    deadline: Number(deadlineFromStore),
     amount: '',
   };
 
@@ -80,7 +77,7 @@ const AddLiquidity: React.FC = () => {
   const handleFormSubmit = async (formData: IAddLiquidityForm) => {
     if (userAddress) {
       try {
-        const deadline = addMinutes(deadlineFromSettings)(new Date());
+        const deadline = addMinutes(deadlineFromStore)(new Date());
         const data: AddLiquidityParams = {
           deadline,
           amount: formData.amount,

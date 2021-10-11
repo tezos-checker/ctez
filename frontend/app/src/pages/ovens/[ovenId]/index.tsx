@@ -1,14 +1,14 @@
 import { Stack, useMediaQuery } from '@chakra-ui/react';
-import OvenInfo from '../../../components/OvenCard/OvenInfo';
 import OvenStats from '../../../components/OvenCard/OvenStats';
 import { useWallet } from '../../../wallet/hooks';
 import {
   useSetCtezBaseStatsToStore,
   useSetOvenDataToStore,
 } from '../../../hooks/setApiDataToStore';
-import OvenOperations from '../operations';
 import BakerInfo from '../../../components/OvenCard/BakerInfo';
 import DepositorsInfo from '../../../components/OvenCard/DepositorsInfo';
+import CollateralOverview from '../../../components/OvenOperations/CollateralOverview';
+import MintableOverview from '../../../components/OvenOperations/MintableOverview';
 
 const OvenIdPage: React.FC = () => {
   const [largerScreen] = useMediaQuery(['(min-width: 800px)']);
@@ -28,8 +28,6 @@ const OvenIdPage: React.FC = () => {
       spacing={4}
     >
       <Stack direction="column" w={largerScreen ? '50%' : '100%'} spacing={4}>
-        <OvenInfo />
-
         <OvenStats />
 
         <BakerInfo />
@@ -37,7 +35,11 @@ const OvenIdPage: React.FC = () => {
         <DepositorsInfo />
       </Stack>
 
-      <OvenOperations largerScreen={largerScreen} />
+      <Stack direction="column" w={largerScreen ? '50%' : '100%'} spacing={4}>
+        <CollateralOverview />
+
+        <MintableOverview />
+      </Stack>
     </Stack>
   );
 };

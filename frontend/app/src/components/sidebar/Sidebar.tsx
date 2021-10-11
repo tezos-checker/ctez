@@ -18,6 +18,7 @@ import { ReactComponent as Logo } from '../../assets/images/sidebar/logo.svg';
 import 'react-pro-sidebar/dist/css/styles.css';
 import { openModal } from '../../redux/slices/UiSlice';
 import { MODAL_NAMES } from '../../constants/modals';
+import { useCtezBaseStats } from '../../api/queries';
 
 export interface Props {
   handleCollapsed: React.MouseEventHandler;
@@ -34,6 +35,7 @@ export const Sidebar: React.FC<Props> = ({
 }) => {
   const location = useLocation();
   const dispatch = useDispatch();
+  const { data } = useCtezBaseStats();
 
   const handleCreateOvenClick = () => {
     dispatch(openModal(MODAL_NAMES.CREATE_OVEN));
@@ -47,7 +49,7 @@ export const Sidebar: React.FC<Props> = ({
             Current Target
           </Text>
           <Text marginLeft="auto" color="#CCD2E3" fontSize="xs" cursor="default">
-            0.963025
+            {data?.currentTarget}
           </Text>
         </Flex>
         <Flex direction="row">
@@ -55,7 +57,7 @@ export const Sidebar: React.FC<Props> = ({
             Current Price
           </Text>
           <Text marginLeft="auto" color="#CCD2E3" fontSize="xs" cursor="default">
-            2.847894
+            {data?.currentPrice}
           </Text>
         </Flex>
         <Flex direction="row">
@@ -63,7 +65,7 @@ export const Sidebar: React.FC<Props> = ({
             Premium
           </Text>
           <Text marginLeft="auto" color="#CCD2E3" fontSize="xs" cursor="default">
-            196.36%
+            {data?.premium}%
           </Text>
         </Flex>
         <Flex direction="row">
@@ -71,7 +73,7 @@ export const Sidebar: React.FC<Props> = ({
             Current Annual Drift
           </Text>
           <Text marginLeft="auto" color="#CCD2E3" fontSize="xs" cursor="default">
-            196.36%
+            {data?.currentAnnualDrift}%
           </Text>
         </Flex>
         <Flex direction="row">
@@ -79,7 +81,7 @@ export const Sidebar: React.FC<Props> = ({
             Annual Drift (Past week)
           </Text>
           <Text marginLeft="auto" color="#CCD2E3" fontSize="xs" cursor="default">
-            196.36%
+            {data?.annualDriftPastWeek}%
           </Text>
         </Flex>
       </Flex>

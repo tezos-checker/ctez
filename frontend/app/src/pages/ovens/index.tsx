@@ -3,8 +3,7 @@ import { MdAdd } from 'react-icons/md';
 import { BsArrowRight } from 'react-icons/bs';
 import { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
-import AllOvenCard from '../../components/OvenCard/AllOvenCard';
-import MyOvenCard from '../../components/OvenCard/MyOvenCard';
+import OvenCard from '../../components/OvenCard/OvenCard';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { useWallet } from '../../wallet/hooks';
 import { openModal } from '../../redux/slices/UiSlice';
@@ -44,7 +43,7 @@ const AllOvensContainer: React.FC = () => {
   return (
     <>
       {data.map((oven) => (
-        <AllOvenCard key={oven.id} oven={oven} />
+        <OvenCard key={oven.id} oven={oven} type="allOvens" />
       ))}
     </>
   );
@@ -105,7 +104,8 @@ const OvensPage: React.FC = () => {
       <Box d="table" w="100%" mt={16}>
         {!isMyOven && <AllOvensContainer />}
 
-        {isMyOven && ovens?.map((oven) => <MyOvenCard key={oven.address} oven={oven} />)}
+        {isMyOven &&
+          ovens?.map((oven) => <OvenCard key={oven.address} oven={oven} type="myOvens" />)}
       </Box>
     </Box>
   );

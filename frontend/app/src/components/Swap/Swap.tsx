@@ -7,14 +7,13 @@ import {
   InputGroup,
   InputRightElement,
   Text,
-  useColorMode,
   useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
 import { validateAddress } from '@taquito/utils';
 import { MdAdd, MdSwapVert } from 'react-icons/md';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { number, object, string } from 'yup';
+import { number, object } from 'yup';
 import { useTranslation } from 'react-i18next';
 import { useFormik } from 'formik';
 import { addMinutes } from 'date-fns/fp';
@@ -29,7 +28,6 @@ import {
   TOKEN,
   TToken,
 } from '../../constants/swap';
-import { DEFAULT_SLIPPAGE } from '../../utils/globals';
 import { CTezIcon, TezIcon } from '../icons';
 import { cashToToken, cfmmError, tokenToCash } from '../../contracts/cfmm';
 import { logger } from '../../utils/logger';
@@ -50,8 +48,8 @@ const Swap: React.FC = () => {
   const text2 = useColorModeValue('text2', 'darkheading');
   const text4 = useColorModeValue('text4', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
-  const slippage = useAppSelector((state) => state.oven.slippage);
-  const deadlineFromSettings = useAppSelector((state) => state.oven.deadline);
+
+  const { slippage, deadline: deadlineFromStore } = useAppSelector((state) => state.trade);
 
   const getRightElement = useCallback((token: TToken) => {
     if (token === TOKEN.Tez) {
@@ -75,10 +73,10 @@ const Swap: React.FC = () => {
     () => ({
       to: userAddress ?? '',
       slippage: Number(slippage),
-      deadline: Number(deadlineFromSettings),
+      deadline: Number(deadlineFromStore),
       amount: 0,
     }),
-    [userAddress],
+    [deadlineFromStore, slippage, userAddress],
   );
 
   const validationSchema = useMemo(
@@ -100,7 +98,7 @@ const Swap: React.FC = () => {
         if (!userAddress) {
           return;
         }
-        const deadline = addMinutes(deadlineFromSettings)(new Date());
+        const deadline = addMinutes(deadlineFromStore)(new Date());
         const result =
           formType === FORM_TYPE.TEZ_CTEZ
             ? await cashToToken({

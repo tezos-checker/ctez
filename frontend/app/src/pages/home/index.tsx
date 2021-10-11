@@ -47,7 +47,7 @@ const HomePage: React.FC = () => {
           p={4}
           m={4}
         >
-          <Tabs>
+          <Tabs isLazy>
             <TabList>
               <Tab>Swap</Tab>
               <Tab>Liquidity</Tab>

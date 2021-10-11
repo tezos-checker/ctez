@@ -5,7 +5,6 @@ import {
   Icon,
   Input,
   Stack,
-  useColorMode,
   useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
@@ -21,7 +20,6 @@ import { cfmmError, removeLiquidity } from '../../contracts/cfmm';
 import { IRemoveLiquidityForm, TRemoveBtnTxt, REMOVE_BTN_TXT } from '../../constants/liquidity';
 import { useWallet } from '../../wallet/hooks';
 import { useCfmmStorage } from '../../api/queries';
-import { DEFAULT_SLIPPAGE } from '../../utils/globals';
 import Button from '../button/Button';
 import { useAppSelector } from '../../redux/store';
 
@@ -38,8 +36,7 @@ const RemoveLiquidity: React.FC = () => {
   const text2 = useColorModeValue('text2', 'darkheading');
   const text4 = useColorModeValue('text4', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
-  const slippage = useAppSelector((state) => state.oven.slippage);
-  const deadlineFromSettings = useAppSelector((state) => state.oven.deadline);
+  const { slippage, deadline: deadlineFromStore } = useAppSelector((state) => state.trade);
 
   const calcMinValues = useCallback(
     (lqtBurned: number) => {
@@ -60,13 +57,13 @@ const RemoveLiquidity: React.FC = () => {
         });
       }
     },
-    [cfmmStorage],
+    [cfmmStorage, slippage],
   );
 
   const initialValues: any = {
     to: userAddress ?? '',
     lqtBurned: '',
-    deadline: Number(deadlineFromSettings),
+    deadline: Number(deadlineFromStore),
     slippage: Number(slippage),
   };
 
@@ -86,7 +83,7 @@ const RemoveLiquidity: React.FC = () => {
   const handleFormSubmit = async (formData: IRemoveLiquidityForm) => {
     if (userAddress) {
       try {
-        const deadline = addMinutes(deadlineFromSettings)(new Date());
+        const deadline = addMinutes(deadlineFromStore)(new Date());
         const data: RemoveLiquidityParams = {
           deadline,
           to: formData.to,

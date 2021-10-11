@@ -3,7 +3,9 @@ import BigNumber from 'bignumber.js';
 import { useParams } from 'react-router-dom';
 import { getOvenMaxCtez } from '../utils/ovenUtils';
 import { useAppSelector } from '../redux/store';
+import { formatNumber } from '../utils/numbers';
 
+// TODO: Refactor usage
 const useOvenStats = () => {
   const { ovenId } = useParams<{ ovenId: string }>();
   const oven = useAppSelector((state) =>
@@ -20,20 +22,36 @@ const useOvenStats = () => {
       return null;
     }
 
-    const toNumber = (value: string | number) => {
-      return new BigNumber(value).shiftedBy(-6).toNumber();
-    };
-
     const { tez_balance, ctez_outstanding } = oven;
     const { max, remaining } = currentTarget
-      ? getOvenMaxCtez(toNumber(tez_balance), toNumber(ctez_outstanding), currentTarget)
+      ? getOvenMaxCtez(
+          formatNumber(tez_balance, 0),
+          formatNumber(ctez_outstanding, 0),
+          currentTarget,
+        )
       : { max: 0, remaining: 0 };
 
-    const outStandingCtez = toNumber(ctez_outstanding) ?? 0;
-    const maxMintableCtez = max < 0 ? 0 : max;
+    const outStandingCtez = formatNumber(ctez_outstanding, -6) ?? 0;
+    const maxMintableCtez = formatNumber(max < 0 ? 0 : max, 0);
     const remainingMintableCtez = remaining < 0 ? 0 : remaining;
 
-    return { outStandingCtez, maxMintableCtez, remainingMintableCtez };
+    let collateralUtilization = formatNumber(
+      (formatNumber(ctez_outstanding, 0) / maxMintableCtez) * 100,
+    ).toFixed(1);
+
+    if (collateralUtilization === 'NaN') {
+      collateralUtilization = '0';
+    }
+
+    const collateralRatio = (100 * (100 / Number(collateralUtilization))).toFixed(1);
+
+    return {
+      outStandingCtez,
+      maxMintableCtez,
+      remainingMintableCtez,
+      collateralUtilization,
+      collateralRatio,
+    };
   }, [currentTarget, oven]);
 
   return { stats, oven, ovenId };
