@@ -5,22 +5,38 @@ import {
   NumberInput,
   NumberInputField,
   NumberInputStepper,
-  Input,
   InputGroup,
   InputRightElement,
   Text,
   useColorModeValue,
   NumberIncrementStepper,
   NumberDecrementStepper,
-  InputRightAddon,
 } from '@chakra-ui/react';
 import { useCallback, useEffect, useState } from 'react';
-import { useAppDispatch } from '../../redux/store';
-import { setSlippage, setDeadline } from '../../redux/slices/OvenSlice';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { setSlippage, setDeadline } from '../../redux/slices/TradeSlice';
 
 const Settings: React.FC = () => {
-  const [slippage, setslippage] = useState('0.2');
-  const [deadline, setdeadline] = useState('20');
+  const { slippage, deadline } = useAppSelector((state) => state.trade);
+  const [slippageLocal, setSlippageLocal] = useState('0.2');
+  const [deadlineLocal, setDeadlineLocal] = useState('20');
+
+  const dispatch = useAppDispatch();
+
+  // ? Setting values to store on form blur
+  const setLocalValuesToStore = useCallback(() => {
+    dispatch(setSlippage(Number(slippageLocal)));
+    dispatch(setDeadline(Number(deadlineLocal)));
+  }, [slippageLocal, deadlineLocal, dispatch]);
+
+  useEffect(() => {
+    // ? Setting local values from store on Mount
+    setSlippageLocal(`${slippage}`);
+    setDeadlineLocal(`${deadline}`);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const getRightElement = useCallback((value: string) => {
     return (
       <InputRightElement mr={10} backgroundColor="transparent">
@@ -34,7 +50,7 @@ const Settings: React.FC = () => {
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
 
   return (
-    <form autoComplete="off">
+    <form autoComplete="off" onBlur={setLocalValuesToStore}>
       <Heading as="h4" size="md" color={text2}>
         Transaction settings
       </Heading>
@@ -48,8 +64,8 @@ const Settings: React.FC = () => {
             bg={inputbg}
             max={50}
             min={0}
-            defaultValue={0.2}
-            onChange={(e) => setslippage(e)}
+            value={slippageLocal}
+            onChange={(ev) => setSlippageLocal(ev)}
           >
             {getRightElement('%')}
             <NumberInputField />
@@ -71,9 +87,9 @@ const Settings: React.FC = () => {
             bg={inputbg}
             max={50}
             min={0}
-            defaultValue={20}
+            value={deadlineLocal}
             mb={5}
-            onChange={(e) => setdeadline(e)}
+            onChange={(ev) => setDeadlineLocal(ev)}
           >
             {getRightElement('Minutes')}
             <NumberInputField />
@@ -83,6 +99,9 @@ const Settings: React.FC = () => {
             </NumberInputStepper>
           </NumberInput>
         </InputGroup>
+        <button type="button" onClick={setLocalValuesToStore}>
+          Update
+        </button>
       </FormControl>
     </form>
   );
