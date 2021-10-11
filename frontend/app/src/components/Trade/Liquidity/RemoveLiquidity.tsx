@@ -15,13 +15,13 @@ import { useTranslation } from 'react-i18next';
 import { useCallback, useEffect, useState } from 'react';
 import { number, object, string } from 'yup';
 import { useFormik } from 'formik';
-import { RemoveLiquidityParams } from '../../interfaces';
-import { cfmmError, removeLiquidity } from '../../contracts/cfmm';
-import { IRemoveLiquidityForm, TRemoveBtnTxt, REMOVE_BTN_TXT } from '../../constants/liquidity';
-import { useWallet } from '../../wallet/hooks';
-import { useCfmmStorage } from '../../api/queries';
-import Button from '../button/Button';
-import { useAppSelector } from '../../redux/store';
+import { RemoveLiquidityParams } from '../../../interfaces';
+import { cfmmError, removeLiquidity } from '../../../contracts/cfmm';
+import { IRemoveLiquidityForm, TRemoveBtnTxt, REMOVE_BTN_TXT } from '../../../constants/liquidity';
+import { useWallet } from '../../../wallet/hooks';
+import { useCfmmStorage } from '../../../api/queries';
+import Button from '../../button/Button';
+import { useAppSelector } from '../../../redux/store';
 
 const RemoveLiquidity: React.FC = () => {
   const [{ pkh: userAddress }] = useWallet();
