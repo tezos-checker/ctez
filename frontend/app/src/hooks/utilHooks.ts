@@ -31,6 +31,7 @@ const useOvenStats = () => {
         )
       : { max: 0, remaining: 0 };
 
+    const tezBalance = formatNumber(tez_balance, -6) ?? 0;
     const outStandingCtez = formatNumber(ctez_outstanding, -6) ?? 0;
     const maxMintableCtez = formatNumber(max < 0 ? 0 : max, 0);
     const remainingMintableCtez = remaining < 0 ? 0 : remaining;
@@ -45,12 +46,33 @@ const useOvenStats = () => {
 
     const collateralRatio = (100 * (100 / Number(collateralUtilization))).toFixed(1);
 
+    const reqTezBalance = (() => {
+      if (currentTarget) {
+        return tezBalance * currentTarget > outStandingCtez
+          ? 0
+          : outStandingCtez / currentTarget - tezBalance;
+      }
+      return 0;
+    })();
+
+    const withdrawableTez = (() => {
+      if (currentTarget) {
+        return tezBalance * currentTarget <= outStandingCtez
+          ? 0
+          : outStandingCtez / currentTarget - tezBalance;
+      }
+      return 0;
+    })();
+
     return {
+      tezBalance,
       outStandingCtez,
       maxMintableCtez,
       remainingMintableCtez,
       collateralUtilization,
       collateralRatio,
+      reqTezBalance,
+      withdrawableTez,
     };
   }, [currentTarget, oven]);
 
