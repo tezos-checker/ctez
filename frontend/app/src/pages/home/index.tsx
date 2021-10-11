@@ -1,20 +1,6 @@
-import {
-  Box,
-  Flex,
-  Stack,
-  Text,
-  Tabs,
-  TabList,
-  TabPanels,
-  Tab,
-  TabPanel,
-  useColorModeValue,
-  Icon,
-} from '@chakra-ui/react';
-import Swap from '../../components/Swap';
-import Liquidity from '../../components/Liquidity';
-import { Settings } from '../../components/Settings/Settings';
-import { ReactComponent as tune } from '../../assets/images/sidebar/tune_settings.svg';
+import { Flex, HStack, Stack, Text, useColorModeValue } from '@chakra-ui/react';
+import Button from '../../components/button/Button';
+import Trade from '../../components/Trade';
 
 const HomePage: React.FC = () => {
   const tabcolor = useColorModeValue('tabcolor', 'darkheading');
@@ -35,40 +21,16 @@ const HomePage: React.FC = () => {
             ctez can be used directly in smart-contracts that would normally pool tez together
             without the thorny question of "who's baking".
           </Text>
+          <HStack w="65%" justifyContent="space-between" spacing="24px">
+            <Button variant="solid" w="100%">
+              Enter App
+            </Button>
+            <Button variant="outline" w="100%">
+              Learn more
+            </Button>
+          </HStack>
         </Stack>
-
-        <Box
-          backgroundColor={background}
-          fontWeight="500"
-          color={tabcolor}
-          minWidth="400px"
-          maxWidth="400px"
-          borderRadius={16}
-          p={4}
-          m={4}
-        >
-          <Tabs isLazy>
-            <TabList>
-              <Tab>Swap</Tab>
-              <Tab>Liquidity</Tab>
-              <Tab position="relative" left="147">
-                <Icon fontSize="2xl" color="#62737F" as={tune} />
-              </Tab>
-            </TabList>
-
-            <TabPanels>
-              <TabPanel>
-                <Swap />
-              </TabPanel>
-              <TabPanel>
-                <Liquidity />
-              </TabPanel>
-              <TabPanel>
-                <Settings />
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
-        </Box>
+        <Trade />
       </Flex>
     </Flex>
   );

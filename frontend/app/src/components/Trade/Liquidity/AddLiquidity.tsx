@@ -15,16 +15,16 @@ import { useCallback, useEffect, useState } from 'react';
 import { number, object } from 'yup';
 import { addMinutes } from 'date-fns/fp';
 import { useFormik } from 'formik';
-import { useWallet } from '../../wallet/hooks';
-import { useCfmmStorage } from '../../api/queries';
+import { useWallet } from '../../../wallet/hooks';
+import { useCfmmStorage } from '../../../api/queries';
 
-import { AddLiquidityParams } from '../../interfaces';
-import { ADD_BTN_TXT, IAddLiquidityForm, TAddBtnTxt } from '../../constants/liquidity';
-import { addLiquidity, cfmmError } from '../../contracts/cfmm';
-import { logger } from '../../utils/logger';
-import { BUTTON_TXT } from '../../constants/swap';
-import Button from '../button/Button';
-import { useAppSelector } from '../../redux/store';
+import { AddLiquidityParams } from '../../../interfaces';
+import { ADD_BTN_TXT, IAddLiquidityForm, TAddBtnTxt } from '../../../constants/liquidity';
+import { addLiquidity, cfmmError } from '../../../contracts/cfmm';
+import { logger } from '../../../utils/logger';
+import { BUTTON_TXT } from '../../../constants/swap';
+import Button from '../../button/Button';
+import { useAppSelector } from '../../../redux/store';
 
 const AddLiquidity: React.FC = () => {
   const [{ pkh: userAddress }] = useWallet();

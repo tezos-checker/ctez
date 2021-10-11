@@ -79,6 +79,7 @@ const FaqPage: React.FC = () => {
         P={8}
       >
         {faq1}
+        {largerScreen ? '' : faq2}
       </Stack>
       <Stack
         direction="column"
@@ -88,7 +89,7 @@ const FaqPage: React.FC = () => {
         borderRadius={16}
         P={8}
       >
-        {faq2}
+        {largerScreen ? faq2 : ''}
       </Stack>
     </Stack>
   );
