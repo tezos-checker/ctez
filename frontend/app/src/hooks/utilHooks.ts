@@ -22,21 +22,17 @@ const useOvenStats = () => {
       return null;
     }
 
-    const toNumber = (value: string | number) => {
-      return new BigNumber(value).shiftedBy(0).toNumber();
-    };
-
     const { tez_balance, ctez_outstanding } = oven;
     const { max, remaining } = currentTarget
-      ? getOvenMaxCtez(toNumber(tez_balance), toNumber(ctez_outstanding), currentTarget)
+      ? getOvenMaxCtez(formatNumber(tez_balance), formatNumber(ctez_outstanding), currentTarget)
       : { max: 0, remaining: 0 };
 
-    const outStandingCtez = toNumber(ctez_outstanding) ?? 0;
+    const outStandingCtez = formatNumber(ctez_outstanding, -6) ?? 0;
     const maxMintableCtez = max < 0 ? 0 : max;
     const remainingMintableCtez = remaining < 0 ? 0 : remaining;
 
     let collateralUtilization = formatNumber(
-      (toNumber(ctez_outstanding) / maxMintableCtez) * 100,
+      (formatNumber(ctez_outstanding) / maxMintableCtez) * 100,
     ).toFixed(1);
 
     if (collateralUtilization === 'NaN') {
