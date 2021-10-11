@@ -17,7 +17,6 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { useCallback } from 'react';
-import { BigNumber } from 'bignumber.js';
 import Button from '../button/Button';
 import { trimAddress } from '../../utils/addressUtils';
 import { useWallet } from '../../wallet/hooks';
@@ -28,6 +27,7 @@ import { OvenSlice } from '../../redux/slices/OvenSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { useUserBalance, useUserLqtData } from '../../api/queries';
 import Identicon from '../avatar/Identicon';
+import { formatNumber as formatNumberUtil } from '../../utils/numbers';
 
 const SignIn: React.FC = () => {
   const [{ pkh: userAddress, network }, setWallet, disconnectWallet] = useWallet();
@@ -37,12 +37,12 @@ const SignIn: React.FC = () => {
   const { data: userLqtData } = useUserLqtData(userAddress);
   const userOvenData = useAppSelector((state) => state.oven.userOvenData);
 
-  const formatNumber = useCallback((number?: number) => {
+  const formatNumber = useCallback((number?: number, shiftedBy = -6) => {
     if (typeof number !== 'number') {
       return null;
     }
 
-    return new BigNumber(number).shiftedBy(-6).toNumber();
+    return formatNumberUtil(number, shiftedBy);
   }, []);
 
   const connectWallet = async () => {
@@ -95,11 +95,11 @@ const SignIn: React.FC = () => {
                   <>
                     <Tr>
                       <Td>ꜩ:</Td>
-                      <Td textAlign="right">{formatNumber(balance.xtz)}</Td>
+                      <Td textAlign="right">{formatNumber(balance.xtz, 0)}</Td>
                     </Tr>
                     <Tr>
                       <Td>cꜩ:</Td>
-                      <Td textAlign="right">{formatNumber(balance.ctez)}</Td>
+                      <Td textAlign="right">{formatNumber(balance.ctez, 0)}</Td>
                     </Tr>
                   </>
                 )}
