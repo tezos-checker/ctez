@@ -1,9 +1,10 @@
 import { Center, Divider, Flex, Stack, Text, useColorModeValue } from '@chakra-ui/react';
 import { useOvenStats } from '../../hooks/utilHooks';
 import ProgressPill from './ProgressPill';
+import { Oven } from '../../interfaces';
 
-const OvenStats: React.FC = () => {
-  const { oven, stats } = useOvenStats();
+const OvenStats: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
+  const { stats } = useOvenStats({ type: 'MyOvens', oven });
   const background = useColorModeValue('white', 'cardbgdark');
   const textcolor = useColorModeValue('text2', 'white');
   const text4color = useColorModeValue('text4', 'white');

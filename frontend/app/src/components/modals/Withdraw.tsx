@@ -14,7 +14,6 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
-  useColorMode,
   useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
@@ -24,20 +23,21 @@ import { useTranslation } from 'react-i18next';
 import { validateAddress } from '@taquito/utils';
 import { number, object, string } from 'yup';
 import { useFormik } from 'formik';
-import { useParams } from 'react-router-dom';
 import { useWallet } from '../../wallet/hooks';
 import { IWithdrawForm } from '../../constants/oven-operations';
 import { cTezError, withdraw } from '../../contracts/ctez';
 import Button from '../button/Button';
 import { CTezIcon } from '../icons';
 import { BUTTON_TXT, TButtonText, TOKEN, TToken } from '../../constants/swap';
+import { Oven } from '../../interfaces';
 
 interface IWithdrawProps {
   isOpen: boolean;
   onClose: () => void;
+  oven: Oven | undefined;
 }
 
-const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose }) => {
+const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose, oven }) => {
   const { t } = useTranslation(['common']);
   const [buttonText, setButtonText] = useState<TButtonText>(BUTTON_TXT.ENTER_AMT);
   const text2 = useColorModeValue('text2', 'darkheading');
@@ -47,22 +47,24 @@ const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose }) => {
   const cardbg = useColorModeValue('bg3', 'darkblue');
   const [{ pkh: userAddress }] = useWallet();
   const toast = useToast();
-  const { ovenId } = useParams<{ ovenId: string }>();
   const initialValues: any = {
     amount: '',
     to: userAddress ?? '',
   };
 
-  const getRightElement = useCallback((token: TToken) => {
-    return (
-      <InputRightElement backgroundColor="transparent" w={24} color={text2}>
-        <CTezIcon height={28} width={28} />
-        <Text fontWeight="500" mx={2}>
-          tez
-        </Text>
-      </InputRightElement>
-    );
-  }, []);
+  const getRightElement = useCallback(
+    (token: TToken) => {
+      return (
+        <InputRightElement backgroundColor="transparent" w={24} color={text2}>
+          <CTezIcon height={28} width={28} />
+          <Text fontWeight="500" mx={2}>
+            tez
+          </Text>
+        </InputRightElement>
+      );
+    },
+    [text2],
+  );
 
   const validationSchema = object().shape({
     amount: number().min(0.1).required(t('required')),
@@ -75,9 +77,9 @@ const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose }) => {
   });
 
   const handleFormSubmit = async (data: IWithdrawForm) => {
-    if (ovenId) {
+    if (oven?.ovenId) {
       try {
-        const result = await withdraw(Number(ovenId), data.amount, data.to);
+        const result = await withdraw(Number(oven.ovenId), data.amount, data.to);
         if (result) {
           toast({
             description: t('txSubmitted'),

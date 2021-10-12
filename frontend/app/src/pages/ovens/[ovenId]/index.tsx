@@ -1,4 +1,6 @@
 import { Stack, useMediaQuery } from '@chakra-ui/react';
+import { BigNumber } from 'bignumber.js';
+import { useParams } from 'react-router-dom';
 import OvenStats from '../../../components/OvenCard/OvenStats';
 import { useWallet } from '../../../wallet/hooks';
 import {
@@ -9,11 +11,20 @@ import BakerInfo from '../../../components/OvenCard/BakerInfo';
 import DepositorsInfo from '../../../components/OvenCard/DepositorsInfo';
 import CollateralOverview from '../../../components/OvenOperations/CollateralOverview';
 import MintableOverview from '../../../components/OvenOperations/MintableOverview';
+import { useAppSelector } from '../../../redux/store';
 
 const OvenIdPage: React.FC = () => {
   const [largerScreen] = useMediaQuery(['(min-width: 800px)']);
+  const { ovenId } = useParams<{ ovenId: string }>();
+  const oven = useAppSelector((state) =>
+    state.oven.ovens.find((x) => {
+      const ovenIdFromStore = new BigNumber(x.ovenId);
+      return ovenId === ovenIdFromStore.toString();
+    }),
+  );
 
   const [{ pkh: userAddress }] = useWallet();
+
   useSetCtezBaseStatsToStore(userAddress);
   useSetOvenDataToStore(userAddress);
 
@@ -28,17 +39,17 @@ const OvenIdPage: React.FC = () => {
       spacing={4}
     >
       <Stack direction="column" w={largerScreen ? '50%' : '100%'} spacing={4}>
-        <OvenStats />
+        <OvenStats oven={oven} />
 
-        <BakerInfo />
+        <BakerInfo oven={oven} />
 
-        <DepositorsInfo />
+        <DepositorsInfo oven={oven} />
       </Stack>
 
       <Stack direction="column" w={largerScreen ? '50%' : '100%'} spacing={4}>
-        <CollateralOverview />
+        <CollateralOverview oven={oven} />
 
-        <MintableOverview />
+        <MintableOverview oven={oven} />
       </Stack>
     </Stack>
   );

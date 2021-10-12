@@ -22,7 +22,7 @@ const useSetOvenDataToStore = (userAddress: string | undefined) => {
   const dispatch = useAppDispatch();
   const extOvens = useAppSelector((state) => state.oven.extOvens);
 
-  const { data: ovenData } = useOvenData(userAddress, extOvens);
+  const { data: ovenData, isLoading: isMyOvensLoading } = useOvenData(userAddress, extOvens);
 
   useEffect(() => {
     if (ovenData && ovenData.length > 0) {
@@ -41,6 +41,8 @@ const useSetOvenDataToStore = (userAddress: string | undefined) => {
       dispatch(OvenSlice.actions.setOvens(ovenData));
     }
   }, [dispatch, ovenData]);
+
+  return { isMyOvensLoading };
 };
 
 const useSetExtOvensToStore = (userAddress: string | undefined) => {

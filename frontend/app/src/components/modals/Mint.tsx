@@ -14,18 +14,15 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
-  useColorMode,
   useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
 import { MdInfo } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
-// import BigNumber from 'bignumber.js';
 import { number, object } from 'yup';
 import { useFormik } from 'formik';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAppSelector } from '../../redux/store';
-// import { getOvenMaxCtez } from '../../utils/ovenUtils';
 import { isMonthFromLiquidation } from '../../api/contracts';
 import { IMintRepayForm } from '../../constants/oven-operations';
 import { cTezError, mintOrBurn } from '../../contracts/ctez';
@@ -34,33 +31,37 @@ import { useOvenStats } from '../../hooks/utilHooks';
 import Button from '../button/Button';
 import { BUTTON_TXT, TButtonText, TOKEN, TToken } from '../../constants/swap';
 import { CTezIcon } from '../icons';
+import { Oven } from '../../interfaces';
 
 interface IMintProps {
   isOpen: boolean;
   onClose: () => void;
+  oven: Oven | undefined;
 }
 
-const Mint: React.FC<IMintProps> = ({ isOpen, onClose }) => {
+const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
   const { t } = useTranslation(['common']);
   const toast = useToast();
   const [buttonText, setButtonText] = useState<TButtonText>(BUTTON_TXT.ENTER_AMT);
-  const { oven, stats, ovenId } = useOvenStats();
   const text2 = useColorModeValue('text2', 'darkheading');
   const text4 = useColorModeValue('text4', 'darkheading');
   const text1 = useColorModeValue('text1', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
   const cardbg = useColorModeValue('bg3', 'darkblue');
 
-  const getRightElement = useCallback((token: TToken) => {
-    return (
-      <InputRightElement backgroundColor="transparent" w={24} color={text2}>
-        <CTezIcon height={28} width={28} />
-        <Text fontWeight="500" mx={2}>
-          ctez
-        </Text>
-      </InputRightElement>
-    );
-  }, []);
+  const getRightElement = useCallback(
+    (token: TToken) => {
+      return (
+        <InputRightElement backgroundColor="transparent" w={24} color={text2}>
+          <CTezIcon height={28} width={28} />
+          <Text fontWeight="500" mx={2}>
+            ctez
+          </Text>
+        </InputRightElement>
+      );
+    },
+    [text2],
+  );
 
   const { tez_balance, ctez_outstanding } = useMemo(
     () =>
@@ -106,7 +107,7 @@ const Mint: React.FC<IMintProps> = ({ isOpen, onClose }) => {
     if (oven?.ovenId) {
       try {
         const amount = data?.amount;
-        const result = await mintOrBurn(Number(ovenId), amount);
+        const result = await mintOrBurn(Number(oven.ovenId), amount);
         if (result) {
           toast({
             description: t('txSubmitted'),

@@ -1,4 +1,4 @@
-import { Box, Select, Spacer, Stack, Icon, Text, useColorModeValue } from '@chakra-ui/react';
+import { Box, Select, Spacer, Stack, Icon, useColorModeValue } from '@chakra-ui/react';
 import { MdAdd } from 'react-icons/md';
 import { BsArrowRight } from 'react-icons/bs';
 import { useMemo } from 'react';
@@ -16,6 +16,7 @@ import {
 } from '../../hooks/setApiDataToStore';
 import Button from '../../components/button/Button';
 import { setSortBy } from '../../redux/slices/OvenSlice';
+import SkeletonLayout from '../../components/skeleton';
 
 const AllOvensContainer: React.FC = () => {
   useSetAllOvensToStore();
@@ -37,13 +38,13 @@ const AllOvensContainer: React.FC = () => {
   }
 
   if (isLoading) {
-    return <Text>Loading...</Text>;
+    return <SkeletonLayout count={7} component="OvenCard" />;
   }
 
   return (
     <>
       {data.map((oven) => (
-        <OvenCard key={oven.id} oven={oven} type="allOvens" />
+        <OvenCard key={oven.id} oven={oven} type="AllOvens" />
       ))}
     </>
   );
@@ -56,7 +57,7 @@ const OvensPage: React.FC = () => {
   const { ovens } = useAppSelector((state) => state.oven);
   const [{ pkh: userAddress }] = useWallet();
   useSetCtezBaseStatsToStore(userAddress);
-  useSetOvenDataToStore(userAddress);
+  const { isMyOvensLoading } = useSetOvenDataToStore(userAddress);
   useSetExtOvensToStore(userAddress);
 
   const isMyOven = useMemo(() => {
@@ -105,7 +106,11 @@ const OvensPage: React.FC = () => {
         {!isMyOven && <AllOvensContainer />}
 
         {isMyOven &&
-          ovens?.map((oven) => <OvenCard key={oven.address} oven={oven} type="myOvens" />)}
+          (isMyOvensLoading ? (
+            <SkeletonLayout component="OvenCard" />
+          ) : (
+            ovens?.map((oven) => <OvenCard key={oven.address} oven={oven} type="MyOvens" />)
+          ))}
       </Box>
     </Box>
   );
