@@ -1,20 +1,17 @@
 import { Box, Grid, Text, useColorModeValue } from '@chakra-ui/react';
-import BigNumber from 'bignumber.js';
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { AllOvenDatum, Oven } from '../../interfaces';
 import ProgressPill from './ProgressPill';
-import { getOvenMaxCtez } from '../../utils/ovenUtils';
-import { useAppSelector } from '../../redux/store';
-import { formatNumber } from '../../utils/numbers';
+import { useOvenStats } from '../../hooks/utilHooks';
 
 type TOvenCardProps =
   | {
-      type: 'allOvens';
+      type: 'AllOvens';
       oven: AllOvenDatum;
     }
   | {
-      type: 'myOvens';
+      type: 'MyOvens';
       oven: Oven;
     };
 
@@ -27,58 +24,36 @@ const truncateText = (text: string | null) => {
   return `${text.substr(0, 5)}...${text.substr(len - 5)}`;
 };
 
-const OvenCard: React.FC<TOvenCardProps> = ({ type, oven }) => {
+const OvenCard: React.FC<TOvenCardProps> = (props) => {
   const background = useColorModeValue('white', 'cardbgdark');
   const textcolor = useColorModeValue('text2', 'white');
-  const currentTarget = useAppSelector((state) => state.stats.baseStats?.originalTarget);
+  const { stats } = useOvenStats(props);
 
   const renderedItems = useMemo(() => {
-    const toNumber = (value: string | number) => {
-      return new BigNumber(value).shiftedBy(-6).toNumber();
-    };
-
-    const { address, baker, tezBalance, ctezOutstanding } = (() => {
-      if (type === 'allOvens' && 'value' in oven) {
+    const { address, baker } = (() => {
+      if (props.type === 'AllOvens' && 'value' in props.oven) {
         return {
-          address: oven.value.address,
-          baker: oven.key.owner,
-          tezBalance: oven.value.tez_balance,
-          ctezOutstanding: oven.value.ctez_outstanding,
+          address: props.oven.value.address,
+          baker: props.oven.key.owner, // TODO add baker address once API is done
         };
       }
 
-      if (type === 'myOvens' && 'tez_balance' in oven) {
+      if (props.type === 'MyOvens' && 'tez_balance' in props.oven) {
         return {
-          address: oven.address,
-          baker: oven.baker,
-          tezBalance: oven.tez_balance,
-          ctezOutstanding: oven.ctez_outstanding,
+          address: props.oven.address,
+          baker: props.oven.baker,
         };
       }
 
-      return { address: '', baker: '', tezBalance: 0, ctezOutstanding: 0 };
+      return { address: '', baker: '' };
     })();
-
-    const { max } = currentTarget
-      ? getOvenMaxCtez(toNumber(tezBalance), toNumber(ctezOutstanding), currentTarget)
-      : { max: 0 };
-
-    const maxMintableCtez = max < 0 ? 0 : max;
-
-    let collateralUtilization = formatNumber(
-      (toNumber(ctezOutstanding) / maxMintableCtez) * 100,
-    ).toFixed(1);
-
-    if (collateralUtilization === 'NaN') {
-      collateralUtilization = '0';
-    }
 
     const items = [
       { label: 'Oven address', value: truncateText(address) },
       { label: 'Baker', value: truncateText(baker) },
-      { label: 'Oven Balance', value: `${formatNumber(tezBalance)} XTZ` },
-      { label: 'Outstanding ', value: `${formatNumber(ctezOutstanding)} cTEZ` },
-      { label: 'Mintable ', value: `${formatNumber(maxMintableCtez, 6)} cTEZ` },
+      { label: 'Oven Balance', value: `${stats?.ovenBalance ?? 0} XTZ` },
+      { label: 'Outstanding ', value: `${stats?.outStandingCtez ?? 0} cTEZ` },
+      { label: 'Mintable ', value: `${stats?.maxMintableCtez} cTEZ` },
     ];
 
     return (
@@ -105,14 +80,22 @@ const OvenCard: React.FC<TOvenCardProps> = ({ type, oven }) => {
           </Box>
         ))}
         <Box>
-          <ProgressPill value={Number(collateralUtilization ?? 0)} />
+          <ProgressPill value={Number(stats?.collateralUtilization ?? 0)} />
           <Text color="#B0B7C3" fontSize="xs">
             Collateral Utilization
           </Text>
         </Box>
       </>
     );
-  }, [currentTarget, oven, textcolor, type]);
+  }, [
+    stats?.ovenBalance,
+    stats?.outStandingCtez,
+    stats?.maxMintableCtez,
+    stats?.collateralUtilization,
+    props.type,
+    props.oven,
+    textcolor,
+  ]);
 
   const content = (
     <Grid
@@ -123,7 +106,7 @@ const OvenCard: React.FC<TOvenCardProps> = ({ type, oven }) => {
       borderRadius={16}
       backgroundColor={background}
       _hover={
-        type === 'myOvens'
+        props.type === 'MyOvens'
           ? { boxShadow: '0 23px 66px 4px rgba(176, 183, 195, 0.25)', cursor: 'pointer' }
           : {}
       }
@@ -132,8 +115,8 @@ const OvenCard: React.FC<TOvenCardProps> = ({ type, oven }) => {
     </Grid>
   );
 
-  if (type === 'myOvens' && 'ovenId' in oven) {
-    return <Link to={`/myovens/${oven.ovenId}`}>{content}</Link>;
+  if (props.type === 'MyOvens' && 'ovenId' in props.oven) {
+    return <Link to={`/myovens/${props.oven.ovenId}`}>{content}</Link>;
   }
 
   return content;

@@ -14,11 +14,10 @@ import { useDelegates } from '../../api/queries';
 import { useWallet } from '../../wallet/hooks';
 import Button from '../button/Button';
 import { cTezError, delegate } from '../../contracts/ctez';
-import { useOvenStats } from '../../hooks/utilHooks';
 import Identicon from '../avatar/Identicon';
+import { Oven } from '../../interfaces';
 
-const BakerInfo: React.FC = () => {
-  const { oven } = useOvenStats();
+const BakerInfo: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
   const { t } = useTranslation(['common']);
   const [{ pkh: userAddress }] = useWallet();
   const { data: delegates } = useDelegates(userAddress);

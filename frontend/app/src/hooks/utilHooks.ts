@@ -1,43 +1,71 @@
 import { useMemo } from 'react';
-import BigNumber from 'bignumber.js';
-import { useParams } from 'react-router-dom';
 import { getOvenMaxCtez } from '../utils/ovenUtils';
 import { useAppSelector } from '../redux/store';
 import { formatNumber } from '../utils/numbers';
+import { AllOvenDatum, Oven } from '../interfaces';
 
-// TODO: Refactor usage
-const useOvenStats = () => {
-  const { ovenId } = useParams<{ ovenId: string }>();
-  const oven = useAppSelector((state) =>
-    state.oven.ovens.find((x) => {
-      const ovenIdFromStore = new BigNumber(x.ovenId);
-      return ovenId === ovenIdFromStore.toString();
-    }),
-  );
+type TUseOvenStatsProps =
+  | {
+      type: 'AllOvens';
+      oven: AllOvenDatum | undefined;
+    }
+  | {
+      type: 'MyOvens';
+      oven: Oven | undefined;
+    };
 
+type TUseOvenStats = (
+  props: TUseOvenStatsProps,
+) => {
+  stats: null | {
+    ovenBalance: number;
+    outStandingCtez: number;
+    maxMintableCtez: number;
+    remainingMintableCtez: number;
+    collateralUtilization: string;
+    collateralRatio: string;
+    reqTezBalance: number;
+    withdrawableTez: number;
+  };
+};
+
+const useOvenStats: TUseOvenStats = (props) => {
   const currentTarget = useAppSelector((state) => state.stats.baseStats?.originalTarget);
 
   const stats = useMemo(() => {
-    if (oven == null) {
+    if (props.oven == null) {
       return null;
     }
 
-    const { tez_balance, ctez_outstanding } = oven;
+    const { tezBalance, ctezOutstanding } = (() => {
+      if (props.type === 'AllOvens') {
+        return {
+          tezBalance: props.oven?.value.tez_balance,
+          ctezOutstanding: props.oven?.value.ctez_outstanding,
+        };
+      }
+
+      if (props.type === 'MyOvens') {
+        return {
+          tezBalance: props.oven?.tez_balance,
+          ctezOutstanding: props.oven?.ctez_outstanding,
+        };
+      }
+
+      return { tezBalance: 0, ctezOutstanding: 0 };
+    })();
+
     const { max, remaining } = currentTarget
-      ? getOvenMaxCtez(
-          formatNumber(tez_balance, 0),
-          formatNumber(ctez_outstanding, 0),
-          currentTarget,
-        )
+      ? getOvenMaxCtez(formatNumber(tezBalance, 0), formatNumber(ctezOutstanding, 0), currentTarget)
       : { max: 0, remaining: 0 };
 
-    const tezBalance = formatNumber(tez_balance, -6) ?? 0;
-    const outStandingCtez = formatNumber(ctez_outstanding, -6) ?? 0;
+    const ovenBalance = formatNumber(tezBalance, -6) ?? 0;
+    const outStandingCtez = formatNumber(ctezOutstanding, -6) ?? 0;
     const maxMintableCtez = formatNumber(max < 0 ? 0 : max, 0);
     const remainingMintableCtez = remaining < 0 ? 0 : remaining;
 
     let collateralUtilization = formatNumber(
-      (formatNumber(ctez_outstanding, 0) / maxMintableCtez) * 100,
+      (formatNumber(ctezOutstanding, 0) / maxMintableCtez) * 100,
     ).toFixed(1);
 
     if (collateralUtilization === 'NaN') {
@@ -48,24 +76,24 @@ const useOvenStats = () => {
 
     const reqTezBalance = (() => {
       if (currentTarget) {
-        return tezBalance * currentTarget > outStandingCtez
+        return ovenBalance * currentTarget > outStandingCtez
           ? 0
-          : outStandingCtez / currentTarget - tezBalance;
+          : outStandingCtez / currentTarget - ovenBalance;
       }
       return 0;
     })();
 
     const withdrawableTez = (() => {
       if (currentTarget) {
-        return tezBalance * currentTarget <= outStandingCtez
+        return ovenBalance * currentTarget <= outStandingCtez
           ? 0
-          : outStandingCtez / currentTarget - tezBalance;
+          : outStandingCtez / currentTarget - ovenBalance;
       }
       return 0;
     })();
 
     return {
-      tezBalance,
+      ovenBalance,
       outStandingCtez,
       maxMintableCtez,
       remainingMintableCtez,
@@ -74,9 +102,9 @@ const useOvenStats = () => {
       reqTezBalance,
       withdrawableTez,
     };
-  }, [currentTarget, oven]);
+  }, [currentTarget, props.type, props.oven]);
 
-  return { stats, oven, ovenId };
+  return { stats };
 };
 
 export { useOvenStats };

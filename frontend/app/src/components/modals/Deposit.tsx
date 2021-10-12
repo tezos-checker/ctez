@@ -1,8 +1,5 @@
 import {
-  Flex,
   FormControl,
-  FormLabel,
-  Icon,
   Input,
   InputGroup,
   InputRightElement,
@@ -14,56 +11,51 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
-  useColorMode,
   useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
 import { useCallback, useEffect, useState } from 'react';
-import { MdInfo } from 'react-icons/md';
+
 import { useTranslation } from 'react-i18next';
 import { number, object } from 'yup';
 import { useFormik } from 'formik';
-import { useParams } from 'react-router-dom';
-import BigNumber from 'bignumber.js';
+
 import { IDepositForm } from '../../constants/oven-operations';
 import { BUTTON_TXT, TButtonText, TOKEN, TToken } from '../../constants/swap';
 import { cTezError, deposit } from '../../contracts/ctez';
 import { logger } from '../../utils/logger';
-import { useAppSelector } from '../../redux/store';
+
 import Button from '../button/Button';
 import { CTezIcon } from '../icons';
+import { Oven } from '../../interfaces';
 
 interface IDepositProps {
   isOpen: boolean;
   onClose: () => void;
+  oven: Oven | undefined;
 }
 
-const Deposit: React.FC<IDepositProps> = ({ isOpen, onClose }) => {
+const Deposit: React.FC<IDepositProps> = ({ isOpen, onClose, oven }) => {
   const toast = useToast();
   const [buttonText, setButtonText] = useState<TButtonText>(BUTTON_TXT.ENTER_AMT);
   const text1 = useColorModeValue('text1', 'darkheading');
   const text2 = useColorModeValue('text2', 'darkheading');
   const text4 = useColorModeValue('text4', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
-  const cardbg = useColorModeValue('bg3', 'darkblue');
-  const { ovenId } = useParams<{ ovenId: string }>();
-  const oven = useAppSelector((state) =>
-    state.oven.ovens.find((x) => {
-      const ovenIdFromStore = new BigNumber(x.ovenId);
-      return ovenId === ovenIdFromStore.toString();
-    }),
-  );
 
-  const getRightElement = useCallback((token: TToken) => {
-    return (
-      <InputRightElement backgroundColor="transparent" w={24} color={text2}>
-        <CTezIcon height={28} width={28} />
-        <Text fontWeight="500" mx={2}>
-          ctez
-        </Text>
-      </InputRightElement>
-    );
-  }, []);
+  const getRightElement = useCallback(
+    (token: TToken) => {
+      return (
+        <InputRightElement backgroundColor="transparent" w={24} color={text2}>
+          <CTezIcon height={28} width={28} />
+          <Text fontWeight="500" mx={2}>
+            ctez
+          </Text>
+        </InputRightElement>
+      );
+    },
+    [text2],
+  );
 
   const { t } = useTranslation(['common']);
   const initialValues: any = {

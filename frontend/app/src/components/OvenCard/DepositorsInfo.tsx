@@ -4,12 +4,11 @@ import { MdAddCircle } from 'react-icons/md';
 import { useOvenStorage } from '../../api/queries';
 import { useWallet } from '../../wallet/hooks';
 import Button from '../button/Button';
-import { useOvenStats } from '../../hooks/utilHooks';
 import Identicon from '../avatar/Identicon';
 import ChangeDepositor from '../modals/ChangeDepositor';
+import { Oven } from '../../interfaces';
 
-const DepositorsInfo: React.FC = () => {
-  const { oven } = useOvenStats();
+const DepositorsInfo: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
   const [{ pkh: userAddress }] = useWallet();
 
   const { data: ovenStorageData } = useOvenStorage(oven?.address);

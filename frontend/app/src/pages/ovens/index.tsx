@@ -1,4 +1,4 @@
-import { Box, Select, Spacer, Stack, Icon, Text, useColorModeValue } from '@chakra-ui/react';
+import { Box, Select, Spacer, Stack, Icon, useColorModeValue } from '@chakra-ui/react';
 import { MdAdd } from 'react-icons/md';
 import { BsArrowRight } from 'react-icons/bs';
 import { useMemo } from 'react';
@@ -44,7 +44,7 @@ const AllOvensContainer: React.FC = () => {
   return (
     <>
       {data.map((oven) => (
-        <OvenCard key={oven.id} oven={oven} type="allOvens" />
+        <OvenCard key={oven.id} oven={oven} type="AllOvens" />
       ))}
     </>
   );
@@ -109,7 +109,7 @@ const OvensPage: React.FC = () => {
           (isMyOvensLoading ? (
             <SkeletonLayout component="OvenCard" />
           ) : (
-            ovens?.map((oven) => <OvenCard key={oven.address} oven={oven} type="myOvens" />)
+            ovens?.map((oven) => <OvenCard key={oven.address} oven={oven} type="MyOvens" />)
           ))}
       </Box>
     </Box>

@@ -4,9 +4,10 @@ import { useOvenStats } from '../../hooks/utilHooks';
 import Button from '../button/Button';
 import Burn from '../modals/Burn';
 import Mint from '../modals/Mint';
+import { Oven } from '../../interfaces';
 
-const MintableOverview: React.FC = () => {
-  const { stats, oven } = useOvenStats();
+const MintableOverview: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
+  const { stats } = useOvenStats({ type: 'MyOvens', oven });
   const background = useColorModeValue('white', 'cardbgdark');
   const textcolor = useColorModeValue('text2', 'white');
   const [mintOpen, setMintOpen] = useState<boolean>(false);
@@ -18,8 +19,8 @@ const MintableOverview: React.FC = () => {
     }
     return (
       <>
-        <Mint isOpen={mintOpen} onClose={() => setMintOpen(false)} />
-        <Burn isOpen={burnOpen} onClose={() => setBurnOpen(false)} />
+        <Mint oven={oven} isOpen={mintOpen} onClose={() => setMintOpen(false)} />
+        <Burn oven={oven} isOpen={burnOpen} onClose={() => setBurnOpen(false)} />
       </>
     );
   }, [oven, mintOpen, setMintOpen, burnOpen, setBurnOpen]);

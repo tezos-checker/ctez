@@ -14,7 +14,6 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
-  useColorMode,
   useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
@@ -23,44 +22,45 @@ import { useTranslation } from 'react-i18next';
 import { number, object } from 'yup';
 import { useFormik } from 'formik';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useAppSelector } from '../../redux/store';
-import { isMonthFromLiquidation } from '../../api/contracts';
 import { IMintRepayForm } from '../../constants/oven-operations';
 import { cTezError, mintOrBurn } from '../../contracts/ctez';
 import { logger } from '../../utils/logger';
-import { useOvenStats } from '../../hooks/utilHooks';
 import Button from '../button/Button';
 import { BUTTON_TXT, TButtonText, TOKEN, TToken } from '../../constants/swap';
 import { CTezIcon } from '../icons';
+import { Oven } from '../../interfaces';
 
 interface IBurnProps {
   isOpen: boolean;
   onClose: () => void;
+  oven: Oven | undefined;
 }
 
-const Burn: React.FC<IBurnProps> = ({ isOpen, onClose }) => {
+const Burn: React.FC<IBurnProps> = ({ isOpen, onClose, oven }) => {
   const { t } = useTranslation(['common']);
   const toast = useToast();
   const [buttonText, setButtonText] = useState<TButtonText>(BUTTON_TXT.ENTER_AMT);
-  const { oven, stats, ovenId } = useOvenStats();
   const text2 = useColorModeValue('text2', 'darkheading');
   const text4 = useColorModeValue('text4', 'darkheading');
   const text1 = useColorModeValue('text1', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
   const cardbg = useColorModeValue('bg3', 'darkblue');
 
-  const getRightElement = useCallback((token: TToken) => {
-    return (
-      <InputRightElement backgroundColor="transparent" w={24} color={text2}>
-        <CTezIcon height={28} width={28} />
-        <Text fontWeight="500" mx={2}>
-          ctez
-        </Text>
-      </InputRightElement>
-    );
-  }, []);
+  const getRightElement = useCallback(
+    (token: TToken) => {
+      return (
+        <InputRightElement backgroundColor="transparent" w={24} color={text2}>
+          <CTezIcon height={28} width={28} />
+          <Text fontWeight="500" mx={2}>
+            ctez
+          </Text>
+        </InputRightElement>
+      );
+    },
+    [text2],
+  );
 
-  const { tez_balance, ctez_outstanding } = useMemo(
+  const { ctez_outstanding } = useMemo(
     () =>
       oven ?? {
         ovenId: 0,
@@ -70,15 +70,6 @@ const Burn: React.FC<IBurnProps> = ({ isOpen, onClose }) => {
     [oven],
   );
 
-  const currentTarget = useAppSelector((state) => state.stats.baseStats?.originalTarget);
-  const drift = useAppSelector((state) => state.stats.baseStats?.drift);
-  // const { max, remaining } = currentTarget
-  //   ? getOvenMaxCtez(tez_balance, ctez_outstanding, currentTarget)
-  //   : { max: 0, remaining: 0 };
-
-  // const outStandingCtez = new BigNumber(ctez_outstanding).shiftedBy(-6).toNumber() ?? 0;
-  // const maxMintableCtez = max < 0 ? 0 : max;
-  // const remainingMintableCtez = remaining < 0 ? 0 : remaining;
   const validationSchema = object().shape({
     amount: number()
       .min(0.000001)
@@ -102,7 +93,7 @@ const Burn: React.FC<IBurnProps> = ({ isOpen, onClose }) => {
     if (oven?.ovenId) {
       try {
         const amount = -data.amount;
-        const result = await mintOrBurn(Number(ovenId), amount);
+        const result = await mintOrBurn(Number(oven.ovenId), amount);
         if (result) {
           toast({
             description: t('txSubmitted'),
