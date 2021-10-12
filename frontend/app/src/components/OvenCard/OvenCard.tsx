@@ -30,27 +30,31 @@ const OvenCard: React.FC<TOvenCardProps> = (props) => {
   const { stats } = useOvenStats(props);
 
   const renderedItems = useMemo(() => {
-    const { address, baker } = (() => {
+    const { address, baker, owner } = (() => {
       if (props.type === 'AllOvens' && 'value' in props.oven) {
         return {
           address: props.oven.value.address,
-          baker: props.oven.key.owner, // TODO add baker address once API is done
+          owner: props.oven.key.owner,
         };
       }
 
-      if (props.type === 'MyOvens' && 'tez_balance' in props.oven) {
+      if (props.type === 'MyOvens' && 'baker' in props.oven) {
         return {
           address: props.oven.address,
           baker: props.oven.baker,
         };
       }
 
-      return { address: '', baker: '' };
+      return { address: '', baker: '', owner: '' };
     })();
 
     const items = [
       { label: 'Oven address', value: truncateText(address) },
-      { label: 'Baker', value: truncateText(baker) },
+      {
+        label: props.type === 'MyOvens' ? 'Baker' : 'Owner',
+        value: truncateText((props.type === 'MyOvens' ? baker : owner) ?? ''),
+      },
+
       { label: 'Oven Balance', value: `${stats?.ovenBalance ?? 0} XTZ` },
       { label: 'Outstanding ', value: `${stats?.outStandingCtez ?? 0} cTEZ` },
       { label: 'Mintable ', value: `${stats?.maxMintableCtez} cTEZ` },
