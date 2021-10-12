@@ -9,13 +9,14 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDelegates } from '../../api/queries';
 import { useWallet } from '../../wallet/hooks';
 import Button from '../button/Button';
 import { cTezError, delegate } from '../../contracts/ctez';
 import Identicon from '../avatar/Identicon';
 import { Oven } from '../../interfaces';
+import SkeletonLayout from '../skeleton';
 
 const BakerInfo: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
   const { t } = useTranslation(['common']);
@@ -34,7 +35,7 @@ const BakerInfo: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
     setDelegator(oven?.baker ?? '');
   }, [oven]);
 
-  const handleConfirm = async () => {
+  const handleConfirm = useCallback(async () => {
     setLoading(true);
     try {
       const result = await delegate(oven?.address ?? '', delegator);
@@ -54,17 +55,30 @@ const BakerInfo: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
       setLoading(false);
       setEdit(false);
     }
-  };
+  }, [delegator, oven?.address, t, toast]);
 
-  return (
-    <Stack p={8} spacing={4} borderRadius={16} backgroundColor={background}>
-      <Text color={textcolor} fontWeight="600">
-        Baker
-      </Text>
+  const bakerCard = useMemo(() => {
+    if (oven?.baker) {
+      return (
+        <Flex w="100%" boxShadow="lg" px={3} py={1} borderRadius={6}>
+          <Identicon seed={oven?.baker ?? undefined} type="tzKtCat" avatarSize="sm" />
 
-      <Divider />
+          <Text as="span" my="auto" flexGrow={1} mx={2}>
+            {oven?.baker}
+          </Text>
+          <Button variant="ghost" size="sm" onClick={() => setEdit(true)}>
+            Edit
+          </Button>
+        </Flex>
+      );
+    }
 
-      {edit ? (
+    return <SkeletonLayout count={1} component="AddressCard" />;
+  }, [oven?.baker]);
+
+  const editBakerCard = useMemo(() => {
+    if (edit) {
+      return (
         <>
           <Select
             placeholder={t('delegatePlaceholder')}
@@ -91,17 +105,21 @@ const BakerInfo: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
             </Button>
           </Flex>
         </>
-      ) : (
-        <Flex w="100%" boxShadow="lg" px={3} py={1} borderRadius={6}>
-          <Identicon seed={oven?.baker ?? undefined} type="tzKtCat" avatarSize="sm" />
-          <Text as="span" my="auto" flexGrow={1} mx={2}>
-            {oven?.baker}
-          </Text>
-          <Button variant="ghost" size="sm" onClick={() => setEdit(true)}>
-            Edit
-          </Button>
-        </Flex>
-      )}
+      );
+    }
+
+    return null;
+  }, [delegates, delegator, edit, handleConfirm, loading, t]);
+
+  return (
+    <Stack p={8} spacing={4} borderRadius={16} backgroundColor={background}>
+      <Text color={textcolor} fontWeight="600">
+        Baker
+      </Text>
+
+      <Divider />
+
+      {edit ? editBakerCard : bakerCard}
     </Stack>
   );
 };

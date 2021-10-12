@@ -1,4 +1,13 @@
-import { Center, Divider, Flex, Stack, Text, useColorModeValue } from '@chakra-ui/react';
+import {
+  Center,
+  Divider,
+  Flex,
+  Skeleton,
+  SkeletonText,
+  Stack,
+  Text,
+  useColorModeValue,
+} from '@chakra-ui/react';
 import { useOvenStats } from '../../hooks/utilHooks';
 import ProgressPill from './ProgressPill';
 import { Oven } from '../../interfaces';
@@ -16,18 +25,27 @@ const OvenStats: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
           Oven Stats
         </Text>
 
-        <Text color={text4color} as="span" fontSize="sm">
-          {oven?.address}
-        </Text>
+        {oven?.address == null ? (
+          <SkeletonText mt={2} noOfLines={1} w="300px" />
+        ) : (
+          <Text color={text4color} as="span" fontSize="sm">
+            {oven?.address}
+          </Text>
+        )}
       </div>
 
       <Divider />
 
       <Flex w="100%">
         <Stack w="30%" alignItems="center">
-          <Text fontSize="lg" fontWeight="600">
-            {stats?.collateralRatio}%
-          </Text>
+          {stats?.collateralRatio == null ? (
+            <Skeleton>0000</Skeleton>
+          ) : (
+            <Text fontSize="lg" fontWeight="600">
+              {stats?.collateralRatio ?? '0000'}%
+            </Text>
+          )}
+
           <Text color={text4color} fontSize="xs">
             Collateral ratio
           </Text>
@@ -38,7 +56,9 @@ const OvenStats: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
         </Center>
 
         <Stack w="70%" textAlign="right">
-          <ProgressPill value={Number(stats?.collateralUtilization ?? 0)} />
+          <Skeleton isLoaded={stats?.collateralUtilization != null}>
+            <ProgressPill value={Number(stats?.collateralUtilization)} />
+          </Skeleton>
           <Text color={text4color} fontSize="xs">
             Collateral utilization
           </Text>

@@ -1,4 +1,13 @@
-import { Center, Divider, Flex, HStack, Stack, Text, useColorModeValue } from '@chakra-ui/react';
+import {
+  Center,
+  Divider,
+  Flex,
+  HStack,
+  Skeleton,
+  Stack,
+  Text,
+  useColorModeValue,
+} from '@chakra-ui/react';
 import { useMemo, useState } from 'react';
 import { useOvenStats } from '../../hooks/utilHooks';
 import Button from '../button/Button';
@@ -31,48 +40,66 @@ const MintableOverview: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
         <Text color={textcolor} fontWeight="700">
           Mintable Overview
         </Text>
+
         <Divider />
+
         <Flex w="100%" justifyContent="space-between">
           <Stack>
-            <Text color="4E5D78" fontWeight="600" fontSize="lg">
-              {stats?.outStandingCtez ?? 0} tez
-            </Text>
+            <Skeleton isLoaded={stats?.outStandingCtez != null}>
+              <Text color="4E5D78" fontWeight="600" fontSize="lg">
+                {stats?.outStandingCtez ?? 0} tez
+              </Text>
+            </Skeleton>
+
             <Text color="#B0B7C3" fontSize="xs">
               Outstanding
             </Text>
           </Stack>
+
           <Center height="50px">
             <Divider orientation="vertical" />
           </Center>
+
           <Stack>
-            <Text color="4E5D78" fontWeight="600" fontSize="lg">
-              {stats?.maxMintableCtez ?? 0} tez
-            </Text>
+            <Skeleton isLoaded={stats?.maxMintableCtez != null}>
+              <Text color="4E5D78" fontWeight="600" fontSize="lg">
+                {stats?.maxMintableCtez ?? 0} tez
+              </Text>
+            </Skeleton>
+
             <Text color="#B0B7C3" fontSize="xs">
               Maximum Mintable
             </Text>
           </Stack>
+
           <Center height="50px">
             <Divider orientation="vertical" />
           </Center>
+
           <Stack>
-            <Text color="4E5D78" fontWeight="600" fontSize="lg">
-              {stats?.remainingMintableCtez ?? 0} tez
-            </Text>
+            <Skeleton isLoaded={stats?.remainingMintableCtez != null}>
+              <Text color="4E5D78" fontWeight="600" fontSize="lg">
+                {stats?.remainingMintableCtez ?? 0} tez
+              </Text>
+            </Skeleton>
+
             <Text color="#B0B7C3" fontSize="xs">
               Remaining Mintable
             </Text>
           </Stack>
         </Flex>
+
         <HStack w="100%" justifyContent="space-between" spacing="24px">
           <Button variant="outline" w="95%" onClick={() => setMintOpen(true)}>
             Mint
           </Button>
+
           <Button variant="outline" w="100%" onClick={() => setBurnOpen(true)}>
             Burn
           </Button>
         </HStack>
       </Stack>
+
       {modals}
     </>
   );
