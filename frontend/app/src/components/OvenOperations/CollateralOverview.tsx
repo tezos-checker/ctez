@@ -1,4 +1,13 @@
-import { Center, Divider, Flex, HStack, Stack, Text, useColorModeValue } from '@chakra-ui/react';
+import {
+  Center,
+  Divider,
+  Flex,
+  HStack,
+  Skeleton,
+  Stack,
+  Text,
+  useColorModeValue,
+} from '@chakra-ui/react';
 import { useMemo, useState } from 'react';
 import { useOvenStats } from '../../hooks/utilHooks';
 import Button from '../button/Button';
@@ -32,48 +41,66 @@ const CollateralOverview: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
         <Text color={textcolor} fontWeight="700">
           Collateral Overview
         </Text>
+
         <Divider />
+
         <Flex w="100%" justifyContent="space-between">
           <Stack>
-            <Text color="4E5D78" fontWeight="600" fontSize="lg">
-              {stats?.ovenBalance.toFixed(2)} tez
-            </Text>
+            <Skeleton isLoaded={stats?.ovenBalance != null}>
+              <Text color="4E5D78" fontWeight="600" fontSize="lg">
+                {stats?.ovenBalance.toFixed(2)} tez
+              </Text>
+            </Skeleton>
+
             <Text color="#B0B7C3" fontSize="xs">
               tez collateral
             </Text>
           </Stack>
+
           <Center height="50px">
             <Divider orientation="vertical" />
           </Center>
+
           <Stack>
-            <Text color="4E5D78" fontWeight="600" fontSize="lg">
-              {stats?.reqTezBalance.toFixed(2)} tez
-            </Text>
+            <Skeleton isLoaded={stats?.reqTezBalance != null}>
+              <Text color="4E5D78" fontWeight="600" fontSize="lg">
+                {stats?.reqTezBalance.toFixed(2)} tez
+              </Text>
+            </Skeleton>
+
             <Text color="#B0B7C3" fontSize="xs">
               Required tez collateral
             </Text>
           </Stack>
+
           <Center height="50px">
             <Divider orientation="vertical" />
           </Center>
+
           <Stack>
-            <Text color="4E5D78" fontWeight="600" fontSize="lg">
-              {Math.abs(stats?.withdrawableTez ?? 0).toFixed(2)} tez
-            </Text>
+            <Skeleton isLoaded={stats?.withdrawableTez != null}>
+              <Text color="4E5D78" fontWeight="600" fontSize="lg">
+                {Math.abs(stats?.withdrawableTez ?? 0).toFixed(2)} tez
+              </Text>
+            </Skeleton>
+
             <Text color="#B0B7C3" fontSize="xs">
               Withdraw tez
             </Text>
           </Stack>
         </Flex>
+
         <HStack w="100%" justifyContent="space-between" spacing="24px">
           <Button variant="outline" w="95%" onClick={() => setDepositOpen(true)}>
             Deposit
           </Button>
+
           <Button variant="outline" w="100%" onClick={() => setWithdrawOpen(true)}>
             Withdraw
           </Button>
         </HStack>
       </Stack>
+
       {modals}
     </>
   );
