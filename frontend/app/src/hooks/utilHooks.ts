@@ -107,4 +107,32 @@ const useOvenStats: TUseOvenStats = (props) => {
   return { stats };
 };
 
-export { useOvenStats };
+type TUseSortedOvensList = (ovens: AllOvenDatum[] | null) => AllOvenDatum[] | null;
+
+const useSortedOvensList: TUseSortedOvensList = (ovens) => {
+  const sortByOption = useAppSelector((state) => state.oven.sortByOption);
+
+  return useMemo(() => {
+    if (ovens == null) {
+      return null;
+    }
+
+    if (sortByOption === 'Oven Balance') {
+      return ovens
+        .slice()
+        .sort((a, b) => (Number(a.value.tez_balance) < Number(b.value.tez_balance) ? 1 : -1));
+    }
+
+    if (sortByOption === 'Outstanding') {
+      return ovens
+        .slice()
+        .sort((a, b) =>
+          Number(a.value.ctez_outstanding) < Number(b.value.ctez_outstanding) ? 1 : -1,
+        );
+    }
+
+    return ovens;
+  }, [ovens, sortByOption]);
+};
+
+export { useOvenStats, useSortedOvensList };
