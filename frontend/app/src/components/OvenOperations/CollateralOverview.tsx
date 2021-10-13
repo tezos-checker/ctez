@@ -13,10 +13,10 @@ import { useOvenStats } from '../../hooks/utilHooks';
 import Button from '../button/Button';
 import Deposit from '../modals/Deposit';
 import Withdraw from '../modals/Withdraw';
-import { Oven } from '../../interfaces';
+import { AllOvenDatum } from '../../interfaces';
 
-const CollateralOverview: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
-  const { stats } = useOvenStats({ type: 'MyOvens', oven });
+const CollateralOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
+  const { stats } = useOvenStats(oven);
   const [depositOpen, setDepositOpen] = useState<boolean>(false);
   const [withdrawOpen, setWithdrawOpen] = useState<boolean>(false);
   const background = useColorModeValue('white', 'cardbgdark');

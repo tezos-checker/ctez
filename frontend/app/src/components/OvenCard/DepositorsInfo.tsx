@@ -1,18 +1,19 @@
 import { Divider, Flex, Stack, Tag, Text, useColorModeValue } from '@chakra-ui/react';
 import { useMemo, useState } from 'react';
 import { MdEdit } from 'react-icons/md';
-import { useOvenStorage } from '../../api/queries';
+import { useOvenDelegate, useOvenStorage } from '../../api/queries';
 import { useWallet } from '../../wallet/hooks';
 import Button from '../button/Button';
 import Identicon from '../avatar/Identicon';
 import ChangeDepositor from '../modals/ChangeDepositor';
-import { Oven } from '../../interfaces';
+import { AllOvenDatum } from '../../interfaces';
 import SkeletonLayout from '../skeleton';
 
-const DepositorsInfo: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
+const DepositorsInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
   const [{ pkh: userAddress }] = useWallet();
 
-  const { data: ovenStorageData } = useOvenStorage(oven?.address);
+  const { data: ovenStorageData } = useOvenStorage(oven?.value.address);
+  const { data: baker } = useOvenDelegate(oven?.value.address);
 
   const background = useColorModeValue('white', 'cardbgdark');
   const textcolor = useColorModeValue('text2', 'white');
@@ -40,12 +41,12 @@ const DepositorsInfo: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
             },
             ...(ovenStorageData?.depositors as string[])?.map((dep) => ({
               value: dep,
-              label: dep === oven?.baker ? 'Baker' : null,
+              label: dep === baker ? 'Baker' : null,
             })),
           ],
       isLoading: false,
     };
-  }, [oven, ovenStorageData, userAddress]);
+  }, [baker, oven, ovenStorageData, userAddress]);
 
   const content = useMemo(() => {
     if (isLoading) {

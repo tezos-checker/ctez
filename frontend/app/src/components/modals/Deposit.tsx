@@ -27,12 +27,12 @@ import { logger } from '../../utils/logger';
 
 import Button from '../button/Button';
 import { CTezIcon } from '../icons';
-import { Oven } from '../../interfaces';
+import { AllOvenDatum } from '../../interfaces';
 
 interface IDepositProps {
   isOpen: boolean;
   onClose: () => void;
-  oven: Oven | undefined;
+  oven: AllOvenDatum | null;
 }
 
 const Deposit: React.FC<IDepositProps> = ({ isOpen, onClose, oven }) => {
@@ -67,9 +67,9 @@ const Deposit: React.FC<IDepositProps> = ({ isOpen, onClose, oven }) => {
   });
 
   const handleFormSubmit = async (data: IDepositForm) => {
-    if (oven?.address) {
+    if (oven?.value.address) {
       try {
-        const result = await deposit(oven.address, data.amount);
+        const result = await deposit(oven.value.address, data.amount);
         if (result) {
           toast({
             description: t('txSubmitted'),

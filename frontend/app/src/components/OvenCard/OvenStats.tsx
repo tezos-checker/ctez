@@ -10,10 +10,10 @@ import {
 } from '@chakra-ui/react';
 import { useOvenStats } from '../../hooks/utilHooks';
 import ProgressPill from './ProgressPill';
-import { Oven } from '../../interfaces';
+import { AllOvenDatum } from '../../interfaces';
 
-const OvenStats: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
-  const { stats } = useOvenStats({ type: 'MyOvens', oven });
+const OvenStats: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
+  const { stats } = useOvenStats(oven);
   const background = useColorModeValue('white', 'cardbgdark');
   const textcolor = useColorModeValue('text2', 'white');
   const text4color = useColorModeValue('text4', 'white');
@@ -25,11 +25,11 @@ const OvenStats: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
           Oven Stats
         </Text>
 
-        {oven?.address == null ? (
+        {oven?.value.address == null ? (
           <SkeletonText mt={2} noOfLines={1} w="300px" />
         ) : (
           <Text color={text4color} as="span" fontSize="sm">
-            {oven?.address}
+            {oven?.value.address}
           </Text>
         )}
       </div>

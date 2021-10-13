@@ -13,10 +13,10 @@ import { useOvenStats } from '../../hooks/utilHooks';
 import Button from '../button/Button';
 import Burn from '../modals/Burn';
 import Mint from '../modals/Mint';
-import { Oven } from '../../interfaces';
+import { AllOvenDatum } from '../../interfaces';
 
-const MintableOverview: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
-  const { stats } = useOvenStats({ type: 'MyOvens', oven });
+const MintableOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
+  const { stats } = useOvenStats(oven);
   const background = useColorModeValue('white', 'cardbgdark');
   const textcolor = useColorModeValue('text2', 'white');
   const [mintOpen, setMintOpen] = useState<boolean>(false);

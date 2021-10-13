@@ -1,19 +1,14 @@
 import { Box, Grid, Text, useColorModeValue } from '@chakra-ui/react';
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { AllOvenDatum, Oven } from '../../interfaces';
+import { AllOvenDatum } from '../../interfaces';
 import ProgressPill from './ProgressPill';
 import { useOvenStats } from '../../hooks/utilHooks';
 
-type TOvenCardProps =
-  | {
-      type: 'AllOvens';
-      oven: AllOvenDatum;
-    }
-  | {
-      type: 'MyOvens';
-      oven: Oven;
-    };
+interface IOvenCardProps {
+  type: 'AllOvens' | 'MyOvens';
+  oven: AllOvenDatum;
+}
 
 const truncateText = (text: string | null) => {
   if (text == null) {
@@ -24,37 +19,22 @@ const truncateText = (text: string | null) => {
   return `${text.substr(0, 5)}...${text.substr(len - 5)}`;
 };
 
-const OvenCard: React.FC<TOvenCardProps> = (props) => {
+const OvenCard: React.FC<IOvenCardProps> = (props) => {
   const background = useColorModeValue('white', 'cardbgdark');
   const textcolor = useColorModeValue('text2', 'white');
-  const { stats } = useOvenStats(props);
+  const { stats } = useOvenStats(props.oven);
 
   const renderedItems = useMemo(() => {
-    const { address, baker, owner } = (() => {
-      if (props.type === 'AllOvens' && 'value' in props.oven) {
-        return {
-          address: props.oven.value.address,
-          owner: props.oven.key.owner,
-        };
-      }
-
-      if (props.type === 'MyOvens' && 'baker' in props.oven) {
-        return {
-          address: props.oven.address,
-          baker: props.oven.baker,
-        };
-      }
-
-      return { address: '', baker: '', owner: '' };
+    const { address, owner } = (() => {
+      return {
+        address: props.oven.value.address,
+        owner: props.oven.key.owner,
+      };
     })();
 
     const items = [
       { label: 'Oven address', value: truncateText(address) },
-      {
-        label: props.type === 'MyOvens' ? 'Baker' : 'Owner',
-        value: truncateText((props.type === 'MyOvens' ? baker : owner) ?? ''),
-      },
-
+      { label: 'Owner', value: truncateText(owner) },
       { label: 'Oven Balance', value: `${stats?.ovenBalance ?? 0} XTZ` },
       { label: 'Outstanding ', value: `${stats?.outStandingCtez ?? 0} cTEZ` },
       { label: 'Mintable ', value: `${stats?.maxMintableCtez} cTEZ` },
@@ -96,7 +76,6 @@ const OvenCard: React.FC<TOvenCardProps> = (props) => {
     stats?.outStandingCtez,
     stats?.maxMintableCtez,
     stats?.collateralUtilization,
-    props.type,
     props.oven,
     textcolor,
   ]);
@@ -119,8 +98,8 @@ const OvenCard: React.FC<TOvenCardProps> = (props) => {
     </Grid>
   );
 
-  if (props.type === 'MyOvens' && 'ovenId' in props.oven) {
-    return <Link to={`/myovens/${props.oven.ovenId}`}>{content}</Link>;
+  if (props.type === 'MyOvens') {
+    return <Link to={`/myovens/${props.oven.key.id}`}>{content}</Link>;
   }
 
   return content;

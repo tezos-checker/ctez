@@ -27,16 +27,15 @@ import { isMonthFromLiquidation } from '../../api/contracts';
 import { IMintRepayForm } from '../../constants/oven-operations';
 import { cTezError, mintOrBurn } from '../../contracts/ctez';
 import { logger } from '../../utils/logger';
-import { useOvenStats } from '../../hooks/utilHooks';
 import Button from '../button/Button';
 import { BUTTON_TXT, TButtonText, TOKEN, TToken } from '../../constants/swap';
 import { CTezIcon } from '../icons';
-import { Oven } from '../../interfaces';
+import { AllOvenDatum } from '../../interfaces';
 
 interface IMintProps {
   isOpen: boolean;
   onClose: () => void;
-  oven: Oven | undefined;
+  oven: AllOvenDatum | null;
 }
 
 const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
@@ -65,8 +64,7 @@ const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
 
   const { tez_balance, ctez_outstanding } = useMemo(
     () =>
-      oven ?? {
-        ovenId: 0,
+      oven?.value ?? {
         tez_balance: '0',
         ctez_outstanding: '0',
       },
@@ -104,10 +102,10 @@ const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
   };
 
   const handleFormSubmit = async (data: IMintRepayForm) => {
-    if (oven?.ovenId) {
+    if (oven?.key.id) {
       try {
         const amount = data?.amount;
-        const result = await mintOrBurn(Number(oven.ovenId), amount);
+        const result = await mintOrBurn(Number(oven.key.id), amount);
         if (result) {
           toast({
             description: t('txSubmitted'),

@@ -29,12 +29,12 @@ import { cTezError, withdraw } from '../../contracts/ctez';
 import Button from '../button/Button';
 import { CTezIcon } from '../icons';
 import { BUTTON_TXT, TButtonText, TOKEN, TToken } from '../../constants/swap';
-import { Oven } from '../../interfaces';
+import { AllOvenDatum } from '../../interfaces';
 
 interface IWithdrawProps {
   isOpen: boolean;
   onClose: () => void;
-  oven: Oven | undefined;
+  oven: AllOvenDatum | null;
 }
 
 const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose, oven }) => {
@@ -77,9 +77,9 @@ const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose, oven }) => {
   });
 
   const handleFormSubmit = async (data: IWithdrawForm) => {
-    if (oven?.ovenId) {
+    if (oven?.key.id) {
       try {
-        const result = await withdraw(Number(oven.ovenId), data.amount, data.to);
+        const result = await withdraw(Number(oven.key.id), data.amount, data.to);
         if (result) {
           toast({
             description: t('txSubmitted'),

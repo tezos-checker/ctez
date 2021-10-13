@@ -2,20 +2,10 @@ import { useMemo } from 'react';
 import { getOvenMaxCtez } from '../utils/ovenUtils';
 import { useAppSelector } from '../redux/store';
 import { formatNumber } from '../utils/numbers';
-import { AllOvenDatum, Oven } from '../interfaces';
-
-type TUseOvenStatsProps =
-  | {
-      type: 'AllOvens';
-      oven: AllOvenDatum | undefined;
-    }
-  | {
-      type: 'MyOvens';
-      oven: Oven | undefined;
-    };
+import { AllOvenDatum } from '../interfaces';
 
 type TUseOvenStats = (
-  props: TUseOvenStatsProps,
+  oven: AllOvenDatum | undefined | null,
 ) => {
   stats: null | {
     ovenBalance: number;
@@ -29,30 +19,19 @@ type TUseOvenStats = (
   };
 };
 
-const useOvenStats: TUseOvenStats = (props) => {
+const useOvenStats: TUseOvenStats = (oven) => {
   const currentTarget = useAppSelector((state) => state.stats.baseStats?.originalTarget);
 
   const stats = useMemo(() => {
-    if (props.oven == null) {
+    if (oven == null) {
       return null;
     }
 
     const { tezBalance, ctezOutstanding } = (() => {
-      if (props.type === 'AllOvens') {
-        return {
-          tezBalance: props.oven?.value.tez_balance,
-          ctezOutstanding: props.oven?.value.ctez_outstanding,
-        };
-      }
-
-      if (props.type === 'MyOvens') {
-        return {
-          tezBalance: props.oven?.tez_balance,
-          ctezOutstanding: props.oven?.ctez_outstanding,
-        };
-      }
-
-      return { tezBalance: 0, ctezOutstanding: 0 };
+      return {
+        tezBalance: oven?.value.tez_balance,
+        ctezOutstanding: oven?.value.ctez_outstanding,
+      };
     })();
 
     const { max, remaining } = currentTarget
@@ -102,7 +81,7 @@ const useOvenStats: TUseOvenStats = (props) => {
       reqTezBalance,
       withdrawableTez,
     };
-  }, [currentTarget, props.type, props.oven]);
+  }, [currentTarget, oven]);
 
   return { stats };
 };

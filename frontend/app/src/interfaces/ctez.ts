@@ -65,7 +65,7 @@ export interface CTezTzktStorage {
 }
 
 export interface AllOvenDatum {
-  id: number;
+  id: string;
   active: boolean;
   hash: string;
   key: {

@@ -26,7 +26,7 @@ const MyOvensContainer: React.FC<{ userAddress: string | undefined }> = ({ userA
   return (
     <>
       {sortedOvens?.map((oven) => (
-        <OvenCard key={oven.value.address} oven={oven} type="AllOvens" />
+        <OvenCard key={oven.value.address} oven={oven} type="MyOvens" />
       ))}
     </>
   );

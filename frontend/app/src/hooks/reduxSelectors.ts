@@ -7,14 +7,14 @@ export function useMyOvensSelector(
 
 export function useMyOvensSelector(
   userAddress: string | undefined,
-  ovenId: number,
-): { ovens: AllOvenDatum | null; isLoading: boolean };
+  ovenId: string,
+): { oven: AllOvenDatum | null; isLoading: boolean };
 
 // ? Using function overload
 export function useMyOvensSelector(
   userAddress: string | undefined,
-  ovenId?: number,
-): { ovens: AllOvenDatum | AllOvenDatum[] | null; isLoading: boolean } {
+  ovenId?: string,
+): { ovens?: AllOvenDatum[] | null; oven?: AllOvenDatum | null; isLoading: boolean } {
   return useAppSelector((state) => {
     if (!userAddress) {
       return { ovens: null, isLoading: false };
@@ -24,7 +24,7 @@ export function useMyOvensSelector(
 
     if (ovenId) {
       return {
-        ovens: userOvens.find((x) => x.id === ovenId) ?? null,
+        oven: userOvens.find((x) => x.key.id === ovenId) ?? null,
         isLoading: state.oven.allOvens.isLoading,
       };
     }
