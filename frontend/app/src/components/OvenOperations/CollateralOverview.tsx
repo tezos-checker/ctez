@@ -3,17 +3,21 @@ import {
   Divider,
   Flex,
   HStack,
+  Icon,
   Skeleton,
   Stack,
   Text,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { useMemo, useState } from 'react';
+import { MdInfo } from 'react-icons/md';
+import { useMemo, useState, MouseEvent } from 'react';
 import { useOvenStats } from '../../hooks/utilHooks';
 import Button from '../button/Button';
 import Deposit from '../modals/Deposit';
 import Withdraw from '../modals/Withdraw';
 import { Oven } from '../../interfaces';
+import Info from '../info/info';
+import data from '../../assets/data/info.json';
 
 const CollateralOverview: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
   const { stats } = useOvenStats({ type: 'MyOvens', oven });
@@ -54,6 +58,7 @@ const CollateralOverview: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
 
             <Text color="#B0B7C3" fontSize="xs">
               tez collateral
+              <Icon opacity="0.3" fontSize="md" color="#B0B7C3" as={MdInfo} m={1} />
             </Text>
           </Stack>
 
@@ -70,6 +75,7 @@ const CollateralOverview: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
 
             <Text color="#B0B7C3" fontSize="xs">
               Required tez collateral
+              <Icon opacity="0.3" fontSize="md" color="#B0B7C3" as={MdInfo} m={1} />
             </Text>
           </Stack>
 
@@ -86,6 +92,7 @@ const CollateralOverview: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
 
             <Text color="#B0B7C3" fontSize="xs">
               Withdraw tez
+              <Icon opacity="0.3" fontSize="md" color="#B0B7C3" as={MdInfo} m={1} />
             </Text>
           </Stack>
         </Flex>

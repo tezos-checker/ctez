@@ -1,6 +1,7 @@
 import {
   Button as ChakraButton,
   Flex,
+  Icon,
   Popover,
   PopoverBody,
   PopoverCloseButton,
@@ -16,7 +17,7 @@ import {
   Tr,
   useDisclosure,
 } from '@chakra-ui/react';
-import { useCallback } from 'react';
+import { useCallback, MouseEvent, useState } from 'react';
 import Button from '../button/Button';
 import { trimAddress } from '../../utils/addressUtils';
 import { useWallet } from '../../wallet/hooks';
@@ -28,6 +29,7 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { useUserBalance, useUserLqtData } from '../../api/queries';
 import Identicon from '../avatar/Identicon';
 import { formatNumber as formatNumberUtil } from '../../utils/numbers';
+import { ReactComponent as copy } from '../../assets/images/sidebar/content_copy.svg';
 
 const SignIn: React.FC = () => {
   const [{ pkh: userAddress, network }, setWallet, disconnectWallet] = useWallet();
@@ -36,6 +38,14 @@ const SignIn: React.FC = () => {
   const { data: balance } = useUserBalance(userAddress);
   const { data: userLqtData } = useUserLqtData(userAddress);
   const userOvenData = useAppSelector((state) => state.oven.userOvenData);
+  const [isHovering, setIsHovering] = useState(false);
+
+  const handleMouseEvent = (e: MouseEvent<HTMLParagraphElement>) => {
+    setIsHovering(true);
+  };
+  const handleMouseOut = (e: MouseEvent<HTMLParagraphElement>) => {
+    setIsHovering(!isHovering);
+  };
 
   const formatNumber = useCallback((number?: number, shiftedBy = -6) => {
     if (typeof number !== 'number') {
@@ -82,10 +92,26 @@ const SignIn: React.FC = () => {
         </PopoverTrigger>
         <PopoverContent mx={4}>
           <PopoverCloseButton />
-          <PopoverHeader>
+          <PopoverHeader
+            onClick={() => navigator.clipboard.writeText(userAddress)}
+            onMouseOver={handleMouseEvent}
+            onMouseOut={handleMouseOut}
+          >
             <Flex alignItems="center">
               <Identicon type="tzKtCat" seed={userAddress} avatarSize="sm" />
-              <Text ml={2}>{trimAddress(userAddress, 'medium')}</Text>
+              <Text onClick={() => navigator.clipboard.writeText(userAddress)} ml={2}>
+                {trimAddress(userAddress, 'medium')}
+              </Text>
+              {isHovering && (
+                <Icon
+                  onClick={() => navigator.clipboard.writeText(userAddress)}
+                  ml={2}
+                  w={3}
+                  h={3}
+                  color="#62737F"
+                  as={copy}
+                />
+              )}
             </Flex>
           </PopoverHeader>
           <PopoverBody>

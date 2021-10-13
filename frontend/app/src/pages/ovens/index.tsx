@@ -1,7 +1,7 @@
-import { Box, Select, Spacer, Stack, Icon, useColorModeValue } from '@chakra-ui/react';
+import { Box, Select, Spacer, Stack, Icon, useColorModeValue, Flex } from '@chakra-ui/react';
 import { MdAdd } from 'react-icons/md';
 import { BsArrowRight } from 'react-icons/bs';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import OvenCard from '../../components/OvenCard/OvenCard';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
@@ -23,6 +23,15 @@ const AllOvensContainer: React.FC = () => {
   let { data } = useAppSelector((state) => state.oven.allOvens);
   const { isLoading } = useAppSelector((state) => state.oven.allOvens);
   const sortbyoption = useAppSelector((state) => state.oven.sortByOption);
+  const dataperpage = 10;
+  console.log(data.length);
+  const [currentPage, setCurrentPage] = useState(1);
+  console.log(Math.ceil(data.length / dataperpage));
+  const pageNumbers = [];
+
+  for (let i = 1; i <= Math.ceil(data.length / dataperpage); i += 1) {
+    pageNumbers.push(i);
+  }
 
   if (sortbyoption === 'Oven Balance') {
     data = data
@@ -40,12 +49,39 @@ const AllOvensContainer: React.FC = () => {
   if (isLoading) {
     return <SkeletonLayout count={7} component="OvenCard" />;
   }
+  const handleClick = (value: any) => {
+    setCurrentPage(value);
+  };
+
+  const renderPageNumbers = pageNumbers.map((number) => {
+    return (
+      <Button
+        _hover={{ cursor: 'pointer' }}
+        value={number}
+        key={number}
+        variant="ghost"
+        mr={3}
+        bg="#B0B7C3"
+        onClick={(e) => handleClick(number)}
+      >
+        {number}
+      </Button>
+    );
+  });
+
+  const indexOfLastOven = currentPage * dataperpage;
+  const indexOfFirstOven = indexOfLastOven - dataperpage;
+  const currentTodos = data.slice(indexOfFirstOven, indexOfLastOven);
+  const renderOvens = currentTodos.map((oven) => {
+    return <OvenCard key={oven.id} oven={oven} type="AllOvens" />;
+  });
 
   return (
     <>
-      {data.map((oven) => (
-        <OvenCard key={oven.id} oven={oven} type="AllOvens" />
-      ))}
+      {renderOvens}
+      <Flex spacing={24} px={552} alignItems="center">
+        {renderPageNumbers}
+      </Flex>
     </>
   );
 };

@@ -3,11 +3,13 @@ import {
   Divider,
   Flex,
   HStack,
+  Icon,
   Skeleton,
   Stack,
   Text,
   useColorModeValue,
 } from '@chakra-ui/react';
+import { MdInfo } from 'react-icons/md';
 import { useMemo, useState } from 'react';
 import { useOvenStats } from '../../hooks/utilHooks';
 import Button from '../button/Button';
@@ -53,6 +55,7 @@ const MintableOverview: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
 
             <Text color="#B0B7C3" fontSize="xs">
               Outstanding
+              <Icon opacity="0.3" fontSize="md" color="#B0B7C3" as={MdInfo} m={1} />
             </Text>
           </Stack>
 
@@ -69,6 +72,7 @@ const MintableOverview: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
 
             <Text color="#B0B7C3" fontSize="xs">
               Maximum Mintable
+              <Icon opacity="0.3" fontSize="md" color="#B0B7C3" as={MdInfo} m={1} />
             </Text>
           </Stack>
 
@@ -85,6 +89,7 @@ const MintableOverview: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
 
             <Text color="#B0B7C3" fontSize="xs">
               Remaining Mintable
+              <Icon opacity="0.3" fontSize="md" color="#B0B7C3" as={MdInfo} m={1} />
             </Text>
           </Stack>
         </Flex>
