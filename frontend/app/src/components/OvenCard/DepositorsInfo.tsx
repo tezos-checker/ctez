@@ -24,21 +24,25 @@ const DepositorsInfo: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
       return { depositors: [], canAnyoneDeposit: false, isLoading: true };
     }
 
+    const canAnyoneDepositLocal =
+      ovenStorageData &&
+      !Array.isArray(ovenStorageData.depositors) &&
+      Object.keys(ovenStorageData.depositors).includes('any');
+
     return {
-      canAnyoneDeposit:
-        ovenStorageData &&
-        !Array.isArray(ovenStorageData.depositors) &&
-        Object.keys(ovenStorageData.depositors).includes('any'),
-      depositors: [
-        {
-          value: userAddress,
-          label: 'You',
-        },
-        ...(ovenStorageData?.depositors as string[])?.map((dep) => ({
-          value: dep,
-          label: dep === oven?.baker ? 'Baker' : null,
-        })),
-      ],
+      canAnyoneDeposit: canAnyoneDepositLocal,
+      depositors: canAnyoneDepositLocal
+        ? []
+        : [
+            {
+              value: userAddress,
+              label: 'You',
+            },
+            ...(ovenStorageData?.depositors as string[])?.map((dep) => ({
+              value: dep,
+              label: dep === oven?.baker ? 'Baker' : null,
+            })),
+          ],
       isLoading: false,
     };
   }, [oven, ovenStorageData, userAddress]);

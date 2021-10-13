@@ -61,7 +61,7 @@ const ChangeDepositor: React.FC<IChangeDepositorProps> = (props) => {
       setDepositors([
         {
           label: 'You',
-          value: props.ovenStorage.admin,
+          value: props.ovenStorage.handle.owner,
           noDelete: true,
         },
         ...(!props.canAnyoneDeposit
