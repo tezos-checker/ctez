@@ -18,6 +18,7 @@ const useSetCtezBaseStatsToStore = (userAddress: string | undefined) => {
   }, [isSuccess, baseStats, dispatch]);
 };
 
+// TODO Refactor to new All Oven API
 const useSetOvenDataToStore = (userAddress: string | undefined) => {
   const dispatch = useAppDispatch();
   const extOvens = useAppSelector((state) => state.oven.extOvens);
@@ -38,7 +39,6 @@ const useSetOvenDataToStore = (userAddress: string | undefined) => {
         { xtz: 0, ctez: 0, totalOvens: ovenData.length },
       );
       dispatch(OvenSlice.actions.setUserOvenData(ovenUserData));
-      dispatch(OvenSlice.actions.setOvens(ovenData));
     }
   }, [dispatch, ovenData]);
 
