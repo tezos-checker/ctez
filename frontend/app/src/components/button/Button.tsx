@@ -1,14 +1,26 @@
-import React, { MouseEventHandler } from 'react';
+import React, { MouseEventHandler, useMemo } from 'react';
 import { Button as ChakraButton, useColorMode, Box, useColorModeValue } from '@chakra-ui/react';
 import { ButtonProps } from '@chakra-ui/button';
+import { useWallet } from '../../wallet/hooks';
 
 export interface IButtonProps extends ButtonProps {
   children: React.ReactNode;
+  walletGuard?: boolean;
 }
 
 const Button: React.FC<IButtonProps> = (props) => {
+  const [{ pkh: userAddress }] = useWallet();
   const { colorMode } = useColorMode();
   const background = useColorModeValue('white', 'cardbgdark');
+
+  const content = useMemo(() => {
+    if (props.walletGuard && !userAddress) {
+      return 'Connect Wallet';
+    }
+
+    return props.children;
+  }, [props.children, props.walletGuard, userAddress]);
+
   if (props.variant === 'outline') {
     return (
       <Box
@@ -35,14 +47,14 @@ const Button: React.FC<IButtonProps> = (props) => {
           borderRadius="5px"
           onClick={(props.onClick as unknown) as MouseEventHandler<HTMLDivElement>}
         >
-          {props.children}
+          {content}
         </Box>
       </Box>
     );
   }
 
   if (props.variant === 'ghost') {
-    return <ChakraButton {...props}>{props.children}</ChakraButton>;
+    return <ChakraButton {...props}>{content}</ChakraButton>;
   }
 
   return (
@@ -66,7 +78,7 @@ const Button: React.FC<IButtonProps> = (props) => {
       rightIcon={props.rightIcon}
       leftIcon={props.leftIcon}
     >
-      {props.children}
+      {content}
     </Box>
   );
 };
