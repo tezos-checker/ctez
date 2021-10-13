@@ -25,20 +25,37 @@ const OvenCard: React.FC<IOvenCardProps> = (props) => {
   const { stats } = useOvenStats(props.oven);
 
   const renderedItems = useMemo(() => {
-    const { address, owner } = (() => {
+    const { address, owner, id } = (() => {
       return {
         address: props.oven.value.address,
         owner: props.oven.key.owner,
+        id: props.oven.key.id,
       };
     })();
 
     const items = [
+      props.type === 'MyOvens' && {
+        label: 'ID',
+        value: `#${id}`,
+      },
       { label: 'Oven address', value: truncateText(address) },
-      { label: 'Owner', value: truncateText(owner) },
-      { label: 'Oven Balance', value: `${stats?.ovenBalance ?? 0} XTZ` },
-      { label: 'Outstanding ', value: `${stats?.outStandingCtez ?? 0} cTEZ` },
-      { label: 'Mintable ', value: `${stats?.maxMintableCtez} cTEZ` },
-    ];
+      props.type === 'AllOvens' && {
+        label: 'Owner',
+        value: truncateText(owner),
+      },
+      {
+        label: 'Oven Balance',
+        value: `${stats?.ovenBalance ?? 0} XTZ`,
+      },
+      {
+        label: 'Outstanding ',
+        value: `${stats?.outStandingCtez ?? 0} cTEZ`,
+      },
+      {
+        label: 'Mintable ',
+        value: `${stats?.maxMintableCtez} cTEZ`,
+      },
+    ].filter((x): x is { label: string; value: string } => !!x);
 
     return (
       <>
@@ -72,11 +89,14 @@ const OvenCard: React.FC<IOvenCardProps> = (props) => {
       </>
     );
   }, [
+    props.type,
+    props.oven.value.address,
+    props.oven.key.owner,
+    props.oven.key.id,
     stats?.ovenBalance,
     stats?.outStandingCtez,
     stats?.maxMintableCtez,
     stats?.collateralUtilization,
-    props.oven,
     textcolor,
   ]);
 
