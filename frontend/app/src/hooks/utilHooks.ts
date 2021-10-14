@@ -2,11 +2,12 @@ import { createElement, useCallback, useMemo } from 'react';
 import { TransactionWalletOperation, WalletOperation } from '@taquito/taquito';
 import { Flex, Spinner, useToast } from '@chakra-ui/react';
 import { getOvenMaxCtez } from '../utils/ovenUtils';
-import { useAppSelector } from '../redux/store';
+import { useAppDispatch, useAppSelector } from '../redux/store';
 import { formatNumber } from '../utils/numbers';
 import { AllOvenDatum } from '../interfaces';
 import { logger } from '../utils/logger';
 import { cfmmError } from '../contracts/cfmm';
+import { openTxSubmittedModal } from '../redux/slices/UiSlice';
 
 type TUseOvenStats = (
   oven: AllOvenDatum | undefined | null,
@@ -124,9 +125,12 @@ const useTxLoader = (): ((result: WalletOperation | TransactionWalletOperation) 
     variant: 'left-accent',
   });
   const toastId = useMemo(() => (Math.random() + 1).toString(36).substring(2), []);
+  const dispatch = useAppDispatch();
 
   return useCallback(
     (result: WalletOperation | TransactionWalletOperation) => {
+      dispatch(openTxSubmittedModal({ opHash: result.opHash }));
+
       if (result.opHash) {
         toast({
           id: toastId,
@@ -161,7 +165,7 @@ const useTxLoader = (): ((result: WalletOperation | TransactionWalletOperation) 
           })
           .catch((error) => {
             logger.warn(error);
-            const errorText = cfmmError[error.data[1].with.int as number] || 'txFailed';
+            const errorText = cfmmError[error.data?.[1]?.with?.int as number] || 'txFailed';
             toast({
               status: 'error',
               description: errorText,
@@ -170,7 +174,7 @@ const useTxLoader = (): ((result: WalletOperation | TransactionWalletOperation) 
           });
       }
     },
-    [toast, toastId],
+    [dispatch, toast, toastId],
   );
 };
 
