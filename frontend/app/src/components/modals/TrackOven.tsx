@@ -9,7 +9,6 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  useColorMode,
   useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
@@ -117,7 +116,9 @@ const TrackOven: React.FC<ITrackOvenProps> = ({ isOpen, onClose }) => {
           </ModalBody>
 
           <ModalFooter py={6}>
-            <Button w="100%">Track Oven</Button>
+            <Button w="100%" type="submit">
+              Track Oven
+            </Button>
           </ModalFooter>
         </form>
       </ModalContent>

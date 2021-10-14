@@ -28,12 +28,12 @@ import { logger } from '../../utils/logger';
 import Button from '../button/Button';
 import { BUTTON_TXT, TButtonText, TOKEN, TToken } from '../../constants/swap';
 import { CTezIcon } from '../icons';
-import { Oven } from '../../interfaces';
+import { AllOvenDatum } from '../../interfaces';
 
 interface IBurnProps {
   isOpen: boolean;
   onClose: () => void;
-  oven: Oven | undefined;
+  oven: AllOvenDatum | null;
 }
 
 const Burn: React.FC<IBurnProps> = ({ isOpen, onClose, oven }) => {
@@ -62,9 +62,7 @@ const Burn: React.FC<IBurnProps> = ({ isOpen, onClose, oven }) => {
 
   const { ctez_outstanding } = useMemo(
     () =>
-      oven ?? {
-        ovenId: 0,
-        tez_balance: '0',
+      oven?.value ?? {
         ctez_outstanding: '0',
       },
     [oven],
@@ -90,10 +88,10 @@ const Burn: React.FC<IBurnProps> = ({ isOpen, onClose, oven }) => {
   };
 
   const handleFormSubmit = async (data: IMintRepayForm) => {
-    if (oven?.ovenId) {
+    if (oven?.key.id) {
       try {
         const amount = -data.amount;
-        const result = await mintOrBurn(Number(oven.ovenId), amount);
+        const result = await mintOrBurn(Number(oven.key.id), amount);
         if (result) {
           toast({
             description: t('txSubmitted'),

@@ -1,5 +1,4 @@
 import {
-  Box,
   Center,
   Divider,
   Flex,
@@ -11,26 +10,19 @@ import {
   Tooltip,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { useMemo, useState, MouseEvent } from 'react';
+import { useMemo } from 'react';
 import { MdInfo } from 'react-icons/md';
 import { useOvenStats } from '../../hooks/utilHooks';
 import ProgressPill from './ProgressPill';
-import { Oven } from '../../interfaces';
+import { AllOvenDatum } from '../../interfaces';
 import data from '../../assets/data/info.json';
 
-const OvenStats: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
-  const { stats } = useOvenStats({ type: 'MyOvens', oven });
+const OvenStats: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
+  const { stats } = useOvenStats(oven);
   const background = useColorModeValue('white', 'cardbgdark');
   const textcolor = useColorModeValue('text2', 'white');
   const text4color = useColorModeValue('text4', 'white');
   const cardbg = useColorModeValue('bg4', 'darkblue');
-
-  const content = data.map((item) => {
-    if (item.topic === 'oven stats') {
-      return item.content;
-    }
-    return null;
-  });
 
   const showInfo = useMemo(() => {
     return (
@@ -38,12 +30,12 @@ const OvenStats: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
         <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
           <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
           <Text color="gray.500" fontSize="xs" ml={2}>
-            {content}
+            {data.find((item) => item.topic === 'oven stats')?.content}
           </Text>
         </Flex>
       </div>
     );
-  }, [content]);
+  }, [cardbg]);
 
   return (
     <Stack p={8} spacing={4} backgroundColor={background} borderRadius={16}>
@@ -56,11 +48,12 @@ const OvenStats: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
             </span>
           </Tooltip>
         </Text>
-        {oven?.address == null ? (
+
+        {oven?.value.address == null ? (
           <SkeletonText mt={2} noOfLines={1} w="300px" />
         ) : (
           <Text color={text4color} as="span" fontSize="sm">
-            {oven?.address}
+            {oven?.value.address}
           </Text>
         )}
       </div>

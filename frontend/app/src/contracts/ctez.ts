@@ -42,10 +42,11 @@ export const create = async (
   userAddress: string,
   bakerAddress: string,
   op: Depositor,
+  lastOvenId: number,
   allowedDepositors?: string[],
   amount = 0,
 ): Promise<string> => {
-  const newOvenId = getLastOvenId(userAddress, cTez.address) + 1;
+  const newOvenId = lastOvenId + 1;
   const hash = await executeMethod(
     cTez,
     'create',
@@ -220,7 +221,8 @@ export const getAllOvens = async (): Promise<AllOvenDatum[] | undefined> => {
     if (!cTez && CTEZ_ADDRESS) {
       await initCTez(CTEZ_ADDRESS);
     }
-    return await getAllOvensAPI();
+    const allOvenData = await getAllOvensAPI();
+    return allOvenData;
   } catch (error) {
     logger.error(error);
     return undefined;

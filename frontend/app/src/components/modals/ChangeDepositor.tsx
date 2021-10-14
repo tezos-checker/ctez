@@ -18,7 +18,7 @@ import {
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Button from '../button/Button';
-import { Oven, OvenStorage } from '../../interfaces';
+import { AllOvenDatum, OvenStorage } from '../../interfaces';
 import RadioCard from '../radio/RadioCard';
 import DepositorsInput from '../input/DepositorsInput';
 import { trimAddress } from '../../utils/addressUtils';
@@ -28,7 +28,7 @@ import { logger } from '../../utils/logger';
 
 interface IChangeDepositorProps {
   canAnyoneDeposit: boolean;
-  oven: Oven;
+  oven: AllOvenDatum;
   ovenStorage: OvenStorage | undefined;
   isOpen: boolean;
   onClose: () => void;
@@ -86,9 +86,9 @@ const ChangeDepositor: React.FC<IChangeDepositorProps> = (props) => {
   ]);
 
   const handleAllowAnyone = async () => {
-    if (props.oven.address && userAddress) {
+    if (props.oven.value.address && userAddress) {
       try {
-        const result = await enableDisableAnyDepositor(props.oven.address, true);
+        const result = await enableDisableAnyDepositor(props.oven.value.address, true);
         if (result) {
           toast({
             description: t('txSubmitted'),
@@ -107,7 +107,7 @@ const ChangeDepositor: React.FC<IChangeDepositorProps> = (props) => {
   };
 
   const handleDepositorSubmit = async () => {
-    if (props.oven.address && props.ovenStorage && userAddress) {
+    if (props.oven.value.address && props.ovenStorage && userAddress) {
       try {
         const userWhiteList = depositors
           .map((item: IDepositorItem) => item?.value ?? item)
@@ -116,7 +116,7 @@ const ChangeDepositor: React.FC<IChangeDepositorProps> = (props) => {
           ? (props.ovenStorage.depositors as string[]).filter((o) => !userWhiteList.includes(o))
           : undefined;
         const result = await addRemoveDepositorList(
-          props.oven.address,
+          props.oven.value.address,
           props.ovenStorage,
           userWhiteList,
           userDenyList,

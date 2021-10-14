@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { UserOvenStats, OvenSerializable, Oven, AllOvenDatum } from '../../interfaces';
+import { UserOvenStats, OvenSerializable, AllOvenDatum } from '../../interfaces';
 
 interface IAllOvenState {
   data: AllOvenDatum[];
@@ -10,7 +10,6 @@ interface IAllOvenState {
 
 interface OvenSliceState {
   oven: OvenSerializable | null;
-  ovens: Oven[];
   extOvens: string[];
   allOvens: IAllOvenState;
   userOvenData: UserOvenStats;
@@ -19,7 +18,6 @@ interface OvenSliceState {
 
 const initialState: OvenSliceState = {
   oven: null,
-  ovens: [],
   extOvens: [],
   allOvens: {
     data: [],
@@ -35,18 +33,8 @@ export const OvenSlice = createSlice({
   name: 'oven',
   initialState,
   reducers: {
-    setOven: (state, action: PayloadAction<OvenSerializable>) => {
-      state.oven = action.payload;
-    },
-    setOvens: (state, action: PayloadAction<Oven[]>) => {
-      state.ovens = action.payload;
-    },
     setExternalOvens: (state, action: PayloadAction<string[]>) => {
       state.extOvens = action.payload;
-    },
-    clearOven: (state) => {
-      state.oven = null;
-      state.ovens = [];
     },
     setUserOvenData: (state, action: PayloadAction<UserOvenStats>) => {
       state.userOvenData = action.payload;
@@ -60,13 +48,5 @@ export const OvenSlice = createSlice({
   },
 });
 
-export const {
-  setOven,
-  setOvens,
-  setExternalOvens,
-  clearOven,
-  setAllOvenData,
-  setUserOvenData,
-  setSortBy,
-} = OvenSlice.actions;
+export const { setExternalOvens, setAllOvenData, setUserOvenData, setSortBy } = OvenSlice.actions;
 export default OvenSlice.reducer;

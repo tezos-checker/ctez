@@ -8,34 +8,28 @@ import {
   Tooltip,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { useMemo, useState, MouseEvent } from 'react';
+import { useMemo, useState } from 'react';
 import { MdEdit, MdInfo } from 'react-icons/md';
-import { useOvenStorage } from '../../api/queries';
+import { useOvenDelegate, useOvenStorage } from '../../api/queries';
 import { useWallet } from '../../wallet/hooks';
 import Button from '../button/Button';
 import Identicon from '../avatar/Identicon';
 import ChangeDepositor from '../modals/ChangeDepositor';
-import { Oven } from '../../interfaces';
+import { AllOvenDatum } from '../../interfaces';
 import SkeletonLayout from '../skeleton';
 import data from '../../assets/data/info.json';
 
-const DepositorsInfo: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
+const DepositorsInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
   const [{ pkh: userAddress }] = useWallet();
 
-  const { data: ovenStorageData } = useOvenStorage(oven?.address);
+  const { data: ovenStorageData } = useOvenStorage(oven?.value.address);
+  const { data: baker } = useOvenDelegate(oven?.value.address);
 
   const background = useColorModeValue('white', 'cardbgdark');
   const textcolor = useColorModeValue('text2', 'white');
 
   const [edit, setEdit] = useState(false);
-  const [showcontent, setShowContent] = useState(false);
   const cardbg = useColorModeValue('bg4', 'darkblue');
-  const depoInfo = data.map((item) => {
-    if (item.topic === 'oven stats') {
-      return item.content;
-    }
-    return null;
-  });
 
   const showInfo = useMemo(() => {
     return (
@@ -43,12 +37,12 @@ const DepositorsInfo: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
         <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
           <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
           <Text color="gray.500" fontSize="xs" ml={2}>
-            {depoInfo}
+            {data.find((item) => item.topic === 'oven stats')?.content}
           </Text>
         </Flex>
       </div>
     );
-  }, [depoInfo]);
+  }, [cardbg]);
 
   const { depositors, canAnyoneDeposit, isLoading } = useMemo(() => {
     if (!oven || !ovenStorageData || !userAddress) {
@@ -71,12 +65,12 @@ const DepositorsInfo: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
             },
             ...(ovenStorageData?.depositors as string[])?.map((dep) => ({
               value: dep,
-              label: dep === oven?.baker ? 'Baker' : null,
+              label: dep === baker ? 'Baker' : null,
             })),
           ],
       isLoading: false,
     };
-  }, [oven, ovenStorageData, userAddress]);
+  }, [baker, oven, ovenStorageData, userAddress]);
 
   const content = useMemo(() => {
     if (isLoading) {

@@ -12,20 +12,22 @@ import {
 } from '@chakra-ui/react';
 import { MdInfo } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
-import { useCallback, useEffect, useMemo, useState, MouseEvent } from 'react';
-import { useDelegates } from '../../api/queries';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useDelegates, useOvenDelegate } from '../../api/queries';
 import { useWallet } from '../../wallet/hooks';
 import Button from '../button/Button';
 import { cTezError, delegate } from '../../contracts/ctez';
 import Identicon from '../avatar/Identicon';
-import { Oven } from '../../interfaces';
+import { AllOvenDatum } from '../../interfaces';
 import SkeletonLayout from '../skeleton';
 import data from '../../assets/data/info.json';
 
-const BakerInfo: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
+const BakerInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
   const { t } = useTranslation(['common']);
   const [{ pkh: userAddress }] = useWallet();
   const { data: delegates } = useDelegates(userAddress);
+  const { data: baker } = useOvenDelegate(oven?.value.address);
+
   const toast = useToast();
 
   const background = useColorModeValue('white', 'cardbgdark');
@@ -34,15 +36,7 @@ const BakerInfo: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
   const [delegator, setDelegator] = useState('');
   const [loading, setLoading] = useState(false);
   const [edit, setEdit] = useState(false);
-  const [showcontent, setShowContent] = useState(false);
   const cardbg = useColorModeValue('bg4', 'darkblue');
-
-  const content = data.map((item) => {
-    if (item.topic === 'oven stats') {
-      return item.content;
-    }
-    return null;
-  });
 
   const showInfo = useMemo(() => {
     return (
@@ -50,21 +44,21 @@ const BakerInfo: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
         <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
           <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
           <Text color="gray.500" fontSize="xs" ml={2}>
-            {content}
+            {data.find((item) => item.topic === 'oven stats')?.content}
           </Text>
         </Flex>
       </div>
     );
-  }, [content]);
+  }, [cardbg]);
 
   useEffect(() => {
-    setDelegator(oven?.baker ?? '');
-  }, [oven]);
+    setDelegator(baker ?? '');
+  }, [baker, oven]);
 
   const handleConfirm = useCallback(async () => {
     setLoading(true);
     try {
-      const result = await delegate(oven?.address ?? '', delegator);
+      const result = await delegate(oven?.value.address ?? '', delegator);
       if (result) {
         toast({
           description: t('txSubmitted'),
@@ -81,16 +75,16 @@ const BakerInfo: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
       setLoading(false);
       setEdit(false);
     }
-  }, [delegator, oven?.address, t, toast]);
+  }, [delegator, oven?.value.address, t, toast]);
 
   const bakerCard = useMemo(() => {
-    if (oven?.baker) {
+    if (baker) {
       return (
         <Flex w="100%" boxShadow="lg" px={3} py={1} borderRadius={6}>
-          <Identicon seed={oven?.baker ?? undefined} type="tzKtCat" avatarSize="sm" />
+          <Identicon seed={baker ?? undefined} type="tzKtCat" avatarSize="sm" />
 
           <Text as="span" my="auto" flexGrow={1} mx={2}>
-            {oven?.baker}
+            {baker}
           </Text>
           <Button variant="ghost" size="sm" onClick={() => setEdit(true)}>
             Edit
@@ -100,7 +94,7 @@ const BakerInfo: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
     }
 
     return <SkeletonLayout count={1} component="AddressCard" />;
-  }, [oven?.baker]);
+  }, [baker]);
 
   const editBakerCard = useMemo(() => {
     if (edit) {
