@@ -1,8 +1,12 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
+import { TransactionWalletOperation, WalletOperation } from '@taquito/taquito';
+import { useToast } from '@chakra-ui/react';
 import { getOvenMaxCtez } from '../utils/ovenUtils';
 import { useAppSelector } from '../redux/store';
 import { formatNumber } from '../utils/numbers';
 import { AllOvenDatum } from '../interfaces';
+import { logger } from '../utils/logger';
+import { cfmmError } from '../contracts/cfmm';
 
 type TUseOvenStats = (
   oven: AllOvenDatum | undefined | null,
@@ -114,4 +118,55 @@ const useSortedOvensList: TUseSortedOvensList = (ovens) => {
   }, [ovens, sortByOption]);
 };
 
-export { useOvenStats, useSortedOvensList };
+const useTxLoader = (): ((
+  result: WalletOperation | TransactionWalletOperation,
+  render: () => React.ReactNode,
+) => void) => {
+  const toast = useToast({
+    position: 'bottom-right',
+    variant: 'left-accent',
+  });
+  const toastId = useMemo(() => (Math.random() + 1).toString(36).substring(2), []);
+
+  return useCallback(
+    (result: WalletOperation | TransactionWalletOperation, render: () => React.ReactNode) => {
+      if (result.opHash) {
+        toast({
+          id: toastId,
+          render,
+          duration: null,
+        });
+
+        result
+          .confirmation()
+          .then((txResult) => {
+            if (txResult.completed) {
+              toast.update(toastId, {
+                status: 'success',
+                description: 'Transaction Confirmed',
+                duration: 5_000,
+              });
+            } else {
+              toast.update(toastId, {
+                status: 'error',
+                description: 'Error',
+                duration: 5_000,
+              });
+            }
+          })
+          .catch((error) => {
+            logger.warn(error);
+            const errorText = cfmmError[error.data[1].with.int as number] || 'txFailed';
+            toast({
+              status: 'error',
+              description: errorText,
+              duration: 5_000,
+            });
+          });
+      }
+    },
+    [toast, toastId],
+  );
+};
+
+export { useOvenStats, useSortedOvensList, useTxLoader };

@@ -1,4 +1,9 @@
-import { OpKind, WalletContract, WalletParamsWithKind } from '@taquito/taquito';
+import {
+  OpKind,
+  TransactionWalletOperation,
+  WalletContract,
+  WalletParamsWithKind,
+} from '@taquito/taquito';
 import { BigNumber } from 'bignumber.js';
 import {
   AllOvenDatum,
@@ -45,9 +50,9 @@ export const create = async (
   lastOvenId: number,
   allowedDepositors?: string[],
   amount = 0,
-): Promise<string> => {
+): Promise<TransactionWalletOperation> => {
   const newOvenId = lastOvenId + 1;
-  const hash = await executeMethod(
+  const operation = await executeMethod(
     cTez,
     'create',
     [newOvenId, bakerAddress, op, allowedDepositors],
@@ -55,13 +60,16 @@ export const create = async (
     amount,
   );
   saveLastOven(userAddress, cTez.address, newOvenId);
-  return hash;
+  return operation;
 };
 
-export const delegate = async (ovenAddress: string, bakerAddress: string): Promise<string> => {
+export const delegate = async (
+  ovenAddress: string,
+  bakerAddress: string,
+): Promise<TransactionWalletOperation> => {
   const ovenContract = await initContract(ovenAddress);
-  const hash = await executeMethod(ovenContract, 'oven_delegate', [bakerAddress]);
-  return hash;
+  const operation = await executeMethod(ovenContract, 'oven_delegate', [bakerAddress]);
+  return operation;
 };
 
 const prepareOvenAllowAddressCall = (
@@ -130,25 +138,32 @@ export const editDepositor = async (
   ops: EditDepositorOps,
   enable: boolean,
   address?: string,
-): Promise<string> => {
+): Promise<TransactionWalletOperation> => {
   const ovenContract = await initContract(ovenAddress);
-  const hash = await executeMethod(ovenContract, 'oven_edit_depositor', [
+  const operation = await executeMethod(ovenContract, 'oven_edit_depositor', [
     ops,
     enable,
     address && address.trim().length > 1 ? address : undefined,
   ]);
-  return hash;
+  return operation;
 };
 
-export const deposit = async (ovenAddress: string, amount: number): Promise<string> => {
+export const deposit = async (
+  ovenAddress: string,
+  amount: number,
+): Promise<TransactionWalletOperation> => {
   const ovenContract = await initContract(ovenAddress);
-  const hash = await executeMethod(ovenContract, 'default', undefined, 0, amount);
-  return hash;
+  const operation = await executeMethod(ovenContract, 'default', undefined, 0, amount);
+  return operation;
 };
 
-export const withdraw = async (ovenId: number, amount: number, to: string): Promise<string> => {
-  const hash = await executeMethod(cTez, 'withdraw', [ovenId, amount * 1e6, to]);
-  return hash;
+export const withdraw = async (
+  ovenId: number,
+  amount: number,
+  to: string,
+): Promise<TransactionWalletOperation> => {
+  const operation = await executeMethod(cTez, 'withdraw', [ovenId, amount * 1e6, to]);
+  return operation;
 };
 
 export const liquidate = async (
@@ -156,14 +171,17 @@ export const liquidate = async (
   overOwner: string,
   amount: number,
   to: string,
-): Promise<string> => {
-  const hash = await executeMethod(cTez, 'liquidate', [ovenId, overOwner, amount * 1e6, to]);
-  return hash;
+): Promise<TransactionWalletOperation> => {
+  const operation = await executeMethod(cTez, 'liquidate', [ovenId, overOwner, amount * 1e6, to]);
+  return operation;
 };
 
-export const mintOrBurn = async (ovenId: number, quantity: number): Promise<string> => {
-  const hash = await executeMethod(cTez, 'mint_or_burn', [ovenId, quantity * 1e6]);
-  return hash;
+export const mintOrBurn = async (
+  ovenId: number,
+  quantity: number,
+): Promise<TransactionWalletOperation> => {
+  const operation = await executeMethod(cTez, 'mint_or_burn', [ovenId, quantity * 1e6]);
+  return operation;
 };
 
 export const getOvenDelegate = async (userOven: string): Promise<string | null> => {
