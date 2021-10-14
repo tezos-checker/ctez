@@ -28,7 +28,7 @@ import { IWithdrawForm } from '../../constants/oven-operations';
 import { cTezError, withdraw } from '../../contracts/ctez';
 import Button from '../button/Button';
 import { CTezIcon } from '../icons';
-import { BUTTON_TXT, TButtonText, TOKEN, TToken } from '../../constants/swap';
+import { BUTTON_TXT, TButtonText } from '../../constants/swap';
 import { AllOvenDatum } from '../../interfaces';
 
 interface IWithdrawProps {
@@ -52,19 +52,16 @@ const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose, oven }) => {
     to: userAddress ?? '',
   };
 
-  const getRightElement = useCallback(
-    (token: TToken) => {
-      return (
-        <InputRightElement backgroundColor="transparent" w={24} color={text2}>
-          <CTezIcon height={28} width={28} />
-          <Text fontWeight="500" mx={2}>
-            tez
-          </Text>
-        </InputRightElement>
-      );
-    },
-    [text2],
-  );
+  const getRightElement = useCallback(() => {
+    return (
+      <InputRightElement backgroundColor="transparent" w={24} color={text2}>
+        <CTezIcon height={28} width={28} />
+        <Text fontWeight="500" mx={2}>
+          tez
+        </Text>
+      </InputRightElement>
+    );
+  }, [text2]);
 
   const validationSchema = object().shape({
     amount: number().min(0.1).required(t('required')),
@@ -156,7 +153,7 @@ const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose, oven }) => {
                   onChange={handleChange}
                   placeholder="0.0"
                 />
-                {getRightElement(TOKEN.Tez)}
+                {getRightElement()}
               </InputGroup>
             </FormControl>
           </ModalBody>

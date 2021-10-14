@@ -27,25 +27,18 @@ const MintableOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => 
   const [burnOpen, setBurnOpen] = useState<boolean>(false);
   const cardbg = useColorModeValue('bg4', 'darkblue');
 
-  const content = data.map((item) => {
-    if (item.topic === 'oven stats') {
-      return item.content;
-    }
-    return null;
-  });
-
   const showInfo = useMemo(() => {
     return (
       <div>
         <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
           <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
           <Text color="gray.500" fontSize="xs" ml={2}>
-            {content}
+            {data.find((item) => item.topic === 'oven stats')?.content}
           </Text>
         </Flex>
       </div>
     );
-  }, [content]);
+  }, [cardbg]);
 
   const modals = useMemo(() => {
     if (!oven) {

@@ -8,7 +8,7 @@ import {
   Tooltip,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { useMemo, useState, MouseEvent } from 'react';
+import { useMemo, useState } from 'react';
 import { MdEdit, MdInfo } from 'react-icons/md';
 import { useOvenDelegate, useOvenStorage } from '../../api/queries';
 import { useWallet } from '../../wallet/hooks';
@@ -29,14 +29,7 @@ const DepositorsInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
   const textcolor = useColorModeValue('text2', 'white');
 
   const [edit, setEdit] = useState(false);
-  const [showcontent, setShowContent] = useState(false);
   const cardbg = useColorModeValue('bg4', 'darkblue');
-  const depoInfo = data.map((item) => {
-    if (item.topic === 'oven stats') {
-      return item.content;
-    }
-    return null;
-  });
 
   const showInfo = useMemo(() => {
     return (
@@ -44,12 +37,12 @@ const DepositorsInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
         <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
           <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
           <Text color="gray.500" fontSize="xs" ml={2}>
-            {depoInfo}
+            {data.find((item) => item.topic === 'oven stats')?.content}
           </Text>
         </Flex>
       </div>
     );
-  }, [depoInfo]);
+  }, [cardbg]);
 
   const { depositors, canAnyoneDeposit, isLoading } = useMemo(() => {
     if (!oven || !ovenStorageData || !userAddress) {

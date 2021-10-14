@@ -1,8 +1,7 @@
 import { Box, Icon, Select, Spacer, Stack, useColorModeValue } from '@chakra-ui/react';
-import { Box, Select, Spacer, Stack, Icon, useColorModeValue, Flex } from '@chakra-ui/react';
 import { MdAdd } from 'react-icons/md';
 import { BsArrowRight } from 'react-icons/bs';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAppDispatch } from '../../redux/store';
 import { useWallet } from '../../wallet/hooks';
