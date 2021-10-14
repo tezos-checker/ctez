@@ -55,9 +55,9 @@ const OvenCard: React.FC<TOvenCardProps> = (props) => {
         value: truncateText((props.type === 'MyOvens' ? baker : owner) ?? ''),
       },
 
-      { label: 'Oven Balance', value: `${stats?.ovenBalance ?? 0} XTZ` },
-      { label: 'Outstanding ', value: `${stats?.outStandingCtez ?? 0} cTEZ` },
-      { label: 'Mintable ', value: `${stats?.maxMintableCtez} cTEZ` },
+      { label: 'Oven Balance', value: `${stats?.ovenBalance ?? 0} tez` },
+      { label: 'Outstanding ', value: `${stats?.outStandingCtez ?? 0} ctez` },
+      { label: 'Mintable ', value: `${stats?.maxMintableCtez} ctez` },
     ];
 
     return (

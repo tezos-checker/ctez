@@ -14,7 +14,6 @@ import data from '../../components/data/faq.json';
 
 const FaqPage: React.FC = () => {
   const [largerScreen] = useMediaQuery(['(min-width: 800px)']);
-  console.log(data);
   const background = useColorModeValue('white', 'cardbgdark');
   const text2 = useColorModeValue('text2', 'darkheading');
 

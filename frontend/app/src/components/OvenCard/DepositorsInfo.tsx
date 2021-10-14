@@ -1,6 +1,15 @@
-import { Divider, Flex, Stack, Tag, Text, useColorModeValue } from '@chakra-ui/react';
-import { useMemo, useState } from 'react';
-import { MdEdit } from 'react-icons/md';
+import {
+  Divider,
+  Flex,
+  Icon,
+  Stack,
+  Tag,
+  Text,
+  Tooltip,
+  useColorModeValue,
+} from '@chakra-ui/react';
+import { useMemo, useState, MouseEvent } from 'react';
+import { MdEdit, MdInfo } from 'react-icons/md';
 import { useOvenStorage } from '../../api/queries';
 import { useWallet } from '../../wallet/hooks';
 import Button from '../button/Button';
@@ -8,6 +17,7 @@ import Identicon from '../avatar/Identicon';
 import ChangeDepositor from '../modals/ChangeDepositor';
 import { Oven } from '../../interfaces';
 import SkeletonLayout from '../skeleton';
+import data from '../../assets/data/info.json';
 
 const DepositorsInfo: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
   const [{ pkh: userAddress }] = useWallet();
@@ -18,6 +28,27 @@ const DepositorsInfo: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
   const textcolor = useColorModeValue('text2', 'white');
 
   const [edit, setEdit] = useState(false);
+  const [showcontent, setShowContent] = useState(false);
+  const cardbg = useColorModeValue('bg4', 'darkblue');
+  const depoInfo = data.map((item) => {
+    if (item.topic === 'oven stats') {
+      return item.content;
+    }
+    return null;
+  });
+
+  const showInfo = useMemo(() => {
+    return (
+      <div>
+        <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
+          <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
+          <Text color="gray.500" fontSize="xs" ml={2}>
+            {depoInfo}
+          </Text>
+        </Flex>
+      </div>
+    );
+  }, [depoInfo]);
 
   const { depositors, canAnyoneDeposit, isLoading } = useMemo(() => {
     if (!oven || !ovenStorageData || !userAddress) {
@@ -76,6 +107,11 @@ const DepositorsInfo: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
       <Stack p={8} spacing={4} borderRadius={16} backgroundColor={background}>
         <Text color={textcolor} fontWeight="600">
           Authorized Depositors
+          <Tooltip label={showInfo} placement="right" borderRadius={14} backgroundColor={cardbg}>
+            <span>
+              <Icon opacity="0.3" fontSize="lg" color="#B0B7C3" as={MdInfo} m={1} mb={1} />
+            </span>
+          </Tooltip>
         </Text>
 
         <Divider />
