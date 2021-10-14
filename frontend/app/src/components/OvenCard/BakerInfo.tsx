@@ -6,6 +6,7 @@ import {
   Select,
   Stack,
   Text,
+  Tooltip,
   useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
@@ -19,7 +20,6 @@ import { cTezError, delegate } from '../../contracts/ctez';
 import Identicon from '../avatar/Identicon';
 import { Oven } from '../../interfaces';
 import SkeletonLayout from '../skeleton';
-import Info from '../info/info';
 import data from '../../assets/data/info.json';
 
 const BakerInfo: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
@@ -35,31 +35,27 @@ const BakerInfo: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
   const [loading, setLoading] = useState(false);
   const [edit, setEdit] = useState(false);
   const [showcontent, setShowContent] = useState(false);
-  let content: any;
+  const cardbg = useColorModeValue('bg4', 'darkblue');
 
-  data.map((item) => {
+  const content = data.map((item) => {
     if (item.topic === 'oven stats') {
-      content = item.content;
+      return item.content;
     }
-    return content;
+    return null;
   });
 
-  const showTooltip = (e: MouseEvent<SVGAElement>) => {
-    setShowContent(!showcontent);
-  };
-  const handleMouseOut = (e: MouseEvent<SVGAElement>) => {
-    setShowContent(!showcontent);
-  };
-
-  const modals = useMemo(() => {
+  const showInfo = useMemo(() => {
     return (
-      <>
-        <Info mt="-45px" ml="92px">
-          {content}
-        </Info>
-      </>
+      <div>
+        <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
+          <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
+          <Text color="gray.500" fontSize="xs" ml={2}>
+            {content}
+          </Text>
+        </Flex>
+      </div>
     );
-  }, [showcontent, setShowContent]);
+  }, [content]);
 
   useEffect(() => {
     setDelegator(oven?.baker ?? '');
@@ -145,17 +141,11 @@ const BakerInfo: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
     <Stack p={8} spacing={4} borderRadius={16} backgroundColor={background}>
       <Text color={textcolor} fontWeight="600">
         Baker
-        <Icon
-          opacity="0.3"
-          fontSize="lg"
-          color="#B0B7C3"
-          as={MdInfo}
-          m={1}
-          mb={1}
-          onMouseOver={showTooltip}
-          onMouseOut={handleMouseOut}
-        />
-        {showcontent ? modals : ''}
+        <Tooltip label={showInfo} placement="right" borderRadius={14} backgroundColor={cardbg}>
+          <span>
+            <Icon opacity="0.3" fontSize="lg" color="#B0B7C3" as={MdInfo} m={1} mb={1} />
+          </span>
+        </Tooltip>
       </Text>
 
       <Divider />

@@ -38,7 +38,7 @@ const AllOvensContainer: React.FC = () => {
       .slice()
       .sort((a, b) => (Number(a.value.tez_balance) < Number(b.value.tez_balance) ? 1 : -1));
   }
-  if (sortbyoption === 'Outstanding') {
+  if (sortbyoption === 'utilization') {
     data = data
       .slice()
       .sort((a, b) =>
@@ -116,7 +116,7 @@ const OvensPage: React.FC = () => {
         >
           {/* TODO */}
           <option value="Oven Balance">Value</option>
-          <option value="Outstanding">Utilization</option>
+          <option value="utilization">Utilization</option>
         </Select>
 
         <Spacer />

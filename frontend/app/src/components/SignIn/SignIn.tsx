@@ -38,14 +38,6 @@ const SignIn: React.FC = () => {
   const { data: balance } = useUserBalance(userAddress);
   const { data: userLqtData } = useUserLqtData(userAddress);
   const userOvenData = useAppSelector((state) => state.oven.userOvenData);
-  const [isHovering, setIsHovering] = useState(false);
-
-  const handleMouseEvent = (e: MouseEvent<HTMLParagraphElement>) => {
-    setIsHovering(true);
-  };
-  const handleMouseOut = (e: MouseEvent<HTMLParagraphElement>) => {
-    setIsHovering(!isHovering);
-  };
 
   const formatNumber = useCallback((number?: number, shiftedBy = -6) => {
     if (typeof number !== 'number') {
@@ -92,26 +84,21 @@ const SignIn: React.FC = () => {
         </PopoverTrigger>
         <PopoverContent mx={4}>
           <PopoverCloseButton />
-          <PopoverHeader
-            onClick={() => navigator.clipboard.writeText(userAddress)}
-            onMouseOver={handleMouseEvent}
-            onMouseOut={handleMouseOut}
-          >
+          <PopoverHeader>
             <Flex alignItems="center">
               <Identicon type="tzKtCat" seed={userAddress} avatarSize="sm" />
               <Text onClick={() => navigator.clipboard.writeText(userAddress)} ml={2}>
                 {trimAddress(userAddress, 'medium')}
               </Text>
-              {isHovering && (
-                <Icon
-                  onClick={() => navigator.clipboard.writeText(userAddress)}
-                  ml={2}
-                  w={3}
-                  h={3}
-                  color="#62737F"
-                  as={copy}
-                />
-              )}
+              <Icon
+                onClick={() => navigator.clipboard.writeText(userAddress)}
+                ml={2}
+                w={3}
+                h={3}
+                color="#62737F"
+                _hover={{ cursor: 'pointer' }}
+                as={copy}
+              />
             </Flex>
           </PopoverHeader>
           <PopoverBody>

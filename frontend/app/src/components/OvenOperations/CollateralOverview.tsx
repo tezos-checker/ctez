@@ -7,6 +7,7 @@ import {
   Skeleton,
   Stack,
   Text,
+  Tooltip,
   useColorModeValue,
 } from '@chakra-ui/react';
 import { MdInfo } from 'react-icons/md';
@@ -16,7 +17,6 @@ import Button from '../button/Button';
 import Deposit from '../modals/Deposit';
 import Withdraw from '../modals/Withdraw';
 import { Oven } from '../../interfaces';
-import Info from '../info/info';
 import data from '../../assets/data/info.json';
 
 const CollateralOverview: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
@@ -25,6 +25,27 @@ const CollateralOverview: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
   const [withdrawOpen, setWithdrawOpen] = useState<boolean>(false);
   const background = useColorModeValue('white', 'cardbgdark');
   const textcolor = useColorModeValue('text2', 'white');
+  const cardbg = useColorModeValue('bg4', 'darkblue');
+
+  const content = data.map((item) => {
+    if (item.topic === 'oven stats') {
+      return item.content;
+    }
+    return null;
+  });
+
+  const showInfo = useMemo(() => {
+    return (
+      <div>
+        <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
+          <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
+          <Text color="gray.500" fontSize="xs" ml={2}>
+            {content}
+          </Text>
+        </Flex>
+      </div>
+    );
+  }, [content]);
 
   const modals = useMemo(() => {
     if (!oven) {
@@ -58,7 +79,16 @@ const CollateralOverview: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
 
             <Text color="#B0B7C3" fontSize="xs">
               tez collateral
-              <Icon opacity="0.3" fontSize="md" color="#B0B7C3" as={MdInfo} m={1} />
+              <Tooltip
+                label={showInfo}
+                placement="right"
+                borderRadius={14}
+                backgroundColor={cardbg}
+              >
+                <span>
+                  <Icon opacity="0.3" fontSize="md" color="#B0B7C3" as={MdInfo} m={1} mb={1} />
+                </span>
+              </Tooltip>
             </Text>
           </Stack>
 
@@ -75,7 +105,16 @@ const CollateralOverview: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
 
             <Text color="#B0B7C3" fontSize="xs">
               Required tez collateral
-              <Icon opacity="0.3" fontSize="md" color="#B0B7C3" as={MdInfo} m={1} />
+              <Tooltip
+                label={showInfo}
+                placement="right"
+                borderRadius={14}
+                backgroundColor={cardbg}
+              >
+                <span>
+                  <Icon opacity="0.3" fontSize="md" color="#B0B7C3" as={MdInfo} m={1} mb={1} />
+                </span>
+              </Tooltip>
             </Text>
           </Stack>
 
@@ -92,7 +131,16 @@ const CollateralOverview: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
 
             <Text color="#B0B7C3" fontSize="xs">
               Withdraw tez
-              <Icon opacity="0.3" fontSize="md" color="#B0B7C3" as={MdInfo} m={1} />
+              <Tooltip
+                label={showInfo}
+                placement="right"
+                borderRadius={14}
+                backgroundColor={cardbg}
+              >
+                <span>
+                  <Icon opacity="0.3" fontSize="md" color="#B0B7C3" as={MdInfo} m={1} mb={1} />
+                </span>
+              </Tooltip>
             </Text>
           </Stack>
         </Flex>

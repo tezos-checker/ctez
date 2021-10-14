@@ -1,4 +1,13 @@
-import { Divider, Flex, Icon, Stack, Tag, Text, useColorModeValue } from '@chakra-ui/react';
+import {
+  Divider,
+  Flex,
+  Icon,
+  Stack,
+  Tag,
+  Text,
+  Tooltip,
+  useColorModeValue,
+} from '@chakra-ui/react';
 import { useMemo, useState, MouseEvent } from 'react';
 import { MdEdit, MdInfo } from 'react-icons/md';
 import { useOvenStorage } from '../../api/queries';
@@ -8,7 +17,6 @@ import Identicon from '../avatar/Identicon';
 import ChangeDepositor from '../modals/ChangeDepositor';
 import { Oven } from '../../interfaces';
 import SkeletonLayout from '../skeleton';
-import Info from '../info/info';
 import data from '../../assets/data/info.json';
 
 const DepositorsInfo: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
@@ -21,31 +29,36 @@ const DepositorsInfo: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
 
   const [edit, setEdit] = useState(false);
   const [showcontent, setShowContent] = useState(false);
-  let info: any;
-
-  data.map((item) => {
+  const cardbg = useColorModeValue('bg4', 'darkblue');
+  const depoInfo = data.map((item) => {
     if (item.topic === 'oven stats') {
-      info = item.content;
+      return item.content;
     }
-    return info;
+    return null;
   });
 
-  const showTooltip = (e: MouseEvent<SVGAElement>) => {
-    setShowContent(!showcontent);
-  };
-  const handleMouseOut = (e: MouseEvent<SVGAElement>) => {
-    setShowContent(!showcontent);
-  };
-
-  const modals = useMemo(() => {
+  const showInfo = useMemo(() => {
     return (
-      <>
-        <Info mt="-45px" ml="172px">
-          {info}
-        </Info>
-      </>
+      <div>
+        <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
+          <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
+          <Text color="gray.500" fontSize="xs" ml={2}>
+            {depoInfo}
+          </Text>
+        </Flex>
+      </div>
     );
-  }, [showcontent, setShowContent]);
+  }, [depoInfo]);
+
+  // const modals = useMemo(() => {
+  //   return (
+  //     <>
+  //       <Info mt="-45px" ml="172px">
+  //         {info}
+  //       </Info>
+  //     </>
+  //   );
+  // }, [showcontent, setShowContent]);
 
   const { depositors, canAnyoneDeposit, isLoading } = useMemo(() => {
     if (!oven || !ovenStorageData || !userAddress) {
@@ -104,17 +117,11 @@ const DepositorsInfo: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
       <Stack p={8} spacing={4} borderRadius={16} backgroundColor={background}>
         <Text color={textcolor} fontWeight="600">
           Authorized Depositors
-          <Icon
-            opacity="0.3"
-            fontSize="lg"
-            color="#B0B7C3"
-            as={MdInfo}
-            m={1}
-            mb={1}
-            onMouseOver={showTooltip}
-            onMouseOut={handleMouseOut}
-          />
-          {showcontent ? modals : ''}
+          <Tooltip label={showInfo} placement="right" borderRadius={14} backgroundColor={cardbg}>
+            <span>
+              <Icon opacity="0.3" fontSize="lg" color="#B0B7C3" as={MdInfo} m={1} mb={1} />
+            </span>
+          </Tooltip>
         </Text>
 
         <Divider />

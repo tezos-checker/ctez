@@ -7,6 +7,7 @@ import {
   Skeleton,
   Stack,
   Text,
+  Tooltip,
   useColorModeValue,
 } from '@chakra-ui/react';
 import { MdInfo } from 'react-icons/md';
@@ -16,6 +17,7 @@ import Button from '../button/Button';
 import Burn from '../modals/Burn';
 import Mint from '../modals/Mint';
 import { Oven } from '../../interfaces';
+import data from '../../assets/data/info.json';
 
 const MintableOverview: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
   const { stats } = useOvenStats({ type: 'MyOvens', oven });
@@ -23,6 +25,27 @@ const MintableOverview: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
   const textcolor = useColorModeValue('text2', 'white');
   const [mintOpen, setMintOpen] = useState<boolean>(false);
   const [burnOpen, setBurnOpen] = useState<boolean>(false);
+  const cardbg = useColorModeValue('bg4', 'darkblue');
+
+  const content = data.map((item) => {
+    if (item.topic === 'oven stats') {
+      return item.content;
+    }
+    return null;
+  });
+
+  const showInfo = useMemo(() => {
+    return (
+      <div>
+        <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
+          <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
+          <Text color="gray.500" fontSize="xs" ml={2}>
+            {content}
+          </Text>
+        </Flex>
+      </div>
+    );
+  }, [content]);
 
   const modals = useMemo(() => {
     if (!oven) {
@@ -55,7 +78,16 @@ const MintableOverview: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
 
             <Text color="#B0B7C3" fontSize="xs">
               Outstanding
-              <Icon opacity="0.3" fontSize="md" color="#B0B7C3" as={MdInfo} m={1} />
+              <Tooltip
+                label={showInfo}
+                placement="right"
+                borderRadius={14}
+                backgroundColor={cardbg}
+              >
+                <span>
+                  <Icon opacity="0.3" fontSize="md" color="#B0B7C3" as={MdInfo} m={1} mb={1} />
+                </span>
+              </Tooltip>
             </Text>
           </Stack>
 
@@ -72,7 +104,16 @@ const MintableOverview: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
 
             <Text color="#B0B7C3" fontSize="xs">
               Maximum Mintable
-              <Icon opacity="0.3" fontSize="md" color="#B0B7C3" as={MdInfo} m={1} />
+              <Tooltip
+                label={showInfo}
+                placement="right"
+                borderRadius={14}
+                backgroundColor={cardbg}
+              >
+                <span>
+                  <Icon opacity="0.3" fontSize="md" color="#B0B7C3" as={MdInfo} m={1} mb={1} />
+                </span>
+              </Tooltip>
             </Text>
           </Stack>
 
@@ -89,7 +130,16 @@ const MintableOverview: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
 
             <Text color="#B0B7C3" fontSize="xs">
               Remaining Mintable
-              <Icon opacity="0.3" fontSize="md" color="#B0B7C3" as={MdInfo} m={1} />
+              <Tooltip
+                label={showInfo}
+                placement="right"
+                borderRadius={14}
+                backgroundColor={cardbg}
+              >
+                <span>
+                  <Icon opacity="0.3" fontSize="md" color="#B0B7C3" as={MdInfo} m={1} mb={1} />
+                </span>
+              </Tooltip>
             </Text>
           </Stack>
         </Flex>
