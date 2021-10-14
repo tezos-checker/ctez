@@ -42,10 +42,11 @@ export const create = async (
   userAddress: string,
   bakerAddress: string,
   op: Depositor,
+  lastOvenId: number,
   allowedDepositors?: string[],
   amount = 0,
 ): Promise<string> => {
-  const newOvenId = getLastOvenId(userAddress, cTez.address) + 1;
+  const newOvenId = lastOvenId + 1;
   const hash = await executeMethod(
     cTez,
     'create',

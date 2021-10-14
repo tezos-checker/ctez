@@ -16,7 +16,7 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { validateAddress } from '@taquito/utils';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { array, number, object, string } from 'yup';
 import { useTranslation } from 'react-i18next';
 import { useFormik } from 'formik';
@@ -28,6 +28,8 @@ import { logger } from '../../utils/logger';
 import RadioCard from '../radio/RadioCard';
 import Button from '../button/Button';
 import DepositorsInput from '../input/DepositorsInput';
+import { makeLastOvenIdSelector } from '../../hooks/reduxSelectors';
+import { useAppSelector } from '../../redux/store';
 
 interface ICreateOvenProps {
   isOpen: boolean;
@@ -60,6 +62,9 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
   const text4 = useColorModeValue('text4', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
   const text1 = useColorModeValue('text1', 'darkheading');
+  const selectLastOvenId = useMemo(makeLastOvenIdSelector, []);
+
+  const lastOvenId = useAppSelector((state) => selectLastOvenId(state, userAddress));
 
   const validationSchema = object().shape({
     delegate: string()
@@ -128,6 +133,7 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
           userAddress,
           data.delegate,
           data.depositType === 'Whitelist' ? Depositor.whitelist : Depositor.any,
+          lastOvenId,
           depositors,
           data.amount,
         );

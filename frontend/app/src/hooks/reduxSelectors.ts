@@ -1,5 +1,8 @@
-import { useAppSelector } from '../redux/store';
+import { createSelector } from 'reselect';
+import { RootState, useAppSelector } from '../redux/store';
 import { AllOvenDatum } from '../interfaces';
+
+const getAllOvens = (state: RootState) => state.oven.allOvens;
 
 export function useMyOvensSelector(
   userAddress: string | undefined,
@@ -38,3 +41,19 @@ export function useMyOvensSelector(
     return { ovens: [...userOvens, ...importedOvens], isLoading: state.oven.allOvens.isLoading };
   });
 }
+
+export const makeLastOvenIdSelector = () =>
+  createSelector(
+    [getAllOvens, (_: unknown, userAddress: string | undefined) => userAddress],
+    (allOvens, userAddress) => {
+      if (!userAddress) {
+        return 0;
+      }
+
+      const userOvens = allOvens.data
+        ?.filter((x) => x.key.owner === userAddress)
+        .sort((a, b) => Number(a.key.id) - Number(b.key.id));
+
+      return Number(userOvens[userOvens.length - 1]?.key.id ?? 0);
+    },
+  );
