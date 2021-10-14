@@ -50,16 +50,6 @@ const DepositorsInfo: React.FC<{ oven: Oven | undefined }> = ({ oven }) => {
     );
   }, [depoInfo]);
 
-  // const modals = useMemo(() => {
-  //   return (
-  //     <>
-  //       <Info mt="-45px" ml="172px">
-  //         {info}
-  //       </Info>
-  //     </>
-  //   );
-  // }, [showcontent, setShowContent]);
-
   const { depositors, canAnyoneDeposit, isLoading } = useMemo(() => {
     if (!oven || !ovenStorageData || !userAddress) {
       return { depositors: [], canAnyoneDeposit: false, isLoading: true };

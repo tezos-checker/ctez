@@ -24,9 +24,7 @@ const AllOvensContainer: React.FC = () => {
   const { isLoading } = useAppSelector((state) => state.oven.allOvens);
   const sortbyoption = useAppSelector((state) => state.oven.sortByOption);
   const dataperpage = 10;
-  console.log(data.length);
   const [currentPage, setCurrentPage] = useState(1);
-  console.log(Math.ceil(data.length / dataperpage));
   const pageNumbers = [];
 
   for (let i = 1; i <= Math.ceil(data.length / dataperpage); i += 1) {
