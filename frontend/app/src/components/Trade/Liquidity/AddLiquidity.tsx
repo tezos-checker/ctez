@@ -25,6 +25,7 @@ import { logger } from '../../../utils/logger';
 import { BUTTON_TXT } from '../../../constants/swap';
 import Button from '../../button/Button';
 import { useAppSelector } from '../../../redux/store';
+import { useTxLoader } from '../../../hooks/utilHooks';
 
 const AddLiquidity: React.FC = () => {
   const [{ pkh: userAddress }] = useWallet();
@@ -38,6 +39,7 @@ const AddLiquidity: React.FC = () => {
   const text4 = useColorModeValue('text4', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
   const { slippage, deadline: deadlineFromStore } = useAppSelector((state) => state.trade);
+  const handleProcessing = useTxLoader();
 
   const calcMaxToken = useCallback(
     (cashDeposited: number) => {
@@ -86,12 +88,7 @@ const AddLiquidity: React.FC = () => {
           minLqtMinted: minLQT,
         };
         const result = await addLiquidity(data);
-        if (result) {
-          toast({
-            description: t('txSubmitted'),
-            status: 'success',
-          });
-        }
+        handleProcessing(result);
       } catch (error) {
         logger.error(error);
         const errorText = cfmmError[error.data[1].with.int as number] || t('txFailed');

@@ -1,6 +1,6 @@
-import { useCallback, useMemo } from 'react';
+import { createElement, useCallback, useMemo } from 'react';
 import { TransactionWalletOperation, WalletOperation } from '@taquito/taquito';
-import { useToast } from '@chakra-ui/react';
+import { Flex, Spinner, useToast } from '@chakra-ui/react';
 import { getOvenMaxCtez } from '../utils/ovenUtils';
 import { useAppSelector } from '../redux/store';
 import { formatNumber } from '../utils/numbers';
@@ -118,10 +118,7 @@ const useSortedOvensList: TUseSortedOvensList = (ovens) => {
   }, [ovens, sortByOption]);
 };
 
-const useTxLoader = (): ((
-  result: WalletOperation | TransactionWalletOperation,
-  render: () => React.ReactNode,
-) => void) => {
+const useTxLoader = (): ((result: WalletOperation | TransactionWalletOperation) => void) => {
   const toast = useToast({
     position: 'bottom-right',
     variant: 'left-accent',
@@ -129,11 +126,19 @@ const useTxLoader = (): ((
   const toastId = useMemo(() => (Math.random() + 1).toString(36).substring(2), []);
 
   return useCallback(
-    (result: WalletOperation | TransactionWalletOperation, render: () => React.ReactNode) => {
+    (result: WalletOperation | TransactionWalletOperation) => {
       if (result.opHash) {
         toast({
           id: toastId,
-          render,
+          render() {
+            return createElement(
+              Flex,
+              {
+                direction: 'row-reverse',
+              },
+              createElement(Spinner, null),
+            );
+          },
           duration: null,
         });
 

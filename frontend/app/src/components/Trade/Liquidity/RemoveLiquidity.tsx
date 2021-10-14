@@ -22,6 +22,7 @@ import { useWallet } from '../../../wallet/hooks';
 import { useCfmmStorage } from '../../../api/queries';
 import Button from '../../button/Button';
 import { useAppSelector } from '../../../redux/store';
+import { useTxLoader } from '../../../hooks/utilHooks';
 
 const RemoveLiquidity: React.FC = () => {
   const [{ pkh: userAddress }] = useWallet();
@@ -37,6 +38,7 @@ const RemoveLiquidity: React.FC = () => {
   const text4 = useColorModeValue('text4', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
   const { slippage, deadline: deadlineFromStore } = useAppSelector((state) => state.trade);
+  const handleProcessing = useTxLoader();
 
   const calcMinValues = useCallback(
     (lqtBurned: number) => {
@@ -92,12 +94,7 @@ const RemoveLiquidity: React.FC = () => {
           minTokensWithdrawn: otherValues.tokenWithdraw,
         };
         const result = await removeLiquidity(data, userAddress);
-        if (result) {
-          toast({
-            description: t('txSubmitted'),
-            status: 'success',
-          });
-        }
+        handleProcessing(result);
       } catch (error) {
         const errorText = cfmmError[error.data[1].with.int as number] || t('txFailed');
         toast({

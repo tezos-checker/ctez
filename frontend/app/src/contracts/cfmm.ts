@@ -68,7 +68,7 @@ export const getTokenAllowanceOps = async (
   return batchOps;
 };
 
-export const addLiquidity = async (args: AddLiquidityParams): Promise<string> => {
+export const addLiquidity = async (args: AddLiquidityParams): Promise<WalletOperation> => {
   const tezos = getTezosInstance();
   const CTezFa12 = await getCTezFa12Contract();
   const batchOps: WalletParamsWithKind[] = await getTokenAllowanceOps(
@@ -96,13 +96,13 @@ export const addLiquidity = async (args: AddLiquidityParams): Promise<string> =>
     },
   ]);
   const hash = await batch.send();
-  return hash.opHash;
+  return hash;
 };
 
 export const removeLiquidity = async (
   args: RemoveLiquidityParams,
   userAddress: string,
-): Promise<string> => {
+): Promise<WalletOperation> => {
   const tezos = getTezosInstance();
   const LQTFa12 = await getLQTContract();
   const batchOps: WalletParamsWithKind[] = await getTokenAllowanceOps(
@@ -131,7 +131,7 @@ export const removeLiquidity = async (
     },
   ]);
   const hash = await batch.send();
-  return hash.opHash;
+  return hash;
 };
 
 export const cashToToken = async (args: CashToTokenParams): Promise<TransactionWalletOperation> => {

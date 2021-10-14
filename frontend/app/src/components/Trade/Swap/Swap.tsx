@@ -118,11 +118,7 @@ const Swap: React.FC = () => {
                 },
                 userAddress,
               );
-        handleProcessing(result, () => (
-          <Flex direction="row-reverse">
-            <Spinner />
-          </Flex>
-        ));
+        handleProcessing(result);
       } catch (error) {
         logger.warn(error);
         const errorText = cfmmError[error.data[1].with.int as number] || t('txFailed');
