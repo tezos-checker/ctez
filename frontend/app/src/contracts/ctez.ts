@@ -220,7 +220,8 @@ export const getAllOvens = async (): Promise<AllOvenDatum[] | undefined> => {
     if (!cTez && CTEZ_ADDRESS) {
       await initCTez(CTEZ_ADDRESS);
     }
-    return await getAllOvensAPI();
+    const allOvenData = await getAllOvensAPI();
+    return allOvenData;
   } catch (error) {
     logger.error(error);
     return undefined;

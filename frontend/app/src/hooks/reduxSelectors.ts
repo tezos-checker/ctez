@@ -11,6 +11,7 @@ export function useMyOvensSelector(
 ): { oven: AllOvenDatum | null; isLoading: boolean };
 
 // ? Using function overload
+// ! Optimize selector using memoization
 export function useMyOvensSelector(
   userAddress: string | undefined,
   ovenId?: string,
@@ -29,6 +30,11 @@ export function useMyOvensSelector(
       };
     }
 
-    return { ovens: userOvens, isLoading: state.oven.allOvens.isLoading };
+    const importedOvensList = state.oven.extOvens;
+    const importedOvens = state.oven.allOvens.data
+      ?.filter((x) => importedOvensList.includes(x.value.address))
+      .map((x) => ({ ...x, isImported: true }));
+
+    return { ovens: [...userOvens, ...importedOvens], isLoading: state.oven.allOvens.isLoading };
   });
 }

@@ -80,4 +80,8 @@ export interface AllOvenDatum {
   firstLevel: number;
   lastLevel: number;
   updates: number;
+  /**
+   * Added in frontend
+   */
+  isImported?: boolean;
 }

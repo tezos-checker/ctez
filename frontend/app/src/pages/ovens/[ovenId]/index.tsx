@@ -1,4 +1,4 @@
-import { Stack, useMediaQuery } from '@chakra-ui/react';
+import { Center, Stack, Text, useMediaQuery } from '@chakra-ui/react';
 import { useParams } from 'react-router-dom';
 import OvenStats from '../../../components/OvenCard/OvenStats';
 import { useWallet } from '../../../wallet/hooks';
@@ -22,6 +22,14 @@ const OvenIdPage: React.FC = () => {
   useSetCtezBaseStatsToStore(userAddress);
   useSetOvenDataToStore(userAddress);
   useSetAllOvensToStore();
+
+  if (userAddress == null) {
+    return (
+      <Center>
+        <Text>Connect your wallet to get started</Text>
+      </Center>
+    );
+  }
 
   return (
     <Stack

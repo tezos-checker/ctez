@@ -1,6 +1,16 @@
-import { Box, Grid, Text, useColorModeValue } from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  Grid,
+  Tag,
+  TagLabel,
+  TagLeftIcon,
+  Text,
+  useColorModeValue,
+} from '@chakra-ui/react';
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { HiDownload } from 'react-icons/hi';
 import { AllOvenDatum } from '../../interfaces';
 import ProgressPill from './ProgressPill';
 import { useOvenStats } from '../../hooks/utilHooks';
@@ -22,6 +32,7 @@ const truncateText = (text: string | null) => {
 const OvenCard: React.FC<IOvenCardProps> = (props) => {
   const background = useColorModeValue('white', 'cardbgdark');
   const textcolor = useColorModeValue('text2', 'white');
+  const imported = useColorModeValue('blue', 'white');
   const { stats } = useOvenStats(props.oven);
 
   const renderedItems = useMemo(() => {
@@ -33,11 +44,22 @@ const OvenCard: React.FC<IOvenCardProps> = (props) => {
       };
     })();
 
-    const items = [
-      props.type === 'MyOvens' && {
+    const firstItem = () => {
+      if (props.oven.isImported) {
+        return {
+          label: 'Owner',
+          value: truncateText(owner),
+        };
+      }
+
+      return {
         label: 'ID',
         value: `#${id}`,
-      },
+      };
+    };
+
+    const items = [
+      props.type === 'MyOvens' && firstItem(),
       { label: 'Oven address', value: truncateText(address) },
       props.type === 'AllOvens' && {
         label: 'Owner',
@@ -93,6 +115,7 @@ const OvenCard: React.FC<IOvenCardProps> = (props) => {
     props.oven.value.address,
     props.oven.key.owner,
     props.oven.key.id,
+    props.oven.isImported,
     stats?.ovenBalance,
     stats?.outStandingCtez,
     stats?.maxMintableCtez,
@@ -101,8 +124,8 @@ const OvenCard: React.FC<IOvenCardProps> = (props) => {
   ]);
 
   const content = (
-    <Grid
-      gridTemplateColumns="repeat(5, 3fr) 4fr"
+    <Flex
+      direction="column"
       my={6}
       py={4}
       px={10}
@@ -114,11 +137,24 @@ const OvenCard: React.FC<IOvenCardProps> = (props) => {
           : {}
       }
     >
-      {renderedItems}
-    </Grid>
+      {props.oven.isImported && (
+        <Tag
+          variant="outline"
+          color={imported}
+          borderColor={imported}
+          mb={2}
+          w="100px"
+          borderRadius="24px"
+        >
+          <TagLeftIcon boxSize="12px" as={HiDownload} />
+          <TagLabel>Imported</TagLabel>
+        </Tag>
+      )}
+      <Grid gridTemplateColumns="repeat(5, 3fr) 4fr">{renderedItems}</Grid>
+    </Flex>
   );
 
-  if (props.type === 'MyOvens') {
+  if (props.type === 'MyOvens' && !props.oven.isImported) {
     return <Link to={`/myovens/${props.oven.key.id}`}>{content}</Link>;
   }
 
