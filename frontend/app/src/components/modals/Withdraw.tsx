@@ -161,7 +161,7 @@ const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose, oven }) => {
             </FormControl>
           </ModalBody>
           <ModalFooter>
-            <Button w="100%" variant="outline">
+            <Button w="100%" variant="outline" type="submit">
               {buttonText}
             </Button>
           </ModalFooter>

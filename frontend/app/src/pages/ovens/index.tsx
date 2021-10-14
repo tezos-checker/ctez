@@ -1,7 +1,8 @@
 import { Box, Icon, Select, Spacer, Stack, useColorModeValue } from '@chakra-ui/react';
+import { Box, Select, Spacer, Stack, Icon, useColorModeValue, Flex } from '@chakra-ui/react';
 import { MdAdd } from 'react-icons/md';
 import { BsArrowRight } from 'react-icons/bs';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAppDispatch } from '../../redux/store';
 import { useWallet } from '../../wallet/hooks';
@@ -39,7 +40,7 @@ const OvensPage: React.FC = () => {
           onChange={(e) => SetSortType(e.target.value)}
         >
           <option value="Oven Balance">Value</option>
-          <option value="Outstanding">Utilization</option>
+          <option value="utilization">Utilization</option>
         </Select>
 
         <Spacer />

@@ -2,14 +2,17 @@ import {
   Box,
   Divider,
   Flex,
+  Icon,
   Select,
   Stack,
   Text,
+  Tooltip,
   useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
+import { MdInfo } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState, MouseEvent } from 'react';
 import { useDelegates, useOvenDelegate } from '../../api/queries';
 import { useWallet } from '../../wallet/hooks';
 import Button from '../button/Button';
@@ -17,6 +20,7 @@ import { cTezError, delegate } from '../../contracts/ctez';
 import Identicon from '../avatar/Identicon';
 import { AllOvenDatum } from '../../interfaces';
 import SkeletonLayout from '../skeleton';
+import data from '../../assets/data/info.json';
 
 const BakerInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
   const { t } = useTranslation(['common']);
@@ -32,6 +36,28 @@ const BakerInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
   const [delegator, setDelegator] = useState('');
   const [loading, setLoading] = useState(false);
   const [edit, setEdit] = useState(false);
+  const [showcontent, setShowContent] = useState(false);
+  const cardbg = useColorModeValue('bg4', 'darkblue');
+
+  const content = data.map((item) => {
+    if (item.topic === 'oven stats') {
+      return item.content;
+    }
+    return null;
+  });
+
+  const showInfo = useMemo(() => {
+    return (
+      <div>
+        <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
+          <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
+          <Text color="gray.500" fontSize="xs" ml={2}>
+            {content}
+          </Text>
+        </Flex>
+      </div>
+    );
+  }, [content]);
 
   useEffect(() => {
     setDelegator(baker ?? '');
@@ -117,6 +143,11 @@ const BakerInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
     <Stack p={8} spacing={4} borderRadius={16} backgroundColor={background}>
       <Text color={textcolor} fontWeight="600">
         Baker
+        <Tooltip label={showInfo} placement="right" borderRadius={14} backgroundColor={cardbg}>
+          <span>
+            <Icon opacity="0.3" fontSize="lg" color="#B0B7C3" as={MdInfo} m={1} mb={1} />
+          </span>
+        </Tooltip>
       </Text>
 
       <Divider />

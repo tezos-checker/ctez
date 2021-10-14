@@ -1,28 +1,61 @@
 import {
+  Box,
   Center,
   Divider,
   Flex,
+  Icon,
   Skeleton,
   SkeletonText,
   Stack,
   Text,
+  Tooltip,
   useColorModeValue,
 } from '@chakra-ui/react';
+import { useMemo, useState, MouseEvent } from 'react';
+import { MdInfo } from 'react-icons/md';
 import { useOvenStats } from '../../hooks/utilHooks';
 import ProgressPill from './ProgressPill';
 import { AllOvenDatum } from '../../interfaces';
+import { Oven } from '../../interfaces';
+import data from '../../assets/data/info.json';
 
 const OvenStats: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
   const { stats } = useOvenStats(oven);
   const background = useColorModeValue('white', 'cardbgdark');
   const textcolor = useColorModeValue('text2', 'white');
   const text4color = useColorModeValue('text4', 'white');
+  const cardbg = useColorModeValue('bg4', 'darkblue');
+
+  const content = data.map((item) => {
+    if (item.topic === 'oven stats') {
+      return item.content;
+    }
+    return null;
+  });
+
+  const showInfo = useMemo(() => {
+    return (
+      <div>
+        <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
+          <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
+          <Text color="gray.500" fontSize="xs" ml={2}>
+            {content}
+          </Text>
+        </Flex>
+      </div>
+    );
+  }, [content]);
 
   return (
     <Stack p={8} spacing={4} backgroundColor={background} borderRadius={16}>
       <div>
         <Text color={textcolor} fontWeight="600">
           Oven Stats
+          <Tooltip label={showInfo} placement="right" borderRadius={14} backgroundColor={cardbg}>
+            <span>
+              <Icon opacity="0.3" fontSize="lg" color="#B0B7C3" as={MdInfo} m={1} mb={1} />
+            </span>
+          </Tooltip>
         </Text>
 
         {oven?.value.address == null ? (
@@ -48,6 +81,11 @@ const OvenStats: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
 
           <Text color={text4color} fontSize="xs">
             Collateral ratio
+            <Tooltip label={showInfo} placement="right" borderRadius={14} backgroundColor={cardbg}>
+              <span>
+                <Icon opacity="0.3" fontSize="md" color="#B0B7C3" as={MdInfo} m={1} mb={1} />
+              </span>
+            </Tooltip>
           </Text>
         </Stack>
 
@@ -61,6 +99,11 @@ const OvenStats: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
           </Skeleton>
           <Text color={text4color} fontSize="xs">
             Collateral utilization
+            <Tooltip label={showInfo} placement="right" borderRadius={14} backgroundColor={cardbg}>
+              <span>
+                <Icon opacity="0.3" fontSize="md" color="#B0B7C3" as={MdInfo} m={1} mb={1} />
+              </span>
+            </Tooltip>
           </Text>
         </Stack>
       </Flex>

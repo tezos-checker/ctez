@@ -16,6 +16,7 @@ const theme = extendTheme({
     textboxbg: '#3A4776',
     darkblue: '#0A194E',
     bg3: '#FAFBFC',
+    bg4: '#F5F5F5',
     green: '#E5F6EF',
     mildgray: '#4C4C4C',
   },

@@ -1,6 +1,7 @@
 import {
   Button as ChakraButton,
   Flex,
+  Icon,
   Popover,
   PopoverBody,
   PopoverCloseButton,
@@ -16,7 +17,7 @@ import {
   Tr,
   useDisclosure,
 } from '@chakra-ui/react';
-import { useCallback } from 'react';
+import { useCallback, MouseEvent, useState } from 'react';
 import Button from '../button/Button';
 import { trimAddress } from '../../utils/addressUtils';
 import { useWallet } from '../../wallet/hooks';
@@ -28,6 +29,7 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { useUserBalance, useUserLqtData } from '../../api/queries';
 import Identicon from '../avatar/Identicon';
 import { formatNumber as formatNumberUtil } from '../../utils/numbers';
+import { ReactComponent as copy } from '../../assets/images/sidebar/content_copy.svg';
 
 const SignIn: React.FC = () => {
   const [{ pkh: userAddress, network }, setWallet, disconnectWallet] = useWallet();
@@ -85,7 +87,18 @@ const SignIn: React.FC = () => {
           <PopoverHeader>
             <Flex alignItems="center">
               <Identicon type="tzKtCat" seed={userAddress} avatarSize="sm" />
-              <Text ml={2}>{trimAddress(userAddress, 'medium')}</Text>
+              <Text onClick={() => navigator.clipboard.writeText(userAddress)} ml={2}>
+                {trimAddress(userAddress, 'medium')}
+              </Text>
+              <Icon
+                onClick={() => navigator.clipboard.writeText(userAddress)}
+                ml={2}
+                w={3}
+                h={3}
+                color="#62737F"
+                _hover={{ cursor: 'pointer' }}
+                as={copy}
+              />
             </Flex>
           </PopoverHeader>
           <PopoverBody>
