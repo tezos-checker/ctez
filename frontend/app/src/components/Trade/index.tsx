@@ -1,6 +1,5 @@
 import {
   Box,
-  Flex,
   Tabs,
   TabList,
   TabPanels,
@@ -8,6 +7,7 @@ import {
   TabPanel,
   useColorModeValue,
   Icon,
+  useMediaQuery,
 } from '@chakra-ui/react';
 import Swap from './Swap';
 import Liquidity from './Liquidity';
@@ -17,6 +17,8 @@ import { Settings } from './Settings/Settings';
 const Trade: React.FC = () => {
   const tabcolor = useColorModeValue('darkgray', 'darkheading');
   const background = useColorModeValue('white', 'cardbgdark');
+  const [largerScreen] = useMediaQuery(['(min-width: 900px)']);
+
   return (
     <Box
       fontWeight="500"
@@ -26,7 +28,8 @@ const Trade: React.FC = () => {
       maxWidth="400px"
       borderRadius={16}
       p={4}
-      m={4}
+      mx={largerScreen ? 4 : 0}
+      my={4}
     >
       <Tabs>
         <TabList>
