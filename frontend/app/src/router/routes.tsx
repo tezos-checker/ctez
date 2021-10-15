@@ -1,9 +1,11 @@
+import { lazy } from 'react';
 import { ComponentRoute } from '../interfaces';
-import FaqPage from '../pages/faq';
-import HomePage from '../pages/home';
-import OvensPage from '../pages/ovens';
-import OvenIdPage from '../pages/ovens/[ovenId]';
-import TradePage from '../pages/trade';
+
+const FaqPage = lazy(() => import('../pages/faq'));
+const HomePage = lazy(() => import('../pages/home'));
+const OvensPage = lazy(() => import('../pages/ovens'));
+const OvenIdPage = lazy(() => import('../pages/ovens/[ovenId]'));
+const TradePage = lazy(() => import('../pages/trade'));
 
 export const routes: ComponentRoute[] = [
   {
