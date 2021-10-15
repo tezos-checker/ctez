@@ -6,7 +6,6 @@ import {
   Input,
   InputGroup,
   InputRightElement,
-  Spinner,
   Text,
   useColorModeValue,
   useToast,
@@ -23,7 +22,6 @@ import {
   BUTTON_TXT,
   ConversionFormParams,
   FORM_TYPE,
-  TButtonText,
   TFormType,
   TOKEN,
   TToken,
@@ -40,7 +38,6 @@ const Swap: React.FC = () => {
   const [{ pkh: userAddress }] = useWallet();
   const [minBuyValue, setMinBuyValue] = useState(0);
   const [formType, setFormType] = useState<TFormType>(FORM_TYPE.TEZ_CTEZ);
-  const [buttonText, setButtonText] = useState<TButtonText>(BUTTON_TXT.ENTER_AMT);
   const { data: cfmmStorage } = useCfmmStorage();
   const { t } = useTranslation(['common', 'header']);
   const toast = useToast();
@@ -94,7 +91,7 @@ const Swap: React.FC = () => {
     [t],
   );
 
-  const { values, handleChange, handleSubmit, isSubmitting } = useFormik({
+  const { values, handleChange, handleSubmit, isSubmitting, errors } = useFormik({
     onSubmit: async (formData) => {
       try {
         if (!userAddress) {
@@ -147,15 +144,21 @@ const Swap: React.FC = () => {
     }
   }, [cfmmStorage, formType, values.amount]);
 
-  useEffect(() => {
+  const { buttonText, errorList } = useMemo(() => {
+    const errorListLocal = Object.values(errors);
     if (!userAddress) {
-      setButtonText(BUTTON_TXT.CONNECT);
-    } else if (values.amount) {
-      setButtonText(BUTTON_TXT.SWAP);
-    } else {
-      setButtonText(BUTTON_TXT.ENTER_AMT);
+      return { buttonText: BUTTON_TXT.CONNECT, errorList: errorListLocal };
     }
-  }, [buttonText, userAddress, values.amount]);
+    if (values.amount) {
+      if (errorListLocal.length > 0) {
+        return { buttonText: errorListLocal[0], errorList: errorListLocal };
+      }
+
+      return { buttonText: BUTTON_TXT.SWAP, errorList: errorListLocal };
+    }
+
+    return { buttonText: BUTTON_TXT.ENTER_AMT, errorList: errorListLocal };
+  }, [errors, userAddress, values.amount]);
 
   return (
     <form autoComplete="off" onSubmit={handleSubmit}>
@@ -216,6 +219,7 @@ const Swap: React.FC = () => {
         mt={4}
         p={6}
         type="submit"
+        disabled={isSubmitting || errorList.length > 0}
         isLoading={isSubmitting}
         leftIcon={buttonText === BUTTON_TXT.CONNECT ? <MdAdd /> : undefined}
       >
