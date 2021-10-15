@@ -29,7 +29,7 @@ const OvensPage: React.FC = () => {
   };
 
   return (
-    <Box m={2} p={8}>
+    <Box maxWidth={1200} mx="auto" my={4} p={4}>
       <Stack direction="row">
         <Select
           color="#B0B7C3"

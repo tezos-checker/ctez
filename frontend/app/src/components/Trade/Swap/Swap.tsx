@@ -10,7 +10,6 @@ import {
   useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
-import { validateAddress } from '@taquito/utils';
 import { MdAdd, MdSwapVert } from 'react-icons/md';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { number, object } from 'yup';
@@ -23,7 +22,6 @@ import {
   BUTTON_TXT,
   ConversionFormParams,
   FORM_TYPE,
-  TButtonText,
   TFormType,
   TOKEN,
   TToken,
@@ -34,12 +32,12 @@ import { logger } from '../../../utils/logger';
 import { useSetCtezBaseStatsToStore } from '../../../hooks/setApiDataToStore';
 import { useAppSelector } from '../../../redux/store';
 import Button from '../../button/Button';
+import { useTxLoader } from '../../../hooks/utilHooks';
 
 const Swap: React.FC = () => {
   const [{ pkh: userAddress }] = useWallet();
   const [minBuyValue, setMinBuyValue] = useState(0);
-  const [formType, setFormType] = useState<TFormType>(FORM_TYPE.CTEZ_TEZ);
-  const [buttonText, setButtonText] = useState<TButtonText>(BUTTON_TXT.ENTER_AMT);
+  const [formType, setFormType] = useState<TFormType>(FORM_TYPE.TEZ_CTEZ);
   const { data: cfmmStorage } = useCfmmStorage();
   const { t } = useTranslation(['common', 'header']);
   const toast = useToast();
@@ -48,6 +46,7 @@ const Swap: React.FC = () => {
   const text2 = useColorModeValue('text2', 'darkheading');
   const text4 = useColorModeValue('text4', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
+  const handleProcessing = useTxLoader();
 
   const { slippage, deadline: deadlineFromStore } = useAppSelector((state) => state.trade);
 
@@ -56,7 +55,7 @@ const Swap: React.FC = () => {
       return (
         <InputRightElement backgroundColor="transparent" w={24}>
           <TezIcon height={28} width={28} />
-          <Text mx={1}>XTZ</Text>
+          <Text mx={1}>tez</Text>
         </InputRightElement>
       );
     }
@@ -64,7 +63,7 @@ const Swap: React.FC = () => {
     return (
       <InputRightElement backgroundColor="transparent" w={24}>
         <CTezIcon height={28} width={28} />
-        <Text mx={1}>CTEZ</Text>
+        <Text mx={1}>ctez</Text>
       </InputRightElement>
     );
   }, []);
@@ -92,7 +91,7 @@ const Swap: React.FC = () => {
     [t],
   );
 
-  const { values, handleChange, handleSubmit, isSubmitting } = useFormik({
+  const { values, handleChange, handleSubmit, isSubmitting, errors } = useFormik({
     onSubmit: async (formData) => {
       try {
         if (!userAddress) {
@@ -116,13 +115,7 @@ const Swap: React.FC = () => {
                 },
                 userAddress,
               );
-        if (result) {
-          toast({
-            status: 'success',
-            description: t('txSubmitted'),
-            duration: 5000,
-          });
-        }
+        handleProcessing(result);
       } catch (error) {
         logger.warn(error);
         const errorText = cfmmError[error.data[1].with.int as number] || t('txFailed');
@@ -151,15 +144,21 @@ const Swap: React.FC = () => {
     }
   }, [cfmmStorage, formType, values.amount]);
 
-  useEffect(() => {
+  const { buttonText, errorList } = useMemo(() => {
+    const errorListLocal = Object.values(errors);
     if (!userAddress) {
-      setButtonText(BUTTON_TXT.CONNECT);
-    } else if (values.amount) {
-      setButtonText(BUTTON_TXT.SWAP);
-    } else {
-      setButtonText(BUTTON_TXT.ENTER_AMT);
+      return { buttonText: BUTTON_TXT.CONNECT, errorList: errorListLocal };
     }
-  }, [buttonText, userAddress, values.amount]);
+    if (values.amount) {
+      if (errorListLocal.length > 0) {
+        return { buttonText: errorListLocal[0], errorList: errorListLocal };
+      }
+
+      return { buttonText: BUTTON_TXT.SWAP, errorList: errorListLocal };
+    }
+
+    return { buttonText: BUTTON_TXT.ENTER_AMT, errorList: errorListLocal };
+  }, [errors, userAddress, values.amount]);
 
   return (
     <form autoComplete="off" onSubmit={handleSubmit}>
@@ -207,7 +206,7 @@ const Swap: React.FC = () => {
       <Flex justifyContent="space-between">
         <Text fontSize="xs">Rate</Text>
         <Text color="#4E5D78" fontSize="xs">
-          1 XTZ = {(1 / Number(baseStats?.currentPrice ?? 1)).toFixed(6)} CTEZ
+          1 tez = {(1 / Number(baseStats?.currentPrice ?? 1)).toFixed(6)} ctez
         </Text>
       </Flex>
       <Flex justifyContent="space-between">
@@ -220,6 +219,7 @@ const Swap: React.FC = () => {
         mt={4}
         p={6}
         type="submit"
+        disabled={isSubmitting || errorList.length > 0}
         isLoading={isSubmitting}
         leftIcon={buttonText === BUTTON_TXT.CONNECT ? <MdAdd /> : undefined}
       >

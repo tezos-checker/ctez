@@ -4,9 +4,10 @@ import { closeModal } from '../../redux/slices/UiSlice';
 import { MODAL_NAMES } from '../../constants/modals';
 import TrackOven from './TrackOven';
 import { useWallet } from '../../wallet/hooks';
+import InfoModal from './InfoModal';
 
 const ModalContainer: React.FC = () => {
-  const openedModal = useAppSelector((state) => state.ui.modal.open);
+  const { open, opHash } = useAppSelector((state) => state.ui.modal);
   const dispatch = useAppDispatch();
   const [{ pkh: userAddress }] = useWallet();
 
@@ -17,11 +18,10 @@ const ModalContainer: React.FC = () => {
   return (
     <>
       {userAddress && (
-        <CreateOven isOpen={openedModal === MODAL_NAMES.CREATE_OVEN} onClose={handleClose} />
+        <CreateOven isOpen={open === MODAL_NAMES.CREATE_OVEN} onClose={handleClose} />
       )}
-      {userAddress && (
-        <TrackOven isOpen={openedModal === MODAL_NAMES.TRACK_OVEN} onClose={handleClose} />
-      )}
+      {userAddress && <TrackOven isOpen={open === MODAL_NAMES.TRACK_OVEN} onClose={handleClose} />}
+      <InfoModal open={open === MODAL_NAMES.TX_SUBMITTED} onClose={handleClose} opHash={opHash} />
     </>
   );
 };
