@@ -3,6 +3,7 @@ export interface BaseRoute {
   props?: unknown;
   Component?: React.ReactNode;
   exact?: boolean;
+  pageTitle?: string;
 }
 
 export interface ComponentRoute extends BaseRoute {
