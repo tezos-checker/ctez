@@ -4,7 +4,7 @@ export interface ConversionFormParams {
   to: string;
   slippage: number;
   deadline: number;
-  amount: number;
+  amount: number | undefined;
 }
 
 export const BUTTON_TXT = {

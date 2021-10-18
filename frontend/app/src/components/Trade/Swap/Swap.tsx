@@ -16,6 +16,7 @@ import { number, object } from 'yup';
 import { useTranslation } from 'react-i18next';
 import { useFormik } from 'formik';
 import { addMinutes } from 'date-fns/fp';
+import * as Yup from 'yup';
 import { useWallet } from '../../../wallet/hooks';
 import { useCfmmStorage, useUserBalance } from '../../../api/queries';
 import {
@@ -75,28 +76,28 @@ const Swap: React.FC = () => {
       to: userAddress ?? '',
       slippage: Number(slippage),
       deadline: Number(deadlineFromStore),
-      amount: 0,
+      amount: undefined,
     }),
     [deadlineFromStore, slippage, userAddress],
   );
 
-  const validationSchema = useMemo(
-    () =>
-      object().shape({
-        slippage: number().min(0).optional(),
-        deadline: number().min(0).required(t('required')),
-        amount: number()
-          .min(0.000001, `${t('shouldMinimum')} 0.000001`)
-          .positive(t('shouldPositive'))
-          .required(t('required')),
-      }),
-    [t],
-  );
+  const maxValue = (): number =>
+    formType === FORM_TYPE.CTEZ_TEZ ? balance?.ctez || 0.0 : balance?.xtz || 0.0;
+
+  const validationSchema = Yup.object().shape({
+    slippage: Yup.number().min(0).optional(),
+    deadline: Yup.number().min(0).required(t('required')),
+    amount: Yup.number()
+      .positive(t('shouldPositive'))
+      .min(0.000001, `${t('shouldMinimum')} 0.000001`)
+      .max(maxValue(), `${t('insufficientBalance')}`)
+      .required(t('required')),
+  });
 
   const { values, handleChange, handleSubmit, isSubmitting, errors } = useFormik({
     onSubmit: async (formData) => {
       try {
-        if (!userAddress) {
+        if (!userAddress || !formData.amount) {
           return;
         }
         const deadline = addMinutes(deadlineFromStore)(new Date());
@@ -133,7 +134,7 @@ const Swap: React.FC = () => {
   });
 
   useEffect(() => {
-    if (cfmmStorage) {
+    if (cfmmStorage && values.amount) {
       const { tokenPool, cashPool } = cfmmStorage;
       const cashSold = values.amount * 1e6;
       const [aPool, bPool] =
@@ -147,6 +148,7 @@ const Swap: React.FC = () => {
   }, [cfmmStorage, formType, values.amount]);
 
   const { buttonText, errorList } = useMemo(() => {
+    logger.info(errors);
     const errorListLocal = Object.values(errors);
     if (!userAddress) {
       return { buttonText: BUTTON_TXT.CONNECT, errorList: errorListLocal };
@@ -173,6 +175,7 @@ const Swap: React.FC = () => {
             name="amount"
             id="amount"
             type="number"
+            placeholder="0.0"
             color={text4}
             bg={inputbg}
             value={values.amount}
@@ -181,7 +184,7 @@ const Swap: React.FC = () => {
           {getRightElement(formType === FORM_TYPE.CTEZ_TEZ ? TOKEN.CTez : TOKEN.Tez)}
         </InputGroup>
         <Text color={text4Text4} fontSize="xs" mt={1}>
-          Balance: {balance?.xtz}
+          Balance: {formType === FORM_TYPE.CTEZ_TEZ ? balance?.ctez : balance?.xtz}
         </Text>
       </FormControl>
 
@@ -203,11 +206,11 @@ const Swap: React.FC = () => {
           To (estimate)
         </FormLabel>
         <InputGroup>
-          <Input color={text4} bg={inputbg} value={minBuyValue} type="number" />
+          <Input isReadOnly color={text4} bg={inputbg} value={minBuyValue} type="number" />
           {getRightElement(formType === FORM_TYPE.CTEZ_TEZ ? TOKEN.Tez : TOKEN.CTez)}
         </InputGroup>
         <Text color={text4Text4} fontSize="xs" mt={1}>
-          Balance: {balance?.ctez}
+          Balance: {formType === FORM_TYPE.CTEZ_TEZ ? balance?.xtz : balance?.ctez}
         </Text>
       </FormControl>
 

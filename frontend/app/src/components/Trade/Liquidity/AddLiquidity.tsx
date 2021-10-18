@@ -11,12 +11,12 @@ import {
 } from '@chakra-ui/react';
 import { MdAdd } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
-import { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { number, object } from 'yup';
 import { addMinutes } from 'date-fns/fp';
 import { useFormik } from 'formik';
 import { useWallet } from '../../../wallet/hooks';
-import { useCfmmStorage } from '../../../api/queries';
+import { useCfmmStorage, useUserBalance } from '../../../api/queries';
 
 import { AddLiquidityParams } from '../../../interfaces';
 import { ADD_BTN_TXT, IAddLiquidityForm, TAddBtnTxt } from '../../../constants/liquidity';
@@ -33,10 +33,12 @@ const AddLiquidity: React.FC = () => {
   const [minLQT, setMinLQT] = useState(0);
   const [buttonText, setButtonText] = useState<TAddBtnTxt>(BUTTON_TXT.ENTER_AMT);
   const { data: cfmmStorage } = useCfmmStorage();
+  const { data: balance } = useUserBalance(userAddress);
   const { t } = useTranslation();
   const toast = useToast();
   const text2 = useColorModeValue('text2', 'darkheading');
   const text4 = useColorModeValue('text4', 'darkheading');
+  const text4Text4 = useColorModeValue('text4', 'text4');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
   const { slippage, deadline: deadlineFromStore } = useAppSelector((state) => state.trade);
   const handleProcessing = useTxLoader();
@@ -64,7 +66,7 @@ const AddLiquidity: React.FC = () => {
   const initialValues: any = {
     slippage: Number(slippage),
     deadline: Number(deadlineFromStore),
-    amount: '',
+    amount: undefined,
   };
 
   const validationSchema = object().shape({
@@ -77,7 +79,7 @@ const AddLiquidity: React.FC = () => {
   });
 
   const handleFormSubmit = async (formData: IAddLiquidityForm) => {
-    if (userAddress) {
+    if (userAddress && formData.amount) {
       try {
         const deadline = addMinutes(deadlineFromStore)(new Date());
         const data: AddLiquidityParams = {
@@ -126,7 +128,14 @@ const AddLiquidity: React.FC = () => {
         <Text color={text2}>Add liquidity</Text>
 
         <Flex alignItems="center" justifyContent="space-between">
-          <FormControl id="to-input-amount" mt={-2} mb={6} w="45%">
+          <FormControl
+            display="flex"
+            flexDirection="column"
+            id="to-input-amount"
+            mt={-2}
+            mb={6}
+            w="45%"
+          >
             <FormLabel color={text2} fontSize="xs">
               tez to deposit
             </FormLabel>
@@ -134,14 +143,21 @@ const AddLiquidity: React.FC = () => {
               type="number"
               name="amount"
               id="amount"
+              placeholder="0.0"
               color={text4}
               bg={inputbg}
               value={values.amount}
               onChange={handleChange}
             />
+            <Text color={text4Text4} fontSize="xs" mt={1}>
+              Balance: {balance?.xtz}
+            </Text>
           </FormControl>
 
-          <Icon as={MdAdd} />
+          <Flex mt={-2} mb={6}>
+            <Icon as={MdAdd} />
+          </Flex>
+
           <FormControl id="to-input-amount" mt={-2} mb={6} w="45%">
             <FormLabel color={text2} fontSize="xs">
               ctez to deposit(approx)
@@ -154,6 +170,9 @@ const AddLiquidity: React.FC = () => {
               placeholder="0.0"
               type="number"
             />
+            <Text color={text4Text4} fontSize="xs" mt={1}>
+              Balance: {balance?.ctez}
+            </Text>
           </FormControl>
         </Flex>
 

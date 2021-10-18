@@ -21,7 +21,7 @@ export const AppRouter: React.FC = () => {
 
   return (
     <Router>
-      <Flex h="100vh">
+      <Flex minHeight="100vh">
         <Sidebar
           handleCollapsed={handleCollapsed}
           handleToggled={handleToggled}
