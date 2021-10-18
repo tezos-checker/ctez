@@ -11,13 +11,13 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { MdAdd, MdSwapVert } from 'react-icons/md';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { number, object } from 'yup';
 import { useTranslation } from 'react-i18next';
 import { useFormik } from 'formik';
 import { addMinutes } from 'date-fns/fp';
 import { useWallet } from '../../../wallet/hooks';
-import { useCfmmStorage } from '../../../api/queries';
+import { useCfmmStorage, useUserBalance } from '../../../api/queries';
 import {
   BUTTON_TXT,
   ConversionFormParams,
@@ -39,12 +39,14 @@ const Swap: React.FC = () => {
   const [minBuyValue, setMinBuyValue] = useState(0);
   const [formType, setFormType] = useState<TFormType>(FORM_TYPE.TEZ_CTEZ);
   const { data: cfmmStorage } = useCfmmStorage();
+  const { data: balance } = useUserBalance(userAddress);
   const { t } = useTranslation(['common', 'header']);
   const toast = useToast();
   useSetCtezBaseStatsToStore(userAddress);
   const baseStats = useAppSelector((state) => state.stats?.baseStats);
   const text2 = useColorModeValue('text2', 'darkheading');
   const text4 = useColorModeValue('text4', 'darkheading');
+  const text4Text4 = useColorModeValue('text4', 'text4');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
   const handleProcessing = useTxLoader();
 
@@ -178,6 +180,9 @@ const Swap: React.FC = () => {
           />
           {getRightElement(formType === FORM_TYPE.CTEZ_TEZ ? TOKEN.CTez : TOKEN.Tez)}
         </InputGroup>
+        <Text color={text4Text4} fontSize="xs" mt={1}>
+          Balance: {balance?.xtz}
+        </Text>
       </FormControl>
 
       <Flex justifyContent="center" mt={2}>
@@ -201,6 +206,9 @@ const Swap: React.FC = () => {
           <Input color={text4} bg={inputbg} value={minBuyValue} type="number" />
           {getRightElement(formType === FORM_TYPE.CTEZ_TEZ ? TOKEN.Tez : TOKEN.CTez)}
         </InputGroup>
+        <Text color={text4Text4} fontSize="xs" mt={1}>
+          Balance: {balance?.ctez}
+        </Text>
       </FormControl>
 
       <Flex justifyContent="space-between">
