@@ -17,7 +17,7 @@ const FaqPage: React.FC = () => {
   const background = useColorModeValue('white', 'cardbgdark');
   const text2 = useColorModeValue('text2', 'darkheading');
 
-  const faq1 = data.map((item) => {
+  const faq1 = data.faq1.map((item) => {
     return (
       <Accordion key={item.id} allowMultiple>
         <AccordionItem border="none" mx={5} my={2}>
@@ -38,7 +38,7 @@ const FaqPage: React.FC = () => {
     );
   });
 
-  const faq2 = data.map((item) => {
+  const faq2 = data.faq2.map((item) => {
     return (
       <Accordion key={item.id} allowMultiple>
         <AccordionItem border="none" mx={5} my={2}>

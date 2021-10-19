@@ -65,7 +65,7 @@ const MintableOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => 
           <Stack>
             <Skeleton isLoaded={stats?.outStandingCtez != null}>
               <Text color="4E5D78" fontWeight="600" fontSize="lg">
-                {stats?.outStandingCtez ?? 0} tez
+                {stats?.outStandingCtez ?? 0} ctez
               </Text>
             </Skeleton>
 
@@ -91,7 +91,7 @@ const MintableOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => 
           <Stack>
             <Skeleton isLoaded={stats?.maxMintableCtez != null}>
               <Text color="4E5D78" fontWeight="600" fontSize="lg">
-                {stats?.maxMintableCtez ?? 0} tez
+                {stats?.maxMintableCtez ?? 0} ctez
               </Text>
             </Skeleton>
 
@@ -117,7 +117,7 @@ const MintableOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => 
           <Stack>
             <Skeleton isLoaded={stats?.remainingMintableCtez != null}>
               <Text color="4E5D78" fontWeight="600" fontSize="lg">
-                {stats?.remainingMintableCtez ?? 0} tez
+                {stats?.remainingMintableCtez ?? 0} ctez
               </Text>
             </Skeleton>
 
