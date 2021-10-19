@@ -196,7 +196,7 @@ export const Sidebar: React.FC<Props> = ({
               <Link to="/faq">FAQ</Link>
             </MenuItem>
             <MenuItem icon={<Github />}>
-              <a href="https://github.com" target="_blank" rel="noreferrer">
+              <a href="https://github.com/Tezsure/ctez" target="_blank" rel="noreferrer">
                 GitHub
               </a>
             </MenuItem>
