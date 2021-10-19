@@ -21,6 +21,7 @@ import Identicon from '../avatar/Identicon';
 import { AllOvenDatum } from '../../interfaces';
 import SkeletonLayout from '../skeleton';
 import data from '../../assets/data/info.json';
+import { useTxLoader } from '../../hooks/utilHooks';
 
 const BakerInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
   const { t } = useTranslation(['common']);
@@ -37,6 +38,7 @@ const BakerInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
   const [loading, setLoading] = useState(false);
   const [edit, setEdit] = useState(false);
   const cardbg = useColorModeValue('bg4', 'darkblue');
+  const handleProcessing = useTxLoader();
 
   const showInfo = useMemo(() => {
     return (
@@ -65,6 +67,7 @@ const BakerInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
           status: 'success',
         });
       }
+      handleProcessing(result);
     } catch (error) {
       const errorText = cTezError[error?.data?.[1].with.int as number] || t('txFailed');
       toast({

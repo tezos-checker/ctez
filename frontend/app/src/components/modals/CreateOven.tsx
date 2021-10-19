@@ -30,6 +30,7 @@ import Button from '../button/Button';
 import DepositorsInput from '../input/DepositorsInput';
 import { makeLastOvenIdSelector } from '../../hooks/reduxSelectors';
 import { useAppSelector } from '../../redux/store';
+import { useTxLoader } from '../../hooks/utilHooks';
 
 interface ICreateOvenProps {
   isOpen: boolean;
@@ -63,6 +64,7 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
   const text1 = useColorModeValue('text1', 'darkheading');
   const selectLastOvenId = useMemo(makeLastOvenIdSelector, []);
+  const handleProcessing = useTxLoader();
 
   const lastOvenId = useAppSelector((state) => selectLastOvenId(state, userAddress));
 
@@ -144,6 +146,7 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
           });
           onClose();
         }
+        handleProcessing(result);
       } catch (error) {
         logger.error(error);
         const errorText = cTezError[error?.data?.[1].with.int as number] || t('txFailed');

@@ -133,14 +133,13 @@ const AddLiquidity: React.FC = () => {
             flexDirection="column"
             id="to-input-amount"
             mt={-2}
-            mb={6}
+            mb={4}
             w="45%"
           >
             <FormLabel color={text2} fontSize="xs">
               tez to deposit
             </FormLabel>
             <Input
-              type="number"
               name="amount"
               id="amount"
               placeholder="0.0"

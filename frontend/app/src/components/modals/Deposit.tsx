@@ -26,8 +26,9 @@ import { cTezError, deposit } from '../../contracts/ctez';
 import { logger } from '../../utils/logger';
 
 import Button from '../button/Button';
-import { CTezIcon } from '../icons';
+import { CTezIcon, TezIcon } from '../icons';
 import { AllOvenDatum } from '../../interfaces';
+import { useTxLoader } from '../../hooks/utilHooks';
 
 interface IDepositProps {
   isOpen: boolean;
@@ -42,14 +43,15 @@ const Deposit: React.FC<IDepositProps> = ({ isOpen, onClose, oven }) => {
   const text2 = useColorModeValue('text2', 'darkheading');
   const text4 = useColorModeValue('text4', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
+  const handleProcessing = useTxLoader();
 
   const getRightElement = useCallback(
     (token: TToken) => {
       return (
         <InputRightElement backgroundColor="transparent" w={24} color={text2}>
-          <CTezIcon height={28} width={28} />
+          <TezIcon height={28} width={28} />
           <Text fontWeight="500" mx={2}>
-            ctez
+            tez
           </Text>
         </InputRightElement>
       );
@@ -70,6 +72,7 @@ const Deposit: React.FC<IDepositProps> = ({ isOpen, onClose, oven }) => {
     if (oven?.value.address) {
       try {
         const result = await deposit(oven.value.address, data.amount);
+        handleProcessing(result);
         if (result) {
           toast({
             description: t('txSubmitted'),

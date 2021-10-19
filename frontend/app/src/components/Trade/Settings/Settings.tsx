@@ -56,7 +56,7 @@ const Settings: React.FC = () => {
       </Heading>
       <FormControl id="from-input-amount">
         <FormLabel color={text2} fontSize="xs" mt={6} mb={3}>
-          Max spillage %
+          Max slippage %
         </FormLabel>
         <InputGroup>
           <NumberInput
@@ -75,9 +75,6 @@ const Settings: React.FC = () => {
             </NumberInputStepper>
           </NumberInput>
         </InputGroup>
-        <FormLabel color={text2} fontSize="md" mt={6} mb={3}>
-          Min ctez bought (approx.): 0
-        </FormLabel>
         <FormLabel color={text2} fontSize="xs" mt={6} mb={3}>
           Transaction Timeout
         </FormLabel>

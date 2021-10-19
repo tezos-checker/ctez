@@ -1,10 +1,15 @@
 import { Flex, HStack, Stack, Text, useColorModeValue, useMediaQuery } from '@chakra-ui/react';
+import { Link } from 'react-router-dom';
 import Button from '../../components/button/Button';
 import Trade from '../../components/Trade';
+import { MODAL_NAMES } from '../../constants/modals';
+import { openModal } from '../../redux/slices/UiSlice';
+import { useAppDispatch } from '../../redux/store';
 
 const HomePage: React.FC = () => {
   const textcolor = useColorModeValue('darkgray', 'white');
   const [largerScreen] = useMediaQuery(['(min-width: 900px)']);
+  const dispatch = useAppDispatch();
 
   return (
     <Flex maxWidth={1200} mx="auto" height="calc(100vh - 72px)" alignItems="center">
@@ -26,11 +31,19 @@ const HomePage: React.FC = () => {
             without the thorny question of "who's baking".
           </Text>
           <HStack mt={6} w="60%" justifyContent="space-between" spacing="24px">
-            <Button variant="solid" w="50%">
-              Enter App
+            <Button
+              variant="solid"
+              w="50%"
+              onClick={() => dispatch(openModal(MODAL_NAMES.CREATE_OVEN))}
+            >
+              Create Oven
             </Button>
-            <Button variant="outline" w="50%">
-              Learn more
+            <Button variant="ghost" w="50%">
+              <Link to="/faq">
+                <Button variant="outline" w="200px">
+                  Learn more
+                </Button>
+              </Link>
             </Button>
           </HStack>
         </Stack>

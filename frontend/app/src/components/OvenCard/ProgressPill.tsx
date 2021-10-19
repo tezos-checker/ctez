@@ -1,4 +1,4 @@
-import { Box, Stack, Text, useColorModeValue } from '@chakra-ui/react';
+import { Box, Flex, Stack, Text, useColorModeValue, VStack, Wrap } from '@chakra-ui/react';
 
 interface IProgressPill {
   value: number;

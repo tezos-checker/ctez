@@ -20,7 +20,7 @@ const Liquidity: React.FC = () => {
   const cardbg = useColorModeValue('bg3', 'darkblue');
 
   return (
-    <Stack spacing={6}>
+    <Stack spacing={5}>
       <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
         <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
         <Text color="gray.500" fontSize="xs" ml={2}>

@@ -31,6 +31,7 @@ import Button from '../button/Button';
 import { BUTTON_TXT, TButtonText, TOKEN, TToken } from '../../constants/swap';
 import { CTezIcon } from '../icons';
 import { AllOvenDatum } from '../../interfaces';
+import { useTxLoader } from '../../hooks/utilHooks';
 
 interface IMintProps {
   isOpen: boolean;
@@ -47,6 +48,7 @@ const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
   const text1 = useColorModeValue('text1', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
   const cardbg = useColorModeValue('bg3', 'darkblue');
+  const handleProcessing = useTxLoader();
 
   const getRightElement = useCallback(
     (token: TToken) => {
@@ -112,6 +114,7 @@ const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
             status: 'success',
           });
         }
+        handleProcessing(result);
       } catch (error) {
         logger.warn(error);
         const errorText = cTezError[error.data[1].with.int as number] || t('txFailed');

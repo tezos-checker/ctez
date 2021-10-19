@@ -30,6 +30,7 @@ import Button from '../button/Button';
 import { CTezIcon } from '../icons';
 import { BUTTON_TXT, TButtonText } from '../../constants/swap';
 import { AllOvenDatum } from '../../interfaces';
+import { useTxLoader } from '../../hooks/utilHooks';
 
 interface IWithdrawProps {
   isOpen: boolean;
@@ -47,6 +48,7 @@ const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose, oven }) => {
   const cardbg = useColorModeValue('bg3', 'darkblue');
   const [{ pkh: userAddress }] = useWallet();
   const toast = useToast();
+  const handleProcessing = useTxLoader();
   const initialValues: any = {
     amount: '',
     to: userAddress ?? '',
@@ -77,6 +79,7 @@ const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose, oven }) => {
     if (oven?.key.id) {
       try {
         const result = await withdraw(Number(oven.key.id), data.amount, data.to);
+        handleProcessing(result);
         if (result) {
           toast({
             description: t('txSubmitted'),

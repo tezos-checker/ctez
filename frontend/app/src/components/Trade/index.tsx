@@ -30,6 +30,7 @@ const Trade: React.FC = () => {
       p={4}
       mx={largerScreen ? 4 : 0}
       my={4}
+      mt={20}
     >
       <Tabs>
         <TabList>
