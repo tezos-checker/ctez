@@ -25,6 +25,7 @@ import { trimAddress } from '../../utils/addressUtils';
 import { useWallet } from '../../wallet/hooks';
 import { addRemoveDepositorList, cTezError, enableDisableAnyDepositor } from '../../contracts/ctez';
 import { logger } from '../../utils/logger';
+import { useTxLoader } from '../../hooks/utilHooks';
 
 interface IChangeDepositorProps {
   canAnyoneDeposit: boolean;
@@ -55,6 +56,7 @@ const ChangeDepositor: React.FC<IChangeDepositorProps> = (props) => {
     onChange: setDepType,
   });
   const group = getRootProps();
+  const handleProcessing = useTxLoader();
 
   useEffect(() => {
     if (props.isOpen && depositors.length === 0 && props.ovenStorage) {

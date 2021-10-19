@@ -29,6 +29,7 @@ import Button from '../button/Button';
 import { BUTTON_TXT, TButtonText, TOKEN, TToken } from '../../constants/swap';
 import { CTezIcon } from '../icons';
 import { AllOvenDatum } from '../../interfaces';
+import { useTxLoader } from '../../hooks/utilHooks';
 
 interface IBurnProps {
   isOpen: boolean;
@@ -45,6 +46,7 @@ const Burn: React.FC<IBurnProps> = ({ isOpen, onClose, oven }) => {
   const text1 = useColorModeValue('text1', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
   const cardbg = useColorModeValue('bg3', 'darkblue');
+  const handleProcessing = useTxLoader();
 
   const getRightElement = useCallback(
     (token: TToken) => {
@@ -92,6 +94,7 @@ const Burn: React.FC<IBurnProps> = ({ isOpen, onClose, oven }) => {
       try {
         const amount = -data.amount;
         const result = await mintOrBurn(Number(oven.key.id), amount);
+        handleProcessing(result);
         if (result) {
           toast({
             description: t('txSubmitted'),

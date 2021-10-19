@@ -203,7 +203,7 @@ const Swap: React.FC = () => {
 
       <FormControl id="to-input-amount" mt={-2} mb={6}>
         <FormLabel color={text2} fontSize="xs">
-          To (estimate)
+          To
         </FormLabel>
         <InputGroup>
           <Input isReadOnly color={text4} bg={inputbg} value={minBuyValue} type="number" />

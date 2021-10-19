@@ -7,6 +7,7 @@ import {
   Stack,
   useColorModeValue,
   useToast,
+  Text,
 } from '@chakra-ui/react';
 import { MdAdd } from 'react-icons/md';
 import { addMinutes } from 'date-fns/fp';
@@ -19,10 +20,11 @@ import { RemoveLiquidityParams } from '../../../interfaces';
 import { cfmmError, removeLiquidity } from '../../../contracts/cfmm';
 import { IRemoveLiquidityForm, TRemoveBtnTxt, REMOVE_BTN_TXT } from '../../../constants/liquidity';
 import { useWallet } from '../../../wallet/hooks';
-import { useCfmmStorage } from '../../../api/queries';
+import { useCfmmStorage, useUserLqtData } from '../../../api/queries';
 import Button from '../../button/Button';
 import { useAppSelector } from '../../../redux/store';
 import { useTxLoader } from '../../../hooks/utilHooks';
+import { formatNumber } from '../../../utils/numbers';
 
 const RemoveLiquidity: React.FC = () => {
   const [{ pkh: userAddress }] = useWallet();
@@ -37,8 +39,10 @@ const RemoveLiquidity: React.FC = () => {
   const text2 = useColorModeValue('text2', 'darkheading');
   const text4 = useColorModeValue('text4', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
+  const text4Text4 = useColorModeValue('text4', 'text4');
   const { slippage, deadline: deadlineFromStore } = useAppSelector((state) => state.trade);
   const handleProcessing = useTxLoader();
+  const { data: userLqtData } = useUserLqtData(userAddress);
 
   const calcMinValues = useCallback(
     (lqtBurned: number) => {
@@ -50,9 +54,9 @@ const RemoveLiquidity: React.FC = () => {
       } else if (cfmmStorage) {
         const { cashPool, tokenPool, lqtTotal } = cfmmStorage;
         const cashWithdraw =
-          ((lqtBurned * cashPool.toNumber()) / lqtTotal.toNumber()) * (1 - slippage * 0.01);
+          ((lqtBurned * 1e6 * cashPool.toNumber()) / lqtTotal.toNumber()) * (1 - slippage * 0.01);
         const tokenWithdraw =
-          ((lqtBurned * tokenPool.toNumber()) / lqtTotal.toNumber()) * (1 - slippage * 0.01);
+          ((lqtBurned * 1e6 * tokenPool.toNumber()) / lqtTotal.toNumber()) * (1 - slippage * 0.01);
         setOtherValues({
           cashWithdraw: Number((cashWithdraw / 1e6).toFixed(6)),
           tokenWithdraw: Number((tokenWithdraw / 1e6).toFixed(6)),
@@ -73,11 +77,7 @@ const RemoveLiquidity: React.FC = () => {
     to: string().test({
       test: (value: any) => validateAddress(value) === 3,
     }),
-    lqtBurned: number()
-      .min(1, `${t('shouldMinimum')} 1`)
-      .positive(t('shouldPositive'))
-      .integer(t('shouldInteger'))
-      .required(t('required')),
+    lqtBurned: number().positive(t('shouldPositive')).required(t('required')),
     deadline: number().min(0).optional(),
     slippage: number().min(0).optional(),
   });
@@ -89,7 +89,7 @@ const RemoveLiquidity: React.FC = () => {
         const data: RemoveLiquidityParams = {
           deadline,
           to: formData.to,
-          lqtBurned: formData.lqtBurned,
+          lqtBurned: formData.lqtBurned * 1e6,
           minCashWithdrawn: otherValues.cashWithdraw,
           minTokensWithdrawn: otherValues.tokenWithdraw,
         };
@@ -133,14 +133,19 @@ const RemoveLiquidity: React.FC = () => {
             LQT to burn
           </FormLabel>
           <Input
-            type="number"
             name="lqtBurned"
             id="lqtBurned"
             value={values.lqtBurned}
             color={text4}
             bg={inputbg}
             onChange={handleChange}
+            placeholder="0.0"
           />
+          {typeof userLqtData?.lqt !== 'undefined' && (
+            <Text color={text4Text4} fontSize="xs" mt={1}>
+              Balance: {formatNumber(userLqtData?.lqt)}
+            </Text>
+          )}
         </FormControl>
 
         <Flex alignItems="center" justifyContent="space-between">

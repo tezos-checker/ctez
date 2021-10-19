@@ -116,15 +116,15 @@ const SignIn: React.FC = () => {
                     </Tr>
                   </>
                 )}
-                {typeof userOvenData !== 'undefined' && (
+                {typeof balance !== 'undefined' && (
                   <>
                     <Tr>
                       <Td>ꜩ in ovens:</Td>
-                      <Td textAlign="right">{formatNumber(userOvenData?.xtz)}</Td>
+                      <Td textAlign="right">{formatNumber(balance.tezInOvens, 0)}</Td>
                     </Tr>
                     <Tr>
                       <Td>cꜩ outstanding:</Td>
-                      <Td textAlign="right">{formatNumber(userOvenData?.ctez)}</Td>
+                      <Td textAlign="right">{formatNumber(balance.ctezOutstanding, 0)}</Td>
                     </Tr>
                   </>
                 )}

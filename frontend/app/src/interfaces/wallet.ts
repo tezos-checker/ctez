@@ -16,4 +16,6 @@ export interface IWalletContext {
 export interface UserBalance {
   xtz: number;
   ctez: number;
+  tezInOvens: number;
+  ctezOutstanding: number;
 }
