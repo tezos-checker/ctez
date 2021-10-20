@@ -30,7 +30,6 @@ export const getUserBalance = async (userAddress: string): Promise<UserBalance> 
     const ctez = await getCtezBalance(userAddress);
     const xtz = await getXtzBalance(userAddress);
     const { tezInOvens, ctezOutstanding } = await getUserOvenData(userAddress);
-    console.log(tezInOvens);
     return {
       xtz,
       ctez,

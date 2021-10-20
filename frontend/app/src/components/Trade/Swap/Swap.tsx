@@ -107,13 +107,13 @@ const Swap: React.FC = () => {
             ? await cashToToken({
                 amount: formData.amount,
                 deadline,
-                minTokensBought: minBuyValue,
+                minTokensBought: minReceived,
                 to: formData.to,
               })
             : await tokenToCash(
                 {
                   deadline,
-                  minCashBought: minBuyValue,
+                  minCashBought: minReceived,
                   to: formData.to,
                   tokensSold: formData.amount,
                 },
@@ -147,8 +147,9 @@ const Swap: React.FC = () => {
       setMinReceived(minRece);
     } else {
       setMinBuyValue(0);
+      setMinReceived(0);
     }
-  }, [cfmmStorage, formType, values.amount]);
+  }, [cfmmStorage, formType, values.amount, slippage]);
 
   const { buttonText, errorList } = useMemo(() => {
     logger.info(errors);
@@ -226,7 +227,7 @@ const Swap: React.FC = () => {
       <Flex justifyContent="space-between">
         <Text fontSize="xs">Min Received</Text>
         <Text color="#4E5D78" fontSize="xs">
-          {Number(minReceived).toFixed(6)} ctez
+          {Number(minReceived).toFixed(6)} {formType === FORM_TYPE.CTEZ_TEZ ? 'tez' : 'ctez'}
         </Text>
       </Flex>
       <Flex justifyContent="space-between">

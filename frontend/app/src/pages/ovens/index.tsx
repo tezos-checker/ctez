@@ -21,7 +21,7 @@ const OvensPage: React.FC = () => {
   useSetCtezBaseStatsToStore(userAddress);
 
   const isMyOven = useMemo(() => {
-    return location.pathname === '/myovens';
+    return location.pathname === '/myovens' || location.pathname === '/myovens/';
   }, [location]);
 
   const SetSortType = (value: string) => {

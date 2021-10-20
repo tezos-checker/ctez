@@ -50,14 +50,13 @@ export const getAllOvensAPI = async (): Promise<AllOvenDatum[]> => {
 
 export const getUserOvenData = async (userAddress: string) => {
   try {
-    const userOvenData: any = await get(
-      `bigmaps/${CTEZ_CONTRACT_BIGMAP}/keys?key.owner=${userAddress}`,
-      undefined,
-      userAddress,
+    const userOvenData: any = await axios.get(
+      `https://api.granadanet.tzkt.io/v1/bigmaps/59943/keys?key.owner=${userAddress}`,
     );
     let tezInOvens: any = 0;
     let ctezOutstanding: any = 0;
     const userOvenDataLength: any = userOvenData.data.length;
+
     for (let i = 0; i < userOvenDataLength; ) {
       tezInOvens += Number(userOvenData.data[i].value.tez_balance) / 1e6;
       ctezOutstanding += Number(userOvenData.data[i].value.ctez_outstanding) / 1e6;

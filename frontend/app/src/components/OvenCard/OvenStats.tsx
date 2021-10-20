@@ -86,7 +86,7 @@ const OvenStats: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
 
         <Stack w="70%" textAlign="right">
           <Skeleton isLoaded={stats?.collateralUtilization != null}>
-            <ProgressPill value={Number(stats?.collateralUtilization)} />
+            <ProgressPill value={Number(stats?.collateralUtilization)} oven={null} />
           </Skeleton>
           <Text color={text4color} fontSize="xs">
             Collateral utilization
