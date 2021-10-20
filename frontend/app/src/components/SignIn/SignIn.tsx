@@ -120,11 +120,13 @@ const SignIn: React.FC = () => {
                   <>
                     <Tr>
                       <Td>ꜩ in ovens:</Td>
-                      <Td textAlign="right">{formatNumber(balance.tezInOvens, 0)}</Td>
+                      <Td textAlign="right">{formatNumber(balance.tezInOvens, 0)?.toFixed(6)}</Td>
                     </Tr>
                     <Tr>
                       <Td>cꜩ outstanding:</Td>
-                      <Td textAlign="right">{formatNumber(balance.ctezOutstanding, 0)}</Td>
+                      <Td textAlign="right">
+                        {formatNumber(balance.ctezOutstanding, 0)?.toFixed(6)}
+                      </Td>
                     </Tr>
                   </>
                 )}

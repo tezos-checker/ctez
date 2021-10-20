@@ -52,6 +52,7 @@ const Swap: React.FC = () => {
   const handleProcessing = useTxLoader();
 
   const { slippage, deadline: deadlineFromStore } = useAppSelector((state) => state.trade);
+  const [minReceived, setMinReceived] = useState(0);
 
   const getRightElement = useCallback((token: TToken) => {
     if (token === TOKEN.Tez) {
@@ -142,6 +143,8 @@ const Swap: React.FC = () => {
       const tokWithoutSlippage =
         (cashSold * 997 * aPool.toNumber()) / (bPool.toNumber() * 1000 + cashSold * 997) / 1e6;
       setMinBuyValue(Number(tokWithoutSlippage.toFixed(6)));
+      const minRece = tokWithoutSlippage - (tokWithoutSlippage * slippage) / 100;
+      setMinReceived(minRece);
     } else {
       setMinBuyValue(0);
     }
@@ -218,6 +221,12 @@ const Swap: React.FC = () => {
         <Text fontSize="xs">Rate</Text>
         <Text color="#4E5D78" fontSize="xs">
           1 tez = {(1 / Number(baseStats?.currentPrice ?? 1)).toFixed(6)} ctez
+        </Text>
+      </Flex>
+      <Flex justifyContent="space-between">
+        <Text fontSize="xs">Min Received</Text>
+        <Text color="#4E5D78" fontSize="xs">
+          {Number(minReceived).toFixed(6)} ctez
         </Text>
       </Flex>
       <Flex justifyContent="space-between">
