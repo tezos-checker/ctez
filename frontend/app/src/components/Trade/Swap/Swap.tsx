@@ -52,6 +52,7 @@ const Swap: React.FC = () => {
   const handleProcessing = useTxLoader();
 
   const { slippage, deadline: deadlineFromStore } = useAppSelector((state) => state.trade);
+  const [minReceived, setMinReceived] = useState(0);
 
   const getRightElement = useCallback((token: TToken) => {
     if (token === TOKEN.Tez) {
@@ -106,13 +107,13 @@ const Swap: React.FC = () => {
             ? await cashToToken({
                 amount: formData.amount,
                 deadline,
-                minTokensBought: minBuyValue,
+                minTokensBought: minReceived,
                 to: formData.to,
               })
             : await tokenToCash(
                 {
                   deadline,
-                  minCashBought: minBuyValue,
+                  minCashBought: minReceived,
                   to: formData.to,
                   tokensSold: formData.amount,
                 },
@@ -142,10 +143,13 @@ const Swap: React.FC = () => {
       const tokWithoutSlippage =
         (cashSold * 997 * aPool.toNumber()) / (bPool.toNumber() * 1000 + cashSold * 997) / 1e6;
       setMinBuyValue(Number(tokWithoutSlippage.toFixed(6)));
+      const minRece = tokWithoutSlippage - (tokWithoutSlippage * slippage) / 100;
+      setMinReceived(minRece);
     } else {
       setMinBuyValue(0);
+      setMinReceived(0);
     }
-  }, [cfmmStorage, formType, values.amount]);
+  }, [cfmmStorage, formType, values.amount, slippage]);
 
   const { buttonText, errorList } = useMemo(() => {
     logger.info(errors);
@@ -218,6 +222,12 @@ const Swap: React.FC = () => {
         <Text fontSize="xs">Rate</Text>
         <Text color="#4E5D78" fontSize="xs">
           1 tez = {(1 / Number(baseStats?.currentPrice ?? 1)).toFixed(6)} ctez
+        </Text>
+      </Flex>
+      <Flex justifyContent="space-between">
+        <Text fontSize="xs">Min Received</Text>
+        <Text color="#4E5D78" fontSize="xs">
+          {Number(minReceived).toFixed(6)} {formType === FORM_TYPE.CTEZ_TEZ ? 'tez' : 'ctez'}
         </Text>
       </Flex>
       <Flex justifyContent="space-between">

@@ -58,7 +58,7 @@ const DepositorsInput: React.FC<IDepositorsInputProps> = (props) => {
     <Box {...props.outerBoxProps}>
       <FormControl>
         <FormLabel fontSize="xs" fontWeight="500">
-          Authorised Deposters
+          Authorized Depositors
         </FormLabel>
 
         <Wrap mb={2}>
