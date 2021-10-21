@@ -8,12 +8,13 @@ import {
   Text,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { HiDownload } from 'react-icons/hi';
 import { AllOvenDatum } from '../../interfaces';
 import ProgressPill from './ProgressPill';
 import { useOvenStats } from '../../hooks/utilHooks';
+import CopyAddress from '../CopyAddress/CopyAddress';
 
 interface IOvenCardProps {
   type: 'AllOvens' | 'MyOvens';
@@ -48,49 +49,50 @@ const OvenCard: React.FC<IOvenCardProps> = (props) => {
       if (props.oven.isImported) {
         return {
           label: 'Owner',
-          value: truncateText(owner),
+          value: owner,
+          displayValue: truncateText(owner),
         };
       }
 
       return {
         label: 'ID',
         value: `#${id}`,
+        displayValue: `#${id}`,
       };
     };
 
     const items = [
       props.type === 'MyOvens' && firstItem(),
-      { label: 'Oven address', value: truncateText(address) },
+      { label: 'Oven address', value: address, displayValue: truncateText(address) },
       props.type === 'AllOvens' && {
         label: 'Owner',
-        value: truncateText(owner),
+        value: owner,
+        displayValue: truncateText(owner),
       },
       {
         label: 'Oven Balance',
         value: `${stats?.ovenBalance ?? 0} XTZ`,
+        displayValue: `${stats?.ovenBalance ?? 0} XTZ`,
       },
       {
         label: 'Outstanding ',
         value: `${stats?.outStandingCtez ?? 0} cTEZ`,
+        displayValue: `${stats?.outStandingCtez ?? 0} cTEZ`,
       },
       {
         label: 'Mintable ',
         value: `${stats?.maxMintableCtez} cTEZ`,
+        displayValue: `${stats?.maxMintableCtez} cTEZ`,
       },
-    ].filter((x): x is { label: string; value: string } => !!x);
+    ].filter((x): x is { label: string; value: string; displayValue: string } => !!x);
 
     return (
       <>
         {items.map((item) => (
           <Box key={item.label}>
-            {item.label === 'Oven address' ? (
-              <Text
-                color={textcolor}
-                onClick={() => navigator.clipboard.writeText(address)}
-                _hover={{ cursor: 'pointer' }}
-                fontWeight="600"
-              >
-                {item.value}
+            {item.label === 'Oven address' || item.label === 'Owner' ? (
+              <Text as="span" color={textcolor} fontWeight="600">
+                <CopyAddress address={item.value}>{item.displayValue}</CopyAddress>
               </Text>
             ) : (
               <Text color={textcolor} fontWeight="600">

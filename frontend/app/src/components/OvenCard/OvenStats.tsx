@@ -10,12 +10,13 @@ import {
   Tooltip,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { MdInfo } from 'react-icons/md';
 import { useOvenStats } from '../../hooks/utilHooks';
 import ProgressPill from './ProgressPill';
 import { AllOvenDatum } from '../../interfaces';
 import data from '../../assets/data/info.json';
+import CopyAddress from '../CopyAddress/CopyAddress';
 
 const OvenStats: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
   const { stats } = useOvenStats(oven);
@@ -53,7 +54,7 @@ const OvenStats: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
           <SkeletonText mt={2} noOfLines={1} w="300px" />
         ) : (
           <Text color={text4color} as="span" fontSize="sm">
-            {oven?.value.address}
+            <CopyAddress address={oven?.value.address}>{oven?.value.address}</CopyAddress>
           </Text>
         )}
       </div>

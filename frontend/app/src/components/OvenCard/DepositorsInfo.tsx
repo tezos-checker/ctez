@@ -18,6 +18,7 @@ import ChangeDepositor from '../modals/ChangeDepositor';
 import { AllOvenDatum } from '../../interfaces';
 import SkeletonLayout from '../skeleton';
 import data from '../../assets/data/info.json';
+import CopyAddress from '../CopyAddress/CopyAddress';
 
 const DepositorsInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
   const [{ pkh: userAddress }] = useWallet();
@@ -85,7 +86,7 @@ const DepositorsInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
       <Flex key={dep.value} w="100%" boxShadow="lg" px={3} py={1} borderRadius={6}>
         <Identicon seed={dep.value ?? undefined} type="tzKtCat" avatarSize="sm" />
         <Text as="span" my="auto" flexGrow={1} mx={2}>
-          {dep.value}
+          <CopyAddress address={dep.value}>{dep.value}</CopyAddress>
         </Text>
         {dep.label && (
           <Tag size="sm" borderRadius="full" variant="solid" h={4} my="auto">

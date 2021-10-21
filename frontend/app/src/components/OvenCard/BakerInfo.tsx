@@ -22,6 +22,7 @@ import { AllOvenDatum } from '../../interfaces';
 import SkeletonLayout from '../skeleton';
 import data from '../../assets/data/info.json';
 import { useTxLoader } from '../../hooks/utilHooks';
+import CopyAddress from '../CopyAddress/CopyAddress';
 
 const BakerInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
   const { t } = useTranslation(['common']);
@@ -87,7 +88,7 @@ const BakerInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
           <Identicon seed={baker ?? undefined} type="tzKtCat" avatarSize="sm" />
 
           <Text as="span" my="auto" flexGrow={1} mx={2}>
-            {baker}
+            <CopyAddress address={baker}>{baker}</CopyAddress>
           </Text>
           <Button variant="ghost" size="sm" onClick={() => setEdit(true)}>
             Edit
