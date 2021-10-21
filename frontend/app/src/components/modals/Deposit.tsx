@@ -14,7 +14,7 @@ import {
   useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useTranslation } from 'react-i18next';
 import { number, object } from 'yup';
@@ -28,7 +28,10 @@ import { logger } from '../../utils/logger';
 import Button from '../button/Button';
 import { CTezIcon, TezIcon } from '../icons';
 import { AllOvenDatum } from '../../interfaces';
-import { useTxLoader } from '../../hooks/utilHooks';
+import { useOvenStats, useTxLoader } from '../../hooks/utilHooks';
+import { useWallet } from '../../wallet/hooks';
+import { useUserBalance } from '../../api/queries';
+import { formatNumber } from '../../utils/numbers';
 
 interface IDepositProps {
   isOpen: boolean;
@@ -38,12 +41,14 @@ interface IDepositProps {
 
 const Deposit: React.FC<IDepositProps> = ({ isOpen, onClose, oven }) => {
   const toast = useToast();
-  const [buttonText, setButtonText] = useState<TButtonText>(BUTTON_TXT.ENTER_AMT);
+  const [{ pkh: userAddress }] = useWallet();
   const text1 = useColorModeValue('text1', 'darkheading');
   const text2 = useColorModeValue('text2', 'darkheading');
   const text4 = useColorModeValue('text4', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
   const handleProcessing = useTxLoader();
+  const text4Text4 = useColorModeValue('text4', 'text4');
+  const { data: balance } = useUserBalance(userAddress);
 
   const getRightElement = useCallback(
     (token: TToken) => {
@@ -64,8 +69,13 @@ const Deposit: React.FC<IDepositProps> = ({ isOpen, onClose, oven }) => {
     amount: '',
   };
 
+  const maxValue = (): number => balance?.xtz || 0.0;
+
   const validationSchema = object().shape({
-    amount: number().min(0.000001).required(t('required')),
+    amount: number()
+      .min(0.000001)
+      .max(maxValue(), `${t('insufficientBalance')}`)
+      .required(t('required')),
   });
 
   const handleFormSubmit = async (data: IDepositForm) => {
@@ -90,19 +100,25 @@ const Deposit: React.FC<IDepositProps> = ({ isOpen, onClose, oven }) => {
     }
   };
 
-  const { values, handleChange, handleSubmit } = useFormik({
+  const { values, handleChange, handleSubmit, isSubmitting, errors } = useFormik({
     initialValues,
     validationSchema,
     onSubmit: handleFormSubmit,
   });
 
-  useEffect(() => {
+  const { buttonText, errorList } = useMemo(() => {
+    logger.info(errors);
+    const errorListLocal = Object.values(errors);
     if (values.amount) {
-      setButtonText(BUTTON_TXT.DEPOSIT);
-    } else {
-      setButtonText(BUTTON_TXT.ENTER_AMT);
+      if (errorListLocal.length > 0) {
+        return { buttonText: errorListLocal[0], errorList: errorListLocal };
+      }
+
+      return { buttonText: BUTTON_TXT.DEPOSIT, errorList: errorListLocal };
     }
-  }, [buttonText, values.amount]);
+
+    return { buttonText: BUTTON_TXT.ENTER_AMT, errorList: errorListLocal };
+  }, [errors, values.amount]);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
@@ -128,10 +144,20 @@ const Deposit: React.FC<IDepositProps> = ({ isOpen, onClose, oven }) => {
                 />
                 {getRightElement(TOKEN.Tez)}
               </InputGroup>
+              {typeof balance !== 'undefined' && (
+                <Text color={text4Text4} fontSize="xs" mt={1}>
+                  Balance: {formatNumber(balance.xtz, 0)}
+                </Text>
+              )}
             </FormControl>
           </ModalBody>
           <ModalFooter>
-            <Button w="100%" variant="outline" type="submit">
+            <Button
+              w="100%"
+              variant="outline"
+              type="submit"
+              disabled={isSubmitting || errorList.length > 0}
+            >
               {buttonText}
             </Button>
           </ModalFooter>

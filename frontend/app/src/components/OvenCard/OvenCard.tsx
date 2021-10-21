@@ -71,18 +71,18 @@ const OvenCard: React.FC<IOvenCardProps> = (props) => {
       },
       {
         label: 'Oven Balance',
-        value: `${stats?.ovenBalance ?? 0} XTZ`,
-        displayValue: `${stats?.ovenBalance ?? 0} XTZ`,
+        value: `${stats?.ovenBalance ?? 0} tez`,
+        displayValue: `${stats?.ovenBalance ?? 0} tez`,
       },
       {
         label: 'Outstanding ',
-        value: `${stats?.outStandingCtez ?? 0} cTEZ`,
-        displayValue: `${stats?.outStandingCtez ?? 0} cTEZ`,
+        value: `${stats?.outStandingCtez ?? 0} ctez`,
+        displayValue: `${stats?.outStandingCtez ?? 0} ctez`,
       },
       {
         label: 'Mintable ',
-        value: `${stats?.maxMintableCtez} cTEZ`,
-        displayValue: `${stats?.maxMintableCtez} cTEZ`,
+        value: `${stats?.maxMintableCtez} ctez`,
+        displayValue: `${stats?.maxMintableCtez} ctez`,
       },
     ].filter((x): x is { label: string; value: string; displayValue: string } => !!x);
 
@@ -105,7 +105,11 @@ const OvenCard: React.FC<IOvenCardProps> = (props) => {
           </Box>
         ))}
         <Box>
-          <ProgressPill value={Number(stats?.collateralUtilization ?? 0)} oven={props.oven} />
+          <ProgressPill
+            value={Number(stats?.collateralUtilization ?? 0)}
+            type={props.type}
+            oven={props.oven}
+          />
           <Text color="#B0B7C3" fontSize="xs">
             Collateral Utilization
           </Text>
@@ -156,7 +160,7 @@ const OvenCard: React.FC<IOvenCardProps> = (props) => {
     </Flex>
   );
 
-  if (props.type === 'MyOvens' && !props.oven.isImported) {
+  if (props.type === 'MyOvens') {
     return <Link to={`/myovens/${props.oven.key.id}`}>{content}</Link>;
   }
 

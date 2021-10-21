@@ -10,8 +10,11 @@ import {
   useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
+import CreatableSelect from 'react-select/creatable';
+import { useFormik } from 'formik';
 import { MdInfo } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
+import * as Yup from 'yup';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDelegates, useOvenDelegate } from '../../api/queries';
 import { useWallet } from '../../wallet/hooks';
@@ -40,6 +43,25 @@ const BakerInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
   const [edit, setEdit] = useState(false);
   const cardbg = useColorModeValue('bg4', 'darkblue');
   const handleProcessing = useTxLoader();
+  let bakerValue: any;
+  let newOption: any;
+
+  const createOption = (label: string) => ({
+    label,
+    value: label,
+  });
+  const setDelegatorValue = (e: any) => {
+    if (e) {
+      setDelegator(e.value);
+    }
+    bakerValue = e.value;
+  };
+
+  const options = delegates?.map((x) => createOption(x.address));
+  const handleCreate = (e: any) => {
+    newOption = createOption(e);
+    options?.push(newOption);
+  };
 
   const showInfo = useMemo(() => {
     return (
@@ -104,20 +126,16 @@ const BakerInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
     if (edit) {
       return (
         <>
-          <Select
-            placeholder={t('delegatePlaceholder')}
-            value={delegator}
+          <CreatableSelect
+            isClearable
+            placeholder="Add a baker or Select from the list below"
             onChange={(ev) => {
-              setDelegator(ev.target.value);
+              setDelegatorValue(ev);
             }}
-            boxShadow="sm"
-          >
-            {delegates?.map((x) => (
-              <option key={x.address} value={x.address}>
-                {x.address}
-              </option>
-            ))}
-          </Select>
+            options={options}
+            onCreateOption={handleCreate}
+            value={bakerValue}
+          />
 
           <Flex justifyContent="right">
             <Button variant="outline" onClick={() => setEdit(false)}>

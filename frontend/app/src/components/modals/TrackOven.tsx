@@ -22,6 +22,7 @@ import { useWallet } from '../../wallet/hooks';
 import { CTEZ_ADDRESS } from '../../utils/globals';
 import { addExternalOven } from '../../utils/ovenUtils';
 import Button from '../button/Button';
+import { useTxLoader } from '../../hooks/utilHooks';
 
 interface ITrackOvenProps {
   isOpen: boolean;
@@ -40,6 +41,7 @@ const TrackOven: React.FC<ITrackOvenProps> = ({ isOpen, onClose }) => {
   const text4 = useColorModeValue('text4', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
   const tabcolor = useColorModeValue('tabcolor', 'darkheading');
+  const handleProcessing = useTxLoader();
 
   const initialValues: any = {
     ovenAddress: '',

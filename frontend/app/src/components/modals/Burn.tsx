@@ -29,7 +29,7 @@ import Button from '../button/Button';
 import { BUTTON_TXT, TButtonText, TOKEN, TToken } from '../../constants/swap';
 import { CTezIcon } from '../icons';
 import { AllOvenDatum } from '../../interfaces';
-import { useTxLoader } from '../../hooks/utilHooks';
+import { useOvenStats, useTxLoader } from '../../hooks/utilHooks';
 
 interface IBurnProps {
   isOpen: boolean;
@@ -40,13 +40,14 @@ interface IBurnProps {
 const Burn: React.FC<IBurnProps> = ({ isOpen, onClose, oven }) => {
   const { t } = useTranslation(['common']);
   const toast = useToast();
-  const [buttonText, setButtonText] = useState<TButtonText>(BUTTON_TXT.ENTER_AMT);
   const text2 = useColorModeValue('text2', 'darkheading');
   const text4 = useColorModeValue('text4', 'darkheading');
   const text1 = useColorModeValue('text1', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
   const cardbg = useColorModeValue('bg3', 'darkblue');
+  const text4Text4 = useColorModeValue('text4', 'text4');
   const handleProcessing = useTxLoader();
+  const { stats } = useOvenStats(oven);
 
   const getRightElement = useCallback(
     (token: TToken) => {
@@ -69,10 +70,12 @@ const Burn: React.FC<IBurnProps> = ({ isOpen, onClose, oven }) => {
       },
     [oven],
   );
+  const maxValue = (): number => stats?.outStandingCtez ?? 0;
 
   const validationSchema = object().shape({
     amount: number()
       .min(0.000001)
+      .max(maxValue(), `${t('insufficientBalance')}`)
       .test({
         test: (value) => {
           if (value) {
@@ -112,19 +115,25 @@ const Burn: React.FC<IBurnProps> = ({ isOpen, onClose, oven }) => {
     }
   };
 
-  const { values, handleChange, handleSubmit } = useFormik({
+  const { values, handleChange, handleSubmit, isSubmitting, errors } = useFormik({
     initialValues,
     validationSchema,
     onSubmit: handleFormSubmit,
   });
 
-  useEffect(() => {
+  const { buttonText, errorList } = useMemo(() => {
+    logger.info(errors);
+    const errorListLocal = Object.values(errors);
     if (values.amount) {
-      setButtonText(BUTTON_TXT.BURN);
-    } else {
-      setButtonText(BUTTON_TXT.ENTER_AMT);
+      if (errorListLocal.length > 0) {
+        return { buttonText: errorListLocal[0], errorList: errorListLocal };
+      }
+
+      return { buttonText: BUTTON_TXT.BURN, errorList: errorListLocal };
     }
-  }, [buttonText, values.amount]);
+
+    return { buttonText: BUTTON_TXT.ENTER_AMT, errorList: errorListLocal };
+  }, [errors, values.amount]);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
@@ -160,10 +169,18 @@ const Burn: React.FC<IBurnProps> = ({ isOpen, onClose, oven }) => {
                 />
                 {getRightElement(TOKEN.Tez)}
               </InputGroup>
+              <Text color={text4Text4} fontSize="xs" mt={1}>
+                Balance: {stats?.outStandingCtez ?? 0}
+              </Text>
             </FormControl>
           </ModalBody>
           <ModalFooter>
-            <Button w="100%" variant="outline" type="submit">
+            <Button
+              w="100%"
+              variant="outline"
+              type="submit"
+              disabled={isSubmitting || errorList.length > 0}
+            >
               {buttonText}
             </Button>
           </ModalFooter>

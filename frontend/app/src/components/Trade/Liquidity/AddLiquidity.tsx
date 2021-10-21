@@ -11,7 +11,7 @@ import {
 } from '@chakra-ui/react';
 import { MdAdd } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { number, object } from 'yup';
 import { addMinutes } from 'date-fns/fp';
 import { useFormik } from 'formik';
@@ -31,7 +31,6 @@ const AddLiquidity: React.FC = () => {
   const [{ pkh: userAddress }] = useWallet();
   const [maxTokens, setMaxToken] = useState(0);
   const [minLQT, setMinLQT] = useState(0);
-  const [buttonText, setButtonText] = useState<TAddBtnTxt>(BUTTON_TXT.ENTER_AMT);
   const { data: cfmmStorage } = useCfmmStorage();
   const { data: balance } = useUserBalance(userAddress);
   const { t } = useTranslation();
@@ -69,11 +68,14 @@ const AddLiquidity: React.FC = () => {
     amount: undefined,
   };
 
+  const maxValue = (): number => balance?.xtz || 0.0;
+
   const validationSchema = object().shape({
     slippage: number().min(0).optional(),
     deadline: number().min(0).optional(),
     amount: number()
       .min(0.000001, `${t('shouldMinimum')} 0.000001`)
+      .max(maxValue(), `${t('insufficientBalance')}`)
       .positive(t('shouldPositive'))
       .required(t('required')),
   });
@@ -102,7 +104,7 @@ const AddLiquidity: React.FC = () => {
     }
   };
 
-  const { values, handleChange, handleSubmit, isSubmitting } = useFormik({
+  const { values, handleChange, handleSubmit, isSubmitting, errors } = useFormik({
     initialValues,
     validationSchema,
     onSubmit: handleFormSubmit,
@@ -112,15 +114,22 @@ const AddLiquidity: React.FC = () => {
     calcMaxToken(Number(values.amount));
   }, [calcMaxToken, values.amount]);
 
-  useEffect(() => {
+  const { buttonText, errorList } = useMemo(() => {
+    logger.info(errors);
+    const errorListLocal = Object.values(errors);
     if (!userAddress) {
-      setButtonText(ADD_BTN_TXT.CONNECT);
-    } else if (values.amount) {
-      setButtonText(ADD_BTN_TXT.ADD_LIQ);
-    } else {
-      setButtonText(ADD_BTN_TXT.ENTER_AMT);
+      return { buttonText: BUTTON_TXT.CONNECT, errorList: errorListLocal };
     }
-  }, [buttonText, userAddress, values.amount]);
+    if (values.amount) {
+      if (errorListLocal.length > 0) {
+        return { buttonText: errorListLocal[0], errorList: errorListLocal };
+      }
+
+      return { buttonText: ADD_BTN_TXT.ADD_LIQ, errorList: errorListLocal };
+    }
+
+    return { buttonText: BUTTON_TXT.ENTER_AMT, errorList: errorListLocal };
+  }, [errors, userAddress, values.amount]);
 
   return (
     <form onSubmit={handleSubmit} id="add-liquidity-form">
@@ -175,7 +184,13 @@ const AddLiquidity: React.FC = () => {
           </FormControl>
         </Flex>
 
-        <Button w="100%" variant="outline" type="submit" isLoading={isSubmitting}>
+        <Button
+          w="100%"
+          variant="outline"
+          type="submit"
+          isLoading={isSubmitting}
+          disabled={isSubmitting || errorList.length > 0}
+        >
           {buttonText}
         </Button>
       </Stack>
