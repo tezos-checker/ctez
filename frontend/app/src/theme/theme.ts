@@ -19,6 +19,7 @@ const theme = extendTheme({
     bg4: '#F5F5F5',
     green: '#E5F6EF',
     mildgray: '#4C4C4C',
+    sideBarBlue: '#081a51',
   },
 });
 

@@ -1,6 +1,6 @@
 import { ProSidebar, SidebarHeader, SidebarContent, Menu, MenuItem } from 'react-pro-sidebar';
 import clsx from 'clsx';
-import { Text, Flex, Box } from '@chakra-ui/react';
+import { Text, Flex, Box, useColorModeValue } from '@chakra-ui/react';
 import React from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -36,6 +36,8 @@ export const Sidebar: React.FC<Props> = ({
   const location = useLocation();
   const dispatch = useDispatch();
   const { data } = useCtezBaseStats();
+
+  const sideBarBackground = useColorModeValue('sideBarBlue', 'cardbgdark');
 
   const handleCreateOvenClick = () => {
     dispatch(openModal(MODAL_NAMES.CREATE_OVEN));
@@ -91,155 +93,157 @@ export const Sidebar: React.FC<Props> = ({
   return (
     <Box id="sidebar" minHeight="100vh">
       <ProSidebar collapsed={collapsed} breakPoint="md" toggled={toggled} onToggle={handleToggled}>
-        <SidebarHeader>
-          <Flex alignItems="center" padding="16px 35px 16px 20px">
-            <Box marginRight="10px">
-              <NavLink to="/">
-                <Logo />
-              </NavLink>
-            </Box>
-            <Text
-              flexGrow={1}
-              flexShrink={1}
-              overflow="hidden"
-              color="white"
-              fontWeight={600}
-              fontSize="xl"
-              whiteSpace="nowrap"
-              textOverflow="ellipsis"
-            >
-              <NavLink to="/">ctez</NavLink>
-            </Text>
-          </Flex>
-          <Box role="button" className="menu-expand-button" onClick={handleCollapsed}>
-            <Flex justifyContent="center" width="8px">
-              {collapsed ? <ArrowRight /> : <ArrowLeft />}
+        <Box background={sideBarBackground}>
+          <SidebarHeader>
+            <Flex alignItems="center" padding="16px 35px 16px 20px">
+              <Box marginRight="10px">
+                <NavLink to="/">
+                  <Logo />
+                </NavLink>
+              </Box>
+              <Text
+                flexGrow={1}
+                flexShrink={1}
+                overflow="hidden"
+                color="white"
+                fontWeight={600}
+                fontSize="xl"
+                whiteSpace="nowrap"
+                textOverflow="ellipsis"
+              >
+                <NavLink to="/">ctez</NavLink>
+              </Text>
             </Flex>
-          </Box>
-        </SidebarHeader>
-        <SidebarContent>
-          <Menu iconShape="square">
-            <MenuItem
-              className={clsx(
-                {
+            <Box role="button" className="menu-expand-button" onClick={handleCollapsed}>
+              <Flex justifyContent="center" width="8px">
+                {collapsed ? <ArrowRight /> : <ArrowLeft />}
+              </Flex>
+            </Box>
+          </SidebarHeader>
+          <SidebarContent>
+            <Menu iconShape="square">
+              <MenuItem
+                className={clsx(
+                  {
+                    hide: collapsed,
+                  },
+                  'no-cursor',
+                )}
+              >
+                <Text color="#51CBFF">Ovens</Text>
+              </MenuItem>
+              <MenuItem
+                className={clsx({
+                  highlight: location.pathname === '/createoven',
+                })}
+                icon={<CreateOven />}
+              >
+                <NavLink to="/myovens" onClick={handleCreateOvenClick}>
+                  Create Oven
+                </NavLink>
+              </MenuItem>
+              <MenuItem
+                className={clsx({
+                  highlight: location.pathname === '/ovens',
+                })}
+                icon={<AllOvens />}
+              >
+                <Link to="/ovens">All Ovens</Link>
+              </MenuItem>
+              <MenuItem
+                className={clsx(
+                  {
+                    hide: collapsed,
+                  },
+                  'no-cursor',
+                )}
+              >
+                <Text fontSize="sm" color="#51CBFF">
+                  Manage
+                </Text>
+              </MenuItem>
+              <MenuItem
+                className={clsx({
+                  highlight: location.pathname === '/myovens',
+                })}
+                icon={<MyOvens />}
+              >
+                <Link to="/myovens">My Ovens</Link>
+              </MenuItem>
+              <MenuItem
+                className={clsx({
+                  highlight: location.pathname === '/trade',
+                })}
+                icon={<Trade />}
+              >
+                <Link to="/trade">Trade</Link>
+              </MenuItem>
+              <MenuItem
+                className={clsx(
+                  {
+                    hide: collapsed,
+                  },
+                  'no-cursor',
+                )}
+              >
+                <Text fontSize="sm" color="#51CBFF">
+                  Info
+                </Text>
+              </MenuItem>
+              <MenuItem
+                className={clsx({
+                  highlight: location.pathname === '/faq',
+                })}
+                icon={<Faq />}
+              >
+                <Link to="/faq">FAQ</Link>
+              </MenuItem>
+              <MenuItem icon={<Github />}>
+                <a href="https://github.com/Tezsure/ctez" target="_blank" rel="noreferrer">
+                  GitHub
+                </a>
+              </MenuItem>
+              <MenuItem
+                className={clsx(
+                  {
+                    hide: collapsed,
+                  },
+                  'no-cursor',
+                )}
+              >
+                <Text fontSize="sm" color="#51CBFF" cursor="default">
+                  Ctez Stats
+                </Text>
+              </MenuItem>
+              <MenuItem
+                className={clsx(
+                  {
+                    hide: collapsed,
+                  },
+                  'no-cursor',
+                  'highlight',
+                )}
+              >
+                {stats()}
+              </MenuItem>
+              <MenuItem
+                className={clsx({
                   hide: collapsed,
-                },
-                'no-cursor',
-              )}
-            >
-              <Text color="#51CBFF">Ovens</Text>
-            </MenuItem>
-            <MenuItem
-              className={clsx({
-                highlight: location.pathname === '/createoven',
-              })}
-              icon={<CreateOven />}
-            >
-              <NavLink to="/myovens" onClick={handleCreateOvenClick}>
-                Create Oven
-              </NavLink>
-            </MenuItem>
-            <MenuItem
-              className={clsx({
-                highlight: location.pathname === '/ovens',
-              })}
-              icon={<AllOvens />}
-            >
-              <Link to="/ovens">All Ovens</Link>
-            </MenuItem>
-            <MenuItem
-              className={clsx(
-                {
-                  hide: collapsed,
-                },
-                'no-cursor',
-              )}
-            >
-              <Text fontSize="sm" color="#51CBFF">
-                Manage
-              </Text>
-            </MenuItem>
-            <MenuItem
-              className={clsx({
-                highlight: location.pathname === '/myovens',
-              })}
-              icon={<MyOvens />}
-            >
-              <Link to="/myovens">My Ovens</Link>
-            </MenuItem>
-            <MenuItem
-              className={clsx({
-                highlight: location.pathname === '/trade',
-              })}
-              icon={<Trade />}
-            >
-              <Link to="/trade">Trade</Link>
-            </MenuItem>
-            <MenuItem
-              className={clsx(
-                {
-                  hide: collapsed,
-                },
-                'no-cursor',
-              )}
-            >
-              <Text fontSize="sm" color="#51CBFF">
-                Info
-              </Text>
-            </MenuItem>
-            <MenuItem
-              className={clsx({
-                highlight: location.pathname === '/faq',
-              })}
-              icon={<Faq />}
-            >
-              <Link to="/faq">FAQ</Link>
-            </MenuItem>
-            <MenuItem icon={<Github />}>
-              <a href="https://github.com/Tezsure/ctez" target="_blank" rel="noreferrer">
-                GitHub
-              </a>
-            </MenuItem>
-            <MenuItem
-              className={clsx(
-                {
-                  hide: collapsed,
-                },
-                'no-cursor',
-              )}
-            >
-              <Text fontSize="sm" color="#51CBFF" cursor="default">
-                Ctez Stats
-              </Text>
-            </MenuItem>
-            <MenuItem
-              className={clsx(
-                {
-                  hide: collapsed,
-                },
-                'no-cursor',
-                'highlight',
-              )}
-            >
-              {stats()}
-            </MenuItem>
-            <MenuItem
-              className={clsx({
-                hide: collapsed,
-              })}
-            >
-              <Text fontSize="sm" color="#51CBFF" cursor="default">
-                ctez adopters
-              </Text>
-            </MenuItem>
-            <MenuItem icon={<Wrap />}>
-              <a href="https://app.tzwrap.com/wrap">Wrap Protocol</a>
-            </MenuItem>
-            <MenuItem icon={<Plenty />}>
-              <a href="https://www.plentydefi.com/">Plenty</a>
-            </MenuItem>
-          </Menu>
-        </SidebarContent>
+                })}
+              >
+                <Text fontSize="sm" color="#51CBFF" cursor="default">
+                  ctez adopters
+                </Text>
+              </MenuItem>
+              <MenuItem icon={<Wrap />}>
+                <a href="https://app.tzwrap.com/wrap">Wrap Protocol</a>
+              </MenuItem>
+              <MenuItem icon={<Plenty />}>
+                <a href="https://www.plentydefi.com/">Plenty</a>
+              </MenuItem>
+            </Menu>
+          </SidebarContent>
+        </Box>
       </ProSidebar>
     </Box>
   );
