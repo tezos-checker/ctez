@@ -138,7 +138,7 @@ export const cashToToken = async (args: CashToTokenParams): Promise<TransactionW
   const operation = await executeMethod(
     cfmm,
     'cashToToken',
-    [args.to, args.minTokensBought * 1e6, args.deadline.toISOString()],
+    [args.to, Math.floor(args.minTokensBought * 1e6), args.deadline.toISOString()],
     undefined,
     args.amount * 1e6,
     true,
@@ -166,7 +166,7 @@ export const tokenToCash = async (
         .tokenToCash(
           args.to,
           args.tokensSold * 1e6,
-          args.minCashBought * 1e6,
+          Math.floor(args.minCashBought * 1e6),
           args.deadline.toISOString(),
         )
         .toTransferParams(),

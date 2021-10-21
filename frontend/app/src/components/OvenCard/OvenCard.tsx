@@ -105,7 +105,7 @@ const OvenCard: React.FC<IOvenCardProps> = (props) => {
           </Box>
         ))}
         <Box>
-          <ProgressPill value={Number(stats?.collateralUtilization ?? 0)} />
+          <ProgressPill value={Number(stats?.collateralUtilization ?? 0)} oven={props.oven} />
           <Text color="#B0B7C3" fontSize="xs">
             Collateral Utilization
           </Text>
