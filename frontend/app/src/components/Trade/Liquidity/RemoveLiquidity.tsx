@@ -13,7 +13,7 @@ import { MdAdd } from 'react-icons/md';
 import { addMinutes } from 'date-fns/fp';
 import { validateAddress } from '@taquito/utils';
 import { useTranslation } from 'react-i18next';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { number, object, string } from 'yup';
 import { useFormik } from 'formik';
 import { RemoveLiquidityParams } from '../../../interfaces';
@@ -25,6 +25,8 @@ import Button from '../../button/Button';
 import { useAppSelector } from '../../../redux/store';
 import { useTxLoader } from '../../../hooks/utilHooks';
 import { formatNumber } from '../../../utils/numbers';
+import { BUTTON_TXT } from '../../../constants/swap';
+import { logger } from '../../../utils/logger';
 
 const RemoveLiquidity: React.FC = () => {
   const [{ pkh: userAddress }] = useWallet();
@@ -35,7 +37,6 @@ const RemoveLiquidity: React.FC = () => {
   const toast = useToast();
   const { data: cfmmStorage } = useCfmmStorage();
   const { t } = useTranslation(['common']);
-  const [buttonText, setButtonText] = useState<TRemoveBtnTxt>(REMOVE_BTN_TXT.ENTER_AMT);
   const text2 = useColorModeValue('text2', 'darkheading');
   const text4 = useColorModeValue('text4', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
@@ -73,11 +74,16 @@ const RemoveLiquidity: React.FC = () => {
     slippage: Number(slippage),
   };
 
+  const maxValue = (): number => formatNumber(userLqtData?.lqt || 0.0);
+
   const validationSchema = object().shape({
     to: string().test({
       test: (value: any) => validateAddress(value) === 3,
     }),
-    lqtBurned: number().positive(t('shouldPositive')).required(t('required')),
+    lqtBurned: number()
+      .positive(t('shouldPositive'))
+      .required(t('required'))
+      .max(maxValue(), `${t('insufficientBalance')}`),
     deadline: number().min(0).optional(),
     slippage: number().min(0).optional(),
   });
@@ -105,7 +111,7 @@ const RemoveLiquidity: React.FC = () => {
     }
   };
 
-  const { values, handleChange, handleSubmit, isSubmitting } = useFormik({
+  const { values, handleChange, handleSubmit, isSubmitting, errors } = useFormik({
     initialValues,
     validationSchema,
     onSubmit: handleFormSubmit,
@@ -115,15 +121,22 @@ const RemoveLiquidity: React.FC = () => {
     calcMinValues(Number(values.lqtBurned));
   }, [calcMinValues, values.slippage, values.lqtBurned]);
 
-  useEffect(() => {
+  const { buttonText, errorList } = useMemo(() => {
+    logger.info(errors);
+    const errorListLocal = Object.values(errors);
     if (!userAddress) {
-      setButtonText(REMOVE_BTN_TXT.CONNECT);
-    } else if (values.lqtBurned) {
-      setButtonText(REMOVE_BTN_TXT.REMOVE_LIQ);
-    } else {
-      setButtonText(REMOVE_BTN_TXT.ENTER_AMT);
+      return { buttonText: BUTTON_TXT.CONNECT, errorList: errorListLocal };
     }
-  }, [buttonText, userAddress, values.lqtBurned]);
+    if (values.lqtBurned) {
+      if (errorListLocal.length > 0) {
+        return { buttonText: errorListLocal[0], errorList: errorListLocal };
+      }
+
+      return { buttonText: REMOVE_BTN_TXT.REMOVE_LIQ, errorList: errorListLocal };
+    }
+
+    return { buttonText: BUTTON_TXT.ENTER_AMT, errorList: errorListLocal };
+  }, [errors, userAddress, values.lqtBurned]);
 
   return (
     <form onSubmit={handleSubmit} id="remove-liquidity-form">
@@ -179,7 +192,12 @@ const RemoveLiquidity: React.FC = () => {
             />
           </FormControl>
         </Flex>
-        <Button variant="outline" type="submit" isLoading={isSubmitting}>
+        <Button
+          variant="outline"
+          type="submit"
+          isLoading={isSubmitting}
+          disabled={isSubmitting || errorList.length > 0}
+        >
           {buttonText}
         </Button>
       </Stack>

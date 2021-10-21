@@ -95,6 +95,9 @@ const DepositorsInput: React.FC<IDepositorsInputProps> = (props) => {
           value={depositorInput}
           onChange={handleDepositorInput}
         />
+        <Text fontSize="xs" color="#4E5D78">
+          Enter space to whitelist depositor
+        </Text>
       </FormControl>
     </Box>
   );

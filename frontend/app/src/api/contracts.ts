@@ -2,9 +2,9 @@ import BigNumber from 'bignumber.js';
 import { sub, format, differenceInDays } from 'date-fns';
 import { getCfmmStorage, getLQTContractStorage } from '../contracts/cfmm';
 import { getCtezStorage } from '../contracts/ctez';
-import { BaseStats, CTezTzktStorage, UserLQTData } from '../interfaces';
+import { BaseStats, CTezTzktStorage, OvenBalance, UserBalance, UserLQTData } from '../interfaces';
 import { CONTRACT_DEPLOYMENT_DATE } from '../utils/globals';
-import { getCTezTzktStorage, getLastBlockOfTheDay } from './tzkt';
+import { getCTezTzktStorage, getLastBlockOfTheDay, getUserOvenData } from './tzkt';
 
 export const getPrevCTezStorage = async (
   days = 7,
@@ -40,6 +40,30 @@ export const getBaseStats = async (userAddress?: string): Promise<BaseStats> => 
     totalLiquidity: totalLiquidity.toFixed(2),
     drift,
   };
+};
+
+export const getUsertexctezData = async (userAddress: string): Promise<OvenBalance> => {
+  const userOvenData = await getUserOvenData(userAddress);
+  try {
+    let tezInOvens: any = 0;
+    let ctezOutstanding: any = 0;
+    const userOvenDataLength: any = userOvenData.length;
+
+    for (let i = 0; i < userOvenDataLength; ) {
+      tezInOvens += Number(userOvenData[i].value.tez_balance) / 1e6;
+      ctezOutstanding += Number(userOvenData[i].value.ctez_outstanding) / 1e6;
+      i += 1;
+    }
+    return {
+      tezInOvens,
+      ctezOutstanding,
+    };
+  } catch (error) {
+    return {
+      tezInOvens: 0,
+      ctezOutstanding: 0,
+    };
+  }
 };
 
 export const getUserLQTData = async (userAddress: string): Promise<UserLQTData> => {

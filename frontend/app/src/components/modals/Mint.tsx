@@ -20,6 +20,7 @@ import {
 import { MdInfo } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 import { number, object } from 'yup';
+import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAppSelector } from '../../redux/store';
@@ -31,7 +32,8 @@ import Button from '../button/Button';
 import { BUTTON_TXT, TButtonText, TOKEN, TToken } from '../../constants/swap';
 import { CTezIcon } from '../icons';
 import { AllOvenDatum } from '../../interfaces';
-import { useTxLoader } from '../../hooks/utilHooks';
+import { useOvenStats, useTxLoader } from '../../hooks/utilHooks';
+import { useUserBalance } from '../../api/queries';
 
 interface IMintProps {
   isOpen: boolean;
@@ -42,11 +44,12 @@ interface IMintProps {
 const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
   const { t } = useTranslation(['common']);
   const toast = useToast();
-  const [buttonText, setButtonText] = useState<TButtonText>(BUTTON_TXT.ENTER_AMT);
+  const { stats } = useOvenStats(oven);
   const text2 = useColorModeValue('text2', 'darkheading');
   const text4 = useColorModeValue('text4', 'darkheading');
   const text1 = useColorModeValue('text1', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
+  const text4Text4 = useColorModeValue('text4', 'text4');
   const cardbg = useColorModeValue('bg3', 'darkblue');
   const handleProcessing = useTxLoader();
 
@@ -75,6 +78,7 @@ const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
 
   const currentTarget = useAppSelector((state) => state.stats.baseStats?.originalTarget);
   const drift = useAppSelector((state) => state.stats.baseStats?.drift);
+  const maxValue = (): number => stats?.remainingMintableCtez ?? 0;
   // const { max, remaining } = currentTarget
   //   ? getOvenMaxCtez(tez_balance, ctez_outstanding, currentTarget)
   //   : { max: 0, remaining: 0 };
@@ -82,9 +86,10 @@ const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
   // const outStandingCtez = new BigNumber(ctez_outstanding).shiftedBy(-6).toNumber() ?? 0;
   // const maxMintableCtez = max < 0 ? 0 : max;
   // const remainingMintableCtez = remaining < 0 ? 0 : remaining;
-  const validationSchema = object().shape({
-    amount: number()
+  const validationSchema = Yup.object().shape({
+    amount: Yup.number()
       .min(0.000001)
+      .max(maxValue(), `${t('insufficientBalance')}`)
       .test({
         test: (value) => {
           if (value !== undefined && drift !== undefined && currentTarget !== undefined) {
@@ -126,19 +131,24 @@ const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
     }
   };
 
-  const { values, handleChange, handleSubmit } = useFormik({
+  const { values, handleChange, handleSubmit, isSubmitting, errors } = useFormik({
     initialValues,
     validationSchema,
     onSubmit: handleFormSubmit,
   });
-
-  useEffect(() => {
+  const { buttonText, errorList } = useMemo(() => {
+    logger.info(errors);
+    const errorListLocal = Object.values(errors);
     if (values.amount) {
-      setButtonText(BUTTON_TXT.MINT);
-    } else {
-      setButtonText(BUTTON_TXT.ENTER_AMT);
+      if (errorListLocal.length > 0) {
+        return { buttonText: errorListLocal[0], errorList: errorListLocal };
+      }
+
+      return { buttonText: BUTTON_TXT.MINT, errorList: errorListLocal };
     }
-  }, [buttonText, values.amount]);
+
+    return { buttonText: BUTTON_TXT.ENTER_AMT, errorList: errorListLocal };
+  }, [errors, values.amount]);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
@@ -175,10 +185,18 @@ const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
                 />
                 {getRightElement(TOKEN.Tez)}
               </InputGroup>
+              <Text color={text4Text4} fontSize="xs" mt={1}>
+                Balance: {stats?.remainingMintableCtez ?? 0}
+              </Text>
             </FormControl>
           </ModalBody>
           <ModalFooter>
-            <Button w="100%" variant="outline" type="submit">
+            <Button
+              w="100%"
+              variant="outline"
+              type="submit"
+              disabled={isSubmitting || errorList.length > 0}
+            >
               {buttonText}
             </Button>
           </ModalFooter>

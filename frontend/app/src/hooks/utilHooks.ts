@@ -8,6 +8,7 @@ import { AllOvenDatum } from '../interfaces';
 import { logger } from '../utils/logger';
 import { cfmmError } from '../contracts/cfmm';
 import { openTxSubmittedModal } from '../redux/slices/UiSlice';
+import { useCtezBaseStats } from '../api/queries';
 
 type TUseOvenStats = (
   oven: AllOvenDatum | undefined | null,
@@ -25,7 +26,9 @@ type TUseOvenStats = (
 };
 
 const useOvenStats: TUseOvenStats = (oven) => {
-  const currentTarget = useAppSelector((state) => state.stats.baseStats?.originalTarget);
+  const { data } = useCtezBaseStats();
+  const currentTarget = Number(data?.currentTarget);
+  const currentTargetMintable = useAppSelector((state) => state.stats.baseStats?.originalTarget);
 
   const stats = useMemo(() => {
     if (oven == null) {
@@ -39,8 +42,12 @@ const useOvenStats: TUseOvenStats = (oven) => {
       };
     })();
 
-    const { max, remaining } = currentTarget
-      ? getOvenMaxCtez(formatNumber(tezBalance, 0), formatNumber(ctezOutstanding, 0), currentTarget)
+    const { max, remaining } = currentTargetMintable
+      ? getOvenMaxCtez(
+          formatNumber(tezBalance, 0),
+          formatNumber(ctezOutstanding, 0),
+          currentTargetMintable,
+        )
       : { max: 0, remaining: 0 };
 
     const ovenBalance = formatNumber(tezBalance, -6) ?? 0;
@@ -62,7 +69,7 @@ const useOvenStats: TUseOvenStats = (oven) => {
       if (currentTarget) {
         return ovenBalance * currentTarget > outStandingCtez
           ? 0
-          : outStandingCtez / currentTarget - ovenBalance;
+          : (outStandingCtez / currentTarget - ovenBalance) * 1.02;
       }
       return 0;
     })();
@@ -71,7 +78,7 @@ const useOvenStats: TUseOvenStats = (oven) => {
       if (currentTarget) {
         return ovenBalance * currentTarget <= outStandingCtez
           ? 0
-          : outStandingCtez / currentTarget - ovenBalance;
+          : (ovenBalance - outStandingCtez / currentTarget) * 0.98;
       }
       return 0;
     })();

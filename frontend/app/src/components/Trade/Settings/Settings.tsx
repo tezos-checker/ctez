@@ -62,7 +62,7 @@ const Settings: React.FC = () => {
           <NumberInput
             color={text4}
             bg={inputbg}
-            max={50}
+            max={100}
             min={0}
             value={slippageLocal}
             onChange={(ev) => setSlippageLocal(ev)}
@@ -82,7 +82,7 @@ const Settings: React.FC = () => {
           <NumberInput
             color={text4}
             bg={inputbg}
-            max={50}
+            max={32}
             min={0}
             value={deadlineLocal}
             mb={5}

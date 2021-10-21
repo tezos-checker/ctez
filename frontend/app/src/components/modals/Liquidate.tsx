@@ -13,7 +13,6 @@ import {
   useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
-import { useHistory } from 'react-router-dom';
 import { useState } from 'react';
 
 import { useTranslation } from 'react-i18next';
@@ -48,7 +47,6 @@ const LiquidateOven: React.FC<ILiquidateProps> = ({ isOpen, onClose, oven }) => 
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
   const handleProcessing = useTxLoader();
   const [{ pkh: userAddress }] = useWallet();
-  const history = useHistory();
 
   const { t } = useTranslation(['common']);
   const initialValues: any = {

@@ -1,15 +1,28 @@
 import { Flex, HStack, Stack, Text, useColorModeValue, useMediaQuery } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Button from '../../components/button/Button';
 import Trade from '../../components/Trade';
+import { ADD_BTN_TXT, TAddBtnTxt } from '../../constants/liquidity';
 import { MODAL_NAMES } from '../../constants/modals';
+import { BUTTON_TXT, TButtonText } from '../../constants/swap';
 import { openModal } from '../../redux/slices/UiSlice';
 import { useAppDispatch } from '../../redux/store';
+import { useWallet } from '../../wallet/hooks';
 
 const HomePage: React.FC = () => {
+  const [{ pkh: userAddress }] = useWallet();
+  const [buttonText, setButtonText] = useState<TButtonText>(BUTTON_TXT.CONNECT);
   const textcolor = useColorModeValue('darkgray', 'white');
   const [largerScreen] = useMediaQuery(['(min-width: 900px)']);
   const dispatch = useAppDispatch();
+  useEffect(() => {
+    if (!userAddress) {
+      setButtonText(BUTTON_TXT.CONNECT);
+    } else {
+      setButtonText(BUTTON_TXT.CREATE_OVEN);
+    }
+  }, [buttonText, userAddress]);
 
   return (
     <Flex maxWidth={1200} mx="auto" height="calc(100vh - 72px)" alignItems="center">
@@ -36,7 +49,7 @@ const HomePage: React.FC = () => {
               w="50%"
               onClick={() => dispatch(openModal(MODAL_NAMES.CREATE_OVEN))}
             >
-              Create Oven
+              {buttonText}
             </Button>
             <Button variant="ghost" w="50%">
               <Link to="/faq">

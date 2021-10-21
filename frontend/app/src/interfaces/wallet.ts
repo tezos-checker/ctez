@@ -19,3 +19,8 @@ export interface UserBalance {
   tezInOvens: number;
   ctezOutstanding: number;
 }
+
+export interface OvenBalance {
+  tezInOvens: number;
+  ctezOutstanding: number;
+}

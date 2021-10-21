@@ -53,6 +53,7 @@ const Swap: React.FC = () => {
 
   const { slippage, deadline: deadlineFromStore } = useAppSelector((state) => state.trade);
   const [minReceived, setMinReceived] = useState(0);
+  const [priceImpact, setpriceImpact] = useState(0);
 
   const getRightElement = useCallback((token: TToken) => {
     if (token === TOKEN.Tez) {
@@ -84,6 +85,11 @@ const Swap: React.FC = () => {
 
   const maxValue = (): number =>
     formType === FORM_TYPE.CTEZ_TEZ ? balance?.ctez || 0.0 : balance?.xtz || 0.0;
+
+  const rate = (): any =>
+    formType === FORM_TYPE.CTEZ_TEZ
+      ? Number(baseStats?.currentPrice ?? 1).toFixed(6)
+      : (1 / Number(baseStats?.currentPrice ?? 1)).toFixed(6);
 
   const validationSchema = Yup.object().shape({
     slippage: Yup.number().min(0).optional(),
@@ -137,6 +143,26 @@ const Swap: React.FC = () => {
   useEffect(() => {
     if (cfmmStorage && values.amount) {
       const { tokenPool, cashPool } = cfmmStorage;
+      const invariant = Number(cashPool) * Number(tokenPool);
+      let initialPrice = 0;
+      const SwapAmount = values.amount * 1e6;
+      let recievedPrice = 0;
+      if (formType === FORM_TYPE.CTEZ_TEZ) {
+        // 1 ctez = 11 tez
+        initialPrice = Number(cashPool) / Number(tokenPool);
+        const newTokenPool = Number(tokenPool) + SwapAmount * 0.997;
+        const newCashPool = invariant / newTokenPool;
+        const difference = Number(cashPool) - newCashPool;
+        recievedPrice = difference / SwapAmount;
+      } else {
+        initialPrice = Number(tokenPool) / Number(cashPool);
+        const newCashPool = Number(cashPool) + SwapAmount * 0.997;
+        const newTokenPool = invariant / newCashPool;
+        const difference = Number(tokenPool) - newTokenPool;
+        recievedPrice = difference / SwapAmount;
+      }
+      const priceImpact1 = ((initialPrice - recievedPrice) * 100) / initialPrice;
+      setpriceImpact(priceImpact1);
       const cashSold = values.amount * 1e6;
       const [aPool, bPool] =
         formType === FORM_TYPE.TEZ_CTEZ ? [tokenPool, cashPool] : [cashPool, tokenPool];
@@ -148,6 +174,7 @@ const Swap: React.FC = () => {
     } else {
       setMinBuyValue(0);
       setMinReceived(0);
+      setpriceImpact(0);
     }
   }, [cfmmStorage, formType, values.amount, slippage]);
 
@@ -221,7 +248,8 @@ const Swap: React.FC = () => {
       <Flex justifyContent="space-between">
         <Text fontSize="xs">Rate</Text>
         <Text color="#4E5D78" fontSize="xs">
-          1 tez = {(1 / Number(baseStats?.currentPrice ?? 1)).toFixed(6)} ctez
+          1 {formType === FORM_TYPE.CTEZ_TEZ ? 'ctez' : 'tez'} = {rate()}{' '}
+          {formType === FORM_TYPE.CTEZ_TEZ ? 'tez' : 'ctez'}
         </Text>
       </Flex>
       <Flex justifyContent="space-between">
@@ -232,7 +260,9 @@ const Swap: React.FC = () => {
       </Flex>
       <Flex justifyContent="space-between">
         <Text fontSize="xs">Price Impact</Text>
-        <Text fontSize="xs">0.0000%</Text>
+        <Text color="#4E5D78" fontSize="xs">
+          {Number(priceImpact).toFixed(6)} %
+        </Text>
       </Flex>
 
       <Button

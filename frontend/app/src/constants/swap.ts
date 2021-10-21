@@ -15,6 +15,7 @@ export const BUTTON_TXT = {
   WITHDRAW: 'Withdraw',
   BURN: 'Burn',
   MINT: 'Mint',
+  CREATE_OVEN: 'Create Oven',
 } as const;
 
 export type TButtonText = ValueOf<typeof BUTTON_TXT>;

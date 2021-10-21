@@ -39,7 +39,7 @@ const OvensPage: React.FC = () => {
           onChange={(e) => SetSortType(e.target.value)}
         >
           <option value="Oven Balance">Value</option>
-          <option value="utilization">Utilization</option>
+          <option value="utilization">Outstanding</option>
         </Select>
 
         <Spacer />
