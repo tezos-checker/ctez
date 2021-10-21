@@ -15,17 +15,18 @@ const CopyAddress: React.FC<Props> = ({ children, address, placement, spaced }) 
   function onClickCopy(e: ReactMouseEvent<SVGElement, MouseEvent>) {
     e.stopPropagation();
     e.preventDefault();
-    navigator.clipboard.writeText(address);
-    return toast({
-      position: 'bottom',
-      render() {
-        return (
-          <Flex borderRadius={14} background={cardbg}>
-            <Text m="auto">Copied to clipboard.</Text>
-          </Flex>
-        );
-      },
-    });
+    navigator.clipboard.writeText(address).then(() =>
+      toast({
+        position: 'bottom',
+        render() {
+          return (
+            <Flex borderRadius={14} background={cardbg}>
+              <Text m="auto">Copied to clipboard.</Text>
+            </Flex>
+          );
+        },
+      }),
+    );
   }
 
   return (
