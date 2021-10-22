@@ -98,7 +98,7 @@ export const addRemoveDepositorList = async (
   ovenStorage: OvenStorage,
   addList: string[] = [],
   disableList: string[] = [],
-): Promise<string> => {
+): Promise<any> => {
   const tezos = getTezosInstance();
   const ovenContract = await initContract(ovenAddress);
   const disableAny =

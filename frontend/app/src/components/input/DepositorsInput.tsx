@@ -114,7 +114,7 @@ const DepositorsInput: React.FC<IDepositorsInputProps> = (props) => {
           onChange={(event) => setDepositorInput(event.target.value)}
         />
         <Text fontSize="xs" color="#4E5D78">
-          Press return to whitelist depositor
+          Press Enter to whitelist depositor before Confirm
         </Text>
       </FormControl>
     </Box>

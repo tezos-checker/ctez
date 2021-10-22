@@ -27,6 +27,8 @@ import SkeletonLayout from '../skeleton';
 import data from '../../assets/data/info.json';
 import { useTxLoader } from '../../hooks/utilHooks';
 import CopyAddress from '../CopyAddress/CopyAddress';
+import { logger } from '../../utils/logger';
+import { BUTTON_TXT } from '../../constants/swap';
 
 const BakerInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
   const { t } = useTranslation(['common']);
@@ -53,14 +55,15 @@ const BakerInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
   });
   const setDelegatorValue = (e: any) => {
     if (e) {
+      bakerValue = e.value;
       setDelegator(e.value);
     }
-    bakerValue = e.value;
   };
 
   const options = delegates?.map((x) => createOption(x.address));
   const handleCreate = (e: any) => {
     newOption = createOption(e);
+    bakerValue = newOption;
     options?.push(newOption);
   };
 
@@ -142,7 +145,7 @@ const BakerInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
   const editBakerCard = useMemo(() => {
     if (edit) {
       return (
-        <>
+        <form>
           <CreatableSelect
             isClearable
             placeholder="Add a baker or Select from the list below"
@@ -154,9 +157,10 @@ const BakerInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
             onCreateOption={handleCreate}
             value={bakerValue}
             components={{ Option }}
+            id="bakerValue"
           />
 
-          <Flex justifyContent="right">
+          <Flex mt={5} justifyContent="right">
             <Button variant="outline" onClick={() => setEdit(false)}>
               Cancel
             </Button>
@@ -165,7 +169,7 @@ const BakerInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
               Confirm
             </Button>
           </Flex>
-        </>
+        </form>
       );
     }
 

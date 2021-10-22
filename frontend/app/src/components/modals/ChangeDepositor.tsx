@@ -123,6 +123,7 @@ const ChangeDepositor: React.FC<IChangeDepositorProps> = (props) => {
           userWhiteList,
           userDenyList,
         );
+        handleProcessing(result);
         if (result) {
           toast({
             description: t('txSubmitted'),
