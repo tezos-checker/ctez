@@ -24,7 +24,6 @@ export const Header: React.FC<IHeaderProps> = ({ handleToggled, toggled }) => {
   const { colorMode, toggleColorMode } = useColorMode();
   const headerBackground = useColorModeValue('white', 'cardbgdark');
   const location = useLocation();
-  // const [headerText, setHeaderText] = useState<string | null>(null);
   const [headerIconText, setHeaderIconText] = useState<HeaderIconText>({ text: null, icon: null });
 
   const setHeader = (pathName: string) => {
@@ -68,6 +67,10 @@ export const Header: React.FC<IHeaderProps> = ({ handleToggled, toggled }) => {
     }
   };
 
+  const isFrontpage = () => {
+    return location.pathname === '/';
+  };
+
   useEffect(() => {
     const pathName = location.pathname;
     setHeader(pathName);
@@ -75,7 +78,11 @@ export const Header: React.FC<IHeaderProps> = ({ handleToggled, toggled }) => {
 
   return (
     <div>
-      <Flex padding="16px" alignItems="center" background={headerBackground}>
+      <Flex
+        padding="16px"
+        alignItems="center"
+        background={!isFrontpage() ? headerBackground : undefined}
+      >
         <Button
           border="1px solid rgba(0, 0, 0, 0.07)"
           backgroundColor="transparent"

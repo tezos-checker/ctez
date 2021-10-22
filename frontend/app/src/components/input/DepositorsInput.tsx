@@ -12,7 +12,7 @@ import {
   Wrap,
   WrapItem,
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { IoMdCloseCircle } from 'react-icons/io';
 import { trimAddress } from '../../utils/addressUtils';
 
@@ -42,6 +42,19 @@ const DepositorsInput: React.FC<IDepositorsInputProps> = (props) => {
       setDepositorInput(depositors[1]);
     } else {
       setDepositorInput(depositors[0]);
+    }
+  };
+
+  const onSubmitDepositorInput = () => {
+    if (
+      depositorInput.match(/^(tz1|tz2)([A-Za-z0-9]{33})$/) &&
+      !props.depositors.some((x) => x.value === depositorInput)
+    ) {
+      props.onChange([
+        ...props.depositors,
+        { label: trimAddress(depositorInput), value: depositorInput },
+      ]);
+      setDepositorInput('');
     }
   };
 
@@ -93,10 +106,15 @@ const DepositorsInput: React.FC<IDepositorsInputProps> = (props) => {
           name="depositorInput"
           id="depositorInput"
           value={depositorInput}
-          onChange={handleDepositorInput}
+          onKeyPress={(event) => {
+            if (event.key === 'Enter') {
+              onSubmitDepositorInput();
+            }
+          }}
+          onChange={(event) => setDepositorInput(event.target.value)}
         />
         <Text fontSize="xs" color="#4E5D78">
-          Enter space to whitelist depositor
+          Press return to whitelist depositor
         </Text>
       </FormControl>
     </Box>
