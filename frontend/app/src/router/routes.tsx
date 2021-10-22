@@ -9,7 +9,7 @@ const TradePage = lazy(() => import('../pages/trade'));
 
 export const routes: ComponentRoute[] = [
   {
-    path: '/myovens/:ovenId',
+    path: '/myovens/:ovenId/:address',
     Component: <OvenIdPage />,
   },
   {

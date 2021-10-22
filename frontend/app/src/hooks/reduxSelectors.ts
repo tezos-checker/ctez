@@ -11,6 +11,7 @@ export function useMyOvensSelector(
 export function useMyOvensSelector(
   userAddress: string | undefined,
   ovenId: string,
+  ovenAddress?: string,
 ): { oven: AllOvenDatum | null; isLoading: boolean };
 
 // ? Using function overload
@@ -18,6 +19,7 @@ export function useMyOvensSelector(
 export function useMyOvensSelector(
   userAddress: string | undefined,
   ovenId?: string,
+  ovenAddress?: string,
 ): { ovens?: AllOvenDatum[] | null; oven?: AllOvenDatum | null; isLoading: boolean } {
   return useAppSelector((state) => {
     if (!userAddress) {
@@ -25,11 +27,32 @@ export function useMyOvensSelector(
     }
 
     const userOvens = state.oven.allOvens.data?.filter((x) => x.key.owner === userAddress);
+    const allOvenss = state.oven.allOvens.data;
 
-    if (ovenId) {
+    // if (ovenId) {
+    //   return {
+    //     oven: userOvens.find((x) => x.key.id === ovenId) ?? null,
+    //     isLoading: state.oven.allOvens.isLoading,
+    //   };
+    // }
+
+    console.log(ovenAddress);
+    console.log(allOvenss.find((x) => x.value.address === ovenAddress));
+    if (ovenAddress && ovenId) {
+      const importedOvensList = state.oven.extOvens;
+      const importedOvens = state.oven.allOvens.data
+        ?.filter((x) => importedOvensList.includes(x.value.address))
+        .map((x) => ({ ...x, isImported: true }));
+      const importedoven = importedOvens.find((x) => x.value.address === ovenAddress) ?? null;
+      if (importedoven) {
+        return {
+          oven: importedoven,
+          isLoading: false,
+        };
+      }
       return {
-        oven: userOvens.find((x) => x.key.id === ovenId) ?? null,
-        isLoading: state.oven.allOvens.isLoading,
+        oven: allOvenss.find((x) => x.value.address === ovenAddress) ?? null,
+        isLoading: false,
       };
     }
 

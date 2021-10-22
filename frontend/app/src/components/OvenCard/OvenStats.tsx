@@ -49,14 +49,20 @@ const OvenStats: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
             </span>
           </Tooltip>
         </Text>
-
-        {oven?.value.address == null ? (
-          <SkeletonText mt={2} noOfLines={1} w="300px" />
-        ) : (
-          <Text color={text4color} as="span" fontSize="sm">
-            <CopyAddress address={oven?.value.address}>{oven?.value.address}</CopyAddress>
+        <Flex mt={2}>
+          <Text fontSize="sm" mr={1} fontWeight="500">
+            Oven Address:
           </Text>
-        )}
+          <Text color="#4E5D78" fontSize="xs">
+            {oven?.value.address == null ? (
+              <SkeletonText noOfLines={1} w="300px" />
+            ) : (
+              <Text color={text4color} as="span" fontSize="sm">
+                <CopyAddress address={oven?.value.address}>{oven?.value.address}</CopyAddress>
+              </Text>
+            )}
+          </Text>
+        </Flex>
       </div>
 
       <Divider />
@@ -87,7 +93,12 @@ const OvenStats: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
 
         <Stack w="70%" textAlign="right">
           <Skeleton isLoaded={stats?.collateralUtilization != null}>
-            <ProgressPill value={Number(stats?.collateralUtilization)} oven={null} type={null} />
+            <ProgressPill
+              value={Number(stats?.collateralUtilization)}
+              oven={null}
+              type={null}
+              warning={null}
+            />
           </Skeleton>
           <Text color={text4color} fontSize="xs">
             Collateral utilization

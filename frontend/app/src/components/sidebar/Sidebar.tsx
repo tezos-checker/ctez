@@ -14,7 +14,7 @@ import { ReactComponent as Wrap } from '../../assets/images/sidebar/wrap.svg';
 import { ReactComponent as Plenty } from '../../assets/images/sidebar/plenty.svg';
 import { ReactComponent as ArrowLeft } from '../../assets/images/sidebar/arrowleft.svg';
 import { ReactComponent as ArrowRight } from '../../assets/images/sidebar/arrowright.svg';
-import { ReactComponent as Logo } from '../../assets/images/sidebar/logo.svg';
+import { ReactComponent as Logo } from '../../assets/images/sidebar/ctez_logo.svg';
 import 'react-pro-sidebar/dist/css/styles.css';
 import { openModal } from '../../redux/slices/UiSlice';
 import { MODAL_NAMES } from '../../constants/modals';
@@ -95,7 +95,7 @@ export const Sidebar: React.FC<Props> = ({
       <ProSidebar collapsed={collapsed} breakPoint="md" toggled={toggled} onToggle={handleToggled}>
         <Box background={sideBarBackground}>
           <SidebarHeader>
-            <Flex alignItems="center" padding="16px 35px 16px 20px">
+            <Flex alignItems="center" padding="16px 35px 16px 12px">
               <Box marginRight="10px">
                 <NavLink to="/">
                   <Logo />
