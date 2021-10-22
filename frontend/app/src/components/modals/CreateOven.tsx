@@ -59,7 +59,7 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
   const [delegate, setDelegate] = useState('');
   const toast = useToast();
   const { t } = useTranslation(['common']);
-  const options1 = ['Whitelist', 'Everyone'];
+  const options = ['Whitelist', 'Everyone'];
   const text2 = useColorModeValue('text2', 'darkheading');
   const text4 = useColorModeValue('text4', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
@@ -238,7 +238,7 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
                 Who can Deposit?
               </FormLabel>
               <Flex {...group} w="100%" justifyContent="space-between">
-                {options1.map((value) => {
+                {options.map((value) => {
                   const radio = getRadioProps({ value });
                   return (
                     <RadioCard key={value} {...radio}>

@@ -10,7 +10,6 @@ export function useMyOvensSelector(
 
 export function useMyOvensSelector(
   userAddress: string | undefined,
-  ovenId: string,
   ovenAddress?: string,
 ): { oven: AllOvenDatum | null; isLoading: boolean };
 
@@ -18,7 +17,6 @@ export function useMyOvensSelector(
 // ! Optimize selector using memoization
 export function useMyOvensSelector(
   userAddress: string | undefined,
-  ovenId?: string,
   ovenAddress?: string,
 ): { ovens?: AllOvenDatum[] | null; oven?: AllOvenDatum | null; isLoading: boolean } {
   return useAppSelector((state) => {
@@ -27,7 +25,7 @@ export function useMyOvensSelector(
     }
 
     const userOvens = state.oven.allOvens.data?.filter((x) => x.key.owner === userAddress);
-    const allOvenss = state.oven.allOvens.data;
+    const allOvens = state.oven.allOvens.data;
 
     // if (ovenId) {
     //   return {
@@ -36,22 +34,20 @@ export function useMyOvensSelector(
     //   };
     // }
 
-    console.log(ovenAddress);
-    console.log(allOvenss.find((x) => x.value.address === ovenAddress));
-    if (ovenAddress && ovenId) {
+    if (ovenAddress) {
       const importedOvensList = state.oven.extOvens;
       const importedOvens = state.oven.allOvens.data
         ?.filter((x) => importedOvensList.includes(x.value.address))
         .map((x) => ({ ...x, isImported: true }));
-      const importedoven = importedOvens.find((x) => x.value.address === ovenAddress) ?? null;
-      if (importedoven) {
+      const importedOven = importedOvens.find((x) => x.value.address === ovenAddress) ?? null;
+      if (importedOven) {
         return {
-          oven: importedoven,
+          oven: importedOven,
           isLoading: false,
         };
       }
       return {
-        oven: allOvenss.find((x) => x.value.address === ovenAddress) ?? null,
+        oven: allOvens.find((x) => x.value.address === ovenAddress) ?? null,
         isLoading: false,
       };
     }

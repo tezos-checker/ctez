@@ -173,7 +173,7 @@ const OvenCard: React.FC<IOvenCardProps> = (props) => {
   );
 
   if (props.type === 'MyOvens') {
-    return <Link to={`/myovens/${props.oven.key.id}/${props.oven.value.address}`}>{content}</Link>;
+    return <Link to={`/myovens/${props.oven.value.address}`}>{content}</Link>;
   }
 
   return content;

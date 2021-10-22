@@ -29,7 +29,7 @@ export const Header: React.FC<IHeaderProps> = ({ handleToggled, toggled }) => {
   const setHeader = (pathName: string) => {
     if (
       matchPath(pathName, {
-        path: '/myovens/:ovenId/:address',
+        path: '/myovens/:address',
       }) != null
     ) {
       // const ovenAddress = pathName.substr(pathName.lastIndexOf('/') + 1, pathName.length);
