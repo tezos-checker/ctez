@@ -15,7 +15,8 @@ import { useFormik } from 'formik';
 import { MdInfo } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { components, OptionProps } from 'react-select';
 import { useDelegates, useOvenDelegate } from '../../api/queries';
 import { useWallet } from '../../wallet/hooks';
 import Button from '../button/Button';
@@ -103,6 +104,13 @@ const BakerInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
     }
   }, [delegator, oven?.value.address, t, toast]);
 
+  const isInputValid = (inputValue: any) => {
+    const exists = options?.find((option) => option.value === inputValue) !== undefined;
+    const valid = inputValue.match(/^(tz1|tz2)([A-Za-z0-9]{33})$/);
+    // TODO: show validation errors somewhere?
+    return valid && !exists;
+  };
+
   const bakerCard = useMemo(() => {
     if (baker) {
       return (
@@ -122,6 +130,15 @@ const BakerInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
     return <SkeletonLayout count={1} component="AddressCard" />;
   }, [baker]);
 
+  const Option = (props: OptionProps<any>) => {
+    const address = props.data.value;
+    return (
+      <CopyAddress address={address}>
+        <components.Option {...props} />
+      </CopyAddress>
+    );
+  };
+
   const editBakerCard = useMemo(() => {
     if (edit) {
       return (
@@ -133,8 +150,10 @@ const BakerInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
               setDelegatorValue(ev);
             }}
             options={options}
+            isValidNewOption={isInputValid}
             onCreateOption={handleCreate}
             value={bakerValue}
+            components={{ Option }}
           />
 
           <Flex justifyContent="right">
