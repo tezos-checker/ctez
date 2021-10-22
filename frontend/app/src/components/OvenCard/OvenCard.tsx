@@ -15,6 +15,9 @@ import { AllOvenDatum } from '../../interfaces';
 import ProgressPill from './ProgressPill';
 import { useOvenStats } from '../../hooks/utilHooks';
 import CopyAddress from '../CopyAddress/CopyAddress';
+import { useCtezBaseStats, useUserBalance } from '../../api/queries';
+import { isMonthFromLiquidation } from '../../api/contracts';
+import { useWallet } from '../../wallet/hooks';
 
 interface IOvenCardProps {
   type: 'AllOvens' | 'MyOvens';
@@ -31,10 +34,18 @@ const truncateText = (text: string | null) => {
 };
 
 const OvenCard: React.FC<IOvenCardProps> = (props) => {
+  const [{ pkh: userAddress }] = useWallet();
   const background = useColorModeValue('white', 'cardbgdark');
   const textcolor = useColorModeValue('text2', 'white');
   const imported = useColorModeValue('blue', 'white');
   const { stats } = useOvenStats(props.oven);
+  const { data } = useCtezBaseStats();
+  const result = isMonthFromLiquidation(
+    Number(stats?.outStandingCtez),
+    Number(data?.currentTarget),
+    Number(stats?.ovenBalance ?? 0),
+    Number(data?.currentAnnualDrift),
+  );
 
   const renderedItems = useMemo(() => {
     const { address, owner, id } = (() => {
@@ -109,6 +120,7 @@ const OvenCard: React.FC<IOvenCardProps> = (props) => {
             value={Number(stats?.collateralUtilization ?? 0)}
             type={props.type}
             oven={props.oven}
+            warning={result}
           />
           <Text color="#B0B7C3" fontSize="xs">
             Collateral Utilization
@@ -161,7 +173,7 @@ const OvenCard: React.FC<IOvenCardProps> = (props) => {
   );
 
   if (props.type === 'MyOvens') {
-    return <Link to={`/myovens/${props.oven.key.id}`}>{content}</Link>;
+    return <Link to={`/myovens/${props.oven.value.address}`}>{content}</Link>;
   }
 
   return content;

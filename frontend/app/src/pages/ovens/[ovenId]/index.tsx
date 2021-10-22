@@ -16,12 +16,12 @@ import { useMyOvensSelector } from '../../../hooks/reduxSelectors';
 const OvenIdPage: React.FC = () => {
   const [{ pkh: userAddress }] = useWallet();
   const [largerScreen] = useMediaQuery(['(min-width: 800px)']);
-  const { ovenId } = useParams<{ ovenId: string }>();
-  const { oven } = useMyOvensSelector(userAddress, ovenId);
-
+  const { address } = useParams<{ address: string }>();
+  const { oven } = useMyOvensSelector(userAddress, address);
   useSetCtezBaseStatsToStore(userAddress);
   useSetOvenDataToStore(userAddress);
   useSetAllOvensToStore();
+  const isImported = !!oven?.isImported;
 
   if (userAddress == null) {
     return (
@@ -43,10 +43,9 @@ const OvenIdPage: React.FC = () => {
     >
       <Stack direction="column" w={largerScreen ? '50%' : '100%'} spacing={4}>
         <OvenStats oven={oven} />
+        {!isImported && <BakerInfo oven={oven} />}
 
-        <BakerInfo oven={oven} />
-
-        <DepositorsInfo oven={oven} />
+        {!isImported && <DepositorsInfo oven={oven} />}
       </Stack>
 
       <Stack direction="column" w={largerScreen ? '50%' : '100%'} spacing={4}>

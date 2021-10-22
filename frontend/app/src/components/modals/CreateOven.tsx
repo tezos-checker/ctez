@@ -15,6 +15,7 @@ import {
   useRadioGroup,
   useToast,
 } from '@chakra-ui/react';
+import CreatableSelect from 'react-select/creatable';
 import { validateAddress } from '@taquito/utils';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { array, number, object, string } from 'yup';
@@ -65,6 +66,18 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
   const text1 = useColorModeValue('text1', 'darkheading');
   const selectLastOvenId = useMemo(makeLastOvenIdSelector, []);
   const handleProcessing = useTxLoader();
+  let newOption: any;
+  let DelegateValue: any;
+
+  const createOption = (label: string) => ({
+    label,
+    value: label,
+  });
+  const delegateOptions = delegates?.map((x) => createOption(x.address));
+  const handleCreate = (e: any) => {
+    newOption = createOption(e);
+    delegateOptions?.push(newOption);
+  };
 
   const lastOvenId = useAppSelector((state) => selectLastOvenId(state, userAddress));
 
@@ -194,22 +207,16 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
               <FormLabel color={text2} fontWeight="500" fontSize="xs">
                 Delegate
               </FormLabel>
-
-              <Select
-                placeholder={t('delegatePlaceholder')}
-                value={values.delegate}
-                color={text4}
-                bg={inputbg}
+              <CreatableSelect
+                isClearable
+                value={DelegateValue}
+                options={delegateOptions}
+                placeholder="Add a baker or Select from the list below"
                 onChange={(ev) => {
-                  formik.setFieldValue('delegate', ev.target.value);
+                  formik.setFieldValue('delegate', ev.value);
                 }}
-              >
-                {delegates?.map((x) => (
-                  <option key={x.address} value={x.address}>
-                    {x.address}
-                  </option>
-                ))}
-              </Select>
+                onCreateOption={handleCreate}
+              />
             </FormControl>
             <FormControl w="100%" mb={2}>
               <FormLabel color={text2} fontWeight="500" fontSize="xs">
