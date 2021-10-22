@@ -87,7 +87,7 @@ export const isMonthFromLiquidation = (
 ): boolean => {
   return (
     outstandingCtez *
-      (((1 / target) * 1) / 2 ** 48) *
+      ((target * 1) / 2 ** 48) *
       (1 + currentDrift / 2 ** 48) ** ((365.25 * 24 * 3600) / 12) *
       (16 / 15) >
     tezBalance

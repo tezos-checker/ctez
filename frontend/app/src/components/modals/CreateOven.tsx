@@ -76,6 +76,7 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
   const delegateOptions = delegates?.map((x) => createOption(x.address));
   const handleCreate = (e: any) => {
     newOption = createOption(e);
+    DelegateValue = newOption;
     delegateOptions?.push(newOption);
   };
 
@@ -132,6 +133,13 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
     depositors: userAddress ? getDefaultDepositorList(delegate) : [],
     // ! Unneccessary variable
     depositorOp: Depositor.whitelist,
+  };
+
+  const isInputValid = (inputValue: any) => {
+    const exists = options?.find((option) => option === inputValue) !== undefined;
+    const valid = inputValue.match(/^(tz1|tz2)([A-Za-z0-9]{33})$/);
+    // TODO: show validation errors somewhere?
+    return valid && !exists;
   };
 
   const handleFormSubmit = async (data: ICreateVaultForm) => {
@@ -216,6 +224,7 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
                   formik.setFieldValue('delegate', ev.value);
                 }}
                 onCreateOption={handleCreate}
+                isValidNewOption={isInputValid}
               />
             </FormControl>
             <FormControl w="100%" mb={2}>
