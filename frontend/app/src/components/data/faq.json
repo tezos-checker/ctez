@@ -3,37 +3,37 @@
     [
       {
         "id": 1,
-        "question": "What is cTez (aka Checker Tezos)? 🧐",
+        "question": "What is cTez (aka Checker Tezos)?",
         "answer": "cTez is a synthetic version of Tezos (XTZ), collateralized by Tezos, that you can redeem for Tezos."
       },
       {
         "id": 2,
-        "question": "Who is behind cTez? 🧐",
+        "question": "Who is behind cTez?",
         "answer": "The code is written by Tezos Co-Founder, Arthur Breitman, and implemented by Bender Labs and Plenty."
       },
       {
         "id": 3,
-        "question": "How is it different from using Tezos? 🤯",
+        "question": "How is it different from using Tezos?",
         "answer": "cTez can be used directly in smart contracts across Tezos DeFi without having to worry about the thorny “Who’s baking?” question when it is staked."
       },
       {
         "id": 4,
-        "question": " That’s great! How can I get started using it? 🤩",
+        "question": " That’s great! How can I get started using it?",
         "answer": "By opening up your own personal oven here! https://ctez.app "
       },
       {
         "id": 5,
-        "question": "What’s a personal oven? 🤨",
+        "question": "What’s a personal oven?",
         "answer": "Where you can mint, redeem, delegate, and modify depositors for cTez and Tezos."
       },
       {
         "id": 6,
-        "question": "Can I create more than one oven? 👀",
+        "question": "Can I create more than one oven?",
         "answer": "Yes, you can!"
       },
       {
         "id": 7,
-        "question": "Why would someone create more than one oven? 😮",
+        "question": "Why would someone create more than one oven?",
         "answer": "In the case that you want to whitelist an oven, or create one so multiple people can add Tezos to it."
       }
     ],
@@ -41,22 +41,22 @@
   [
     {
       "id": 8,
-      "question": "How is the value of cTez determined? 🤑",
+      "question": "How is the value of cTez determined?",
       "answer": "Algorithmically! More information about the formula and the ‘drift’ can be found in the documentation."
     },
     {
       "id": 9,
-      "question": " I’ve read something about ‘liquidation’ being possible, what does that mean? 😫",
+      "question": " I’ve read something about ‘liquidation’ being possible, what does that mean?",
       "answer": "In the event that you are over or under collateralized by 6.7%, your oven can be closed and anyone can grab the collateral by sending it the outstanding cTez (or fraction thereof)."
     },
     {
       "id": 10,
-      "question": "If that happens, is there a fee that must be paid? 😩",
+      "question": "If that happens, is there a fee that must be paid?",
       "answer": "Yes! It is a 1/31 penalty for liquidation."
     },
     {
       "id": 11,
-      "question": "Can I use cTez in any Dapp that uses Tezos? 😏",
+      "question": "Can I use cTez in any Dapp that uses Tezos?",
       "answer": "Yes, but the developers behind the Dapp must update their smart contracts to work with it. Ex: Any token pair/XTZ, can be replaced by any token pair/cTez."
     },
     {
@@ -71,7 +71,7 @@
     },
     {
       "id": 14,
-      "question": "What is the ‘drift’? 🤔",
+      "question": "What is the ‘drift’?",
       "answer": "It is a system-wide parameter that varies over time, the floating peg against Tezos."
     }
   ]

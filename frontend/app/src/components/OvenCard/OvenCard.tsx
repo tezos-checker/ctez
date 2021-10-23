@@ -18,6 +18,7 @@ import CopyAddress from '../CopyAddress/CopyAddress';
 import { useCtezBaseStats, useUserBalance } from '../../api/queries';
 import { isMonthFromLiquidation } from '../../api/contracts';
 import { useWallet } from '../../wallet/hooks';
+import SkeletonLayout from '../skeleton';
 
 interface IOvenCardProps {
   type: 'AllOvens' | 'MyOvens';
@@ -171,6 +172,10 @@ const OvenCard: React.FC<IOvenCardProps> = (props) => {
       <Grid gridTemplateColumns="repeat(5, 3fr) 4fr">{renderedItems}</Grid>
     </Flex>
   );
+
+  if (stats?.collateralUtilization === 'Infinity') {
+    return <SkeletonLayout count={1} component="OvenCard" />;
+  }
 
   if (props.type === 'MyOvens') {
     return <Link to={`/myovens/${props.oven.value.address}`}>{content}</Link>;

@@ -28,7 +28,8 @@ type TUseOvenStats = (
 const useOvenStats: TUseOvenStats = (oven) => {
   const { data } = useCtezBaseStats();
   const currentTarget = Number(data?.currentTarget);
-  const currentTargetMintable = useAppSelector((state) => state.stats.baseStats?.originalTarget);
+  const currentTargetMintable = Number(data?.originalTarget);
+  const currentTargetMintable1 = useAppSelector((state) => state.stats.baseStats?.originalTarget);
 
   const stats = useMemo(() => {
     if (oven == null) {
