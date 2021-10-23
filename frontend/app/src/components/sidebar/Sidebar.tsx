@@ -93,7 +93,7 @@ export const Sidebar: React.FC<Props> = ({
   return (
     <Box id="sidebar" minHeight="100vh">
       <ProSidebar collapsed={collapsed} breakPoint="md" toggled={toggled} onToggle={handleToggled}>
-        <Box background={sideBarBackground}>
+        <Box background={sideBarBackground} flexGrow={1}>
           <SidebarHeader>
             <Flex alignItems="center" padding="16px 35px 16px 12px">
               <Box marginRight="10px">

@@ -11,17 +11,18 @@ import {
   ModalHeader,
   ModalOverlay,
   Select,
+  Text,
   useColorModeValue,
   useRadioGroup,
   useToast,
 } from '@chakra-ui/react';
 import CreatableSelect from 'react-select/creatable';
 import { validateAddress } from '@taquito/utils';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { array, number, object, string } from 'yup';
 import { useTranslation } from 'react-i18next';
 import { useFormik } from 'formik';
-import { useDelegates } from '../../api/queries';
+import { useDelegates, useUserBalance } from '../../api/queries';
 import { Depositor } from '../../interfaces';
 import { create, cTezError } from '../../contracts/ctez';
 import { useWallet } from '../../wallet/hooks';
@@ -60,8 +61,10 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
   const toast = useToast();
   const { t } = useTranslation(['common']);
   const options = ['Whitelist', 'Everyone'];
+  const { data: balance } = useUserBalance(userAddress);
   const text2 = useColorModeValue('text2', 'darkheading');
   const text4 = useColorModeValue('text4', 'darkheading');
+  const text4Text4 = useColorModeValue('text4', 'text4');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
   const text1 = useColorModeValue('text1', 'darkheading');
   const selectLastOvenId = useMemo(makeLastOvenIdSelector, []);
@@ -240,6 +243,9 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
                 value={values.amount}
                 onChange={handleChange}
               />
+              <Text color={text4Text4} fontSize="xs" mt={1}>
+                Balance: {balance?.xtz}
+              </Text>
             </FormControl>
 
             <FormControl w="100%" mb={2}>
