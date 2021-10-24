@@ -3,7 +3,6 @@ import {
   Divider,
   Flex,
   Icon,
-  Select,
   Stack,
   Text,
   Tooltip,
@@ -11,12 +10,11 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import CreatableSelect from 'react-select/creatable';
-import { useFormik } from 'formik';
 import { MdInfo } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
-import * as Yup from 'yup';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { components, OptionProps } from 'react-select';
+import { components, GroupBase, OptionProps, OptionsOrGroups } from 'react-select';
+import { validateAddress } from '@taquito/utils';
 import { useDelegates, useOvenDelegate } from '../../api/queries';
 import { useWallet } from '../../wallet/hooks';
 import Button from '../button/Button';
@@ -27,45 +25,49 @@ import SkeletonLayout from '../skeleton';
 import data from '../../assets/data/info.json';
 import { useTxLoader } from '../../hooks/utilHooks';
 import CopyAddress from '../CopyAddress/CopyAddress';
-import { logger } from '../../utils/logger';
-import { BUTTON_TXT } from '../../constants/swap';
+
+type TOption = { label: string; value: string };
 
 const BakerInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
   const { t } = useTranslation(['common']);
   const [{ pkh: userAddress }] = useWallet();
   const { data: delegates } = useDelegates(userAddress);
-  const { data: baker } = useOvenDelegate(oven?.value.address);
+  const { data: baker, refetch: refetchBaker } = useOvenDelegate(oven?.value.address);
 
   const toast = useToast();
 
   const background = useColorModeValue('white', 'cardbgdark');
   const textcolor = useColorModeValue('text2', 'white');
 
-  const [delegator, setDelegator] = useState('');
+  const createOption = useCallback<(label: string) => TOption>(
+    (label) => ({
+      label,
+      value: label,
+    }),
+    [],
+  );
+
+  const [bakerSelect, setBakerSelect] = useState<TOption | null>(null);
+
   const [loading, setLoading] = useState(false);
+  const [processing, setProcessing] = useState(false);
   const [edit, setEdit] = useState(false);
   const cardbg = useColorModeValue('bg4', 'darkblue');
   const handleProcessing = useTxLoader();
-  let bakerValue: any;
-  let newOption: any;
 
-  const createOption = (label: string) => ({
-    label,
-    value: label,
-  });
-  const setDelegatorValue = (e: any) => {
-    if (e) {
-      bakerValue = e.value;
-      setDelegator(e.value);
-    }
-  };
+  const [options, setOptions] = useState<OptionsOrGroups<TOption, GroupBase<TOption>>>([]);
 
-  const options = delegates?.map((x) => createOption(x.address));
-  const handleCreate = (e: any) => {
-    newOption = createOption(e);
-    bakerValue = newOption;
-    options?.push(newOption);
-  };
+  useEffect(() => {
+    setOptions(delegates?.map((x) => createOption(x.address)) ?? []);
+  }, [createOption, delegates]);
+
+  const handleCreate = useCallback(
+    (e: string) => {
+      const newOption = createOption(e);
+      setOptions((prev) => [...prev, newOption]);
+    },
+    [createOption],
+  );
 
   const showInfo = useMemo(() => {
     return (
@@ -80,21 +82,25 @@ const BakerInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
     );
   }, [cardbg]);
 
-  useEffect(() => {
-    setDelegator(baker ?? '');
-  }, [baker, oven]);
-
   const handleConfirm = useCallback(async () => {
     setLoading(true);
+
+    if (!bakerSelect) {
+      return;
+    }
+
     try {
-      const result = await delegate(oven?.value.address ?? '', delegator);
-      if (result) {
-        toast({
-          description: t('txSubmitted'),
-          status: 'success',
-        });
-      }
-      handleProcessing(result);
+      const result = await delegate(oven?.value.address ?? '', bakerSelect.value);
+
+      setProcessing(true);
+
+      handleProcessing(result).then((res) => {
+        if (res) {
+          refetchBaker().finally(() => setProcessing(false));
+        } else {
+          setProcessing(false);
+        }
+      });
     } catch (error) {
       const errorText = cTezError[error?.data?.[1].with.int as number] || t('txFailed');
       toast({
@@ -105,25 +111,40 @@ const BakerInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
       setLoading(false);
       setEdit(false);
     }
-  }, [delegator, oven?.value.address, t, toast]);
+  }, [bakerSelect, handleProcessing, oven?.value.address, refetchBaker, t, toast]);
 
-  const isInputValid = (inputValue: any) => {
-    const exists = options?.find((option) => option.value === inputValue) !== undefined;
-    const valid = inputValue.match(/^(tz1|tz2)([A-Za-z0-9]{33})$/);
-    // TODO: show validation errors somewhere?
-    return valid && !exists;
-  };
+  const isInputValid = useCallback(
+    (inputValue: string) => {
+      const exists =
+        options?.find((option) => (option as TOption).value === inputValue) !== undefined;
+      const valid = validateAddress(inputValue) === 3;
+      // TODO: show validation errors somewhere?
+      return valid && !exists;
+    },
+    [options],
+  );
 
   const bakerCard = useMemo(() => {
     if (baker) {
+      // ? Show updated baker (less opacity) when user edits and submits it, to avoid confusing the user
+      const bakerToDisplay =
+        (loading || processing) && bakerSelect?.value ? bakerSelect.value : baker;
+
       return (
-        <Flex w="100%" boxShadow="lg" px={3} py={1} borderRadius={6}>
-          <Identicon seed={baker ?? undefined} type="tzKtCat" avatarSize="sm" />
+        <Flex
+          w="100%"
+          boxShadow="lg"
+          px={3}
+          py={1}
+          borderRadius={6}
+          opacity={loading || processing ? 0.3 : 1}
+        >
+          <Identicon seed={bakerToDisplay ?? undefined} type="tzKtCat" avatarSize="sm" />
 
           <Text as="span" my="auto" flexGrow={1} mx={2}>
-            <CopyAddress address={baker}>{baker}</CopyAddress>
+            <CopyAddress address={bakerToDisplay}>{bakerToDisplay}</CopyAddress>
           </Text>
-          <Button variant="ghost" size="sm" onClick={() => setEdit(true)}>
+          <Button variant="ghost" size="sm" onClick={() => setEdit(true)} disabled={processing}>
             Edit
           </Button>
         </Flex>
@@ -131,9 +152,9 @@ const BakerInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
     }
 
     return <SkeletonLayout count={1} component="AddressCard" />;
-  }, [baker]);
+  }, [baker, bakerSelect?.value, loading, processing]);
 
-  const Option = (props: OptionProps<any>) => {
+  const Option = (props: OptionProps<TOption>) => {
     const address = props.data.value;
     return (
       <CopyAddress address={address}>
@@ -150,12 +171,14 @@ const BakerInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
             isClearable
             placeholder="Add a baker or Select from the list below"
             onChange={(ev) => {
-              setDelegatorValue(ev);
+              if (ev) {
+                setBakerSelect(ev as TOption);
+              }
             }}
             options={options}
             isValidNewOption={isInputValid}
             onCreateOption={handleCreate}
-            value={bakerValue}
+            value={bakerSelect}
             components={{ Option }}
             id="bakerValue"
           />
@@ -174,7 +197,7 @@ const BakerInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
     }
 
     return null;
-  }, [delegates, delegator, edit, handleConfirm, loading, t]);
+  }, [edit, options, isInputValid, handleCreate, bakerSelect, handleConfirm, loading]);
 
   return (
     <Stack p={8} spacing={4} borderRadius={16} backgroundColor={background}>
