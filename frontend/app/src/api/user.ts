@@ -1,8 +1,7 @@
 import { getTezosInstance } from '../contracts/client';
 import { getCTezFa12Contract } from '../contracts/fa12';
-import { OvenBalance, UserBalance } from '../interfaces';
-import { getUsertexctezData } from './contracts';
-import { getUserOvenData } from './tzkt';
+import { UserBalance } from '../interfaces';
+import { getUserTezCtezData } from './contracts';
 
 const getXtzBalance = async (userAddress: string) => {
   try {
@@ -30,7 +29,7 @@ export const getUserBalance = async (userAddress: string): Promise<UserBalance> 
   try {
     const ctez = await getCtezBalance(userAddress);
     const xtz = await getXtzBalance(userAddress);
-    const { tezInOvens, ctezOutstanding } = await getUsertexctezData(userAddress);
+    const { tezInOvens, ctezOutstanding } = await getUserTezCtezData(userAddress);
     return {
       xtz,
       ctez,
