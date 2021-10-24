@@ -1,4 +1,4 @@
-import { Box, Icon, Select, Spacer, Stack, useColorModeValue } from '@chakra-ui/react';
+import { Flex, Box, Icon, Select, Spacer, Stack, useColorModeValue } from '@chakra-ui/react';
 import { MdAdd } from 'react-icons/md';
 import { BsArrowRight } from 'react-icons/bs';
 import { useMemo } from 'react';
@@ -30,7 +30,7 @@ const OvensPage: React.FC = () => {
 
   return (
     <Box maxWidth={1200} mx="auto" my={4} p={4}>
-      <Stack direction="row">
+      <Flex>
         <Select
           color="#B0B7C3"
           placeholder="Sort by:"
@@ -59,7 +59,7 @@ const OvensPage: React.FC = () => {
         >
           Create Oven
         </Button>
-      </Stack>
+      </Flex>
 
       <Box d="table" w="100%" mt={16}>
         {!isMyOven && <AllOvensContainer />}

@@ -21,6 +21,16 @@ form {
   border-radius: 3px;
 }
 
+/*#sidebar .pro-sidebar {*/
+/*  width: 230px;*/
+/*  min-width: 230px;*/
+/*}*/
+
+/*#sidebar .pro-sidebar.collapsed {*/
+/*  width: 80px;*/
+/*  min-width: 80px;*/
+/*}*/
+
 #sidebar .pro-sidebar-inner {
   background-color: transparent;
 }

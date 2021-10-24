@@ -14,7 +14,7 @@ import { ReactComponent as Wrap } from '../../assets/images/sidebar/wrap.svg';
 import { ReactComponent as Plenty } from '../../assets/images/sidebar/plenty.svg';
 import { ReactComponent as ArrowLeft } from '../../assets/images/sidebar/arrowleft.svg';
 import { ReactComponent as ArrowRight } from '../../assets/images/sidebar/arrowright.svg';
-import { ReactComponent as Logo } from '../../assets/images/sidebar/ctez_logo.svg';
+import { ReactComponent as Logo } from '../../assets/images/sidebar/ctez.svg';
 import 'react-pro-sidebar/dist/css/styles.css';
 import { openModal } from '../../redux/slices/UiSlice';
 import { MODAL_NAMES } from '../../constants/modals';
@@ -91,14 +91,14 @@ export const Sidebar: React.FC<Props> = ({
   };
 
   return (
-    <Box id="sidebar" minHeight="100vh">
+    <Box id="sidebar">
       <ProSidebar collapsed={collapsed} breakPoint="md" toggled={toggled} onToggle={handleToggled}>
         <Box background={sideBarBackground} flexGrow={1}>
           <SidebarHeader>
-            <Flex alignItems="center" padding="16px 35px 16px 12px">
-              <Box marginRight="10px">
+            <Flex alignItems="center" justifyContent="center" padding="16px 0px 16px 20px">
+              <Box>
                 <NavLink to="/">
-                  <Logo />
+                  <Logo width="40px" height="40px" />
                 </NavLink>
               </Box>
               <Text
@@ -108,6 +108,7 @@ export const Sidebar: React.FC<Props> = ({
                 color="white"
                 fontWeight={600}
                 fontSize="xl"
+                marginLeft="10px"
                 whiteSpace="nowrap"
                 textOverflow="ellipsis"
               >
@@ -121,127 +122,107 @@ export const Sidebar: React.FC<Props> = ({
             </Box>
           </SidebarHeader>
           <SidebarContent>
-            <Menu iconShape="square">
-              <MenuItem
-                className={clsx(
-                  {
+            <Box height="calc(100vh - 72px)" overflow="auto">
+              <Menu iconShape="square">
+                <MenuItem
+                  className={clsx({
+                    highlight: location.pathname === '/createoven',
+                  })}
+                  icon={<CreateOven />}
+                >
+                  <NavLink to="/myovens" onClick={handleCreateOvenClick}>
+                    Create Oven
+                  </NavLink>
+                </MenuItem>
+                <MenuItem
+                  className={clsx({
+                    highlight: location.pathname === '/ovens',
+                  })}
+                  icon={<AllOvens />}
+                >
+                  <Link to="/ovens">All Ovens</Link>
+                </MenuItem>
+                <MenuItem
+                  className={clsx({
+                    highlight: location.pathname === '/myovens',
+                  })}
+                  icon={<MyOvens />}
+                >
+                  <Link to="/myovens">My Ovens</Link>
+                </MenuItem>
+                <MenuItem
+                  className={clsx({
+                    highlight: location.pathname === '/trade',
+                  })}
+                  icon={<Trade />}
+                >
+                  <Link to="/trade">Trade</Link>
+                </MenuItem>
+                <MenuItem
+                  className={clsx(
+                    {
+                      hide: collapsed,
+                    },
+                    'no-cursor',
+                  )}
+                >
+                  <Text fontSize="sm" color="#51CBFF" cursor="default">
+                    Stats
+                  </Text>
+                </MenuItem>
+                <MenuItem
+                  className={clsx(
+                    {
+                      hide: collapsed,
+                    },
+                    'no-cursor',
+                    'highlight',
+                  )}
+                >
+                  {stats()}
+                </MenuItem>
+                <MenuItem
+                  className={clsx(
+                    {
+                      hide: collapsed,
+                    },
+                    'no-cursor',
+                  )}
+                >
+                  <Text fontSize="sm" color="#51CBFF">
+                    Info
+                  </Text>
+                </MenuItem>
+                <MenuItem
+                  className={clsx({
+                    highlight: location.pathname === '/faq',
+                  })}
+                  icon={<Faq />}
+                >
+                  <Link to="/faq">FAQ</Link>
+                </MenuItem>
+                <MenuItem icon={<Github />}>
+                  <a href="https://github.com/Tezsure/ctez" target="_blank" rel="noreferrer">
+                    GitHub
+                  </a>
+                </MenuItem>
+                <MenuItem
+                  className={clsx({
                     hide: collapsed,
-                  },
-                  'no-cursor',
-                )}
-              >
-                <Text color="#51CBFF">Ovens</Text>
-              </MenuItem>
-              <MenuItem
-                className={clsx({
-                  highlight: location.pathname === '/createoven',
-                })}
-                icon={<CreateOven />}
-              >
-                <NavLink to="/myovens" onClick={handleCreateOvenClick}>
-                  Create Oven
-                </NavLink>
-              </MenuItem>
-              <MenuItem
-                className={clsx({
-                  highlight: location.pathname === '/ovens',
-                })}
-                icon={<AllOvens />}
-              >
-                <Link to="/ovens">All Ovens</Link>
-              </MenuItem>
-              <MenuItem
-                className={clsx(
-                  {
-                    hide: collapsed,
-                  },
-                  'no-cursor',
-                )}
-              >
-                <Text fontSize="sm" color="#51CBFF">
-                  Manage
-                </Text>
-              </MenuItem>
-              <MenuItem
-                className={clsx({
-                  highlight: location.pathname === '/myovens',
-                })}
-                icon={<MyOvens />}
-              >
-                <Link to="/myovens">My Ovens</Link>
-              </MenuItem>
-              <MenuItem
-                className={clsx({
-                  highlight: location.pathname === '/trade',
-                })}
-                icon={<Trade />}
-              >
-                <Link to="/trade">Trade</Link>
-              </MenuItem>
-              <MenuItem
-                className={clsx(
-                  {
-                    hide: collapsed,
-                  },
-                  'no-cursor',
-                )}
-              >
-                <Text fontSize="sm" color="#51CBFF">
-                  Info
-                </Text>
-              </MenuItem>
-              <MenuItem
-                className={clsx({
-                  highlight: location.pathname === '/faq',
-                })}
-                icon={<Faq />}
-              >
-                <Link to="/faq">FAQ</Link>
-              </MenuItem>
-              <MenuItem icon={<Github />}>
-                <a href="https://github.com/Tezsure/ctez" target="_blank" rel="noreferrer">
-                  GitHub
-                </a>
-              </MenuItem>
-              <MenuItem
-                className={clsx(
-                  {
-                    hide: collapsed,
-                  },
-                  'no-cursor',
-                )}
-              >
-                <Text fontSize="sm" color="#51CBFF" cursor="default">
-                  Ctez Stats
-                </Text>
-              </MenuItem>
-              <MenuItem
-                className={clsx(
-                  {
-                    hide: collapsed,
-                  },
-                  'no-cursor',
-                  'highlight',
-                )}
-              >
-                {stats()}
-              </MenuItem>
-              <MenuItem
-                className={clsx({
-                  hide: collapsed,
-                })}
-              >
-                <Text fontSize="sm" color="#51CBFF" cursor="default">
-                  ctez adopters
-                </Text>
-              </MenuItem>
-              <MenuItem icon={<Wrap />}>
-                <a href="https://app.tzwrap.com/wrap">Wrap Protocol</a>
-              </MenuItem>
-              <MenuItem icon={<Plenty />}>
-                <a href="https://www.plentydefi.com/">Plenty</a>
-              </MenuItem>
-            </Menu>
+                  })}
+                >
+                  <Text fontSize="sm" color="#51CBFF" cursor="default">
+                    Adopters
+                  </Text>
+                </MenuItem>
+                <MenuItem icon={<Wrap />}>
+                  <a href="https://app.tzwrap.com/wrap">Wrap Protocol</a>
+                </MenuItem>
+                <MenuItem icon={<Plenty />}>
+                  <a href="https://www.plentydefi.com/">Plenty</a>
+                </MenuItem>
+              </Menu>
+            </Box>
           </SidebarContent>
         </Box>
       </ProSidebar>

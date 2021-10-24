@@ -22,7 +22,7 @@ interface HeaderIconText {
 
 export const Header: React.FC<IHeaderProps> = ({ handleToggled, toggled }) => {
   const { colorMode, toggleColorMode } = useColorMode();
-  const headerBackground = useColorModeValue('white', 'cardbgdark');
+  const headerBackground = useColorModeValue('white', 'transparent');
   const location = useLocation();
   const [headerIconText, setHeaderIconText] = useState<HeaderIconText>({ text: null, icon: null });
 
@@ -77,7 +77,7 @@ export const Header: React.FC<IHeaderProps> = ({ handleToggled, toggled }) => {
   }, [location]);
 
   return (
-    <div>
+    <Box width="100%">
       <Flex
         padding="16px"
         alignItems="center"
@@ -104,6 +104,6 @@ export const Header: React.FC<IHeaderProps> = ({ handleToggled, toggled }) => {
         </Box>
         <SignIn />
       </Flex>
-    </div>
+    </Box>
   );
 };
