@@ -100,7 +100,7 @@ const Deposit: React.FC<IDepositProps> = ({ isOpen, onClose, oven }) => {
     }
   };
 
-  const { values, handleChange, handleSubmit, isSubmitting, errors } = useFormik({
+  const { values, handleChange, handleSubmit, isSubmitting, errors, ...formik } = useFormik({
     initialValues,
     validationSchema,
     onSubmit: handleFormSubmit,
@@ -146,7 +146,15 @@ const Deposit: React.FC<IDepositProps> = ({ isOpen, onClose, oven }) => {
               </InputGroup>
               {typeof balance !== 'undefined' && (
                 <Text color={text4Text4} fontSize="xs" mt={1}>
-                  Balance: {formatNumber(balance.xtz, 0)}
+                  Balance: {formatNumber(balance.xtz, 0)}{' '}
+                  <Text
+                    as="span"
+                    cursor="pointer"
+                    color="#e35f5f"
+                    onClick={() => formik.setFieldValue('amount', formatNumber(balance.xtz, 0))}
+                  >
+                    (Max)
+                  </Text>
                 </Text>
               )}
             </FormControl>

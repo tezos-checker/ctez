@@ -102,7 +102,7 @@ const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose, oven }) => {
     }
   };
 
-  const { values, handleChange, handleSubmit, isSubmitting, errors } = useFormik({
+  const { values, handleChange, handleSubmit, isSubmitting, errors, ...formik } = useFormik({
     initialValues,
     validationSchema,
     onSubmit: handleFormSubmit,
@@ -171,7 +171,17 @@ const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose, oven }) => {
                 {getRightElement()}
               </InputGroup>
               <Text color={text4Text4} fontSize="xs" mt={1}>
-                Balance: {Math.abs(stats?.withdrawableTez ?? 0).toFixed(2)}
+                Balance: {Math.abs(stats?.withdrawableTez ?? 0).toFixed(6)}{' '}
+                <Text
+                  as="span"
+                  cursor="pointer"
+                  color="#e35f5f"
+                  onClick={() =>
+                    formik.setFieldValue('amount', Math.abs(stats?.withdrawableTez ?? 0).toFixed(6))
+                  }
+                >
+                  (Max)
+                </Text>
               </Text>
             </FormControl>
           </ModalBody>
