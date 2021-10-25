@@ -2,6 +2,7 @@ import { ValueOf } from './helper';
 
 export interface IAddLiquidityForm {
   amount: number | undefined;
+  ctezAmount: number | undefined;
   slippage: number;
   deadline: number;
 }
