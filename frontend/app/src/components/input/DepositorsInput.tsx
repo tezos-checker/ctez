@@ -3,12 +3,14 @@ import {
   BoxProps,
   Flex,
   FormControl,
+  FormErrorMessage,
   FormHelperText,
   FormLabel,
   IconButton,
   Input,
   SlideFade,
   Text,
+  useColorModeValue,
   Wrap,
   WrapItem,
 } from '@chakra-ui/react';
@@ -30,32 +32,43 @@ interface IDepositorsInputProps {
 
 const DepositorsInput: React.FC<IDepositorsInputProps> = (props) => {
   const [depositorInput, setDepositorInput] = useState('');
+  const text2 = useColorModeValue('text2', 'darkheading');
+  const [error, setError] = useState<string | null>(null);
 
-  const handleDepositorInput = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = ev.target;
-    const depositors = value.split(' ');
-    if (depositors.length > 1 && !props.depositors.some((x) => x.value === depositors[0])) {
-      props.onChange([
-        ...props.depositors,
-        { label: trimAddress(depositors[0]), value: depositors[0] },
-      ]);
-      setDepositorInput(depositors[1]);
-    } else {
-      setDepositorInput(depositors[0]);
-    }
-  };
+  // const handleDepositorInput = (ev: React.ChangeEvent<HTMLInputElement>) => {
+  //   const { value } = ev.target;
+  //   const depositors = value.split(' ');
+  //   if (depositors.length > 1 && !props.depositors.some((x) => x.value === depositors[0])) {
+  //     props.onChange([
+  //       ...props.depositors,
+  //       { label: trimAddress(depositors[0]), value: depositors[0] },
+  //     ]);
+  //     setDepositorInput(depositors[1]);
+  //   } else {
+  //     setDepositorInput(depositors[0]);
+  //   }
+  // };
 
   const onSubmitDepositorInput = () => {
-    if (
-      depositorInput.match(/^(tz1|tz2)([A-Za-z0-9]{33})$/) &&
-      !props.depositors.some((x) => x.value === depositorInput)
-    ) {
-      props.onChange([
-        ...props.depositors,
-        { label: trimAddress(depositorInput), value: depositorInput },
-      ]);
-      setDepositorInput('');
+    const addressValid = depositorInput.match(/^(tz1|tz2)([A-Za-z0-9]{33})$/);
+    const addressExists = props.depositors.some((x) => x.value === depositorInput);
+
+    if (!addressValid) {
+      setError('Invalid Address');
+      return;
     }
+
+    if (addressExists) {
+      setError('Address already exists');
+      return;
+    }
+
+    setError(null);
+    props.onChange([
+      ...props.depositors,
+      { label: trimAddress(depositorInput), value: depositorInput },
+    ]);
+    setDepositorInput('');
   };
 
   const removeDepositor = (index: number) => {
@@ -69,8 +82,8 @@ const DepositorsInput: React.FC<IDepositorsInputProps> = (props) => {
 
   return (
     <Box {...props.outerBoxProps}>
-      <FormControl>
-        <FormLabel fontSize="xs" fontWeight="500">
+      <FormControl isInvalid={error != null}>
+        <FormLabel color={text2} fontSize="xs" fontWeight="500">
           Authorized Depositors
         </FormLabel>
 
@@ -108,14 +121,23 @@ const DepositorsInput: React.FC<IDepositorsInputProps> = (props) => {
           value={depositorInput}
           onKeyPress={(event) => {
             if (event.key === 'Enter') {
+              event.preventDefault();
               onSubmitDepositorInput();
+            }
+          }}
+          onBlur={() => {
+            if (error != null) {
+              setError(null);
             }
           }}
           onChange={(event) => setDepositorInput(event.target.value)}
         />
-        <Text fontSize="xs" color="#4E5D78">
-          Press Enter to whitelist depositor before Confirm
-        </Text>
+        {!error && (
+          <FormHelperText fontSize="xs" color="#4E5D78">
+            Press Enter to whitelist depositor before Confirm
+          </FormHelperText>
+        )}
+        {error && <FormErrorMessage fontSize="xs">{error}</FormErrorMessage>}
       </FormControl>
     </Box>
   );

@@ -17,7 +17,7 @@ import {
   Tr,
   useDisclosure,
 } from '@chakra-ui/react';
-import { useCallback, MouseEvent, useState } from 'react';
+import { useCallback } from 'react';
 import Button from '../button/Button';
 import { trimAddress } from '../../utils/addressUtils';
 import { useWallet } from '../../wallet/hooks';
@@ -25,7 +25,7 @@ import { getBeaconInstance } from '../../wallet';
 import { APP_NAME, NETWORK } from '../../utils/globals';
 import { setWalletProvider } from '../../contracts/client';
 import { OvenSlice } from '../../redux/slices/OvenSlice';
-import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { useAppDispatch } from '../../redux/store';
 import { useUserBalance, useUserLqtData } from '../../api/queries';
 import Identicon from '../avatar/Identicon';
 import { formatNumber as formatNumberUtil, formatNumberStandard } from '../../utils/numbers';
@@ -37,7 +37,6 @@ const SignIn: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { data: balance } = useUserBalance(userAddress);
   const { data: userLqtData } = useUserLqtData(userAddress);
-  const userOvenData = useAppSelector((state) => state.oven.userOvenData);
 
   const formatNumber = useCallback((number?: number, shiftedBy = -6) => {
     if (typeof number !== 'number') {
@@ -107,13 +106,13 @@ const SignIn: React.FC = () => {
                 {typeof balance !== 'undefined' && (
                   <>
                     <Tr>
-                      <Td>ꜩ:</Td>
+                      <Td>tez:</Td>
                       <Td textAlign="right">
                         {formatNumberStandard(formatNumber(balance.xtz, 0))}
                       </Td>
                     </Tr>
                     <Tr>
-                      <Td>cꜩ:</Td>
+                      <Td>ctez:</Td>
                       <Td textAlign="right">
                         {formatNumberStandard(formatNumber(balance.ctez, 0))}
                       </Td>
@@ -123,13 +122,13 @@ const SignIn: React.FC = () => {
                 {typeof balance !== 'undefined' && (
                   <>
                     <Tr>
-                      <Td>ꜩ in ovens:</Td>
+                      <Td>tez in ovens:</Td>
                       <Td textAlign="right">
                         {formatNumberStandard(formatNumber(balance.tezInOvens, 0))}
                       </Td>
                     </Tr>
                     <Tr>
-                      <Td>cꜩ outstanding:</Td>
+                      <Td>ctez outstanding:</Td>
                       <Td textAlign="right">
                         {formatNumberStandard(formatNumber(balance.ctezOutstanding, 0))}
                       </Td>

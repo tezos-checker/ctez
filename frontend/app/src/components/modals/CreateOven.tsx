@@ -10,7 +10,6 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Select,
   Text,
   useColorModeValue,
   useRadioGroup,
@@ -18,7 +17,7 @@ import {
 } from '@chakra-ui/react';
 import CreatableSelect from 'react-select/creatable';
 import { validateAddress } from '@taquito/utils';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { array, number, object, string } from 'yup';
 import { useTranslation } from 'react-i18next';
 import { useFormik } from 'formik';
@@ -32,7 +31,7 @@ import Button from '../button/Button';
 import DepositorsInput from '../input/DepositorsInput';
 import { makeLastOvenIdSelector } from '../../hooks/reduxSelectors';
 import { useAppSelector } from '../../redux/store';
-import { useTxLoader } from '../../hooks/utilHooks';
+import { useBakerSelect, useTxLoader } from '../../hooks/utilHooks';
 
 interface ICreateOvenProps {
   isOpen: boolean;
@@ -57,7 +56,11 @@ interface ICreateVaultForm {
 const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
   const [{ pkh: userAddress }] = useWallet();
   const { data: delegates } = useDelegates(userAddress);
-  const [delegate, setDelegate] = useState('');
+
+  const { bakerSelect, setBakerSelect, options: bakerOptions, handleBakerCreate } = useBakerSelect(
+    delegates,
+  );
+
   const toast = useToast();
   const { t } = useTranslation(['common']);
   const options = ['Whitelist', 'Everyone'];
@@ -69,19 +72,6 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
   const text1 = useColorModeValue('text1', 'darkheading');
   const selectLastOvenId = useMemo(makeLastOvenIdSelector, []);
   const handleProcessing = useTxLoader();
-  let newOption: any;
-  let DelegateValue: any;
-
-  const createOption = (label: string) => ({
-    label,
-    value: label,
-  });
-  const delegateOptions = delegates?.map((x) => createOption(x.address));
-  const handleCreate = (e: any) => {
-    newOption = createOption(e);
-    DelegateValue = newOption;
-    delegateOptions?.push(newOption);
-  };
 
   const lastOvenId = useAppSelector((state) => selectLastOvenId(state, userAddress));
 
@@ -130,10 +120,10 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
   );
 
   const initialValues: ICreateVaultForm = {
-    delegate,
+    delegate: '',
     amount: 0,
     depositType: 'Whitelist',
-    depositors: userAddress ? getDefaultDepositorList(delegate) : [],
+    depositors: userAddress ? getDefaultDepositorList('') : [],
     // ! Unneccessary variable
     depositorOp: Depositor.whitelist,
   };
@@ -220,13 +210,16 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
               </FormLabel>
               <CreatableSelect
                 isClearable
-                value={DelegateValue}
-                options={delegateOptions}
+                value={bakerSelect}
+                options={bakerOptions}
                 placeholder="Add a baker or Select from the list below"
                 onChange={(ev) => {
-                  formik.setFieldValue('delegate', ev.value);
+                  if (ev) {
+                    setBakerSelect(ev);
+                    formik.setFieldValue('delegate', ev.value);
+                  }
                 }}
-                onCreateOption={handleCreate}
+                onCreateOption={handleBakerCreate}
                 isValidNewOption={isInputValid}
               />
             </FormControl>
@@ -244,7 +237,15 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
                 onChange={handleChange}
               />
               <Text color={text4Text4} fontSize="xs" mt={1}>
-                Balance: {balance?.xtz}
+                Balance: {balance?.xtz}{' '}
+                <Text
+                  as="span"
+                  cursor="pointer"
+                  color="#e35f5f"
+                  onClick={() => formik.setFieldValue('amount', balance?.xtz)}
+                >
+                  (Max)
+                </Text>
               </Text>
             </FormControl>
 

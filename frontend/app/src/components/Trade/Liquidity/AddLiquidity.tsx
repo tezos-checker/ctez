@@ -19,7 +19,7 @@ import { useWallet } from '../../../wallet/hooks';
 import { useCfmmStorage, useUserBalance } from '../../../api/queries';
 
 import { AddLiquidityParams } from '../../../interfaces';
-import { ADD_BTN_TXT, IAddLiquidityForm, TAddBtnTxt } from '../../../constants/liquidity';
+import { ADD_BTN_TXT, IAddLiquidityForm } from '../../../constants/liquidity';
 import { addLiquidity, cfmmError } from '../../../contracts/cfmm';
 import { logger } from '../../../utils/logger';
 import { BUTTON_TXT } from '../../../constants/swap';
@@ -30,11 +30,10 @@ import { formatNumberStandard } from '../../../utils/numbers';
 
 const AddLiquidity: React.FC = () => {
   const [{ pkh: userAddress }] = useWallet();
-  const [maxTokens, setMaxToken] = useState(0);
   const [minLQT, setMinLQT] = useState(0);
   const { data: cfmmStorage } = useCfmmStorage();
   const { data: balance } = useUserBalance(userAddress);
-  const { t } = useTranslation();
+  const { t } = useTranslation(['common']);
   const toast = useToast();
   const text2 = useColorModeValue('text2', 'darkheading');
   const text4 = useColorModeValue('text4', 'darkheading');
@@ -44,19 +43,20 @@ const AddLiquidity: React.FC = () => {
   const handleProcessing = useTxLoader();
 
   const calcMaxToken = useCallback(
-    (cashDeposited: number) => {
+    (cashDeposited: number, setFieldValue) => {
       if (cfmmStorage) {
         const { tokenPool, cashPool, lqtTotal } = cfmmStorage;
         const cash = cashDeposited * 1e6;
         const max =
           Math.ceil(((cash * tokenPool.toNumber()) / cashPool.toNumber()) * (1 + slippage * 0.01)) /
           1e6;
-        setMaxToken(Number(max.toFixed(6)));
+
+        setFieldValue('ctezAmount', Number(max.toFixed(6)));
         const minLQTMinted =
           ((cash * lqtTotal.toNumber()) / cashPool.toNumber()) * (1 - slippage * 0.01);
         setMinLQT(Number(Math.floor(minLQTMinted).toFixed()));
       } else {
-        setMaxToken(-1);
+        setFieldValue('ctezAmount', -1);
         setMinLQT(-1);
       }
     },
@@ -67,9 +67,11 @@ const AddLiquidity: React.FC = () => {
     slippage: Number(slippage),
     deadline: Number(deadlineFromStore),
     amount: undefined,
+    ctezAmount: undefined,
   };
 
   const maxValue = (): number => balance?.xtz || 0.0;
+  const maxCtezValue = (): number => balance?.ctez || 0.0;
 
   const validationSchema = object().shape({
     slippage: number().min(0).optional(),
@@ -79,17 +81,21 @@ const AddLiquidity: React.FC = () => {
       .max(maxValue(), `${t('insufficientBalance')}`)
       .positive(t('shouldPositive'))
       .required(t('required')),
+    ctezAmount: number()
+      .min(0.000001, `${t('shouldMinimum')} 0.000001`)
+      .max(maxCtezValue(), 'Insufficient ctez Balance')
+      .positive(t('shouldPositive')),
   });
 
   const handleFormSubmit = async (formData: IAddLiquidityForm) => {
-    if (userAddress && formData.amount) {
+    if (userAddress && formData.amount && formData.ctezAmount) {
       try {
         const deadline = addMinutes(deadlineFromStore)(new Date());
         const data: AddLiquidityParams = {
           deadline,
           amount: formData.amount,
           owner: userAddress,
-          maxTokensDeposited: maxTokens,
+          maxTokensDeposited: formData.ctezAmount,
           minLqtMinted: minLQT,
         };
         const result = await addLiquidity(data);
@@ -105,15 +111,15 @@ const AddLiquidity: React.FC = () => {
     }
   };
 
-  const { values, handleChange, handleSubmit, isSubmitting, errors } = useFormik({
+  const { values, handleChange, handleSubmit, isSubmitting, errors, ...formik } = useFormik({
     initialValues,
     validationSchema,
     onSubmit: handleFormSubmit,
   });
 
   useEffect(() => {
-    calcMaxToken(Number(values.amount));
-  }, [calcMaxToken, values.amount]);
+    calcMaxToken(Number(values.amount), formik.setFieldValue);
+  }, [calcMaxToken, values.amount, formik.setFieldValue]);
 
   const { buttonText, errorList } = useMemo(() => {
     logger.info(errors);
@@ -159,7 +165,15 @@ const AddLiquidity: React.FC = () => {
               onChange={handleChange}
             />
             <Text color={text4Text4} fontSize="xs" mt={1}>
-              Balance: {formatNumberStandard(balance?.xtz)}
+              Balance: {formatNumberStandard(balance?.xtz)}{' '}
+              <Text
+                as="span"
+                cursor="pointer"
+                color="#e35f5f"
+                onClick={() => formik.setFieldValue('amount', formatNumberStandard(balance?.xtz))}
+              >
+                (Max)
+              </Text>
             </Text>
           </FormControl>
 
@@ -172,7 +186,7 @@ const AddLiquidity: React.FC = () => {
               ctez to deposit(approx)
             </FormLabel>
             <Input
-              value={maxTokens}
+              value={values.ctezAmount}
               readOnly
               border={0}
               color={text2}

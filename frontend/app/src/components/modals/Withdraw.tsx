@@ -17,7 +17,7 @@ import {
   useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { MdInfo } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 import { validateAddress } from '@taquito/utils';
@@ -27,8 +27,8 @@ import { useWallet } from '../../wallet/hooks';
 import { IWithdrawForm } from '../../constants/oven-operations';
 import { cTezError, withdraw } from '../../contracts/ctez';
 import Button from '../button/Button';
-import { CTezIcon, TezIcon } from '../icons';
-import { BUTTON_TXT, TButtonText } from '../../constants/swap';
+import { TezIcon } from '../icons';
+import { BUTTON_TXT } from '../../constants/swap';
 import { AllOvenDatum } from '../../interfaces';
 import { useOvenStats, useTxLoader } from '../../hooks/utilHooks';
 import { logger } from '../../utils/logger';
@@ -102,7 +102,7 @@ const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose, oven }) => {
     }
   };
 
-  const { values, handleChange, handleSubmit, isSubmitting, errors } = useFormik({
+  const { values, handleChange, handleSubmit, isSubmitting, errors, ...formik } = useFormik({
     initialValues,
     validationSchema,
     onSubmit: handleFormSubmit,
@@ -171,7 +171,17 @@ const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose, oven }) => {
                 {getRightElement()}
               </InputGroup>
               <Text color={text4Text4} fontSize="xs" mt={1}>
-                Balance: {Math.abs(stats?.withdrawableTez ?? 0).toFixed(2)}
+                Balance: {Math.abs(stats?.withdrawableTez ?? 0).toFixed(6)}{' '}
+                <Text
+                  as="span"
+                  cursor="pointer"
+                  color="#e35f5f"
+                  onClick={() =>
+                    formik.setFieldValue('amount', Math.abs(stats?.withdrawableTez ?? 0).toFixed(6))
+                  }
+                >
+                  (Max)
+                </Text>
               </Text>
             </FormControl>
           </ModalBody>
@@ -181,6 +191,7 @@ const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose, oven }) => {
               variant="outline"
               type="submit"
               disabled={isSubmitting || errorList.length > 0}
+              isLoading={isSubmitting}
             >
               {buttonText}
             </Button>

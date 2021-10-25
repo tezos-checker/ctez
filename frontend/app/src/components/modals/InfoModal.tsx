@@ -28,9 +28,9 @@ const InfoModal: React.FC<IInfoModal> = (props) => {
       <ModalOverlay />
       <ModalContent>
         <ModalCloseButton />
-        <ModalBody>
+        <ModalBody mb={2}>
           <Flex direction="column" alignItems="center">
-            <Image width="96px" height="96px" src={TxSubmitted} mb={8} />
+            <Image width="82px" height="82px" src={TxSubmitted} mb={6} mt={8} />
 
             <Heading color={text2} fontSize="lg" textAlign="center" mb={2}>
               Transaction Submitted
@@ -38,6 +38,7 @@ const InfoModal: React.FC<IInfoModal> = (props) => {
 
             <Button
               variant="ghost"
+              color={text2}
               onClick={
                 !props.opHash
                   ? undefined
