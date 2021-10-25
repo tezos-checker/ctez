@@ -130,7 +130,7 @@ export const Sidebar: React.FC<Props> = ({
                   })}
                   icon={<CreateOven />}
                 >
-                  <NavLink to="/myovens" onClick={handleCreateOvenClick}>
+                  <NavLink to={(loc) => loc.pathname} onClick={handleCreateOvenClick}>
                     Create Oven
                   </NavLink>
                 </MenuItem>

@@ -81,10 +81,13 @@ export const isMonthFromLiquidation = (
   target: number,
   tezBalance: number,
   currentDrift: number,
+  noTargetScale?: boolean,
 ): boolean => {
+  const scaledTarget = noTargetScale ? target : target / 2 ** 48;
+
   return (
     outstandingCtez *
-      target *
+      scaledTarget *
       (1 + currentDrift / 2 ** 48) ** ((365.25 * 24 * 3600) / 12) *
       (16 / 15) >
     tezBalance
