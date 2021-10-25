@@ -28,7 +28,7 @@ const HomePage: React.FC = () => {
     <Flex maxWidth={1200} mx="auto" height="calc(100vh - 72px)" alignItems="center">
       <Flex alignItems="center" flexDirection={largerScreen ? 'row' : 'column'}>
         <Stack
-          spacing={3}
+          spacing={5}
           pl={largerScreen ? 4 : 1}
           pr={largerScreen ? 0 : 1}
           textAlign={largerScreen ? 'left' : 'center'}
@@ -40,22 +40,22 @@ const HomePage: React.FC = () => {
             fontSize={largerScreen ? 'sm' : 'md'}
             mt={largerScreen ? '' : '185px'}
           >
-            No governance, completely mechanical, straightforward.
+            ctez, a Tezos public good
           </Text>
           <Text
             color={textcolor}
             fontSize={largerScreen ? '48px' : '20px'}
             as="strong"
-            line-height="16px"
+            lineHeight="50px"
           >
             Unlock liquidity on Tezos and stay in control
           </Text>
           <Text opacity="0.5" color={textcolor} fontSize="md" pr={15}>
-            ctez can be used directly in smart-contracts that would normally pool tez together
-            without the thorny question of "who's baking".
+            ctez is a collateralized version of tez allowing you to use Tezos DeFi and delegate your
+            tez simultaneously.
           </Text>
           <HStack
-            mt={6}
+            mt={10}
             w={largerScreen ? '60%' : '90%'}
             justifyContent="space-between"
             spacing={largerScreen ? '24px' : '15px'}

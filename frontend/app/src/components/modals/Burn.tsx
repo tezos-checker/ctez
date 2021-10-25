@@ -159,6 +159,7 @@ const Burn: React.FC<IBurnProps> = ({ isOpen, onClose, oven }) => {
                   id="amount"
                   color={text2}
                   bg={inputbg}
+                  lang="en-US"
                   value={values.amount}
                   onChange={handleChange}
                   placeholder="0.0"

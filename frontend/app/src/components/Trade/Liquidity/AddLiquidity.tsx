@@ -51,7 +51,7 @@ const AddLiquidity: React.FC = () => {
           Math.ceil(((cash * tokenPool.toNumber()) / cashPool.toNumber()) * (1 + slippage * 0.01)) /
           1e6;
 
-        setFieldValue('ctezAmount', Number(max.toFixed(6)));
+        setFieldValue('ctezAmount', formatNumberStandard(max));
         const minLQTMinted =
           ((cash * lqtTotal.toNumber()) / cashPool.toNumber()) * (1 - slippage * 0.01);
         setMinLQT(Number(Math.floor(minLQTMinted).toFixed()));
@@ -123,6 +123,7 @@ const AddLiquidity: React.FC = () => {
 
   const { buttonText, errorList } = useMemo(() => {
     const errorListLocal = Object.values(errors);
+    console.log(errorListLocal);
     if (!userAddress) {
       return { buttonText: BUTTON_TXT.CONNECT, errorList: errorListLocal };
     }
@@ -162,6 +163,7 @@ const AddLiquidity: React.FC = () => {
               bg={inputbg}
               value={values.amount}
               onChange={handleChange}
+              lang="en-US"
             />
             <Text color={text4Text4} fontSize="xs" mt={1}>
               Balance: {formatNumberStandard(balance?.xtz)}{' '}

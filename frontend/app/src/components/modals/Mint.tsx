@@ -173,6 +173,7 @@ const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
                   id="amount"
                   color={text2}
                   bg={inputbg}
+                  lang="en-US"
                   placeholder="0.0"
                   value={values.amount}
                   onChange={handleChange}

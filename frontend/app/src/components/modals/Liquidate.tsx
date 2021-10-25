@@ -132,6 +132,7 @@ const LiquidateOven: React.FC<ILiquidateProps> = ({ isOpen, onClose, oven }) => 
                   bg={inputbg}
                   value={values.to}
                   onChange={handleChange}
+                  lang="en-US"
                 />
               </InputGroup>
             </FormControl>
@@ -145,6 +146,7 @@ const LiquidateOven: React.FC<ILiquidateProps> = ({ isOpen, onClose, oven }) => 
                   id="amount"
                   color={text2}
                   bg={inputbg}
+                  lang="en-US"
                   value={values.amount}
                   onChange={handleChange}
                 />
