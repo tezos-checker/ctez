@@ -122,7 +122,6 @@ const AddLiquidity: React.FC = () => {
   }, [calcMaxToken, values.amount, formik.setFieldValue]);
 
   const { buttonText, errorList } = useMemo(() => {
-    logger.info(errors);
     const errorListLocal = Object.values(errors);
     if (!userAddress) {
       return { buttonText: BUTTON_TXT.CONNECT, errorList: errorListLocal };

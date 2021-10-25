@@ -180,7 +180,6 @@ const Swap: React.FC = () => {
   }, [cfmmStorage, formType, values.amount, slippage]);
 
   const { buttonText, errorList } = useMemo(() => {
-    logger.info(errors);
     const errorListLocal = Object.values(errors);
     if (!userAddress) {
       return { buttonText: BUTTON_TXT.CONNECT, errorList: errorListLocal };
