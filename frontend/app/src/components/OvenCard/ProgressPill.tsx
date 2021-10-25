@@ -26,7 +26,7 @@ const ProgressPill: React.FC<IProgressPill> = ({ value, oven, type, warning }) =
         <LiquidateOven oven={oven} isOpen={liquidateOven} onClose={() => setliquidateOven(false)} />
       </>
     );
-  }, [liquidateOven, setliquidateOven]);
+  }, [liquidateOven, oven]);
 
   const showInfo = useMemo(() => {
     return (
@@ -56,7 +56,7 @@ const ProgressPill: React.FC<IProgressPill> = ({ value, oven, type, warning }) =
             h="100%"
             w={value > 100 ? '100' : `${value}%`}
             borderRadius={4}
-            backgroundColor={value < 100 ? (value > 80 ? '#F3DD63' : '#38CB89') : '#CC3936'}
+            backgroundColor={value > 100 ? '#CC3936' : value > 80 ? '#F3DD63' : '#38CB89'}
           />
         </Box>
         <Text maxWidth={40}>{value}%</Text>

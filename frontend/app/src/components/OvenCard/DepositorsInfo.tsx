@@ -61,8 +61,8 @@ const DepositorsInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
         ? []
         : [
             {
-              value: userAddress,
-              label: 'You',
+              value: oven.key.owner,
+              label: oven.key.owner === userAddress ? 'You' : 'Owner',
             },
             ...(ovenStorageData?.depositors as string[])?.map((dep) => ({
               value: dep,
