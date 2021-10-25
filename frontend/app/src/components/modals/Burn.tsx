@@ -21,12 +21,12 @@ import { MdInfo } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 import { number, object } from 'yup';
 import { useFormik } from 'formik';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { IMintRepayForm } from '../../constants/oven-operations';
 import { cTezError, mintOrBurn } from '../../contracts/ctez';
 import { logger } from '../../utils/logger';
 import Button from '../button/Button';
-import { BUTTON_TXT, TButtonText, TOKEN, TToken } from '../../constants/swap';
+import { BUTTON_TXT } from '../../constants/swap';
 import { CTezIcon } from '../icons';
 import { AllOvenDatum } from '../../interfaces';
 import { useOvenStats, useTxLoader } from '../../hooks/utilHooks';
@@ -49,19 +49,16 @@ const Burn: React.FC<IBurnProps> = ({ isOpen, onClose, oven }) => {
   const handleProcessing = useTxLoader();
   const { stats } = useOvenStats(oven);
 
-  const getRightElement = useCallback(
-    (token: TToken) => {
-      return (
-        <InputRightElement backgroundColor="transparent" w={24} color={text2}>
-          <CTezIcon height={28} width={28} />
-          <Text fontWeight="500" mx={2}>
-            ctez
-          </Text>
-        </InputRightElement>
-      );
-    },
-    [text2],
-  );
+  const getRightElement = useCallback(() => {
+    return (
+      <InputRightElement backgroundColor="transparent" w={24} color={text2}>
+        <CTezIcon height={28} width={28} />
+        <Text fontWeight="500" mx={2}>
+          ctez
+        </Text>
+      </InputRightElement>
+    );
+  }, [text2]);
 
   const { ctez_outstanding } = useMemo(
     () =>
@@ -115,7 +112,7 @@ const Burn: React.FC<IBurnProps> = ({ isOpen, onClose, oven }) => {
     }
   };
 
-  const { values, handleChange, handleSubmit, isSubmitting, errors } = useFormik({
+  const { values, handleChange, handleSubmit, isSubmitting, errors, ...formik } = useFormik({
     initialValues,
     validationSchema,
     onSubmit: handleFormSubmit,
@@ -166,10 +163,18 @@ const Burn: React.FC<IBurnProps> = ({ isOpen, onClose, oven }) => {
                   onChange={handleChange}
                   placeholder="0.0"
                 />
-                {getRightElement(TOKEN.Tez)}
+                {getRightElement()}
               </InputGroup>
               <Text color={text4Text4} fontSize="xs" mt={1}>
-                Balance: {stats?.outStandingCtez ?? 0}
+                Balance: {stats?.outStandingCtez ?? 0}{' '}
+                <Text
+                  as="span"
+                  cursor="pointer"
+                  color="#e35f5f"
+                  onClick={() => formik.setFieldValue('amount', stats?.outStandingCtez ?? 0)}
+                >
+                  (Max)
+                </Text>
               </Text>
             </FormControl>
           </ModalBody>

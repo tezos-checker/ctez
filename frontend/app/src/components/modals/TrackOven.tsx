@@ -20,9 +20,10 @@ import { isOven } from '../../contracts/ctez';
 import { useOvenData } from '../../api/queries';
 import { useWallet } from '../../wallet/hooks';
 import { CTEZ_ADDRESS } from '../../utils/globals';
-import { addExternalOven } from '../../utils/ovenUtils';
+import { addExternalOven, getExternalOvens } from '../../utils/ovenUtils';
 import Button from '../button/Button';
-import { useTxLoader } from '../../hooks/utilHooks';
+import { setExternalOvens } from '../../redux/slices/OvenSlice';
+import { useAppDispatch } from '../../redux/store';
 
 interface ITrackOvenProps {
   isOpen: boolean;
@@ -36,12 +37,12 @@ interface IAddOvenForm {
 const TrackOven: React.FC<ITrackOvenProps> = ({ isOpen, onClose }) => {
   const [{ pkh: userAddress }] = useWallet();
   const toast = useToast();
+  const dispatch = useAppDispatch();
   const { t } = useTranslation(['common']);
   const text2 = useColorModeValue('text2', 'darkheading');
   const text4 = useColorModeValue('text4', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
-  const tabcolor = useColorModeValue('tabcolor', 'darkheading');
-  const handleProcessing = useTxLoader();
+  const tabcolor = useColorModeValue('text1', 'darkheading');
 
   const initialValues: any = {
     ovenAddress: '',
@@ -82,11 +83,13 @@ const TrackOven: React.FC<ITrackOvenProps> = ({ isOpen, onClose }) => {
           description: t('ovenAddedSuccess'),
           status: 'success',
         });
+        dispatch(setExternalOvens(getExternalOvens(userAddress, CTEZ_ADDRESS)));
+        onClose();
       }
     }
   };
 
-  const { values, handleChange, handleSubmit } = useFormik({
+  const { values, handleChange, handleSubmit, ...formik } = useFormik({
     initialValues,
     validationSchema,
     onSubmit: handleFormSubmit,
@@ -118,7 +121,7 @@ const TrackOven: React.FC<ITrackOvenProps> = ({ isOpen, onClose }) => {
           </ModalBody>
 
           <ModalFooter py={6}>
-            <Button w="100%" type="submit">
+            <Button w="100%" type="submit" isLoading={formik.isSubmitting}>
               Track Oven
             </Button>
           </ModalFooter>

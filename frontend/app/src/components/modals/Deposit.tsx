@@ -14,21 +14,21 @@ import {
   useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { useTranslation } from 'react-i18next';
 import { number, object } from 'yup';
 import { useFormik } from 'formik';
 
 import { IDepositForm } from '../../constants/oven-operations';
-import { BUTTON_TXT, TButtonText, TOKEN, TToken } from '../../constants/swap';
+import { BUTTON_TXT } from '../../constants/swap';
 import { cTezError, deposit } from '../../contracts/ctez';
 import { logger } from '../../utils/logger';
 
 import Button from '../button/Button';
-import { CTezIcon, TezIcon } from '../icons';
+import { TezIcon } from '../icons';
 import { AllOvenDatum } from '../../interfaces';
-import { useOvenStats, useTxLoader } from '../../hooks/utilHooks';
+import { useTxLoader } from '../../hooks/utilHooks';
 import { useWallet } from '../../wallet/hooks';
 import { useUserBalance } from '../../api/queries';
 import { formatNumber } from '../../utils/numbers';
@@ -50,19 +50,16 @@ const Deposit: React.FC<IDepositProps> = ({ isOpen, onClose, oven }) => {
   const text4Text4 = useColorModeValue('text4', 'text4');
   const { data: balance } = useUserBalance(userAddress);
 
-  const getRightElement = useCallback(
-    (token: TToken) => {
-      return (
-        <InputRightElement backgroundColor="transparent" w={24} color={text2}>
-          <TezIcon height={28} width={28} />
-          <Text fontWeight="500" mx={2}>
-            tez
-          </Text>
-        </InputRightElement>
-      );
-    },
-    [text2],
-  );
+  const getRightElement = useCallback(() => {
+    return (
+      <InputRightElement backgroundColor="transparent" w={24} color={text2}>
+        <TezIcon height={28} width={28} />
+        <Text fontWeight="500" mx={2}>
+          tez
+        </Text>
+      </InputRightElement>
+    );
+  }, [text2]);
 
   const { t } = useTranslation(['common']);
   const initialValues: any = {
@@ -100,7 +97,7 @@ const Deposit: React.FC<IDepositProps> = ({ isOpen, onClose, oven }) => {
     }
   };
 
-  const { values, handleChange, handleSubmit, isSubmitting, errors } = useFormik({
+  const { values, handleChange, handleSubmit, isSubmitting, errors, ...formik } = useFormik({
     initialValues,
     validationSchema,
     onSubmit: handleFormSubmit,
@@ -141,11 +138,19 @@ const Deposit: React.FC<IDepositProps> = ({ isOpen, onClose, oven }) => {
                   onChange={handleChange}
                   placeholder="0.0"
                 />
-                {getRightElement(TOKEN.Tez)}
+                {getRightElement()}
               </InputGroup>
               {typeof balance !== 'undefined' && (
                 <Text color={text4Text4} fontSize="xs" mt={1}>
-                  Balance: {formatNumber(balance.xtz, 0)}
+                  Balance: {formatNumber(balance.xtz, 0)}{' '}
+                  <Text
+                    as="span"
+                    cursor="pointer"
+                    color="#e35f5f"
+                    onClick={() => formik.setFieldValue('amount', formatNumber(balance.xtz, 0))}
+                  >
+                    (Max)
+                  </Text>
                 </Text>
               )}
             </FormControl>
@@ -156,6 +161,7 @@ const Deposit: React.FC<IDepositProps> = ({ isOpen, onClose, oven }) => {
               variant="outline"
               type="submit"
               disabled={isSubmitting || errorList.length > 0}
+              isLoading={isSubmitting}
             >
               {buttonText}
             </Button>

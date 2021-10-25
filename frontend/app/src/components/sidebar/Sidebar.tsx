@@ -1,6 +1,6 @@
 import { ProSidebar, SidebarHeader, SidebarContent, Menu, MenuItem } from 'react-pro-sidebar';
 import clsx from 'clsx';
-import { Text, Flex, Box, useColorModeValue } from '@chakra-ui/react';
+import { Text, Flex, Box, useColorModeValue, Image } from '@chakra-ui/react';
 import React from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -10,7 +10,7 @@ import { ReactComponent as CreateOven } from '../../assets/images/sidebar/create
 import { ReactComponent as Trade } from '../../assets/images/sidebar/trade.svg';
 import { ReactComponent as Faq } from '../../assets/images/sidebar/faq.svg';
 import { ReactComponent as Github } from '../../assets/images/sidebar/github.svg';
-import { ReactComponent as Wrap } from '../../assets/images/sidebar/wrap.svg';
+import BenderLabs from '../../assets/images/sidebar/bender-labs.png';
 import { ReactComponent as Plenty } from '../../assets/images/sidebar/plenty.svg';
 import { ReactComponent as ArrowLeft } from '../../assets/images/sidebar/arrowleft.svg';
 import { ReactComponent as ArrowRight } from '../../assets/images/sidebar/arrowright.svg';
@@ -215,11 +215,15 @@ export const Sidebar: React.FC<Props> = ({
                     Adopters
                   </Text>
                 </MenuItem>
-                <MenuItem icon={<Wrap />}>
-                  <a href="https://app.tzwrap.com/wrap">Wrap Protocol</a>
+                <MenuItem icon={<Image src={BenderLabs} w={21} />}>
+                  <a href="https://www.benderlabs.io/" target="_blank" rel="noreferrer">
+                    Bender Labs
+                  </a>
                 </MenuItem>
                 <MenuItem icon={<Plenty />}>
-                  <a href="https://www.plentydefi.com/">Plenty</a>
+                  <a href="https://www.plentydefi.com/" target="_blank" rel="noreferrer">
+                    Plenty
+                  </a>
                 </MenuItem>
               </Menu>
             </Box>

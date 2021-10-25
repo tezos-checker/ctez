@@ -102,7 +102,7 @@ const Swap: React.FC = () => {
       .required(t('required')),
   });
 
-  const { values, handleChange, handleSubmit, isSubmitting, errors } = useFormik({
+  const { values, handleChange, handleSubmit, isSubmitting, errors, ...formik } = useFormik({
     onSubmit: async (formData) => {
       try {
         if (!userAddress || !formData.amount) {
@@ -218,15 +218,38 @@ const Swap: React.FC = () => {
           Balance:{' '}
           {formType === FORM_TYPE.CTEZ_TEZ
             ? formatNumberStandard(balance?.ctez)
-            : formatNumberStandard(balance?.xtz)}
+            : formatNumberStandard(balance?.xtz)}{' '}
+          <Text
+            as="span"
+            cursor="pointer"
+            color="#e35f5f"
+            onClick={() =>
+              formik.setFieldValue(
+                'amount',
+                formType === FORM_TYPE.CTEZ_TEZ
+                  ? formatNumberStandard(balance?.ctez)
+                  : formatNumberStandard(balance?.xtz),
+              )
+            }
+          >
+            (Max)
+          </Text>
         </Text>
       </FormControl>
 
       <Flex justifyContent="center" mt={2}>
         <IconButton
           variant="ghost"
-          size="sm"
+          size="4xl"
           borderRadius="50%"
+          p={2}
+          sx={{
+            transition: 'transform 0s',
+          }}
+          _hover={{
+            transform: 'rotate(180deg)',
+            transition: 'transform 0.5s',
+          }}
           aria-label="Swap Token"
           icon={<MdSwapVert />}
           onClick={() =>
@@ -235,7 +258,7 @@ const Swap: React.FC = () => {
         />
       </Flex>
 
-      <FormControl id="to-input-amount" mt={-2} mb={6}>
+      <FormControl id="to-input-amount" mt={0} mb={6}>
         <FormLabel color={text2} fontSize="xs">
           To
         </FormLabel>

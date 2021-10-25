@@ -1,15 +1,5 @@
-import {
-  Box,
-  Flex,
-  Icon,
-  Stack,
-  Text,
-  Tooltip,
-  useColorModeValue,
-  VStack,
-  Wrap,
-} from '@chakra-ui/react';
-import { useMemo, useState, useEffect } from 'react';
+import { Box, Flex, Icon, Stack, Text, Tooltip, useColorModeValue } from '@chakra-ui/react';
+import { useMemo, useState } from 'react';
 import { BsArrowRight } from 'react-icons/bs';
 import { MdInfo } from 'react-icons/md';
 import { AllOvenDatum } from '../../interfaces';
@@ -72,7 +62,7 @@ const ProgressPill: React.FC<IProgressPill> = ({ value, oven, type, warning }) =
         <Text maxWidth={40}>{value}%</Text>
         {modals}
       </Stack>
-      {value > 100 && type === 'AllOvens' && !warning && (
+      {value > 100 && type === 'AllOvens' && (
         <Text
           color="#CC3936"
           position="relative"
@@ -88,7 +78,7 @@ const ProgressPill: React.FC<IProgressPill> = ({ value, oven, type, warning }) =
           <Icon ml={1} as={BsArrowRight} />
         </Text>
       )}
-      {type === 'AllOvens' && warning && (
+      {type === 'AllOvens' && warning && value < 100 && (
         <Text
           color="#F6AD55"
           position="relative"

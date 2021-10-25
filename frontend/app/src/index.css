@@ -37,6 +37,7 @@ form {
 
 #sidebar .pro-menu a {
   color: #ccd2e3;
+  font-size: 18px;
 }
 
 #sidebar .pro-sidebar-inner .pro-sidebar-layout {
@@ -92,4 +93,25 @@ form {
   .menu-expand-button {
     display: block;
   }
+}
+
+::-webkit-scrollbar {
+  left: -10px;
+  width: 16px;
+  border-radius: 12px;
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #babac0;
+  border-radius: 12px;
+  box-shadow: inset 0 0 10px 10px transparent;
+  border: solid 4px transparent;
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 12px;
+  box-shadow: inset 0 0 10px 10px transparent;
+  border: solid 4px transparent;
+  background-color: transparent;
 }

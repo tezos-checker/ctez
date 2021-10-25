@@ -12,8 +12,8 @@ import {
 import CreatableSelect from 'react-select/creatable';
 import { MdInfo } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { components, GroupBase, OptionProps, OptionsOrGroups } from 'react-select';
+import React, { useCallback, useMemo, useState } from 'react';
+import { components, OptionProps } from 'react-select';
 import { validateAddress } from '@taquito/utils';
 import { useDelegates, useOvenDelegate } from '../../api/queries';
 import { useWallet } from '../../wallet/hooks';
@@ -23,7 +23,7 @@ import Identicon from '../avatar/Identicon';
 import { AllOvenDatum } from '../../interfaces';
 import SkeletonLayout from '../skeleton';
 import data from '../../assets/data/info.json';
-import { useTxLoader } from '../../hooks/utilHooks';
+import { useBakerSelect, useTxLoader } from '../../hooks/utilHooks';
 import CopyAddress from '../CopyAddress/CopyAddress';
 
 type TOption = { label: string; value: string };
@@ -39,35 +39,13 @@ const BakerInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
   const background = useColorModeValue('white', 'cardbgdark');
   const textcolor = useColorModeValue('text2', 'white');
 
-  const createOption = useCallback<(label: string) => TOption>(
-    (label) => ({
-      label,
-      value: label,
-    }),
-    [],
-  );
-
-  const [bakerSelect, setBakerSelect] = useState<TOption | null>(null);
+  const { bakerSelect, setBakerSelect, options, handleBakerCreate } = useBakerSelect(delegates);
 
   const [loading, setLoading] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [edit, setEdit] = useState(false);
   const cardbg = useColorModeValue('bg4', 'darkblue');
   const handleProcessing = useTxLoader();
-
-  const [options, setOptions] = useState<OptionsOrGroups<TOption, GroupBase<TOption>>>([]);
-
-  useEffect(() => {
-    setOptions(delegates?.map((x) => createOption(x.address)) ?? []);
-  }, [createOption, delegates]);
-
-  const handleCreate = useCallback(
-    (e: string) => {
-      const newOption = createOption(e);
-      setOptions((prev) => [...prev, newOption]);
-    },
-    [createOption],
-  );
 
   const showInfo = useMemo(() => {
     return (
@@ -177,7 +155,7 @@ const BakerInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
             }}
             options={options}
             isValidNewOption={isInputValid}
-            onCreateOption={handleCreate}
+            onCreateOption={handleBakerCreate}
             value={bakerSelect}
             components={{ Option }}
             id="bakerValue"
@@ -197,7 +175,16 @@ const BakerInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
     }
 
     return null;
-  }, [edit, options, isInputValid, handleCreate, bakerSelect, handleConfirm, loading]);
+  }, [
+    edit,
+    options,
+    isInputValid,
+    handleBakerCreate,
+    bakerSelect,
+    handleConfirm,
+    loading,
+    setBakerSelect,
+  ]);
 
   return (
     <Stack p={8} spacing={4} borderRadius={16} backgroundColor={background}>

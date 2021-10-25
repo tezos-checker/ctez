@@ -19,21 +19,19 @@ import {
 } from '@chakra-ui/react';
 import { MdInfo } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
-import { number, object } from 'yup';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useAppSelector } from '../../redux/store';
 import { isMonthFromLiquidation } from '../../api/contracts';
 import { IMintRepayForm } from '../../constants/oven-operations';
 import { cTezError, mintOrBurn } from '../../contracts/ctez';
 import { logger } from '../../utils/logger';
 import Button from '../button/Button';
-import { BUTTON_TXT, TButtonText, TOKEN, TToken } from '../../constants/swap';
+import { BUTTON_TXT } from '../../constants/swap';
 import { CTezIcon } from '../icons';
 import { AllOvenDatum } from '../../interfaces';
 import { useOvenStats, useTxLoader } from '../../hooks/utilHooks';
-import { useUserBalance } from '../../api/queries';
 
 interface IMintProps {
   isOpen: boolean;
@@ -53,19 +51,16 @@ const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
   const cardbg = useColorModeValue('bg3', 'darkblue');
   const handleProcessing = useTxLoader();
 
-  const getRightElement = useCallback(
-    (token: TToken) => {
-      return (
-        <InputRightElement backgroundColor="transparent" w={24} color={text2}>
-          <CTezIcon height={28} width={28} />
-          <Text fontWeight="500" mx={2}>
-            ctez
-          </Text>
-        </InputRightElement>
-      );
-    },
-    [text2],
-  );
+  const getRightElement = useCallback(() => {
+    return (
+      <InputRightElement backgroundColor="transparent" w={24} color={text2}>
+        <CTezIcon height={28} width={28} />
+        <Text fontWeight="500" mx={2}>
+          ctez
+        </Text>
+      </InputRightElement>
+    );
+  }, [text2]);
 
   const { tez_balance, ctez_outstanding } = useMemo(
     () =>
@@ -131,7 +126,7 @@ const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
     }
   };
 
-  const { values, handleChange, handleSubmit, isSubmitting, errors } = useFormik({
+  const { values, handleChange, handleSubmit, isSubmitting, errors, ...formik } = useFormik({
     initialValues,
     validationSchema,
     onSubmit: handleFormSubmit,
@@ -182,10 +177,23 @@ const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
                   value={values.amount}
                   onChange={handleChange}
                 />
-                {getRightElement(TOKEN.Tez)}
+                {getRightElement()}
               </InputGroup>
               <Text color={text4Text4} fontSize="xs" mt={1}>
-                Balance: {stats?.remainingMintableCtez ?? 0}
+                Balance: {((stats?.remainingMintableCtez ?? 0) * 0.98).toFixed(6)}{' '}
+                <Text
+                  as="span"
+                  cursor="pointer"
+                  color="#e35f5f"
+                  onClick={() =>
+                    formik.setFieldValue(
+                      'amount',
+                      ((stats?.remainingMintableCtez ?? 0) * 0.98).toFixed(6),
+                    )
+                  }
+                >
+                  (Max)
+                </Text>
               </Text>
             </FormControl>
           </ModalBody>
