@@ -34,11 +34,16 @@ const OvenCard: React.FC<IOvenCardProps> = (props) => {
   const { stats } = useOvenStats(props.oven);
   const { data } = useCtezBaseStats();
   const [largerScreen] = useMediaQuery(['(min-width: 800px)']);
-  const result = isMonthFromLiquidation(
-    Number(stats?.outStandingCtez),
-    Number(data?.currentTarget),
-    Number(stats?.ovenBalance ?? 0),
-    Number(data?.currentAnnualDrift),
+
+  const result = useMemo(
+    () =>
+      isMonthFromLiquidation(
+        Number(stats?.outStandingCtez),
+        Number(data?.currentTarget),
+        Number(stats?.ovenBalance ?? 0),
+        Number(data?.currentAnnualDrift),
+      ),
+    [data?.currentAnnualDrift, data?.currentTarget, stats?.outStandingCtez, stats?.ovenBalance],
   );
 
   // ? Used for changing layout between Mobile and Desktop view
