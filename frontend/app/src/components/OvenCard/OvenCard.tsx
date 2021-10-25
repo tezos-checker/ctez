@@ -43,6 +43,7 @@ const OvenCard: React.FC<IOvenCardProps> = (props) => {
         Number(data?.currentTarget),
         Number(stats?.ovenBalance ?? 0),
         Number(data?.currentAnnualDrift),
+        true,
       ),
     [data?.currentAnnualDrift, data?.currentTarget, stats?.outStandingCtez, stats?.ovenBalance],
   );
