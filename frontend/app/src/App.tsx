@@ -1,9 +1,7 @@
 import React, { Suspense, useEffect, useState } from 'react';
 import { HelmetProvider } from 'react-helmet-async';
-import { LocalizationProvider } from '@material-ui/pickers';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import { ToastProvider, DefaultToastContainer } from 'react-toast-notifications';
-import DateFnsUtils from '@material-ui/pickers/adapter/date-fns';
+import { ChakraProvider } from '@chakra-ui/react';
 import { WalletProvider } from './wallet/walletContext';
 import { WalletInterface } from './interfaces';
 import { initTezos, setWalletProvider } from './contracts/client';
@@ -14,16 +12,11 @@ import { initCTez } from './contracts/ctez';
 import { initCfmm } from './contracts/cfmm';
 import { logger } from './utils/logger';
 import { getNodePort, getNodeURL } from './utils/settingUtils';
+import ModalContainer from './components/modals/ModalContainer';
+import theme from './theme/theme';
+import ErrorBoundary from './components/ErrorBoundary';
 
 const queryClient = new QueryClient();
-
-/**
- * Hack to show errors above drawer
- */
-const AppToastContainer: React.FC = (props: any) => {
-  const newProps = { ...props, style: { zIndex: 9999 } };
-  return <DefaultToastContainer {...newProps} />;
-};
 
 const App: React.FC = () => {
   const [wallet, setWallet] = useState<Partial<WalletInterface>>({});
@@ -57,16 +50,14 @@ const App: React.FC = () => {
     <Suspense fallback="Loading...">
       <HelmetProvider>
         <QueryClientProvider client={queryClient}>
-          <LocalizationProvider dateAdapter={DateFnsUtils}>
-            <WalletProvider value={{ wallet, setWallet }}>
-              <ToastProvider
-                placement="bottom-right"
-                components={{ ToastContainer: AppToastContainer }}
-              >
+          <WalletProvider value={{ wallet, setWallet }}>
+            <ChakraProvider theme={theme}>
+              <ErrorBoundary>
                 <AppRouter />
-              </ToastProvider>
-            </WalletProvider>
-          </LocalizationProvider>
+                <ModalContainer />
+              </ErrorBoundary>
+            </ChakraProvider>
+          </WalletProvider>
         </QueryClientProvider>
       </HelmetProvider>
     </Suspense>

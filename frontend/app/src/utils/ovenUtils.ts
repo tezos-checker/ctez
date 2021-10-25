@@ -43,7 +43,7 @@ export const removeExternalOven = (
 export const toSerializeableOven = (oven: Oven): OvenSerializable => {
   return {
     ...oven,
-    ovenId: typeof oven.ovenId === 'number' ? oven.ovenId : oven.ovenId.toNumber(),
+    ovenId: Number(oven.ovenId),
     tez_balance: oven.tez_balance.toString(),
     ctez_outstanding: oven.ctez_outstanding.toString(),
   };
@@ -52,9 +52,9 @@ export const toSerializeableOven = (oven: Oven): OvenSerializable => {
 export const toOven = (oven: OvenSerializable): Oven => {
   return {
     ...oven,
-    tez_balance: new BigNumber(oven.tez_balance),
-    ctez_outstanding: new BigNumber(oven.ctez_outstanding),
-    ovenId: new BigNumber(oven.ovenId),
+    tez_balance: oven.tez_balance,
+    ctez_outstanding: oven.ctez_outstanding,
+    ovenId: oven.ovenId,
   };
 };
 
@@ -88,7 +88,11 @@ export const getOvenImageId = (ovenId: number, totalOvens: number): number => {
   return ovenId > TOTAL_OVEN_IMAGES ? scaleBetween(ovenId, 1, 5, 6, totalOvens) : ovenId;
 };
 
-export const getOvenMaxCtez = (ovenTez: string, currentCtez: string, target: number) => {
+export const getOvenMaxCtez = (
+  ovenTez: string | number,
+  currentCtez: string | number,
+  target: number,
+) => {
   const max = maxCTez(new BigNumber(ovenTez).shiftedBy(-6).toNumber(), target / 2 ** 48);
   const remaining = max - new BigNumber(currentCtez).shiftedBy(-6).toNumber();
   return { max, remaining: Number(remaining.toFixed(6)) };

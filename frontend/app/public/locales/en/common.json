@@ -74,6 +74,7 @@
   "invalidAddress": "Invalid address",
   "shouldMinimum": "Should be minimum",
   "shouldPositive": "Should be a positive number",
+  "insufficientBalance": "Insufficient Balance",
   "shouldInteger": "Should be an integer",
   "imported": "Imported",
   "external": "External",

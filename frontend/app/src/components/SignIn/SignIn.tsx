@@ -1,99 +1,173 @@
-import { Box, Button, Grid } from '@material-ui/core';
-import { useDispatch, useSelector } from 'react-redux';
-import styled from '@emotion/styled';
-import { GiChickenOven, GiDeerTrack, GiWallet } from 'react-icons/gi';
-import React, { useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { setWalletProvider } from '../../contracts/client';
-import { APP_NAME, NETWORK } from '../../utils/globals';
-import { getBeaconInstance } from '../../wallet';
+import {
+  Button as ChakraButton,
+  Flex,
+  Icon,
+  Popover,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverFooter,
+  PopoverHeader,
+  PopoverTrigger,
+  Table,
+  TableCaption,
+  Tbody,
+  Td,
+  Text,
+  Tr,
+  useDisclosure,
+} from '@chakra-ui/react';
+import { useCallback } from 'react';
+import Button from '../button/Button';
+import { trimAddress } from '../../utils/addressUtils';
 import { useWallet } from '../../wallet/hooks';
-import Identicon from '../Identicon';
-import ProfilePopover from '../ProfilePopover';
+import { getBeaconInstance } from '../../wallet';
+import { APP_NAME, NETWORK } from '../../utils/globals';
+import { setWalletProvider } from '../../contracts/client';
 import { OvenSlice } from '../../redux/slices/OvenSlice';
-import { RootState } from '../../redux/rootReducer';
+import { useAppDispatch } from '../../redux/store';
 import { useUserBalance, useUserLqtData } from '../../api/queries';
+import Identicon from '../avatar/Identicon';
+import { formatNumber as formatNumberUtil, formatNumberStandard } from '../../utils/numbers';
+import { ReactComponent as copy } from '../../assets/images/sidebar/content_copy.svg';
 
-const SignedInBoxStyled = styled(Box)`
-  cursor: pointer;
-`;
-
-export const SignIn: React.FC = () => {
-  const { t } = useTranslation(['header']);
-  const dispatch = useDispatch();
-  const [{ wallet, pkh: userAddress, network }, setWallet, disconnectWallet] = useWallet();
-  const [isOpen, setOpen] = useState(false);
-  const userOvenData = useSelector((state: RootState) => state.oven.userOvenData);
+const SignIn: React.FC = () => {
+  const [{ pkh: userAddress, network }, setWallet, disconnectWallet] = useWallet();
+  const dispatch = useAppDispatch();
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const { data: balance } = useUserBalance(userAddress);
   const { data: userLqtData } = useUserLqtData(userAddress);
+
+  const formatNumber = useCallback((number?: number, shiftedBy = -6) => {
+    if (typeof number !== 'number') {
+      return null;
+    }
+
+    return formatNumberUtil(number, shiftedBy);
+  }, []);
+
   const connectWallet = async () => {
     const newWallet = await getBeaconInstance(APP_NAME, true, NETWORK);
     newWallet?.wallet && setWalletProvider(newWallet.wallet);
     newWallet && setWallet(newWallet);
   };
 
-  const onWalletDisconnect = () => {
+  const onDisconnectWallet = () => {
     dispatch(OvenSlice.actions.setUserOvenData({ ctez: 0, xtz: 0, totalOvens: 0 }));
     disconnectWallet();
   };
 
+  if (!userAddress) {
+    return (
+      <Button
+        border="1px solid rgba(0, 0, 0, 0.07)"
+        backgroundColor="transparent"
+        onClick={connectWallet}
+      >
+        Connect wallet
+      </Button>
+    );
+  }
+
   return (
-    <div>
-      <Grid container direction="row" style={{ flexWrap: 'nowrap' }} spacing={1}>
-        <Grid item>
-          <Button
-            variant="outlined"
-            component={RouterLink}
-            to="/track-oven"
-            endIcon={<GiDeerTrack />}
-            sx={{ textTransform: 'none' }}
-          >
-            {t('trackOven')}
-          </Button>
-        </Grid>
-        <Grid item>
-          <Button
-            variant="outlined"
-            component={RouterLink}
-            to="/create"
-            endIcon={<GiChickenOven />}
-            sx={{ textTransform: 'none' }}
-          >
-            {t('createOven')}
-          </Button>
-        </Grid>
-        {!wallet ? (
-          <Grid item>
-            <Button
-              variant="outlined"
-              onClick={connectWallet}
-              sx={{ textTransform: 'none' }}
-              endIcon={<GiWallet />}
-            >
-              {t('signIn')}
-            </Button>
-          </Grid>
-        ) : (
-          <Grid item>
-            <SignedInBoxStyled>
-              <Identicon seed={userAddress ?? ''} onClick={() => setOpen(true)} type="tzKtCat" />
-              <ProfilePopover
-                isOpen={isOpen}
-                onClose={() => setOpen(false)}
-                handleAction={onWalletDisconnect}
-                address={userAddress ?? ''}
-                network={network ?? ''}
-                actionText={t('signOut')}
-                balance={balance}
-                ovenDetails={userOvenData}
-                lqt={userLqtData?.lqt || 0}
-                lqtShare={userLqtData?.lqtShare || 0}
+    <>
+      <Popover
+        placement="bottom"
+        computePositionOnMount
+        isOpen={isOpen}
+        onClose={onClose}
+        offset={[0, -40]}
+      >
+        <PopoverTrigger>
+          <ChakraButton w={0} minW={0} p={0} />
+        </PopoverTrigger>
+        <PopoverContent mx={4}>
+          <PopoverCloseButton />
+          <PopoverHeader>
+            <Flex alignItems="center">
+              <Identicon type="tzKtCat" seed={userAddress} avatarSize="sm" />
+              <Text onClick={() => navigator.clipboard.writeText(userAddress)} ml={2}>
+                {trimAddress(userAddress, 'medium')}
+              </Text>
+              <Icon
+                onClick={() => navigator.clipboard.writeText(userAddress)}
+                ml={2}
+                w={3}
+                h={3}
+                color="#62737F"
+                _hover={{ cursor: 'pointer' }}
+                as={copy}
               />
-            </SignedInBoxStyled>
-          </Grid>
-        )}
-      </Grid>
-    </div>
+            </Flex>
+          </PopoverHeader>
+          <PopoverBody>
+            <Table variant="unstyled" size="sm">
+              <Tbody>
+                {typeof balance !== 'undefined' && (
+                  <>
+                    <Tr>
+                      <Td>tez:</Td>
+                      <Td textAlign="right">
+                        {formatNumberStandard(formatNumber(balance.xtz, 0))}
+                      </Td>
+                    </Tr>
+                    <Tr>
+                      <Td>ctez:</Td>
+                      <Td textAlign="right">
+                        {formatNumberStandard(formatNumber(balance.ctez, 0))}
+                      </Td>
+                    </Tr>
+                  </>
+                )}
+                {typeof balance !== 'undefined' && (
+                  <>
+                    <Tr>
+                      <Td>tez in ovens:</Td>
+                      <Td textAlign="right">
+                        {formatNumberStandard(formatNumber(balance.tezInOvens, 0))}
+                      </Td>
+                    </Tr>
+                    <Tr>
+                      <Td>ctez outstanding:</Td>
+                      <Td textAlign="right">
+                        {formatNumberStandard(formatNumber(balance.ctezOutstanding, 0))}
+                      </Td>
+                    </Tr>
+                  </>
+                )}
+                {typeof userLqtData?.lqt !== 'undefined' && (
+                  <Tr>
+                    <Td>LQT:</Td>
+                    <Td textAlign="right">
+                      {formatNumberStandard(formatNumber(userLqtData?.lqt))}
+                    </Td>
+                  </Tr>
+                )}
+                {typeof userLqtData?.lqtShare !== 'undefined' && (
+                  <Tr>
+                    <Td>LQT Pool share:</Td>
+                    <Td textAlign="right">{userLqtData?.lqtShare}%</Td>
+                  </Tr>
+                )}
+              </Tbody>
+
+              <TableCaption mt={0}>{network}</TableCaption>
+            </Table>
+          </PopoverBody>
+
+          <PopoverFooter>
+            <Button mx="auto" variant="outline" onClick={onDisconnectWallet}>
+              Sign Out
+            </Button>
+          </PopoverFooter>
+        </PopoverContent>
+      </Popover>
+
+      <Button border="1px solid rgba(0, 0, 0, 0.07)" backgroundColor="transparent" onClick={onOpen}>
+        {trimAddress(userAddress)}
+      </Button>
+    </>
   );
 };
+
+export default SignIn;

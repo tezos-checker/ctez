@@ -12,5 +12,7 @@ export const RPC_PORT = process.env.REACT_APP_RPC_PORT ?? '443';
 export const TZKT_API = process.env.REACT_APP_TZKT ?? 'http://localhost';
 export const TZKT_PORT = process.env.REACT_APP_TZKT_PORT ?? '443';
 export const CONTRACT_DEPLOYMENT_DATE = process.env.REACT_APP_CONTRACT_DEPLOYMENT_DATE || '';
+export const CTEZ_CONTRACT_BIGMAP = process.env.REACT_APP_CTEZ_CONTRACT_BIGMAP ?? 30161;
 export const TOTAL_OVEN_IMAGES = 11;
 export const DEFAULT_SLIPPAGE = 0.2;
+export const DEFAULT_DEALINE = 20;

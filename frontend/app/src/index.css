@@ -1,13 +1,117 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+*:focus {
+  box-shadow: none !important;
+}
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+form {
+  color: gray;
+}
+#sidebar .pro-sidebar-inner .pro-sidebar-layout ul .pro-inner-item .pro-icon-wrapper {
+  background-color: transparent;
+  color: #000;
+  border-radius: 3px;
+}
+
+/*#sidebar .pro-sidebar {*/
+/*  width: 230px;*/
+/*  min-width: 230px;*/
+/*}*/
+
+/*#sidebar .pro-sidebar.collapsed {*/
+/*  width: 80px;*/
+/*  min-width: 80px;*/
+/*}*/
+
+#sidebar .pro-sidebar-inner {
+  background-color: transparent;
+}
+
+#sidebar .pro-menu a {
+  color: #ccd2e3;
+  font-size: 18px;
+}
+
+#sidebar .pro-sidebar-inner .pro-sidebar-layout {
+  overflow: visible;
+}
+
+#sidebar .pro-sidebar-inner .pro-sidebar-layout .pro-sidebar-header {
+  border: none;
+}
+
+.hide {
+  visibility: hidden;
+}
+
+.remove {
+  display: none;
+}
+
+.logo {
+  width: 45px;
+  height: 45px;
+}
+
+.highlight {
+  background: #1b2b65;
+}
+
+.no-cursor > .pro-inner-item {
+  cursor: default !important;
+}
+
+.menu-expand-button {
+  color: #445bff;
+  padding: 5px;
+  background: white;
+  position: absolute;
+  right: -10px;
+  z-index: 9999;
+  line-height: 20px;
+  border-radius: 50%;
+  border: 1px solid #dadada;
+  font-weight: bold;
+  font-size: 22px;
+  cursor: pointer;
+  top: 28px;
+  display: none;
+}
+
+@media (min-width: 992px) {
+  .md-menu {
+    display: none !important;
+  }
+  .menu-expand-button {
+    display: block;
+  }
+}
+
+::-webkit-scrollbar {
+  left: -10px;
+  width: 8px;
+  border-radius: 12px;
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #babac0;
+  border-radius: 12px;
+  box-shadow: inset 0 0 10px 10px transparent;
+  border: solid 4px transparent;
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 12px;
+  box-shadow: inset 0 0 10px 10px transparent;
+  border: solid 4px transparent;
+  background-color: transparent;
 }

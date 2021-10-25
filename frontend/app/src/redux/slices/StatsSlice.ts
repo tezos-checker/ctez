@@ -18,3 +18,6 @@ export const StatsSlice = createSlice({
     },
   },
 });
+
+export const { setBaseStats } = StatsSlice.actions;
+export default StatsSlice.reducer;

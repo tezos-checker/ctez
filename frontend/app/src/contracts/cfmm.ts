@@ -1,4 +1,10 @@
-import { OpKind, WalletContract, WalletParamsWithKind } from '@taquito/taquito';
+import {
+  OpKind,
+  TransactionWalletOperation,
+  WalletContract,
+  WalletOperation,
+  WalletParamsWithKind,
+} from '@taquito/taquito';
 import BigNumber from 'bignumber.js';
 import {
   AddLiquidityParams,
@@ -62,7 +68,7 @@ export const getTokenAllowanceOps = async (
   return batchOps;
 };
 
-export const addLiquidity = async (args: AddLiquidityParams): Promise<string> => {
+export const addLiquidity = async (args: AddLiquidityParams): Promise<WalletOperation> => {
   const tezos = getTezosInstance();
   const CTezFa12 = await getCTezFa12Contract();
   const batchOps: WalletParamsWithKind[] = await getTokenAllowanceOps(
@@ -90,13 +96,13 @@ export const addLiquidity = async (args: AddLiquidityParams): Promise<string> =>
     },
   ]);
   const hash = await batch.send();
-  return hash.opHash;
+  return hash;
 };
 
 export const removeLiquidity = async (
   args: RemoveLiquidityParams,
   userAddress: string,
-): Promise<string> => {
+): Promise<WalletOperation> => {
   const tezos = getTezosInstance();
   const LQTFa12 = await getLQTContract();
   const batchOps: WalletParamsWithKind[] = await getTokenAllowanceOps(
@@ -125,25 +131,25 @@ export const removeLiquidity = async (
     },
   ]);
   const hash = await batch.send();
-  return hash.opHash;
+  return hash;
 };
 
-export const cashToToken = async (args: CashToTokenParams): Promise<string> => {
-  const hash = await executeMethod(
+export const cashToToken = async (args: CashToTokenParams): Promise<TransactionWalletOperation> => {
+  const operation = await executeMethod(
     cfmm,
     'cashToToken',
-    [args.to, args.minTokensBought * 1e6, args.deadline.toISOString()],
+    [args.to, Math.floor(args.minTokensBought * 1e6), args.deadline.toISOString()],
     undefined,
     args.amount * 1e6,
     true,
   );
-  return hash;
+  return operation;
 };
 
 export const tokenToCash = async (
   args: TokenToCashParams,
   userAddress: string,
-): Promise<string> => {
+): Promise<WalletOperation> => {
   const tezos = getTezosInstance();
   const CTezFa12 = await getCTezFa12Contract();
   const batchOps: WalletParamsWithKind[] = await getTokenAllowanceOps(
@@ -160,7 +166,7 @@ export const tokenToCash = async (
         .tokenToCash(
           args.to,
           args.tokensSold * 1e6,
-          args.minCashBought * 1e6,
+          Math.floor(args.minCashBought * 1e6),
           args.deadline.toISOString(),
         )
         .toTransferParams(),
@@ -170,19 +176,21 @@ export const tokenToCash = async (
       ...CTezFa12.methods.approve(CFMM_ADDRESS, 0).toTransferParams(),
     },
   ]);
-  const hash = await batch.send();
-  return hash.opHash;
+  const batchOperation = await batch.send();
+  return batchOperation;
 };
 
-export const tokenToToken = async (args: TokenToTokenParams): Promise<string> => {
-  const hash = await executeMethod(cfmm, 'tokenToToken', [
+export const tokenToToken = async (
+  args: TokenToTokenParams,
+): Promise<TransactionWalletOperation> => {
+  const operation = await executeMethod(cfmm, 'tokenToToken', [
     args.outputCfmmContract,
     args.minTokensBought * 1e6,
     args.to,
     args.tokensSold * 1e6,
     args.deadline.toISOString(),
   ]);
-  return hash;
+  return operation;
 };
 
 /**

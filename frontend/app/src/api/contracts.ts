@@ -2,9 +2,9 @@ import BigNumber from 'bignumber.js';
 import { sub, format, differenceInDays } from 'date-fns';
 import { getCfmmStorage, getLQTContractStorage } from '../contracts/cfmm';
 import { getCtezStorage } from '../contracts/ctez';
-import { BaseStats, CTezTzktStorage, UserLQTData } from '../interfaces';
+import { BaseStats, CTezTzktStorage, OvenBalance, UserLQTData } from '../interfaces';
 import { CONTRACT_DEPLOYMENT_DATE } from '../utils/globals';
-import { getCTezTzktStorage, getLastBlockOfTheDay } from './tzkt';
+import { getCTezTzktStorage, getLastBlockOfTheDay, getUserOvenData } from './tzkt';
 
 export const getPrevCTezStorage = async (
   days = 7,
@@ -42,6 +42,27 @@ export const getBaseStats = async (userAddress?: string): Promise<BaseStats> => 
   };
 };
 
+export const getUserTezCtezData = async (userAddress: string): Promise<OvenBalance> => {
+  const userOvenData = await getUserOvenData(userAddress);
+  try {
+    return userOvenData.reduce(
+      (acc, cur) => ({
+        tezInOvens: acc.tezInOvens + Number(cur.value.tez_balance) / 1e6,
+        ctezOutstanding: acc.tezInOvens + Number(cur.value.ctez_outstanding) / 1e6,
+      }),
+      {
+        tezInOvens: 0,
+        ctezOutstanding: 0,
+      },
+    );
+  } catch (error) {
+    return {
+      tezInOvens: 0,
+      ctezOutstanding: 0,
+    };
+  }
+};
+
 export const getUserLQTData = async (userAddress: string): Promise<UserLQTData> => {
   const cfmmStorage = await getCfmmStorage();
   const lqtTokenStorage = await getLQTContractStorage();
@@ -50,7 +71,7 @@ export const getUserLQTData = async (userAddress: string): Promise<UserLQTData> 
   return {
     lqt: userLqtBalance.toNumber(),
     lqtShare: Number(
-      ((userLqtBalance.toNumber() / cfmmStorage.lqtTotal.toNumber()) * 100).toFixed(2),
+      ((userLqtBalance.toNumber() / cfmmStorage.lqtTotal.toNumber()) * 100).toFixed(6),
     ),
   };
 };
@@ -60,10 +81,13 @@ export const isMonthFromLiquidation = (
   target: number,
   tezBalance: number,
   currentDrift: number,
+  noTargetScale?: boolean,
 ): boolean => {
+  const scaledTarget = noTargetScale ? target : target / 2 ** 48;
+
   return (
     outstandingCtez *
-      (target / 2 ** 48) *
+      scaledTarget *
       (1 + currentDrift / 2 ** 48) ** ((365.25 * 24 * 3600) / 12) *
       (16 / 15) >
     tezBalance

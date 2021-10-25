@@ -2,10 +2,10 @@ import { MichelsonMap } from '@taquito/taquito';
 import BigNumber from 'bignumber.js';
 
 export interface Oven {
-  ovenId: BigNumber;
+  ovenId: string | number;
   address: string;
-  ctez_outstanding: BigNumber;
-  tez_balance: BigNumber;
+  ctez_outstanding: string | number;
+  tez_balance: string | number;
   baker: string | null;
   isExternal?: boolean;
   isImported?: boolean;
@@ -62,4 +62,26 @@ export interface CTezTzktStorage {
   cfmm_address: string;
   ctez_fa12_address: string;
   last_drift_update: string;
+}
+
+export interface AllOvenDatum {
+  id: string;
+  active: boolean;
+  hash: string;
+  key: {
+    id: string;
+    owner: string;
+  };
+  value: {
+    address: string;
+    tez_balance: string;
+    ctez_outstanding: string;
+  };
+  firstLevel: number;
+  lastLevel: number;
+  updates: number;
+  /**
+   * Added in frontend
+   */
+  isImported?: boolean;
 }
