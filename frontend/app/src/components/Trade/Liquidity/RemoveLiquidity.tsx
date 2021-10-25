@@ -18,7 +18,7 @@ import { number, object, string } from 'yup';
 import { useFormik } from 'formik';
 import { RemoveLiquidityParams } from '../../../interfaces';
 import { cfmmError, removeLiquidity } from '../../../contracts/cfmm';
-import { IRemoveLiquidityForm, TRemoveBtnTxt, REMOVE_BTN_TXT } from '../../../constants/liquidity';
+import { IRemoveLiquidityForm, REMOVE_BTN_TXT } from '../../../constants/liquidity';
 import { useWallet } from '../../../wallet/hooks';
 import { useCfmmStorage, useUserLqtData } from '../../../api/queries';
 import Button from '../../button/Button';
@@ -26,7 +26,6 @@ import { useAppSelector } from '../../../redux/store';
 import { useTxLoader } from '../../../hooks/utilHooks';
 import { formatNumber, formatNumberStandard } from '../../../utils/numbers';
 import { BUTTON_TXT } from '../../../constants/swap';
-import { logger } from '../../../utils/logger';
 
 const RemoveLiquidity: React.FC = () => {
   const [{ pkh: userAddress }] = useWallet();
@@ -38,7 +37,6 @@ const RemoveLiquidity: React.FC = () => {
   const { data: cfmmStorage } = useCfmmStorage();
   const { t } = useTranslation(['common']);
   const text2 = useColorModeValue('text2', 'darkheading');
-  const text4 = useColorModeValue('text4', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
   const text4Text4 = useColorModeValue('text4', 'text4');
   const { slippage, deadline: deadlineFromStore } = useAppSelector((state) => state.trade);
@@ -152,6 +150,7 @@ const RemoveLiquidity: React.FC = () => {
             bg={inputbg}
             onChange={handleChange}
             placeholder="0.0"
+            type="number"
             lang="en-US"
           />
           {typeof userLqtData?.lqt !== 'undefined' && (

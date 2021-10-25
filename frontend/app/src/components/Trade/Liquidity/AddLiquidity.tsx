@@ -36,7 +36,6 @@ const AddLiquidity: React.FC = () => {
   const { t } = useTranslation(['common']);
   const toast = useToast();
   const text2 = useColorModeValue('text2', 'darkheading');
-  const text4 = useColorModeValue('text4', 'darkheading');
   const text4Text4 = useColorModeValue('text4', 'text4');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
   const { slippage, deadline: deadlineFromStore } = useAppSelector((state) => state.trade);
@@ -123,7 +122,6 @@ const AddLiquidity: React.FC = () => {
 
   const { buttonText, errorList } = useMemo(() => {
     const errorListLocal = Object.values(errors);
-    console.log(errorListLocal);
     if (!userAddress) {
       return { buttonText: BUTTON_TXT.CONNECT, errorList: errorListLocal };
     }
@@ -163,6 +161,7 @@ const AddLiquidity: React.FC = () => {
               bg={inputbg}
               value={values.amount}
               onChange={handleChange}
+              type="number"
               lang="en-US"
             />
             <Text color={text4Text4} fontSize="xs" mt={1}>
