@@ -24,7 +24,7 @@ import { useCfmmStorage, useUserLqtData } from '../../../api/queries';
 import Button from '../../button/Button';
 import { useAppSelector } from '../../../redux/store';
 import { useTxLoader } from '../../../hooks/utilHooks';
-import { formatNumber } from '../../../utils/numbers';
+import { formatNumber, formatNumberStandard } from '../../../utils/numbers';
 import { BUTTON_TXT } from '../../../constants/swap';
 import { logger } from '../../../utils/logger';
 
@@ -156,7 +156,7 @@ const RemoveLiquidity: React.FC = () => {
           />
           {typeof userLqtData?.lqt !== 'undefined' && (
             <Text color={text4Text4} fontSize="xs" mt={1}>
-              Balance: {formatNumber(userLqtData?.lqt)}
+              Balance: {formatNumberStandard(formatNumber(userLqtData?.lqt))}
             </Text>
           )}
         </FormControl>

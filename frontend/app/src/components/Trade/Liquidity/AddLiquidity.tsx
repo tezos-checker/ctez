@@ -26,6 +26,7 @@ import { BUTTON_TXT } from '../../../constants/swap';
 import Button from '../../button/Button';
 import { useAppSelector } from '../../../redux/store';
 import { useTxLoader } from '../../../hooks/utilHooks';
+import { formatNumberStandard } from '../../../utils/numbers';
 
 const AddLiquidity: React.FC = () => {
   const [{ pkh: userAddress }] = useWallet();
@@ -158,7 +159,7 @@ const AddLiquidity: React.FC = () => {
               onChange={handleChange}
             />
             <Text color={text4Text4} fontSize="xs" mt={1}>
-              Balance: {balance?.xtz}
+              Balance: {formatNumberStandard(balance?.xtz ?? 0)}
             </Text>
           </FormControl>
 
@@ -179,7 +180,7 @@ const AddLiquidity: React.FC = () => {
               type="number"
             />
             <Text color={text4Text4} fontSize="xs" mt={1}>
-              Balance: {balance?.ctez}
+              Balance: {formatNumberStandard(balance?.ctez ?? 0)}
             </Text>
           </FormControl>
         </Flex>

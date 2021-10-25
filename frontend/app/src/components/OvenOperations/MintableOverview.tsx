@@ -18,6 +18,7 @@ import Burn from '../modals/Burn';
 import Mint from '../modals/Mint';
 import { AllOvenDatum } from '../../interfaces';
 import data from '../../assets/data/info.json';
+import { formatNumberStandard } from '../../utils/numbers';
 
 const MintableOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
   const { stats } = useOvenStats(oven);
@@ -89,7 +90,7 @@ const MintableOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => 
           <Stack>
             <Skeleton isLoaded={stats?.outStandingCtez != null}>
               <Text color="4E5D78" fontWeight="600" fontSize="lg">
-                {stats?.outStandingCtez ?? 0} ctez
+                {formatNumberStandard(Number(stats?.outStandingCtez ?? 0))} ctez
               </Text>
             </Skeleton>
 
@@ -115,7 +116,7 @@ const MintableOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => 
           <Stack>
             <Skeleton isLoaded={stats?.maxMintableCtez != null}>
               <Text color="4E5D78" fontWeight="600" fontSize="lg">
-                {stats?.maxMintableCtez ?? 0} ctez
+                {formatNumberStandard(Number(stats?.maxMintableCtez ?? 0))} ctez
               </Text>
             </Skeleton>
 
@@ -141,7 +142,7 @@ const MintableOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => 
           <Stack>
             <Skeleton isLoaded={stats?.remainingMintableCtez != null}>
               <Text color="4E5D78" fontWeight="600" fontSize="lg">
-                {stats?.remainingMintableCtez ?? 0} ctez
+                {formatNumberStandard(Number(stats?.remainingMintableCtez ?? 0))} ctez
               </Text>
             </Skeleton>
 

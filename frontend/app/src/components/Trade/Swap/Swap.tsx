@@ -34,6 +34,7 @@ import { useSetCtezBaseStatsToStore } from '../../../hooks/setApiDataToStore';
 import { useAppSelector } from '../../../redux/store';
 import Button from '../../button/Button';
 import { useTxLoader } from '../../../hooks/utilHooks';
+import { formatNumberStandard } from '../../../utils/numbers';
 
 const Swap: React.FC = () => {
   const [{ pkh: userAddress }] = useWallet();
@@ -215,7 +216,10 @@ const Swap: React.FC = () => {
           {getRightElement(formType === FORM_TYPE.CTEZ_TEZ ? TOKEN.CTez : TOKEN.Tez)}
         </InputGroup>
         <Text color={text4Text4} fontSize="xs" mt={1}>
-          Balance: {formType === FORM_TYPE.CTEZ_TEZ ? balance?.ctez : balance?.xtz}
+          Balance:{' '}
+          {formType === FORM_TYPE.CTEZ_TEZ
+            ? formatNumberStandard(balance?.ctez ?? 0)
+            : formatNumberStandard(balance?.xtz ?? 0)}
         </Text>
       </FormControl>
 
@@ -241,7 +245,10 @@ const Swap: React.FC = () => {
           {getRightElement(formType === FORM_TYPE.CTEZ_TEZ ? TOKEN.Tez : TOKEN.CTez)}
         </InputGroup>
         <Text color={text4Text4} fontSize="xs" mt={1}>
-          Balance: {formType === FORM_TYPE.CTEZ_TEZ ? balance?.xtz : balance?.ctez}
+          Balance:{' '}
+          {formType === FORM_TYPE.CTEZ_TEZ
+            ? formatNumberStandard(balance?.xtz ?? 0)
+            : formatNumberStandard(balance?.ctez ?? 0)}
         </Text>
       </FormControl>
 
@@ -255,13 +262,14 @@ const Swap: React.FC = () => {
       <Flex justifyContent="space-between">
         <Text fontSize="xs">Min Received</Text>
         <Text color="#4E5D78" fontSize="xs">
-          {Number(minReceived).toFixed(6)} {formType === FORM_TYPE.CTEZ_TEZ ? 'tez' : 'ctez'}
+          {formatNumberStandard(Number(Number(minReceived).toFixed(6)))}{' '}
+          {formType === FORM_TYPE.CTEZ_TEZ ? 'tez' : 'ctez'}
         </Text>
       </Flex>
       <Flex justifyContent="space-between">
         <Text fontSize="xs">Price Impact</Text>
         <Text color="#4E5D78" fontSize="xs">
-          {Number(priceImpact).toFixed(6)} %
+          {formatNumberStandard(Number(Number(priceImpact).toFixed(6)))} %
         </Text>
       </Flex>
 
