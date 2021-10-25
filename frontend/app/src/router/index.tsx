@@ -6,7 +6,7 @@ import { Sidebar } from '../components/sidebar/Sidebar';
 import { Header } from '../components/header/Header';
 
 export const AppRouter: React.FC = () => {
-  const backgroundColor = useColorModeValue('gray.100', 'gray.800');
+  const backgroundColor = useColorModeValue('gray.100', '#0A194E');
   const [toggled, setToggled] = useState(false);
   const [collapsed, setCollapsed] = useState(true);
 
@@ -21,29 +21,32 @@ export const AppRouter: React.FC = () => {
 
   return (
     <Router>
-      <Flex minHeight="100vh">
-        <Sidebar
-          handleCollapsed={handleCollapsed}
-          handleToggled={handleToggled}
-          collapsed={collapsed}
-          toggled={toggled}
-        />
-        <Flex direction="column" w="100%" backgroundColor={backgroundColor}>
-          <Header handleToggled={handleToggled} toggled={toggled} />
-          <Box height="100vh" overflow="auto">
-            <Suspense fallback="Loading..">
-              <Switch>
-                {routes.map((route) => (
-                  <Route
-                    key={typeof route.path === 'string' ? route.path : route.path[0]}
-                    path={route.path}
-                  >
-                    {route.Component}
-                  </Route>
-                ))}
-              </Switch>
-            </Suspense>
-          </Box>
+      <Flex height="100vh">
+        <Flex width="100%">
+          <Sidebar
+            handleCollapsed={handleCollapsed}
+            handleToggled={handleToggled}
+            collapsed={collapsed}
+            toggled={toggled}
+          />
+          <Flex direction="column" w="100%" backgroundColor={backgroundColor}>
+            <Header handleToggled={handleToggled} toggled={toggled} />
+
+            <Box overflow="hidden">
+              <Suspense fallback="Loading..">
+                <Switch>
+                  {routes.map((route) => (
+                    <Route
+                      key={typeof route.path === 'string' ? route.path : route.path[0]}
+                      path={route.path}
+                    >
+                      {route.Component}
+                    </Route>
+                  ))}
+                </Switch>
+              </Suspense>
+            </Box>
+          </Flex>
         </Flex>
       </Flex>
     </Router>
