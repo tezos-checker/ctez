@@ -1,4 +1,12 @@
-import { Flex, Box, Icon, Select, Spacer, useColorModeValue } from '@chakra-ui/react';
+import {
+  Flex,
+  Box,
+  Icon,
+  Select,
+  Spacer,
+  useColorModeValue,
+  useMediaQuery,
+} from '@chakra-ui/react';
 import { MdAdd } from 'react-icons/md';
 import { BsArrowRight } from 'react-icons/bs';
 import { useMemo } from 'react';
@@ -17,6 +25,8 @@ const OvensPage: React.FC = () => {
   const location = useLocation();
   const dispatch = useAppDispatch();
   const background = useColorModeValue('white', 'cardbgdark');
+  const [mobileScreen] = useMediaQuery(['(max-width: 600px)']);
+
   const [{ pkh: userAddress }] = useWallet();
   useSetCtezBaseStatsToStore(userAddress);
 
@@ -30,7 +40,7 @@ const OvensPage: React.FC = () => {
 
   return (
     <Box maxWidth={1200} mx="auto" my={4} p={4}>
-      <Flex>
+      <Flex direction={mobileScreen ? 'column' : 'row'}>
         <Select
           color="#B0B7C3"
           placeholder="Sort by:"
@@ -43,22 +53,25 @@ const OvensPage: React.FC = () => {
         </Select>
 
         <Spacer />
-        <Button
-          rightIcon={<BsArrowRight />}
-          variant="outline"
-          w="20%"
-          onClick={() => dispatch(openModal(MODAL_NAMES.TRACK_OVEN))}
-        >
-          Track Oven
-        </Button>
-        <Button
-          leftIcon={<Icon as={MdAdd} w={6} h={6} />}
-          variant="solid"
-          w="20%"
-          onClick={() => dispatch(openModal(MODAL_NAMES.CREATE_OVEN))}
-        >
-          Create Oven
-        </Button>
+
+        <Flex mt={mobileScreen ? 2 : 0}>
+          <Button
+            rightIcon={<BsArrowRight />}
+            variant="outline"
+            onClick={() => dispatch(openModal(MODAL_NAMES.TRACK_OVEN))}
+            outerSx={{ mr: 2 }}
+          >
+            Track Oven
+          </Button>
+
+          <Button
+            leftIcon={<Icon as={MdAdd} w={6} h={6} />}
+            variant="solid"
+            onClick={() => dispatch(openModal(MODAL_NAMES.CREATE_OVEN))}
+          >
+            Create Oven
+          </Button>
+        </Flex>
       </Flex>
 
       <Box d="table" w="100%" mt={16}>
