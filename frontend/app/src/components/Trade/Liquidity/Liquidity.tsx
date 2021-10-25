@@ -6,7 +6,6 @@ import {
   Box,
   Collapse,
   useDisclosure,
-  useColorMode,
   useColorModeValue,
 } from '@chakra-ui/react';
 import { FaChevronCircleDown } from 'react-icons/fa';
@@ -24,8 +23,8 @@ const Liquidity: React.FC = () => {
       <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
         <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
         <Text color="gray.500" fontSize="xs" ml={2}>
-          By adding liquidity you'll earn 0.2% of all trades on this pair proportional to your share
-          of the pool.
+          By adding liquidity you'll earn 0.05% of all trades on this pair proportional to your
+          share of the pool.
         </Text>
       </Flex>
 
