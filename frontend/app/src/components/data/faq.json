@@ -2,11 +2,6 @@
   "faq1":
     [
       {
-        "id": 1,
-        "question": "What is cTez (aka Checker Tezos)?",
-        "answer": "cTez is a synthetic version of Tezos (XTZ), collateralized by Tezos, that you can redeem for Tezos."
-      },
-      {
         "id": 2,
         "question": "Who is behind cTez?",
         "answer": "The code is written by Tezos Co-Founder, Arthur Breitman, and implemented by Bender Labs and Plenty."

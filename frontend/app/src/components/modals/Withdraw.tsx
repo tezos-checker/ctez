@@ -148,6 +148,7 @@ const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose, oven }) => {
                 color={text2}
                 bg={inputbg}
                 id="to"
+                lang="en-US"
                 value={values.to}
                 onChange={handleChange}
               />
@@ -163,6 +164,7 @@ const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose, oven }) => {
                   id="amount"
                   color={text2}
                   bg={inputbg}
+                  lang="en-US"
                   value={values.amount}
                   onChange={handleChange}
                   placeholder="0.0"

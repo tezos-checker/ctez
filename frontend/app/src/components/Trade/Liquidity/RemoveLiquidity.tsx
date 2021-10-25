@@ -59,8 +59,8 @@ const RemoveLiquidity: React.FC = () => {
         const tokenWithdraw =
           ((lqtBurned * 1e6 * tokenPool.toNumber()) / lqtTotal.toNumber()) * (1 - slippage * 0.01);
         setOtherValues({
-          cashWithdraw: Number((cashWithdraw / 1e6).toFixed(6)),
-          tokenWithdraw: Number((tokenWithdraw / 1e6).toFixed(6)),
+          cashWithdraw: formatNumberStandard(cashWithdraw / 1e6),
+          tokenWithdraw: formatNumberStandard(tokenWithdraw / 1e6),
         });
       }
     },
@@ -152,6 +152,7 @@ const RemoveLiquidity: React.FC = () => {
             bg={inputbg}
             onChange={handleChange}
             placeholder="0.0"
+            lang="en-US"
           />
           {typeof userLqtData?.lqt !== 'undefined' && (
             <Text color={text4Text4} fontSize="xs" mt={1}>
@@ -181,6 +182,7 @@ const RemoveLiquidity: React.FC = () => {
               placeholder="0.0"
               type="number"
               color={text2}
+              lang="en-US"
               value={otherValues.cashWithdraw}
             />
           </FormControl>
@@ -196,6 +198,7 @@ const RemoveLiquidity: React.FC = () => {
               placeholder="0.0"
               type="number"
               color={text2}
+              lang="en-US"
               value={otherValues.tokenWithdraw}
             />
           </FormControl>
