@@ -8,6 +8,9 @@ import {
 } from '@chakra-ui/react';
 import { ButtonProps } from '@chakra-ui/button';
 import { useWallet } from '../../wallet/hooks';
+import { getBeaconInstance } from '../../wallet';
+import { APP_NAME, NETWORK } from '../../utils/globals';
+import { setWalletProvider } from '../../contracts/client';
 
 export interface IButtonProps extends ButtonProps {
   outerSx?: CSSObject;
@@ -16,7 +19,7 @@ export interface IButtonProps extends ButtonProps {
 }
 
 const Button: React.FC<IButtonProps> = (props) => {
-  const [{ pkh: userAddress }] = useWallet();
+  const [{ pkh: userAddress }, setWallet] = useWallet();
   const { colorMode } = useColorMode();
   const background = useColorModeValue('white', 'cardbgdark');
 
@@ -27,6 +30,16 @@ const Button: React.FC<IButtonProps> = (props) => {
 
     return props.children;
   }, [props.children, props.walletGuard, userAddress]);
+
+  const handleClick: React.MouseEventHandler<HTMLButtonElement> = async (ev) => {
+    if (props.walletGuard && !userAddress) {
+      const newWallet = await getBeaconInstance(APP_NAME, true, NETWORK);
+      newWallet?.wallet && setWalletProvider(newWallet.wallet);
+      newWallet && setWallet(newWallet);
+    } else {
+      props.onClick?.(ev);
+    }
+  };
 
   if (props.variant === 'outline') {
     return (
@@ -53,7 +66,7 @@ const Button: React.FC<IButtonProps> = (props) => {
           px={6}
           color={colorMode === 'light' ? 'blue' : 'white'}
           borderRadius="5px"
-          onClick={(props.onClick as unknown) as MouseEventHandler<HTMLDivElement>}
+          onClick={(handleClick as unknown) as MouseEventHandler<HTMLDivElement>}
         >
           {content}
         </Box>
@@ -63,7 +76,7 @@ const Button: React.FC<IButtonProps> = (props) => {
 
   if (props.variant === 'ghost') {
     return (
-      <ChakraButton {...props} sx={props.outerSx}>
+      <ChakraButton {...props} sx={props.outerSx} onClick={handleClick}>
         {content}
       </ChakraButton>
     );
@@ -86,7 +99,7 @@ const Button: React.FC<IButtonProps> = (props) => {
       _hover={{
         bgGradient: 'linear(to-r, #0F62FF, #6B5BD2)',
       }}
-      onClick={(props.onClick as unknown) as MouseEventHandler<HTMLDivElement>}
+      onClick={(handleClick as unknown) as MouseEventHandler<HTMLDivElement>}
       rightIcon={props.rightIcon}
       leftIcon={props.leftIcon}
       sx={props.outerSx}

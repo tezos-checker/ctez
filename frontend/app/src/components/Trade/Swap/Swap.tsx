@@ -305,6 +305,7 @@ const Swap: React.FC = () => {
       </Flex>
 
       <Button
+        walletGuard
         width="100%"
         mt={4}
         p={6}
