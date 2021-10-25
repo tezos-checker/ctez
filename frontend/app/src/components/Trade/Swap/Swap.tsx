@@ -211,6 +211,7 @@ const Swap: React.FC = () => {
             bg={inputbg}
             value={values.amount}
             onChange={handleChange}
+            lang="en-US"
           />
           {getRightElement(formType === FORM_TYPE.CTEZ_TEZ ? TOKEN.CTez : TOKEN.Tez)}
         </InputGroup>
@@ -270,6 +271,7 @@ const Swap: React.FC = () => {
             value={minBuyValue || ''}
             placeholder="0.0"
             type="number"
+            lang="en-US"
           />
           {getRightElement(formType === FORM_TYPE.CTEZ_TEZ ? TOKEN.Tez : TOKEN.CTez)}
         </InputGroup>
