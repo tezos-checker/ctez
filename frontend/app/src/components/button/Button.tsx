@@ -1,9 +1,16 @@
 import React, { MouseEventHandler, useMemo } from 'react';
-import { Button as ChakraButton, useColorMode, Box, useColorModeValue } from '@chakra-ui/react';
+import {
+  Button as ChakraButton,
+  useColorMode,
+  Box,
+  useColorModeValue,
+  CSSObject,
+} from '@chakra-ui/react';
 import { ButtonProps } from '@chakra-ui/button';
 import { useWallet } from '../../wallet/hooks';
 
 export interface IButtonProps extends ButtonProps {
+  outerSx?: CSSObject;
   children: React.ReactNode;
   walletGuard?: boolean;
 }
@@ -34,6 +41,7 @@ const Button: React.FC<IButtonProps> = (props) => {
         p="1px"
         w={props.w}
         borderRadius="5px"
+        sx={props.outerSx}
       >
         <Box
           as={ChakraButton}
@@ -54,7 +62,11 @@ const Button: React.FC<IButtonProps> = (props) => {
   }
 
   if (props.variant === 'ghost') {
-    return <ChakraButton {...props}>{content}</ChakraButton>;
+    return (
+      <ChakraButton {...props} sx={props.outerSx}>
+        {content}
+      </ChakraButton>
+    );
   }
 
   return (
@@ -77,6 +89,7 @@ const Button: React.FC<IButtonProps> = (props) => {
       onClick={(props.onClick as unknown) as MouseEventHandler<HTMLDivElement>}
       rightIcon={props.rightIcon}
       leftIcon={props.leftIcon}
+      sx={props.outerSx}
     >
       {content}
     </Box>

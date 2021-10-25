@@ -1,6 +1,19 @@
-import { Flex, Box, Icon, Select, Spacer, Stack, useColorModeValue } from '@chakra-ui/react';
+import {
+  Flex,
+  Box,
+  Icon,
+  Select,
+  Spacer,
+  useColorModeValue,
+  useMediaQuery,
+  MenuItem,
+  MenuList,
+  IconButton,
+  MenuButton,
+  Menu,
+} from '@chakra-ui/react';
 import { MdAdd } from 'react-icons/md';
-import { BsArrowRight } from 'react-icons/bs';
+import { BsArrowRight, BsThreeDotsVertical } from 'react-icons/bs';
 import { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAppDispatch } from '../../redux/store';
@@ -10,13 +23,15 @@ import { MODAL_NAMES } from '../../constants/modals';
 import { useSetCtezBaseStatsToStore } from '../../hooks/setApiDataToStore';
 import Button from '../../components/button/Button';
 import { setSortBy } from '../../redux/slices/OvenSlice';
-import { AllOvensContainer } from './AllOvensContainer';
+import AllOvensContainer from './AllOvensContainer';
 import MyOvensContainer from './MyOvensContainer';
 
 const OvensPage: React.FC = () => {
   const location = useLocation();
   const dispatch = useAppDispatch();
   const background = useColorModeValue('white', 'cardbgdark');
+  const [mobileScreen] = useMediaQuery(['(max-width: 600px)']);
+
   const [{ pkh: userAddress }] = useWallet();
   useSetCtezBaseStatsToStore(userAddress);
 
@@ -27,6 +42,53 @@ const OvensPage: React.FC = () => {
   const SetSortType = (value: string) => {
     dispatch(setSortBy(value));
   };
+
+  const toolBarButtons = useMemo(() => {
+    if (mobileScreen) {
+      return (
+        <Menu>
+          <MenuButton
+            as={IconButton}
+            aria-label="Options"
+            icon={<BsThreeDotsVertical />}
+            variant="outline"
+          />
+          <MenuList>
+            <MenuItem
+              icon={<BsArrowRight />}
+              onClick={() => dispatch(openModal(MODAL_NAMES.TRACK_OVEN))}
+            >
+              Track Oven
+            </MenuItem>
+            <MenuItem icon={<MdAdd />} onClick={() => dispatch(openModal(MODAL_NAMES.CREATE_OVEN))}>
+              Create Oven
+            </MenuItem>
+          </MenuList>
+        </Menu>
+      );
+    }
+
+    return (
+      <Flex>
+        <Button
+          rightIcon={<BsArrowRight />}
+          variant="outline"
+          onClick={() => dispatch(openModal(MODAL_NAMES.TRACK_OVEN))}
+          outerSx={{ mr: 2 }}
+        >
+          Track Oven
+        </Button>
+
+        <Button
+          leftIcon={<Icon as={MdAdd} w={6} h={6} />}
+          variant="solid"
+          onClick={() => dispatch(openModal(MODAL_NAMES.CREATE_OVEN))}
+        >
+          Create Oven
+        </Button>
+      </Flex>
+    );
+  }, [dispatch, mobileScreen]);
 
   return (
     <Box maxWidth={1200} mx="auto" my={4} p={4}>
@@ -43,22 +105,8 @@ const OvensPage: React.FC = () => {
         </Select>
 
         <Spacer />
-        <Button
-          rightIcon={<BsArrowRight />}
-          variant="outline"
-          w="20%"
-          onClick={() => dispatch(openModal(MODAL_NAMES.TRACK_OVEN))}
-        >
-          Track Oven
-        </Button>
-        <Button
-          leftIcon={<Icon as={MdAdd} w={6} h={6} />}
-          variant="solid"
-          w="20%"
-          onClick={() => dispatch(openModal(MODAL_NAMES.CREATE_OVEN))}
-        >
-          Create Oven
-        </Button>
+
+        {toolBarButtons}
       </Flex>
 
       <Box d="table" w="100%" mt={16}>
