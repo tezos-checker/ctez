@@ -34,6 +34,7 @@ import { useSetCtezBaseStatsToStore } from '../../../hooks/setApiDataToStore';
 import { useAppSelector } from '../../../redux/store';
 import Button from '../../button/Button';
 import { useTxLoader } from '../../../hooks/utilHooks';
+import { formatNumberStandard } from '../../../utils/numbers';
 
 const Swap: React.FC = () => {
   const [{ pkh: userAddress }] = useWallet();
@@ -88,8 +89,8 @@ const Swap: React.FC = () => {
 
   const rate = (): any =>
     formType === FORM_TYPE.CTEZ_TEZ
-      ? Number(baseStats?.currentPrice ?? 1).toFixed(6)
-      : (1 / Number(baseStats?.currentPrice ?? 1)).toFixed(6);
+      ? formatNumberStandard(baseStats?.currentPrice ?? 1)
+      : formatNumberStandard(1 / Number(baseStats?.currentPrice ?? 1));
 
   const validationSchema = Yup.object().shape({
     slippage: Yup.number().min(0).optional(),
@@ -207,7 +208,7 @@ const Swap: React.FC = () => {
             id="amount"
             type="number"
             placeholder="0.0"
-            color={text4}
+            color={text2}
             bg={inputbg}
             value={values.amount}
             onChange={handleChange}
@@ -215,7 +216,10 @@ const Swap: React.FC = () => {
           {getRightElement(formType === FORM_TYPE.CTEZ_TEZ ? TOKEN.CTez : TOKEN.Tez)}
         </InputGroup>
         <Text color={text4Text4} fontSize="xs" mt={1}>
-          Balance: {formType === FORM_TYPE.CTEZ_TEZ ? balance?.ctez : balance?.xtz}
+          Balance:{' '}
+          {formType === FORM_TYPE.CTEZ_TEZ
+            ? formatNumberStandard(balance?.ctez)
+            : formatNumberStandard(balance?.xtz)}
         </Text>
       </FormControl>
 
@@ -237,11 +241,14 @@ const Swap: React.FC = () => {
           To
         </FormLabel>
         <InputGroup>
-          <Input isReadOnly color={text4} bg={inputbg} value={minBuyValue} type="number" />
+          <Input isReadOnly color={text2} bg={inputbg} value={minBuyValue} type="number" />
           {getRightElement(formType === FORM_TYPE.CTEZ_TEZ ? TOKEN.Tez : TOKEN.CTez)}
         </InputGroup>
         <Text color={text4Text4} fontSize="xs" mt={1}>
-          Balance: {formType === FORM_TYPE.CTEZ_TEZ ? balance?.xtz : balance?.ctez}
+          Balance:{' '}
+          {formType === FORM_TYPE.CTEZ_TEZ
+            ? formatNumberStandard(balance?.xtz)
+            : formatNumberStandard(balance?.ctez)}
         </Text>
       </FormControl>
 
@@ -255,13 +262,14 @@ const Swap: React.FC = () => {
       <Flex justifyContent="space-between">
         <Text fontSize="xs">Min Received</Text>
         <Text color="#4E5D78" fontSize="xs">
-          {Number(minReceived).toFixed(6)} {formType === FORM_TYPE.CTEZ_TEZ ? 'tez' : 'ctez'}
+          {formatNumberStandard(Number(minReceived))}{' '}
+          {formType === FORM_TYPE.CTEZ_TEZ ? 'tez' : 'ctez'}
         </Text>
       </Flex>
       <Flex justifyContent="space-between">
         <Text fontSize="xs">Price Impact</Text>
         <Text color="#4E5D78" fontSize="xs">
-          {Number(priceImpact).toFixed(6)} %
+          {formatNumberStandard(Number(priceImpact))} %
         </Text>
       </Flex>
 

@@ -114,7 +114,7 @@ const LiquidateOven: React.FC<ILiquidateProps> = ({ isOpen, onClose, oven }) => 
               <Input
                 readOnly
                 name="ovenOwner"
-                color={text4}
+                color={text2}
                 bg={inputbg}
                 id="ovenOwner"
                 value={values.ovenOwner}
@@ -128,7 +128,7 @@ const LiquidateOven: React.FC<ILiquidateProps> = ({ isOpen, onClose, oven }) => 
                 <Input
                   name="to"
                   id="to"
-                  color={text4}
+                  color={text2}
                   bg={inputbg}
                   value={values.to}
                   onChange={handleChange}
@@ -143,7 +143,7 @@ const LiquidateOven: React.FC<ILiquidateProps> = ({ isOpen, onClose, oven }) => 
                 <Input
                   name="amount"
                   id="amount"
-                  color={text4}
+                  color={text2}
                   bg={inputbg}
                   value={values.amount}
                   onChange={handleChange}

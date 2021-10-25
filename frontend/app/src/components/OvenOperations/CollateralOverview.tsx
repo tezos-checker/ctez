@@ -18,6 +18,7 @@ import Deposit from '../modals/Deposit';
 import Withdraw from '../modals/Withdraw';
 import { AllOvenDatum } from '../../interfaces';
 import data from '../../assets/data/info.json';
+import { formatNumberStandard } from '../../utils/numbers';
 
 const CollateralOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
   const { stats } = useOvenStats(oven);
@@ -27,13 +28,39 @@ const CollateralOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) =
   const textcolor = useColorModeValue('text2', 'white');
   const cardbg = useColorModeValue('bg4', 'darkblue');
 
-  const showInfo = useMemo(() => {
+  const showInfoTez = useMemo(() => {
     return (
       <div>
         <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
           <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
           <Text color="gray.500" fontSize="xs" ml={2}>
-            {data.find((item) => item.topic === 'oven stats')?.content}
+            {data.find((item) => item.topic === 'Tez Collateral')?.content}
+          </Text>
+        </Flex>
+      </div>
+    );
+  }, [cardbg]);
+
+  const showInfoRequiredTez = useMemo(() => {
+    return (
+      <div>
+        <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
+          <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
+          <Text color="gray.500" fontSize="xs" ml={2}>
+            {data.find((item) => item.topic === 'required tez collateral')?.content}
+          </Text>
+        </Flex>
+      </div>
+    );
+  }, [cardbg]);
+
+  const showInfoWithdrawTez = useMemo(() => {
+    return (
+      <div>
+        <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
+          <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
+          <Text color="gray.500" fontSize="xs" ml={2}>
+            {data.find((item) => item.topic === 'Withdraw tez')?.content}
           </Text>
         </Flex>
       </div>
@@ -66,14 +93,14 @@ const CollateralOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) =
           <Stack>
             <Skeleton isLoaded={stats?.ovenBalance != null}>
               <Text color="4E5D78" fontWeight="600" fontSize="lg">
-                {stats?.ovenBalance.toFixed(2)} tez
+                {formatNumberStandard(stats?.ovenBalance)} tez
               </Text>
             </Skeleton>
 
             <Text color="#B0B7C3" fontSize="xs">
               tez collateral
               <Tooltip
-                label={showInfo}
+                label={showInfoTez}
                 placement="right"
                 borderRadius={14}
                 backgroundColor={cardbg}
@@ -92,14 +119,14 @@ const CollateralOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) =
           <Stack>
             <Skeleton isLoaded={stats?.reqTezBalance != null}>
               <Text color="4E5D78" fontWeight="600" fontSize="lg">
-                {stats?.reqTezBalance.toFixed(2)} tez
+                {formatNumberStandard(stats?.reqTezBalance)} tez
               </Text>
             </Skeleton>
 
             <Text color="#B0B7C3" fontSize="xs">
               Required tez collateral
               <Tooltip
-                label={showInfo}
+                label={showInfoRequiredTez}
                 placement="right"
                 borderRadius={14}
                 backgroundColor={cardbg}
@@ -118,14 +145,14 @@ const CollateralOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) =
           <Stack>
             <Skeleton isLoaded={stats?.withdrawableTez != null}>
               <Text color="4E5D78" fontWeight="600" fontSize="lg">
-                {Math.abs(stats?.withdrawableTez ?? 0).toFixed(2)} tez
+                {formatNumberStandard(Math.abs(stats?.withdrawableTez ?? 0))} tez
               </Text>
             </Skeleton>
 
             <Text color="#B0B7C3" fontSize="xs">
               Withdraw tez
               <Tooltip
-                label={showInfo}
+                label={showInfoWithdrawTez}
                 placement="right"
                 borderRadius={14}
                 backgroundColor={cardbg}

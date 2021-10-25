@@ -146,7 +146,7 @@ const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose, oven }) => {
               <Input
                 readOnly
                 name="to"
-                color={text4}
+                color={text2}
                 bg={inputbg}
                 id="to"
                 value={values.to}
@@ -162,7 +162,7 @@ const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose, oven }) => {
                   type="number"
                   name="amount"
                   id="amount"
-                  color={text4}
+                  color={text2}
                   bg={inputbg}
                   value={values.amount}
                   onChange={handleChange}
