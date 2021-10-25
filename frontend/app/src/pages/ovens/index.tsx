@@ -6,9 +6,14 @@ import {
   Spacer,
   useColorModeValue,
   useMediaQuery,
+  MenuItem,
+  MenuList,
+  IconButton,
+  MenuButton,
+  Menu,
 } from '@chakra-ui/react';
 import { MdAdd } from 'react-icons/md';
-import { BsArrowRight } from 'react-icons/bs';
+import { BsArrowRight, BsThreeDotsVertical } from 'react-icons/bs';
 import { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAppDispatch } from '../../redux/store';
@@ -38,9 +43,56 @@ const OvensPage: React.FC = () => {
     dispatch(setSortBy(value));
   };
 
+  const toolBarButtons = useMemo(() => {
+    if (mobileScreen) {
+      return (
+        <Menu>
+          <MenuButton
+            as={IconButton}
+            aria-label="Options"
+            icon={<BsThreeDotsVertical />}
+            variant="outline"
+          />
+          <MenuList>
+            <MenuItem
+              icon={<BsArrowRight />}
+              onClick={() => dispatch(openModal(MODAL_NAMES.TRACK_OVEN))}
+            >
+              Track Oven
+            </MenuItem>
+            <MenuItem icon={<MdAdd />} onClick={() => dispatch(openModal(MODAL_NAMES.CREATE_OVEN))}>
+              Create Oven
+            </MenuItem>
+          </MenuList>
+        </Menu>
+      );
+    }
+
+    return (
+      <Flex>
+        <Button
+          rightIcon={<BsArrowRight />}
+          variant="outline"
+          onClick={() => dispatch(openModal(MODAL_NAMES.TRACK_OVEN))}
+          outerSx={{ mr: 2 }}
+        >
+          Track Oven
+        </Button>
+
+        <Button
+          leftIcon={<Icon as={MdAdd} w={6} h={6} />}
+          variant="solid"
+          onClick={() => dispatch(openModal(MODAL_NAMES.CREATE_OVEN))}
+        >
+          Create Oven
+        </Button>
+      </Flex>
+    );
+  }, [dispatch, mobileScreen]);
+
   return (
     <Box maxWidth={1200} mx="auto" my={4} p={4}>
-      <Flex direction={mobileScreen ? 'column' : 'row'}>
+      <Flex>
         <Select
           color="#B0B7C3"
           placeholder="Sort by:"
@@ -54,24 +106,7 @@ const OvensPage: React.FC = () => {
 
         <Spacer />
 
-        <Flex mt={mobileScreen ? 2 : 0}>
-          <Button
-            rightIcon={<BsArrowRight />}
-            variant="outline"
-            onClick={() => dispatch(openModal(MODAL_NAMES.TRACK_OVEN))}
-            outerSx={{ mr: 2 }}
-          >
-            Track Oven
-          </Button>
-
-          <Button
-            leftIcon={<Icon as={MdAdd} w={6} h={6} />}
-            variant="solid"
-            onClick={() => dispatch(openModal(MODAL_NAMES.CREATE_OVEN))}
-          >
-            Create Oven
-          </Button>
-        </Flex>
+        {toolBarButtons}
       </Flex>
 
       <Box d="table" w="100%" mt={16}>
