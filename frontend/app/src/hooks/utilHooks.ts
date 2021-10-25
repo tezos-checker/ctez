@@ -78,19 +78,12 @@ const useOvenStats: TUseOvenStats = (oven) => {
       if (currentTarget) {
         return ovenBalance * currentTarget > outStandingCtez
           ? 0
-          : (outStandingCtez / currentTarget - ovenBalance) * 1.02;
+          : outStandingCtez / currentTarget - ovenBalance;
       }
       return 0;
     })();
 
-    const withdrawableTez = (() => {
-      if (currentTarget) {
-        return ovenBalance * currentTarget <= outStandingCtez
-          ? 0
-          : (ovenBalance - outStandingCtez / currentTarget) * 0.98;
-      }
-      return 0;
-    })();
+    const withdrawableTez = ovenBalance * (1 - Number(collateralUtilization) / 100);
 
     return {
       ovenBalance,
