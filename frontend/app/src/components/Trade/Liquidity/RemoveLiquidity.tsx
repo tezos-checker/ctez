@@ -155,13 +155,13 @@ const RemoveLiquidity: React.FC = () => {
           />
           {typeof userLqtData?.lqt !== 'undefined' && (
             <Text color={text4Text4} fontSize="xs" mt={1}>
-              Balance: {formatNumberStandard(userLqtData?.lqt)}{' '}
+              Balance: {formatNumberStandard(userLqtData?.lqt / 1e6)}{' '}
               <Text
                 as="span"
                 cursor="pointer"
                 color="#e35f5f"
                 onClick={() =>
-                  formik.setFieldValue('lqtBurned', formatNumberStandard(userLqtData?.lqt))
+                  formik.setFieldValue('lqtBurned', formatNumberStandard(userLqtData?.lqt / 1e6))
                 }
               >
                 (Max)
