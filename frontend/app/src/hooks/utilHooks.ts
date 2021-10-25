@@ -83,7 +83,8 @@ const useOvenStats: TUseOvenStats = (oven) => {
       return 0;
     })();
 
-    const withdrawableTez = ovenBalance * (1 - Number(collateralUtilization) / 100);
+    const withdrawableTez =
+      ovenBalance * (1 - formatNumber(formatNumber(ctezOutstanding, 0) / maxMintableCtez));
 
     return {
       ovenBalance,
