@@ -159,7 +159,7 @@ const AddLiquidity: React.FC = () => {
               onChange={handleChange}
             />
             <Text color={text4Text4} fontSize="xs" mt={1}>
-              Balance: {formatNumberStandard(balance?.xtz ?? 0)}
+              Balance: {formatNumberStandard(balance?.xtz)}
             </Text>
           </FormControl>
 
@@ -180,7 +180,7 @@ const AddLiquidity: React.FC = () => {
               type="number"
             />
             <Text color={text4Text4} fontSize="xs" mt={1}>
-              Balance: {formatNumberStandard(balance?.ctez ?? 0)}
+              Balance: {formatNumberStandard(balance?.ctez)}
             </Text>
           </FormControl>
         </Flex>

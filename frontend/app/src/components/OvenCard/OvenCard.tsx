@@ -141,18 +141,18 @@ const OvenCard: React.FC<IOvenCardProps> = (props) => {
       },
       {
         label: 'Oven Balance',
-        value: `${formatNumberStandard(Number(stats?.ovenBalance ?? 0))} tez`,
-        displayValue: `${formatNumberStandard(Number(stats?.ovenBalance ?? 0))} tez`,
+        value: `${formatNumberStandard(stats?.ovenBalance)} tez`,
+        displayValue: `${formatNumberStandard(stats?.ovenBalance)} tez`,
       },
       {
         label: 'Outstanding ',
-        value: `${formatNumberStandard(Number(stats?.outStandingCtez ?? 0))} ctez`,
-        displayValue: `${formatNumberStandard(Number(stats?.outStandingCtez ?? 0))} ctez`,
+        value: `${formatNumberStandard(stats?.outStandingCtez)} ctez`,
+        displayValue: `${formatNumberStandard(stats?.outStandingCtez)} ctez`,
       },
       {
         label: 'Mintable ',
-        value: `${formatNumberStandard(Number(stats?.maxMintableCtez))} ctez`,
-        displayValue: `${formatNumberStandard(Number(stats?.maxMintableCtez))} ctez`,
+        value: `${formatNumberStandard(stats?.maxMintableCtez)} ctez`,
+        displayValue: `${formatNumberStandard(stats?.maxMintableCtez)} ctez`,
       },
     ]
       .filter((x): x is { label: string; value: string; displayValue: string } => !!x)

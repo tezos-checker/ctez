@@ -93,7 +93,7 @@ const CollateralOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) =
           <Stack>
             <Skeleton isLoaded={stats?.ovenBalance != null}>
               <Text color="4E5D78" fontWeight="600" fontSize="lg">
-                {formatNumberStandard(Number(stats?.ovenBalance.toFixed(2)))} tez
+                {formatNumberStandard(stats?.ovenBalance)} tez
               </Text>
             </Skeleton>
 
@@ -119,7 +119,7 @@ const CollateralOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) =
           <Stack>
             <Skeleton isLoaded={stats?.reqTezBalance != null}>
               <Text color="4E5D78" fontWeight="600" fontSize="lg">
-                {formatNumberStandard(Number(stats?.reqTezBalance.toFixed(2)))} tez
+                {formatNumberStandard(stats?.reqTezBalance)} tez
               </Text>
             </Skeleton>
 
@@ -145,7 +145,7 @@ const CollateralOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) =
           <Stack>
             <Skeleton isLoaded={stats?.withdrawableTez != null}>
               <Text color="4E5D78" fontWeight="600" fontSize="lg">
-                {formatNumberStandard(Number(Math.abs(stats?.withdrawableTez ?? 0).toFixed(2)))} tez
+                {formatNumberStandard(Math.abs(stats?.withdrawableTez ?? 0))} tez
               </Text>
             </Skeleton>
 

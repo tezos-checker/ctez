@@ -89,8 +89,8 @@ const Swap: React.FC = () => {
 
   const rate = (): any =>
     formType === FORM_TYPE.CTEZ_TEZ
-      ? Number(baseStats?.currentPrice ?? 1).toFixed(6)
-      : (1 / Number(baseStats?.currentPrice ?? 1)).toFixed(6);
+      ? formatNumberStandard(baseStats?.currentPrice ?? 1)
+      : formatNumberStandard(1 / Number(baseStats?.currentPrice ?? 1));
 
   const validationSchema = Yup.object().shape({
     slippage: Yup.number().min(0).optional(),
@@ -218,8 +218,8 @@ const Swap: React.FC = () => {
         <Text color={text4Text4} fontSize="xs" mt={1}>
           Balance:{' '}
           {formType === FORM_TYPE.CTEZ_TEZ
-            ? formatNumberStandard(balance?.ctez ?? 0)
-            : formatNumberStandard(balance?.xtz ?? 0)}
+            ? formatNumberStandard(balance?.ctez)
+            : formatNumberStandard(balance?.xtz)}
         </Text>
       </FormControl>
 
@@ -247,8 +247,8 @@ const Swap: React.FC = () => {
         <Text color={text4Text4} fontSize="xs" mt={1}>
           Balance:{' '}
           {formType === FORM_TYPE.CTEZ_TEZ
-            ? formatNumberStandard(balance?.xtz ?? 0)
-            : formatNumberStandard(balance?.ctez ?? 0)}
+            ? formatNumberStandard(balance?.xtz)
+            : formatNumberStandard(balance?.ctez)}
         </Text>
       </FormControl>
 
@@ -262,14 +262,14 @@ const Swap: React.FC = () => {
       <Flex justifyContent="space-between">
         <Text fontSize="xs">Min Received</Text>
         <Text color="#4E5D78" fontSize="xs">
-          {formatNumberStandard(Number(Number(minReceived).toFixed(6)))}{' '}
+          {formatNumberStandard(Number(minReceived))}{' '}
           {formType === FORM_TYPE.CTEZ_TEZ ? 'tez' : 'ctez'}
         </Text>
       </Flex>
       <Flex justifyContent="space-between">
         <Text fontSize="xs">Price Impact</Text>
         <Text color="#4E5D78" fontSize="xs">
-          {formatNumberStandard(Number(Number(priceImpact).toFixed(6)))} %
+          {formatNumberStandard(Number(priceImpact))} %
         </Text>
       </Flex>
 

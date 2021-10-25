@@ -28,7 +28,7 @@ import { OvenSlice } from '../../redux/slices/OvenSlice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { useUserBalance, useUserLqtData } from '../../api/queries';
 import Identicon from '../avatar/Identicon';
-import { formatNumber as formatNumberUtil } from '../../utils/numbers';
+import { formatNumber as formatNumberUtil, formatNumberStandard } from '../../utils/numbers';
 import { ReactComponent as copy } from '../../assets/images/sidebar/content_copy.svg';
 
 const SignIn: React.FC = () => {
@@ -108,11 +108,15 @@ const SignIn: React.FC = () => {
                   <>
                     <Tr>
                       <Td>ꜩ:</Td>
-                      <Td textAlign="right">{formatNumber(balance.xtz, 0)}</Td>
+                      <Td textAlign="right">
+                        {formatNumberStandard(formatNumber(balance.xtz, 0))}
+                      </Td>
                     </Tr>
                     <Tr>
                       <Td>cꜩ:</Td>
-                      <Td textAlign="right">{formatNumber(balance.ctez, 0)}</Td>
+                      <Td textAlign="right">
+                        {formatNumberStandard(formatNumber(balance.ctez, 0))}
+                      </Td>
                     </Tr>
                   </>
                 )}
@@ -120,12 +124,14 @@ const SignIn: React.FC = () => {
                   <>
                     <Tr>
                       <Td>ꜩ in ovens:</Td>
-                      <Td textAlign="right">{formatNumber(balance.tezInOvens, 0)?.toFixed(6)}</Td>
+                      <Td textAlign="right">
+                        {formatNumberStandard(formatNumber(balance.tezInOvens, 0))}
+                      </Td>
                     </Tr>
                     <Tr>
                       <Td>cꜩ outstanding:</Td>
                       <Td textAlign="right">
-                        {formatNumber(balance.ctezOutstanding, 0)?.toFixed(6)}
+                        {formatNumberStandard(formatNumber(balance.ctezOutstanding, 0))}
                       </Td>
                     </Tr>
                   </>
@@ -133,13 +139,15 @@ const SignIn: React.FC = () => {
                 {typeof userLqtData?.lqt !== 'undefined' && (
                   <Tr>
                     <Td>LQT:</Td>
-                    <Td textAlign="right">{formatNumber(userLqtData?.lqt)}</Td>
+                    <Td textAlign="right">
+                      {formatNumberStandard(formatNumber(userLqtData?.lqt))}
+                    </Td>
                   </Tr>
                 )}
                 {typeof userLqtData?.lqtShare !== 'undefined' && (
                   <Tr>
                     <Td>LQT Pool share:</Td>
-                    <Td textAlign="right">{userLqtData?.lqtShare}%</Td>
+                    <Td textAlign="right">{formatNumberStandard(userLqtData?.lqtShare)}%</Td>
                   </Tr>
                 )}
               </Tbody>
