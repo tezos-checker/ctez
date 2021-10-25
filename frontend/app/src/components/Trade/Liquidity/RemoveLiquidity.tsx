@@ -111,7 +111,7 @@ const RemoveLiquidity: React.FC = () => {
     }
   };
 
-  const { values, handleChange, handleSubmit, isSubmitting, errors } = useFormik({
+  const { values, handleChange, handleSubmit, isSubmitting, errors, ...formik } = useFormik({
     initialValues,
     validationSchema,
     onSubmit: handleFormSubmit,
@@ -156,7 +156,15 @@ const RemoveLiquidity: React.FC = () => {
           />
           {typeof userLqtData?.lqt !== 'undefined' && (
             <Text color={text4Text4} fontSize="xs" mt={1}>
-              Balance: {formatNumber(userLqtData?.lqt)}
+              Balance: {formatNumber(userLqtData?.lqt)}{' '}
+              <Text
+                as="span"
+                cursor="pointer"
+                color="#e35f5f"
+                onClick={() => formik.setFieldValue('lqtBurned', formatNumber(userLqtData?.lqt))}
+              >
+                (Max)
+              </Text>
             </Text>
           )}
         </FormControl>
