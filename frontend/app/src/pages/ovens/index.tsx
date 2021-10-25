@@ -4,6 +4,7 @@ import {
   Icon,
   Select,
   Spacer,
+  Text,
   useColorModeValue,
   useMediaQuery,
   MenuItem,
@@ -93,15 +94,17 @@ const OvensPage: React.FC = () => {
   return (
     <Box maxWidth={1200} mx="auto" my={4} p={4}>
       <Flex>
+        <Text color="#B0B7C3" mt={2} mr={1}>
+          Sort By:
+        </Text>
         <Select
           color="#B0B7C3"
-          placeholder="Sort by:"
           w={186}
           backgroundColor={background}
           onChange={(e) => SetSortType(e.target.value)}
         >
           <option value="Oven Balance">Value</option>
-          <option value="utilization">Outstanding</option>
+          <option value="Outstanding">Outstanding</option>
         </Select>
 
         <Spacer />
