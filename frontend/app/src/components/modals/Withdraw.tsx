@@ -17,7 +17,7 @@ import {
   useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { MdInfo } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 import { validateAddress } from '@taquito/utils';
@@ -27,8 +27,8 @@ import { useWallet } from '../../wallet/hooks';
 import { IWithdrawForm } from '../../constants/oven-operations';
 import { cTezError, withdraw } from '../../contracts/ctez';
 import Button from '../button/Button';
-import { CTezIcon, TezIcon } from '../icons';
-import { BUTTON_TXT, TButtonText } from '../../constants/swap';
+import { TezIcon } from '../icons';
+import { BUTTON_TXT } from '../../constants/swap';
 import { AllOvenDatum } from '../../interfaces';
 import { useOvenStats, useTxLoader } from '../../hooks/utilHooks';
 import { logger } from '../../utils/logger';
@@ -191,6 +191,7 @@ const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose, oven }) => {
               variant="outline"
               type="submit"
               disabled={isSubmitting || errorList.length > 0}
+              isLoading={isSubmitting}
             >
               {buttonText}
             </Button>
