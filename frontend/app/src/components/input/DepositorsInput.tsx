@@ -9,6 +9,7 @@ import {
   Input,
   SlideFade,
   Text,
+  useColorModeValue,
   Wrap,
   WrapItem,
 } from '@chakra-ui/react';
@@ -30,20 +31,21 @@ interface IDepositorsInputProps {
 
 const DepositorsInput: React.FC<IDepositorsInputProps> = (props) => {
   const [depositorInput, setDepositorInput] = useState('');
+  const text2 = useColorModeValue('text2', 'darkheading');
 
-  const handleDepositorInput = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = ev.target;
-    const depositors = value.split(' ');
-    if (depositors.length > 1 && !props.depositors.some((x) => x.value === depositors[0])) {
-      props.onChange([
-        ...props.depositors,
-        { label: trimAddress(depositors[0]), value: depositors[0] },
-      ]);
-      setDepositorInput(depositors[1]);
-    } else {
-      setDepositorInput(depositors[0]);
-    }
-  };
+  // const handleDepositorInput = (ev: React.ChangeEvent<HTMLInputElement>) => {
+  //   const { value } = ev.target;
+  //   const depositors = value.split(' ');
+  //   if (depositors.length > 1 && !props.depositors.some((x) => x.value === depositors[0])) {
+  //     props.onChange([
+  //       ...props.depositors,
+  //       { label: trimAddress(depositors[0]), value: depositors[0] },
+  //     ]);
+  //     setDepositorInput(depositors[1]);
+  //   } else {
+  //     setDepositorInput(depositors[0]);
+  //   }
+  // };
 
   const onSubmitDepositorInput = () => {
     if (
@@ -70,7 +72,7 @@ const DepositorsInput: React.FC<IDepositorsInputProps> = (props) => {
   return (
     <Box {...props.outerBoxProps}>
       <FormControl>
-        <FormLabel fontSize="xs" fontWeight="500">
+        <FormLabel color={text2} fontSize="xs" fontWeight="500">
           Authorized Depositors
         </FormLabel>
 
@@ -108,6 +110,7 @@ const DepositorsInput: React.FC<IDepositorsInputProps> = (props) => {
           value={depositorInput}
           onKeyPress={(event) => {
             if (event.key === 'Enter') {
+              event.preventDefault();
               onSubmitDepositorInput();
             }
           }}
