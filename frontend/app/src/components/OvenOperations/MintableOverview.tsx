@@ -18,6 +18,7 @@ import Burn from '../modals/Burn';
 import Mint from '../modals/Mint';
 import { AllOvenDatum } from '../../interfaces';
 import data from '../../assets/data/info.json';
+import { formatNumberStandard } from '../../utils/numbers';
 
 const MintableOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
   const { stats } = useOvenStats(oven);
@@ -27,13 +28,37 @@ const MintableOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => 
   const [burnOpen, setBurnOpen] = useState<boolean>(false);
   const cardbg = useColorModeValue('bg4', 'darkblue');
 
-  const showInfo = useMemo(() => {
+  const showInfoOutstanding = useMemo(() => {
     return (
       <div>
         <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
           <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
           <Text color="gray.500" fontSize="xs" ml={2}>
-            {data.find((item) => item.topic === 'oven stats')?.content}
+            {data.find((item) => item.topic === 'outstanding')?.content}
+          </Text>
+        </Flex>
+      </div>
+    );
+  }, [cardbg]);
+  const showInfoMaxMintable = useMemo(() => {
+    return (
+      <div>
+        <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
+          <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
+          <Text color="gray.500" fontSize="xs" ml={2}>
+            {data.find((item) => item.topic === 'mintable')?.content}
+          </Text>
+        </Flex>
+      </div>
+    );
+  }, [cardbg]);
+  const showInfoRemainingMintable = useMemo(() => {
+    return (
+      <div>
+        <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
+          <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
+          <Text color="gray.500" fontSize="xs" ml={2}>
+            {data.find((item) => item.topic === 'remaining mintable')?.content}
           </Text>
         </Flex>
       </div>
@@ -65,14 +90,14 @@ const MintableOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => 
           <Stack>
             <Skeleton isLoaded={stats?.outStandingCtez != null}>
               <Text color="4E5D78" fontWeight="600" fontSize="lg">
-                {stats?.outStandingCtez ?? 0} ctez
+                {formatNumberStandard(stats?.outStandingCtez)} ctez
               </Text>
             </Skeleton>
 
             <Text color="#B0B7C3" fontSize="xs">
               Outstanding
               <Tooltip
-                label={showInfo}
+                label={showInfoOutstanding}
                 placement="right"
                 borderRadius={14}
                 backgroundColor={cardbg}
@@ -91,14 +116,14 @@ const MintableOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => 
           <Stack>
             <Skeleton isLoaded={stats?.maxMintableCtez != null}>
               <Text color="4E5D78" fontWeight="600" fontSize="lg">
-                {stats?.maxMintableCtez ?? 0} ctez
+                {formatNumberStandard(stats?.maxMintableCtez)} ctez
               </Text>
             </Skeleton>
 
             <Text color="#B0B7C3" fontSize="xs">
               Maximum Mintable
               <Tooltip
-                label={showInfo}
+                label={showInfoMaxMintable}
                 placement="right"
                 borderRadius={14}
                 backgroundColor={cardbg}
@@ -117,14 +142,14 @@ const MintableOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => 
           <Stack>
             <Skeleton isLoaded={stats?.remainingMintableCtez != null}>
               <Text color="4E5D78" fontWeight="600" fontSize="lg">
-                {stats?.remainingMintableCtez ?? 0} ctez
+                {formatNumberStandard(stats?.remainingMintableCtez)} ctez
               </Text>
             </Skeleton>
 
             <Text color="#B0B7C3" fontSize="xs">
               Remaining Mintable
               <Tooltip
-                label={showInfo}
+                label={showInfoRemainingMintable}
                 placement="right"
                 borderRadius={14}
                 backgroundColor={cardbg}

@@ -53,7 +53,7 @@ const BakerInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
         <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
           <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
           <Text color="gray.500" fontSize="xs" ml={2}>
-            {data.find((item) => item.topic === 'oven stats')?.content}
+            {data.find((item) => item.topic === 'baker')?.content}
           </Text>
         </Flex>
       </div>

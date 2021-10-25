@@ -231,7 +231,7 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
                 type="number"
                 name="amount"
                 id="amount"
-                color={text4}
+                color={text2}
                 bg={inputbg}
                 value={values.amount}
                 onChange={handleChange}

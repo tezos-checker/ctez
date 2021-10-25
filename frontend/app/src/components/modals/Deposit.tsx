@@ -133,7 +133,7 @@ const Deposit: React.FC<IDepositProps> = ({ isOpen, onClose, oven }) => {
                   type="number"
                   name="amount"
                   id="amount"
-                  color={text4}
+                  color={text2}
                   bg={inputbg}
                   value={values.amount}
                   onChange={handleChange}

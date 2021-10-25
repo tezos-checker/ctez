@@ -172,7 +172,7 @@ const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
                   type="number"
                   name="amount"
                   id="amount"
-                  color={text4}
+                  color={text2}
                   bg={inputbg}
                   placeholder="0.0"
                   value={values.amount}

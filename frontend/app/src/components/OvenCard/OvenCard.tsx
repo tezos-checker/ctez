@@ -21,6 +21,7 @@ import { useCtezBaseStats } from '../../api/queries';
 import { isMonthFromLiquidation } from '../../api/contracts';
 import SkeletonLayout from '../skeleton';
 import { trimAddress } from '../../utils/addressUtils';
+import { formatNumberStandard } from '../../utils/numbers';
 
 interface IOvenCardProps {
   type: 'AllOvens' | 'MyOvens';
@@ -145,18 +146,18 @@ const OvenCard: React.FC<IOvenCardProps> = (props) => {
       },
       {
         label: 'Oven Balance',
-        value: `${stats?.ovenBalance ?? 0} tez`,
-        displayValue: `${stats?.ovenBalance ?? 0} tez`,
+        value: `${formatNumberStandard(stats?.ovenBalance)} tez`,
+        displayValue: `${formatNumberStandard(stats?.ovenBalance)} tez`,
       },
       {
         label: 'Outstanding ',
-        value: `${stats?.outStandingCtez ?? 0} ctez`,
-        displayValue: `${stats?.outStandingCtez ?? 0} ctez`,
+        value: `${formatNumberStandard(stats?.outStandingCtez)} ctez`,
+        displayValue: `${formatNumberStandard(stats?.outStandingCtez)} ctez`,
       },
       {
         label: 'Mintable ',
-        value: `${stats?.maxMintableCtez} ctez`,
-        displayValue: `${stats?.maxMintableCtez} ctez`,
+        value: `${formatNumberStandard(stats?.maxMintableCtez)} ctez`,
+        displayValue: `${formatNumberStandard(stats?.maxMintableCtez)} ctez`,
       },
     ]
       .filter((x): x is { label: string; value: string; displayValue: string } => !!x)

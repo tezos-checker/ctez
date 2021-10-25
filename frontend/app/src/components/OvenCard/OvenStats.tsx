@@ -31,7 +31,31 @@ const OvenStats: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
         <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
           <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
           <Text color="gray.500" fontSize="xs" ml={2}>
-            {data.find((item) => item.topic === 'oven stats')?.content}
+            {data.find((item) => item.topic === 'oven address')?.content}
+          </Text>
+        </Flex>
+      </div>
+    );
+  }, [cardbg]);
+  const showInfoCollateralRatio = useMemo(() => {
+    return (
+      <div>
+        <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
+          <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
+          <Text color="gray.500" fontSize="xs" ml={2}>
+            {data.find((item) => item.topic === 'collateral ratio')?.content}
+          </Text>
+        </Flex>
+      </div>
+    );
+  }, [cardbg]);
+  const showInfoCollateralUtilization = useMemo(() => {
+    return (
+      <div>
+        <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
+          <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
+          <Text color="gray.500" fontSize="xs" ml={2}>
+            {data.find((item) => item.topic === 'Collateral Utilization')?.content}
           </Text>
         </Flex>
       </div>
@@ -79,7 +103,12 @@ const OvenStats: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
 
           <Text color={text4color} fontSize="xs">
             Collateral ratio
-            <Tooltip label={showInfo} placement="right" borderRadius={14} backgroundColor={cardbg}>
+            <Tooltip
+              label={showInfoCollateralRatio}
+              placement="right"
+              borderRadius={14}
+              backgroundColor={cardbg}
+            >
               <span>
                 <Icon opacity="0.3" fontSize="md" color="#B0B7C3" as={MdInfo} m={1} mb={1} />
               </span>
@@ -102,7 +131,12 @@ const OvenStats: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
           </Skeleton>
           <Text color={text4color} fontSize="xs">
             Collateral utilization
-            <Tooltip label={showInfo} placement="right" borderRadius={14} backgroundColor={cardbg}>
+            <Tooltip
+              label={showInfoCollateralUtilization}
+              placement="right"
+              borderRadius={14}
+              backgroundColor={cardbg}
+            >
               <span>
                 <Icon opacity="0.3" fontSize="md" color="#B0B7C3" as={MdInfo} m={1} mb={1} />
               </span>

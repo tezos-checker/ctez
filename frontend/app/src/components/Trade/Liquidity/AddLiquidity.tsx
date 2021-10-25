@@ -26,6 +26,7 @@ import { BUTTON_TXT } from '../../../constants/swap';
 import Button from '../../button/Button';
 import { useAppSelector } from '../../../redux/store';
 import { useTxLoader } from '../../../hooks/utilHooks';
+import { formatNumberStandard } from '../../../utils/numbers';
 
 const AddLiquidity: React.FC = () => {
   const [{ pkh: userAddress }] = useWallet();
@@ -159,29 +160,29 @@ const AddLiquidity: React.FC = () => {
               name="amount"
               id="amount"
               placeholder="0.0"
-              color={text4}
+              color={text2}
               bg={inputbg}
               value={values.amount}
               onChange={handleChange}
             />
             <Text color={text4Text4} fontSize="xs" mt={1}>
-              Balance: {balance?.xtz}{' '}
+              Balance: {formatNumberStandard(balance?.xtz)}{' '}
               <Text
                 as="span"
                 cursor="pointer"
                 color="#e35f5f"
-                onClick={() => formik.setFieldValue('amount', balance?.xtz)}
+                onClick={() => formik.setFieldValue('amount', formatNumberStandard(balance?.xtz))}
               >
                 (Max)
               </Text>
             </Text>
           </FormControl>
 
-          <Flex mt={-2} mb={6}>
-            <Icon as={MdAdd} />
+          <Flex mt={1} mb={5}>
+            <Icon as={MdAdd} fontSize="lg" />
           </Flex>
 
-          <FormControl id="to-input-amount" mt={-2} mb={6} w="45%">
+          <FormControl id="to-input-amount" mb={6} w="45%">
             <FormLabel color={text2} fontSize="xs">
               ctez to deposit(approx)
             </FormLabel>
@@ -189,12 +190,12 @@ const AddLiquidity: React.FC = () => {
               value={values.ctezAmount}
               readOnly
               border={0}
-              color={text4}
+              color={text2}
               placeholder="0.0"
               type="number"
             />
             <Text color={text4Text4} fontSize="xs" mt={1}>
-              Balance: {balance?.ctez}
+              Balance: {formatNumberStandard(balance?.ctez)}
             </Text>
           </FormControl>
         </Flex>

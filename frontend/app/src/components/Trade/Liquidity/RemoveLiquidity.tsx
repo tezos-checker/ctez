@@ -24,7 +24,7 @@ import { useCfmmStorage, useUserLqtData } from '../../../api/queries';
 import Button from '../../button/Button';
 import { useAppSelector } from '../../../redux/store';
 import { useTxLoader } from '../../../hooks/utilHooks';
-import { formatNumber } from '../../../utils/numbers';
+import { formatNumber, formatNumberStandard } from '../../../utils/numbers';
 import { BUTTON_TXT } from '../../../constants/swap';
 import { logger } from '../../../utils/logger';
 
@@ -149,19 +149,19 @@ const RemoveLiquidity: React.FC = () => {
             name="lqtBurned"
             id="lqtBurned"
             value={values.lqtBurned}
-            color={text4}
+            color={text2}
             bg={inputbg}
             onChange={handleChange}
             placeholder="0.0"
           />
           {typeof userLqtData?.lqt !== 'undefined' && (
             <Text color={text4Text4} fontSize="xs" mt={1}>
-              Balance: {formatNumber(userLqtData?.lqt)}{' '}
+              Balance: {formatNumberStandard(userLqtData?.lqt)}{' '}
               <Text
                 as="span"
                 cursor="pointer"
                 color="#e35f5f"
-                onClick={() => formik.setFieldValue('lqtBurned', formatNumber(userLqtData?.lqt))}
+                onClick={() => formik.setFieldValue('lqtBurned', formatNumberStandard(userLqtData?.lqt))}
               >
                 (Max)
               </Text>
@@ -179,13 +179,12 @@ const RemoveLiquidity: React.FC = () => {
               border={0}
               placeholder="0.0"
               type="number"
-              color={text4}
-              bg={inputbg}
+              color={text2}
               value={otherValues.cashWithdraw}
             />
           </FormControl>
 
-          <Icon as={MdAdd} />
+          <Icon as={MdAdd} mb="-25" fontSize="lg" />
           <FormControl id="to-input-amount" w="45%">
             <FormLabel color={text2} fontSize="xs">
               Min. ctez to withdraw
@@ -195,7 +194,7 @@ const RemoveLiquidity: React.FC = () => {
               border={0}
               placeholder="0.0"
               type="number"
-              color={text4}
+              color={text2}
               value={otherValues.tokenWithdraw}
             />
           </FormControl>
