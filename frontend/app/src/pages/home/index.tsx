@@ -38,7 +38,7 @@ const HomePage: React.FC = () => {
             opacity="0.5"
             color={textcolor}
             fontSize={largerScreen ? 'sm' : 'md'}
-            mt={largerScreen ? '' : '300px'}
+            mt={largerScreen ? '' : '185px'}
           >
             No governance, completely mechanical, straightforward.
           </Text>
