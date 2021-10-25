@@ -122,15 +122,17 @@ const BakerInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
           <Text as="span" my="auto" flexGrow={1} mx={2}>
             <CopyAddress address={bakerToDisplay}>{bakerToDisplay}</CopyAddress>
           </Text>
-          <Button variant="ghost" size="sm" onClick={() => setEdit(true)} disabled={processing}>
-            Edit
-          </Button>
+          {!oven?.isImported && (
+            <Button variant="ghost" size="sm" onClick={() => setEdit(true)} disabled={processing}>
+              Edit
+            </Button>
+          )}
         </Flex>
       );
     }
 
     return <SkeletonLayout count={1} component="AddressCard" />;
-  }, [baker, bakerSelect?.value, loading, processing]);
+  }, [baker, bakerSelect?.value, loading, oven?.isImported, processing]);
 
   const Option = (props: OptionProps<TOption>) => {
     const address = props.data.value;

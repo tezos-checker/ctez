@@ -162,15 +162,17 @@ const MintableOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => 
           </Stack>
         </Flex>
 
-        <HStack w="100%" justifyContent="space-between" spacing="24px">
-          <Button variant="outline" w="95%" onClick={() => setMintOpen(true)}>
-            Mint
-          </Button>
+        {!oven?.isImported && (
+          <HStack w="100%" justifyContent="space-between" spacing="24px">
+            <Button variant="outline" w="95%" onClick={() => setMintOpen(true)}>
+              Mint
+            </Button>
 
-          <Button variant="outline" w="100%" onClick={() => setBurnOpen(true)}>
-            Burn
-          </Button>
-        </HStack>
+            <Button variant="outline" w="100%" onClick={() => setBurnOpen(true)}>
+              Burn
+            </Button>
+          </HStack>
+        )}
       </Stack>
 
       {modals}
