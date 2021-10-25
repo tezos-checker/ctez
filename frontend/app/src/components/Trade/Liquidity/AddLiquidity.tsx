@@ -122,7 +122,6 @@ const AddLiquidity: React.FC = () => {
   }, [calcMaxToken, values.amount, formik.setFieldValue]);
 
   const { buttonText, errorList } = useMemo(() => {
-    logger.info(errors);
     const errorListLocal = Object.values(errors);
     if (!userAddress) {
       return { buttonText: BUTTON_TXT.CONNECT, errorList: errorListLocal };
@@ -177,11 +176,9 @@ const AddLiquidity: React.FC = () => {
             </Text>
           </FormControl>
 
-          <Flex mt={1} mb={5}>
-            <Icon as={MdAdd} fontSize="lg" />
-          </Flex>
+          <Icon as={MdAdd} fontSize="lg" mt={-38} />
 
-          <FormControl id="to-input-amount" mb={6} w="45%">
+          <FormControl id="to-input-amount" mb={8} w="45%">
             <FormLabel color={text2} fontSize="xs">
               ctez to deposit(approx)
             </FormLabel>
@@ -192,8 +189,9 @@ const AddLiquidity: React.FC = () => {
               color={text2}
               placeholder="0.0"
               type="number"
+              mt={-2}
             />
-            <Text color={text4Text4} fontSize="xs" mt={1}>
+            <Text color={text4Text4} fontSize="xs" mb={0}>
               Balance: {formatNumberStandard(balance?.ctez)}
             </Text>
           </FormControl>

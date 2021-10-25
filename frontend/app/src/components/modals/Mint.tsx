@@ -132,7 +132,6 @@ const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
     onSubmit: handleFormSubmit,
   });
   const { buttonText, errorList } = useMemo(() => {
-    logger.info(errors);
     const errorListLocal = Object.values(errors);
     if (values.amount) {
       if (errorListLocal.length > 0) {
