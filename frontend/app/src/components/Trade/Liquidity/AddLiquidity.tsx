@@ -163,11 +163,11 @@ const AddLiquidity: React.FC = () => {
             </Text>
           </FormControl>
 
-          <Flex mt={-2} mb={6}>
-            <Icon as={MdAdd} />
+          <Flex mt={1} mb={5}>
+            <Icon as={MdAdd} fontSize="lg" />
           </Flex>
 
-          <FormControl id="to-input-amount" mt={-2} mb={6} w="45%">
+          <FormControl id="to-input-amount" mb={6} w="45%">
             <FormLabel color={text2} fontSize="xs">
               ctez to deposit(approx)
             </FormLabel>

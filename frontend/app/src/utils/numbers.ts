@@ -7,7 +7,7 @@ export const formatNumber: TFormatNumber = (value, shiftedBy = -6) => {
 };
 
 export const formatNumberStandard = (value: number | string | null | undefined) => {
-  if (value === null) {
+  if (value == null) {
     return 0;
   }
   return Number(value).toLocaleString('en-US', { maximumFractionDigits: 6, useGrouping: false });

@@ -172,12 +172,11 @@ const RemoveLiquidity: React.FC = () => {
               placeholder="0.0"
               type="number"
               color={text2}
-              bg={inputbg}
               value={otherValues.cashWithdraw}
             />
           </FormControl>
 
-          <Icon as={MdAdd} />
+          <Icon as={MdAdd} mb="-25" fontSize="lg" />
           <FormControl id="to-input-amount" w="45%">
             <FormLabel color={text2} fontSize="xs">
               Min. ctez to withdraw
