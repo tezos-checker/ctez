@@ -121,8 +121,7 @@ const CollateralOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) =
   const handleWithdrawClick = useCallback(() => {
     const canWithdraw = oven?.key.owner === userAddress;
 
-    const hasWithdrawalAmt =
-      (stats?.ovenBalance ?? 0) * (1 - Number(stats?.collateralUtilization ?? 0) / 100);
+    const hasWithdrawalAmt = stats?.withdrawableTez ?? 0;
 
     if (canWithdraw && hasWithdrawalAmt > 0) {
       setWithdrawOpen(true);
