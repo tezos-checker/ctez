@@ -119,18 +119,22 @@ const CollateralOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) =
   }, [oven?.key.owner, ovenStorageData, toast, userAddress]);
 
   const handleWithdrawClick = useCallback(() => {
-    const canWithdraw =
+    const canWithdraw = oven?.key.owner === userAddress;
+
+    const hasWithdrawalAmt =
       (stats?.ovenBalance ?? 0) * (1 - Number(stats?.collateralUtilization ?? 0) / 100);
 
-    if (canWithdraw > 0) {
+    if (canWithdraw && hasWithdrawalAmt > 0) {
       setWithdrawOpen(true);
     } else {
       toast({
         status: 'error',
-        description: 'Excessive tez withdrawal',
+        description: !canWithdraw
+          ? 'You are not authorized to withdrawal'
+          : 'Excessive tez withdrawal',
       });
     }
-  }, [stats?.collateralUtilization, stats?.ovenBalance, toast]);
+  }, [oven?.key.owner, stats?.collateralUtilization, stats?.ovenBalance, toast, userAddress]);
 
   return (
     <>
