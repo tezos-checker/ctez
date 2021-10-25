@@ -1,10 +1,19 @@
-import { createElement, useCallback, useMemo } from 'react';
+import {
+  createElement,
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { TransactionWalletOperation, WalletOperation } from '@taquito/taquito';
 import { Flex, Spinner, useToast } from '@chakra-ui/react';
+import { GroupBase, OptionsOrGroups } from 'react-select';
 import { getOvenMaxCtez } from '../utils/ovenUtils';
 import { useAppDispatch, useAppSelector } from '../redux/store';
 import { formatNumber } from '../utils/numbers';
-import { AllOvenDatum } from '../interfaces';
+import { AllOvenDatum, Baker } from '../interfaces';
 import { logger } from '../utils/logger';
 import { cfmmError } from '../contracts/cfmm';
 import { openTxSubmittedModal } from '../redux/slices/UiSlice';
@@ -194,4 +203,44 @@ const useTxLoader = (): ((
   );
 };
 
-export { useOvenStats, useSortedOvensList, useTxLoader };
+type TOption = { label: string; value: string };
+
+type TUseBakerSelect = (
+  delegates: Baker[] | undefined,
+) => {
+  bakerSelect: TOption | null;
+  setBakerSelect: Dispatch<SetStateAction<TOption | null>>;
+  options: OptionsOrGroups<TOption, GroupBase<TOption>>;
+  setOptions: Dispatch<SetStateAction<OptionsOrGroups<TOption, GroupBase<TOption>>>>;
+  handleBakerCreate: (e: string) => void;
+};
+
+const useBakerSelect: TUseBakerSelect = (delegates) => {
+  const createOption = useCallback<(label: string) => TOption>(
+    (label) => ({
+      label,
+      value: label,
+    }),
+    [],
+  );
+
+  const [bakerSelect, setBakerSelect] = useState<TOption | null>(null);
+  const [options, setOptions] = useState<OptionsOrGroups<TOption, GroupBase<TOption>>>([]);
+
+  useEffect(() => {
+    setOptions(delegates?.map((x) => createOption(x.address)) ?? []);
+  }, [createOption, delegates]);
+
+  const handleBakerCreate = useCallback(
+    (e: string) => {
+      const newOption = createOption(e);
+      setOptions((prev) => [...prev, newOption]);
+      setBakerSelect(newOption);
+    },
+    [createOption],
+  );
+
+  return { bakerSelect, setBakerSelect, options, setOptions, handleBakerCreate };
+};
+
+export { useOvenStats, useSortedOvensList, useTxLoader, useBakerSelect };
