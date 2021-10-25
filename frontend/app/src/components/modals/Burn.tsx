@@ -122,7 +122,6 @@ const Burn: React.FC<IBurnProps> = ({ isOpen, onClose, oven }) => {
   });
 
   const { buttonText, errorList } = useMemo(() => {
-    logger.info(errors);
     const errorListLocal = Object.values(errors);
     if (values.amount) {
       if (errorListLocal.length > 0) {
