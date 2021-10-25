@@ -22,7 +22,7 @@ import { AddLiquidityParams } from '../../../interfaces';
 import { ADD_BTN_TXT, IAddLiquidityForm, TAddBtnTxt } from '../../../constants/liquidity';
 import { addLiquidity, cfmmError } from '../../../contracts/cfmm';
 import { logger } from '../../../utils/logger';
-import { BUTTON_TXT } from '../../../constants/swap';
+import { BUTTON_TXT, FORM_TYPE } from '../../../constants/swap';
 import Button from '../../button/Button';
 import { useAppSelector } from '../../../redux/store';
 import { useTxLoader } from '../../../hooks/utilHooks';
@@ -104,7 +104,7 @@ const AddLiquidity: React.FC = () => {
     }
   };
 
-  const { values, handleChange, handleSubmit, isSubmitting, errors } = useFormik({
+  const { values, handleChange, handleSubmit, isSubmitting, errors, ...formik } = useFormik({
     initialValues,
     validationSchema,
     onSubmit: handleFormSubmit,
@@ -158,7 +158,15 @@ const AddLiquidity: React.FC = () => {
               onChange={handleChange}
             />
             <Text color={text4Text4} fontSize="xs" mt={1}>
-              Balance: {balance?.xtz}
+              Balance: {balance?.xtz}{' '}
+              <Text
+                as="span"
+                cursor="pointer"
+                color="#e35f5f"
+                onClick={() => formik.setFieldValue('amount', balance?.xtz)}
+              >
+                (Max)
+              </Text>
             </Text>
           </FormControl>
 
