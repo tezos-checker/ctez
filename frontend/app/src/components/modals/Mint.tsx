@@ -44,7 +44,6 @@ const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
   const toast = useToast();
   const { stats } = useOvenStats(oven);
   const text2 = useColorModeValue('text2', 'darkheading');
-  const text4 = useColorModeValue('text4', 'darkheading');
   const text1 = useColorModeValue('text1', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
   const text4Text4 = useColorModeValue('text4', 'text4');
@@ -180,16 +179,13 @@ const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
                 {getRightElement()}
               </InputGroup>
               <Text color={text4Text4} fontSize="xs" mt={1}>
-                Balance: {((stats?.remainingMintableCtez ?? 0) * 0.98).toFixed(6)}{' '}
+                Balance: {(stats?.remainingMintableCtez ?? 0).toFixed(6)}{' '}
                 <Text
                   as="span"
                   cursor="pointer"
                   color="#e35f5f"
                   onClick={() =>
-                    formik.setFieldValue(
-                      'amount',
-                      ((stats?.remainingMintableCtez ?? 0) * 0.98).toFixed(6),
-                    )
+                    formik.setFieldValue('amount', (stats?.remainingMintableCtez ?? 0).toFixed(6))
                   }
                 >
                   (Max)
