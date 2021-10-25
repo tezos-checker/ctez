@@ -244,7 +244,15 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
                 onChange={handleChange}
               />
               <Text color={text4Text4} fontSize="xs" mt={1}>
-                Balance: {balance?.xtz}
+                Balance: {balance?.xtz}{' '}
+                <Text
+                  as="span"
+                  cursor="pointer"
+                  color="#e35f5f"
+                  onClick={() => formik.setFieldValue('amount', balance?.xtz)}
+                >
+                  (Max)
+                </Text>
               </Text>
             </FormControl>
 
