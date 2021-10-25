@@ -32,6 +32,7 @@ import { BUTTON_TXT } from '../../constants/swap';
 import { CTezIcon } from '../icons';
 import { AllOvenDatum } from '../../interfaces';
 import { useOvenStats, useTxLoader } from '../../hooks/utilHooks';
+import { formatNumberStandard } from '../../utils/numbers';
 
 interface IMintProps {
   isOpen: boolean;
@@ -179,13 +180,16 @@ const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
                 {getRightElement()}
               </InputGroup>
               <Text color={text4Text4} fontSize="xs" mt={1}>
-                Balance: {(stats?.remainingMintableCtez ?? 0).toFixed(6)}{' '}
+                Balance: {formatNumberStandard(stats?.remainingMintableCtez ?? 0)}{' '}
                 <Text
                   as="span"
                   cursor="pointer"
                   color="#e35f5f"
                   onClick={() =>
-                    formik.setFieldValue('amount', (stats?.remainingMintableCtez ?? 0).toFixed(6))
+                    formik.setFieldValue(
+                      'amount',
+                      formatNumberStandard(stats?.remainingMintableCtez),
+                    )
                   }
                 >
                   (Max)
