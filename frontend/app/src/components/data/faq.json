@@ -3,23 +3,23 @@
     [
       {
         "id": 2,
-        "question": "Who is behind cTez?",
-        "answer": "The code is written by Tezos Co-Founder, Arthur Breitman, and implemented by Bender Labs and Plenty."
+        "question": "Who is behind ctez?",
+        "answer": "The smart contracts are written by Tezos Co-Founder Arthur Breitman, and implemented by Bender Labs and Plenty."
       },
       {
         "id": 3,
-        "question": "How is it different from using Tezos?",
-        "answer": "cTez can be used directly in smart contracts across Tezos DeFi without having to worry about the thorny “Who’s baking?” question when it is staked."
+        "question": "How is it different from using tez?",
+        "answer": "Ctez can be used directly in smart contracts across Tezos DeFi without having to worry about the thorny question: Who’s baking? This solves the issue of large amounts of tez being pooled and locked in smart contracts which may therefore effectively be excluded from Tezos governance."
       },
       {
         "id": 4,
         "question": " That’s great! How can I get started using it?",
-        "answer": "By opening up your own personal oven here! https://ctez.app "
+        "answer": "By opening up your own personal oven on https://ctez.app"
       },
       {
         "id": 5,
         "question": "What’s a personal oven?",
-        "answer": "Where you can mint, redeem, delegate, and modify depositors for cTez and Tezos."
+        "answer": "Where you can mint, burn, delegate, and modify depositors for ctez and tez."
       },
       {
         "id": 6,
@@ -29,45 +29,45 @@
       {
         "id": 7,
         "question": "Why would someone create more than one oven?",
-        "answer": "In the case that you want to whitelist an oven, or create one so multiple people can add Tezos to it."
+        "answer": "In case that you would like to whitelist an oven, or create one that can be used by multiple addresses."
       }
     ],
   "faq2":
   [
     {
       "id": 8,
-      "question": "How is the value of cTez determined?",
-      "answer": "Algorithmically! More information about the formula and the ‘drift’ can be found in the documentation."
+      "question": "How is the value of ctez determined?",
+      "answer": "Algorithmically! More information about the formula and the ‘drift’ can be found in this FAQ."
     },
     {
       "id": 9,
       "question": " I’ve read something about ‘liquidation’ being possible, what does that mean?",
-      "answer": "In the event that you are over or under collateralized by 6.7%, your oven can be closed and anyone can grab the collateral by sending it the outstanding cTez (or fraction thereof)."
+      "answer": "In the event that you under collateralized by 6.7%, your oven can be closed and anyone can grab the collateral by sending the outstanding ctez -or fraction thereof- to the vault."
     },
     {
       "id": 10,
       "question": "If that happens, is there a fee that must be paid?",
-      "answer": "Yes! It is a 1/31 penalty for liquidation."
+      "answer": "Yes! There is a 1/31 penalty for liquidation."
     },
     {
       "id": 11,
-      "question": "Can I use cTez in any Dapp that uses Tezos?",
-      "answer": "Yes, but the developers behind the Dapp must update their smart contracts to work with it. Ex: Any token pair/XTZ, can be replaced by any token pair/cTez."
+      "question": "Can I use ctez in any Dapp that uses Tezos?",
+      "answer": "Yes, but the developers behind the Dapp must update their smart contracts to work with it. In principle, any token/XTZ pair can be replaced by any token/ctez pair."
     },
     {
       "id": 12,
-      "question": "Is there a locking period for cTez?",
-      "answer": "None, you can mint and redeem whenever you want!"
+      "question": "Is there a locking period for ctez?",
+      "answer": "Nope, you can mint and redeem whenever you want!"
     },
     {
       "id": 13,
-      "question": "What are the fees for minting and redeeming cTez?",
-      "answer": "None, except for on-chain transaction fees, or gas."
+      "question": "What are the fees for minting and redeeming ctez?",
+      "answer": "None, except for transaction fees (gas)."
     },
     {
       "id": 14,
       "question": "What is the ‘drift’?",
-      "answer": "It is a system-wide parameter that varies over time, the floating peg against Tezos."
+      "answer": "It is a system-wide parameter that varies over time. The drift helps to maintain a stable tez:ctez conversion rate. Swapping tez for ctez or vice versa adjusts the drift and target factor. Each time the CPMM (Constant Product Market Maker) is called, the drift, and the target factor for ctez, are adjusted."
     }
   ]
 }
