@@ -29,21 +29,37 @@ const HomePage: React.FC = () => {
       <Flex alignItems="center" flexDirection={largerScreen ? 'row' : 'column'}>
         <Stack
           spacing={3}
-          pl={largerScreen ? 4 : 0}
+          pl={largerScreen ? 4 : 1}
+          pr={largerScreen ? 0 : 1}
           textAlign={largerScreen ? 'left' : 'center'}
           alignItems={largerScreen ? 'left' : 'center'}
         >
-          <Text opacity="0.5" color={textcolor} fontSize="sm">
+          <Text
+            opacity="0.5"
+            color={textcolor}
+            fontSize={largerScreen ? 'sm' : 'md'}
+            mt={largerScreen ? '' : '300px'}
+          >
             No governance, completely mechanical, straightforward.
           </Text>
-          <Text color={textcolor} fontSize="48px" as="strong" line-height="16px">
+          <Text
+            color={textcolor}
+            fontSize={largerScreen ? '48px' : '20px'}
+            as="strong"
+            line-height="16px"
+          >
             Unlock liquidity on Tezos and stay in control
           </Text>
           <Text opacity="0.5" color={textcolor} fontSize="md" pr={15}>
             ctez can be used directly in smart-contracts that would normally pool tez together
             without the thorny question of "who's baking".
           </Text>
-          <HStack mt={6} w="60%" justifyContent="space-between" spacing="24px">
+          <HStack
+            mt={6}
+            w={largerScreen ? '60%' : '90%'}
+            justifyContent="space-between"
+            spacing={largerScreen ? '24px' : '15px'}
+          >
             <Button
               variant="solid"
               w="50%"
@@ -53,7 +69,7 @@ const HomePage: React.FC = () => {
             </Button>
             <Button variant="ghost" w="50%">
               <Link to="/faq">
-                <Button variant="outline" w="200px">
+                <Button variant="outline" w={largerScreen ? '200px' : '180px'}>
                   Learn more
                 </Button>
               </Link>

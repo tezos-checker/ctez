@@ -1,27 +1,62 @@
 [
   {
     "id": 1,
-    "topic": "oven stats",
-    "content": "Lorem ipsum dolor sit amet, consectetur adipiscing eli"
+    "topic": "collateral ratio",
+    "content": "The USD value of available tez collateral divided by the USD value of outstanding ctez"
   },
   {
     "id": 2,
     "topic": "baker",
-    "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam"
+    "content": "A Tezos node pooling tez delegated to them to sign and publish blocks on the Tezos blockchain"
   },
   {
     "id": 3,
     "topic": "Authorized Depositors",
-    "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam"
+    "content": "A Tezos address that is granted access to deposit tez to and mint ctez from a specific oven"
   },
   {
     "id": 4,
-    "topic": "oven stats2",
-    "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam"
+    "topic": "Tez Collateral",
+    "content": "The amount of tez that has been deposited in an oven to collateralize the ctez position"
   },
   {
     "id": 5,
-    "topic": "oven stats3",
-    "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam"
+    "topic": "required tez collateral",
+    "content": "The amount of tez required in an oven for the oven to be fully collateralized"
+  },
+  {
+    "id": 6,
+    "topic": "Withdraw tez",
+    "content": "Ability to withdraw tez from your oven, either directly or by redeeming your ctez"
+  },
+  {
+    "id": 7,
+    "topic": "Collateral Utilization",
+    "content": "% of collateral currently used to back outstanding ctez"
+  },
+  {
+    "id": 8,
+    "topic": "mintable",
+    "content": "Maximum amount of ctez that can be minted from the oven"
+  },
+  {
+    "id": 9,
+    "topic": "oven address",
+    "content": "Smart contract that governing the oven"
+  },
+  {
+    "id": 10,
+    "topic": "outstanding",
+    "content": "Amount of ctez minted from the oven"
+  },
+  {
+    "id": 11,
+    "topic": "max slippage",
+    "content": "% of price slippage tolerated for your swap"
+  },
+  {
+    "id": 12,
+    "topic": "timeout",
+    "content": "Max time before transaction is cancelled if not validated"
   }
 ]

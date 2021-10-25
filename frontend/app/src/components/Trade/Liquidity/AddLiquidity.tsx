@@ -152,7 +152,7 @@ const AddLiquidity: React.FC = () => {
               name="amount"
               id="amount"
               placeholder="0.0"
-              color={text4}
+              color={text2}
               bg={inputbg}
               value={values.amount}
               onChange={handleChange}
@@ -174,7 +174,7 @@ const AddLiquidity: React.FC = () => {
               value={maxTokens}
               readOnly
               border={0}
-              color={text4}
+              color={text2}
               placeholder="0.0"
               type="number"
             />

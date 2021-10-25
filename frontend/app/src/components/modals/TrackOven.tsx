@@ -109,7 +109,7 @@ const TrackOven: React.FC<ITrackOvenProps> = ({ isOpen, onClose }) => {
               <Input
                 name="ovenAddress"
                 id="ovenAddress"
-                color={text4}
+                color={text2}
                 bg={inputbg}
                 value={values.ovenAddress}
                 onChange={handleChange}

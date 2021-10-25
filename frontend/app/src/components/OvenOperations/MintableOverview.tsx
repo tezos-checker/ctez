@@ -27,13 +27,37 @@ const MintableOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => 
   const [burnOpen, setBurnOpen] = useState<boolean>(false);
   const cardbg = useColorModeValue('bg4', 'darkblue');
 
-  const showInfo = useMemo(() => {
+  const showInfoOutstanding = useMemo(() => {
     return (
       <div>
         <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
           <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
           <Text color="gray.500" fontSize="xs" ml={2}>
-            {data.find((item) => item.topic === 'oven stats')?.content}
+            {data.find((item) => item.topic === 'outstanding')?.content}
+          </Text>
+        </Flex>
+      </div>
+    );
+  }, [cardbg]);
+  const showInfoMaxMintable = useMemo(() => {
+    return (
+      <div>
+        <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
+          <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
+          <Text color="gray.500" fontSize="xs" ml={2}>
+            {data.find((item) => item.topic === 'mintable')?.content}
+          </Text>
+        </Flex>
+      </div>
+    );
+  }, [cardbg]);
+  const showInfoRemainingMintable = useMemo(() => {
+    return (
+      <div>
+        <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
+          <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
+          <Text color="gray.500" fontSize="xs" ml={2}>
+            {data.find((item) => item.topic === 'mintable')?.content}
           </Text>
         </Flex>
       </div>
@@ -72,7 +96,7 @@ const MintableOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => 
             <Text color="#B0B7C3" fontSize="xs">
               Outstanding
               <Tooltip
-                label={showInfo}
+                label={showInfoOutstanding}
                 placement="right"
                 borderRadius={14}
                 backgroundColor={cardbg}
@@ -98,7 +122,7 @@ const MintableOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => 
             <Text color="#B0B7C3" fontSize="xs">
               Maximum Mintable
               <Tooltip
-                label={showInfo}
+                label={showInfoMaxMintable}
                 placement="right"
                 borderRadius={14}
                 backgroundColor={cardbg}
@@ -124,7 +148,7 @@ const MintableOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => 
             <Text color="#B0B7C3" fontSize="xs">
               Remaining Mintable
               <Tooltip
-                label={showInfo}
+                label={showInfoRemainingMintable}
                 placement="right"
                 borderRadius={14}
                 backgroundColor={cardbg}

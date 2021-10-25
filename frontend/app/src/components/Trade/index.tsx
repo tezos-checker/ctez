@@ -28,7 +28,7 @@ const Trade: React.FC = () => {
       maxWidth="400px"
       borderRadius={16}
       p={4}
-      mx={largerScreen ? 4 : 0}
+      mx={largerScreen ? 4 : 1}
       my={4}
       mt={20}
     >

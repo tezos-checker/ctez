@@ -207,7 +207,7 @@ const Swap: React.FC = () => {
             id="amount"
             type="number"
             placeholder="0.0"
-            color={text4}
+            color={text2}
             bg={inputbg}
             value={values.amount}
             onChange={handleChange}
@@ -237,7 +237,7 @@ const Swap: React.FC = () => {
           To
         </FormLabel>
         <InputGroup>
-          <Input isReadOnly color={text4} bg={inputbg} value={minBuyValue} type="number" />
+          <Input isReadOnly color={text2} bg={inputbg} value={minBuyValue} type="number" />
           {getRightElement(formType === FORM_TYPE.CTEZ_TEZ ? TOKEN.Tez : TOKEN.CTez)}
         </InputGroup>
         <Text color={text4Text4} fontSize="xs" mt={1}>

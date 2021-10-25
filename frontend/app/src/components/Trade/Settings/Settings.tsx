@@ -11,10 +11,15 @@ import {
   useColorModeValue,
   NumberIncrementStepper,
   NumberDecrementStepper,
+  Tooltip,
+  Icon,
+  Flex,
 } from '@chakra-ui/react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { MdInfo } from 'react-icons/md';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import { setSlippage, setDeadline } from '../../../redux/slices/TradeSlice';
+import data from '../../../assets/data/info.json';
 
 const Settings: React.FC = () => {
   const { slippage, deadline } = useAppSelector((state) => state.trade);
@@ -48,6 +53,33 @@ const Settings: React.FC = () => {
   const text2 = useColorModeValue('text2', 'darkheading');
   const text4 = useColorModeValue('text4', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
+  const cardbg = useColorModeValue('bg4', 'darkblue');
+
+  const showInfoMaxSlippage = useMemo(() => {
+    return (
+      <div>
+        <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
+          <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
+          <Text color="gray.500" fontSize="xs" ml={2}>
+            {data.find((item) => item.topic === 'max slippage')?.content}
+          </Text>
+        </Flex>
+      </div>
+    );
+  }, [cardbg]);
+
+  const showInfoTimeout = useMemo(() => {
+    return (
+      <div>
+        <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
+          <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
+          <Text color="gray.500" fontSize="xs" ml={2}>
+            {data.find((item) => item.topic === 'timeout')?.content}
+          </Text>
+        </Flex>
+      </div>
+    );
+  }, [cardbg]);
 
   return (
     <form autoComplete="off" onBlur={setLocalValuesToStore}>
@@ -57,10 +89,20 @@ const Settings: React.FC = () => {
       <FormControl id="from-input-amount">
         <FormLabel color={text2} fontSize="xs" mt={6} mb={3}>
           Max slippage %
+          <Tooltip
+            label={showInfoMaxSlippage}
+            placement="right-start"
+            borderRadius={14}
+            backgroundColor={cardbg}
+          >
+            <span>
+              <Icon opacity="0.3" fontSize="md" color="#B0B7C3" as={MdInfo} m={1} mb={1} />
+            </span>
+          </Tooltip>
         </FormLabel>
         <InputGroup>
           <NumberInput
-            color={text4}
+            color={text2}
             bg={inputbg}
             max={100}
             min={0}
@@ -77,10 +119,20 @@ const Settings: React.FC = () => {
         </InputGroup>
         <FormLabel color={text2} fontSize="xs" mt={6} mb={3}>
           Transaction Timeout
+          <Tooltip
+            label={showInfoTimeout}
+            placement="right-start"
+            borderRadius={14}
+            backgroundColor={cardbg}
+          >
+            <span>
+              <Icon opacity="0.3" fontSize="md" color="#B0B7C3" as={MdInfo} m={1} mb={1} />
+            </span>
+          </Tooltip>
         </FormLabel>
         <InputGroup>
           <NumberInput
-            color={text4}
+            color={text2}
             bg={inputbg}
             max={32}
             min={0}

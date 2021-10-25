@@ -149,7 +149,7 @@ const RemoveLiquidity: React.FC = () => {
             name="lqtBurned"
             id="lqtBurned"
             value={values.lqtBurned}
-            color={text4}
+            color={text2}
             bg={inputbg}
             onChange={handleChange}
             placeholder="0.0"
@@ -171,7 +171,7 @@ const RemoveLiquidity: React.FC = () => {
               border={0}
               placeholder="0.0"
               type="number"
-              color={text4}
+              color={text2}
               bg={inputbg}
               value={otherValues.cashWithdraw}
             />
@@ -187,7 +187,7 @@ const RemoveLiquidity: React.FC = () => {
               border={0}
               placeholder="0.0"
               type="number"
-              color={text4}
+              color={text2}
               value={otherValues.tokenWithdraw}
             />
           </FormControl>

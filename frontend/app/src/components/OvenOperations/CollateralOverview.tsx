@@ -27,13 +27,39 @@ const CollateralOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) =
   const textcolor = useColorModeValue('text2', 'white');
   const cardbg = useColorModeValue('bg4', 'darkblue');
 
-  const showInfo = useMemo(() => {
+  const showInfoTez = useMemo(() => {
     return (
       <div>
         <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
           <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
           <Text color="gray.500" fontSize="xs" ml={2}>
-            {data.find((item) => item.topic === 'oven stats')?.content}
+            {data.find((item) => item.topic === 'Tez collateral')?.content}
+          </Text>
+        </Flex>
+      </div>
+    );
+  }, [cardbg]);
+
+  const showInfoRequiredTez = useMemo(() => {
+    return (
+      <div>
+        <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
+          <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
+          <Text color="gray.500" fontSize="xs" ml={2}>
+            {data.find((item) => item.topic === 'required tez collateral')?.content}
+          </Text>
+        </Flex>
+      </div>
+    );
+  }, [cardbg]);
+
+  const showInfoWithdrawTez = useMemo(() => {
+    return (
+      <div>
+        <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
+          <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
+          <Text color="gray.500" fontSize="xs" ml={2}>
+            {data.find((item) => item.topic === 'Withdraw tez')?.content}
           </Text>
         </Flex>
       </div>
@@ -73,7 +99,7 @@ const CollateralOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) =
             <Text color="#B0B7C3" fontSize="xs">
               tez collateral
               <Tooltip
-                label={showInfo}
+                label={showInfoTez}
                 placement="right"
                 borderRadius={14}
                 backgroundColor={cardbg}
@@ -99,7 +125,7 @@ const CollateralOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) =
             <Text color="#B0B7C3" fontSize="xs">
               Required tez collateral
               <Tooltip
-                label={showInfo}
+                label={showInfoRequiredTez}
                 placement="right"
                 borderRadius={14}
                 backgroundColor={cardbg}
@@ -125,7 +151,7 @@ const CollateralOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) =
             <Text color="#B0B7C3" fontSize="xs">
               Withdraw tez
               <Tooltip
-                label={showInfo}
+                label={showInfoWithdrawTez}
                 placement="right"
                 borderRadius={14}
                 backgroundColor={cardbg}
