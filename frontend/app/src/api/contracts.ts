@@ -71,7 +71,7 @@ export const getUserLQTData = async (userAddress: string): Promise<UserLQTData> 
   return {
     lqt: userLqtBalance.toNumber(),
     lqtShare: Number(
-      ((userLqtBalance.toNumber() / cfmmStorage.lqtTotal.toNumber()) * 100).toFixed(2),
+      ((userLqtBalance.toNumber() / cfmmStorage.lqtTotal.toNumber()) * 100).toFixed(6),
     ),
   };
 };

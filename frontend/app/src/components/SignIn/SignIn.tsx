@@ -146,7 +146,7 @@ const SignIn: React.FC = () => {
                 {typeof userLqtData?.lqtShare !== 'undefined' && (
                   <Tr>
                     <Td>LQT Pool share:</Td>
-                    <Td textAlign="right">{formatNumberStandard(userLqtData?.lqtShare)}%</Td>
+                    <Td textAlign="right">{userLqtData?.lqtShare}%</Td>
                   </Tr>
                 )}
               </Tbody>

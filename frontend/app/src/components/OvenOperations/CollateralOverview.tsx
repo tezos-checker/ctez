@@ -9,9 +9,10 @@ import {
   Text,
   Tooltip,
   useColorModeValue,
+  useToast,
 } from '@chakra-ui/react';
 import { MdInfo } from 'react-icons/md';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useOvenStats } from '../../hooks/utilHooks';
 import Button from '../button/Button';
 import Deposit from '../modals/Deposit';
@@ -19,14 +20,19 @@ import Withdraw from '../modals/Withdraw';
 import { AllOvenDatum } from '../../interfaces';
 import data from '../../assets/data/info.json';
 import { formatNumberStandard } from '../../utils/numbers';
+import { useOvenStorage } from '../../api/queries';
+import { useWallet } from '../../wallet/hooks';
 
 const CollateralOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
+  const [{ pkh: userAddress }] = useWallet();
   const { stats } = useOvenStats(oven);
   const [depositOpen, setDepositOpen] = useState<boolean>(false);
   const [withdrawOpen, setWithdrawOpen] = useState<boolean>(false);
   const background = useColorModeValue('white', 'cardbgdark');
   const textcolor = useColorModeValue('text2', 'white');
   const cardbg = useColorModeValue('bg4', 'darkblue');
+  const toast = useToast();
+  const { data: ovenStorageData } = useOvenStorage(oven?.value.address);
 
   const showInfoTez = useMemo(() => {
     return (
@@ -79,6 +85,52 @@ const CollateralOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) =
       </>
     );
   }, [oven, depositOpen, setDepositOpen, withdrawOpen, setWithdrawOpen]);
+
+  const handleDepositClick = useCallback(() => {
+    const canAnyoneDepositLocal =
+      ovenStorageData &&
+      !Array.isArray(ovenStorageData.depositors) &&
+      Object.keys(ovenStorageData.depositors).includes('any');
+
+    const isAuthorized = () => {
+      if (canAnyoneDepositLocal) {
+        return true;
+      }
+
+      if (oven?.key.owner === userAddress) {
+        return true;
+      }
+
+      if (Array.isArray(ovenStorageData?.depositors)) {
+        return ovenStorageData?.depositors.includes(userAddress ?? '');
+      }
+
+      return false;
+    };
+
+    if (isAuthorized()) {
+      setDepositOpen(true);
+    } else {
+      toast({
+        status: 'error',
+        description: 'You are not authorized to deposit',
+      });
+    }
+  }, [oven?.key.owner, ovenStorageData, toast, userAddress]);
+
+  const handleWithdrawClick = useCallback(() => {
+    const canWithdraw =
+      (stats?.ovenBalance ?? 0) * (1 - Number(stats?.collateralUtilization ?? 0) / 100);
+
+    if (canWithdraw > 0) {
+      setWithdrawOpen(true);
+    } else {
+      toast({
+        status: 'error',
+        description: 'Excessive tez withdrawal',
+      });
+    }
+  }, [stats?.collateralUtilization, stats?.ovenBalance, toast]);
 
   return (
     <>
@@ -166,11 +218,11 @@ const CollateralOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) =
         </Flex>
 
         <HStack w="100%" justifyContent="space-between" spacing="24px">
-          <Button variant="outline" w="95%" onClick={() => setDepositOpen(true)}>
+          <Button variant="outline" w="95%" onClick={handleDepositClick}>
             Deposit
           </Button>
 
-          <Button variant="outline" w="100%" onClick={() => setWithdrawOpen(true)}>
+          <Button variant="outline" w="100%" onClick={handleWithdrawClick}>
             Withdraw
           </Button>
         </HStack>
