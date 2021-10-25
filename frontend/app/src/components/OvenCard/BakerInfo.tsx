@@ -3,6 +3,7 @@ import {
   Divider,
   Flex,
   Icon,
+  Spacer,
   Stack,
   Text,
   Tooltip,
@@ -163,7 +164,8 @@ const BakerInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
             id="bakerValue"
           />
 
-          <Flex mt={5} justifyContent="right">
+          <Flex mt={5}>
+            <Spacer />
             <Button variant="outline" onClick={() => setEdit(false)}>
               Cancel
             </Button>
