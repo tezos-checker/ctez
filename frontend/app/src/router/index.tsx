@@ -32,7 +32,7 @@ export const AppRouter: React.FC = () => {
           <Flex direction="column" w="100%" backgroundColor={backgroundColor}>
             <Header handleToggled={handleToggled} toggled={toggled} />
 
-            <Box overflow="hidden">
+            <Box overflow="auto">
               <Suspense fallback="Loading..">
                 <Switch>
                   {routes.map((route) => (

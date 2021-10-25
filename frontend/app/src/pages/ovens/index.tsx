@@ -1,4 +1,4 @@
-import { Flex, Box, Icon, Select, Spacer, Stack, useColorModeValue } from '@chakra-ui/react';
+import { Flex, Box, Icon, Select, Spacer, useColorModeValue } from '@chakra-ui/react';
 import { MdAdd } from 'react-icons/md';
 import { BsArrowRight } from 'react-icons/bs';
 import { useMemo } from 'react';
@@ -10,7 +10,7 @@ import { MODAL_NAMES } from '../../constants/modals';
 import { useSetCtezBaseStatsToStore } from '../../hooks/setApiDataToStore';
 import Button from '../../components/button/Button';
 import { setSortBy } from '../../redux/slices/OvenSlice';
-import { AllOvensContainer } from './AllOvensContainer';
+import AllOvensContainer from './AllOvensContainer';
 import MyOvensContainer from './MyOvensContainer';
 
 const OvensPage: React.FC = () => {
