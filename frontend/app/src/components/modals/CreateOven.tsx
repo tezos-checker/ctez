@@ -66,7 +66,6 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
   const options = ['Whitelist', 'Everyone'];
   const { data: balance } = useUserBalance(userAddress);
   const text2 = useColorModeValue('text2', 'darkheading');
-  const text4 = useColorModeValue('text4', 'darkheading');
   const text4Text4 = useColorModeValue('text4', 'text4');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
   const text1 = useColorModeValue('text1', 'darkheading');
@@ -190,6 +189,7 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
   const group = getRootProps();
 
   const handleClose = () => {
+    setBakerSelect(null);
     formik.resetForm();
     onClose();
   };
@@ -219,7 +219,10 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
                     formik.setFieldValue('delegate', ev.value);
                   }
                 }}
-                onCreateOption={handleBakerCreate}
+                onCreateOption={(value) => {
+                  formik.setFieldValue('delegate', value);
+                  handleBakerCreate(value);
+                }}
                 isValidNewOption={isInputValid}
               />
             </FormControl>

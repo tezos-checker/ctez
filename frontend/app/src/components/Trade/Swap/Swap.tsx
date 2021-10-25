@@ -268,7 +268,8 @@ const Swap: React.FC = () => {
             isReadOnly
             color={text2}
             bg={inputbg}
-            value={minBuyValue}
+            value={minBuyValue || ''}
+            placeholder="0.0"
             type="number"
             lang="en-US"
           />

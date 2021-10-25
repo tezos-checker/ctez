@@ -32,6 +32,7 @@ import { BUTTON_TXT } from '../../constants/swap';
 import { CTezIcon } from '../icons';
 import { AllOvenDatum } from '../../interfaces';
 import { useOvenStats, useTxLoader } from '../../hooks/utilHooks';
+import { formatNumberStandard } from '../../utils/numbers';
 
 interface IMintProps {
   isOpen: boolean;
@@ -44,7 +45,6 @@ const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
   const toast = useToast();
   const { stats } = useOvenStats(oven);
   const text2 = useColorModeValue('text2', 'darkheading');
-  const text4 = useColorModeValue('text4', 'darkheading');
   const text1 = useColorModeValue('text1', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
   const text4Text4 = useColorModeValue('text4', 'text4');
@@ -181,7 +181,7 @@ const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
                 {getRightElement()}
               </InputGroup>
               <Text color={text4Text4} fontSize="xs" mt={1}>
-                Balance: {((stats?.remainingMintableCtez ?? 0) * 0.98).toFixed(6)}{' '}
+                Balance: {formatNumberStandard(stats?.remainingMintableCtez ?? 0)}{' '}
                 <Text
                   as="span"
                   cursor="pointer"
@@ -189,7 +189,7 @@ const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
                   onClick={() =>
                     formik.setFieldValue(
                       'amount',
-                      ((stats?.remainingMintableCtez ?? 0) * 0.98).toFixed(6),
+                      formatNumberStandard(stats?.remainingMintableCtez),
                     )
                   }
                 >
