@@ -122,9 +122,6 @@ const AddLiquidity: React.FC = () => {
 
   const { buttonText, errorList } = useMemo(() => {
     const errorListLocal = Object.values(errors);
-    if (!userAddress) {
-      return { buttonText: BUTTON_TXT.CONNECT, errorList: errorListLocal };
-    }
     if (values.amount) {
       if (errorListLocal.length > 0) {
         return { buttonText: errorListLocal[0], errorList: errorListLocal };
@@ -134,7 +131,7 @@ const AddLiquidity: React.FC = () => {
     }
 
     return { buttonText: BUTTON_TXT.ENTER_AMT, errorList: errorListLocal };
-  }, [errors, userAddress, values.amount]);
+  }, [errors, values.amount]);
 
   return (
     <form onSubmit={handleSubmit} id="add-liquidity-form">
@@ -199,6 +196,7 @@ const AddLiquidity: React.FC = () => {
         </Flex>
 
         <Button
+          walletGuard
           w="100%"
           variant="outline"
           type="submit"

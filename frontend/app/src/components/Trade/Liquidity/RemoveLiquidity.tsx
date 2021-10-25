@@ -203,6 +203,7 @@ const RemoveLiquidity: React.FC = () => {
           </FormControl>
         </Flex>
         <Button
+          walletGuard
           variant="outline"
           type="submit"
           isLoading={isSubmitting}
