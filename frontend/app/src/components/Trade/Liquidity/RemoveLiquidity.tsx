@@ -161,7 +161,9 @@ const RemoveLiquidity: React.FC = () => {
                 as="span"
                 cursor="pointer"
                 color="#e35f5f"
-                onClick={() => formik.setFieldValue('lqtBurned', formatNumberStandard(userLqtData?.lqt))}
+                onClick={() =>
+                  formik.setFieldValue('lqtBurned', formatNumberStandard(userLqtData?.lqt))
+                }
               >
                 (Max)
               </Text>

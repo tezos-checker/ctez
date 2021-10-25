@@ -216,7 +216,10 @@ const Swap: React.FC = () => {
           {getRightElement(formType === FORM_TYPE.CTEZ_TEZ ? TOKEN.CTez : TOKEN.Tez)}
         </InputGroup>
         <Text color={text4Text4} fontSize="xs" mt={1}>
-          Balance: {formType === FORM_TYPE.CTEZ_TEZ ? formatNumberStandard(balance?.ctez) : formatNumberStandard(balance?.xtz)}{' '}
+          Balance:{' '}
+          {formType === FORM_TYPE.CTEZ_TEZ
+            ? formatNumberStandard(balance?.ctez)
+            : formatNumberStandard(balance?.xtz)}{' '}
           <Text
             as="span"
             cursor="pointer"
@@ -224,7 +227,9 @@ const Swap: React.FC = () => {
             onClick={() =>
               formik.setFieldValue(
                 'amount',
-                formType === FORM_TYPE.CTEZ_TEZ ? formatNumberStandard(balance?.ctez) : formatNumberStandard(balance?.xtz),
+                formType === FORM_TYPE.CTEZ_TEZ
+                  ? formatNumberStandard(balance?.ctez)
+                  : formatNumberStandard(balance?.xtz),
               )
             }
           >

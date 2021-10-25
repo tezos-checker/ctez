@@ -132,7 +132,6 @@ const AddLiquidity: React.FC = () => {
         return { buttonText: errorListLocal[0], errorList: errorListLocal };
       }
 
-      // TODO validate ctez balance
       return { buttonText: ADD_BTN_TXT.ADD_LIQ, errorList: errorListLocal };
     }
 
