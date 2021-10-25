@@ -44,7 +44,9 @@ export const getCTezTzktStorage = async (
 };
 
 export const getAllOvensAPI = async (): Promise<AllOvenDatum[]> => {
-  const data = await get<AllOvenDatum[], unknown>(`bigmaps/${CTEZ_CONTRACT_BIGMAP}/keys`);
+  const data = await get<AllOvenDatum[], unknown>(
+    `bigmaps/${CTEZ_CONTRACT_BIGMAP}/keys?limit=10000`,
+  );
   return data;
 };
 
