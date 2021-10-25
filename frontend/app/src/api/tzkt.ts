@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { AllOvenDatum, Baker, Block, CTezTzktStorage, UserBalance } from '../interfaces';
+import { AllOvenDatum, Baker, Block, CTezTzktStorage } from '../interfaces';
 import { CTEZ_ADDRESS, CTEZ_CONTRACT_BIGMAP, TZKT_API, TZKT_PORT } from '../utils/globals';
 import { getTzKtPort, getTzKtURL } from '../utils/settingUtils';
 
@@ -48,8 +48,8 @@ export const getAllOvensAPI = async (): Promise<AllOvenDatum[]> => {
   return data;
 };
 
-export const getUserOvenData = async (userAddress: string): Promise<any> => {
-  const userOvenData: any = await get(
+export const getUserOvenData = async (userAddress: string): Promise<AllOvenDatum[]> => {
+  const userOvenData = await get<AllOvenDatum[], undefined>(
     `bigmaps/${CTEZ_CONTRACT_BIGMAP}/keys?key.owner=${userAddress}`,
     undefined,
     userAddress,

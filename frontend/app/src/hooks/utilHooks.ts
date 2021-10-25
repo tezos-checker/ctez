@@ -29,7 +29,6 @@ const useOvenStats: TUseOvenStats = (oven) => {
   const { data } = useCtezBaseStats();
   const currentTarget = Number(data?.currentTarget);
   const currentTargetMintable = Number(data?.originalTarget);
-  const currentTargetMintable1 = useAppSelector((state) => state.stats.baseStats?.originalTarget);
 
   const stats = useMemo(() => {
     if (oven == null) {
@@ -94,7 +93,7 @@ const useOvenStats: TUseOvenStats = (oven) => {
       reqTezBalance,
       withdrawableTez,
     };
-  }, [currentTarget, oven]);
+  }, [currentTarget, currentTargetMintable, oven]);
 
   return { stats };
 };
@@ -127,7 +126,9 @@ const useSortedOvensList: TUseSortedOvensList = (ovens) => {
   }, [ovens, sortByOption]);
 };
 
-const useTxLoader = (): ((result: WalletOperation | TransactionWalletOperation) => void) => {
+const useTxLoader = (): ((
+  result: WalletOperation | TransactionWalletOperation,
+) => Promise<boolean>) => {
   const toast = useToast({
     position: 'bottom-right',
     variant: 'left-accent',
@@ -154,7 +155,7 @@ const useTxLoader = (): ((result: WalletOperation | TransactionWalletOperation) 
           duration: null,
         });
 
-        result
+        return result
           .confirmation()
           .then((txResult) => {
             if (txResult.completed) {
@@ -163,24 +164,31 @@ const useTxLoader = (): ((result: WalletOperation | TransactionWalletOperation) 
                 description: 'Transaction Confirmed',
                 duration: 5_000,
               });
-            } else {
-              toast.update(toastId, {
-                status: 'error',
-                description: 'Error',
-                duration: 5_000,
-              });
+
+              return true;
             }
+            toast.update(toastId, {
+              status: 'error',
+              description: 'Error',
+              duration: 5_000,
+            });
+
+            return false;
           })
           .catch((error) => {
             logger.warn(error);
-            const errorText = cfmmError[error.data?.[1]?.with?.int as number] || 'txFailed';
+            const errorText =
+              cfmmError[error.data?.[1]?.with?.int as number] || 'Transaction Failed';
             toast({
               status: 'error',
               description: errorText,
               duration: 5_000,
             });
+            return false;
           });
       }
+
+      return new Promise(() => false);
     },
     [dispatch, toast, toastId],
   );
