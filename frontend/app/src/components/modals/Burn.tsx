@@ -30,6 +30,7 @@ import { BUTTON_TXT } from '../../constants/swap';
 import { CTezIcon } from '../icons';
 import { AllOvenDatum } from '../../interfaces';
 import { useOvenStats, useTxLoader } from '../../hooks/utilHooks';
+import { useUserBalance } from '../../api/queries';
 
 interface IBurnProps {
   isOpen: boolean;
@@ -48,6 +49,7 @@ const Burn: React.FC<IBurnProps> = ({ isOpen, onClose, oven }) => {
   const text4Text4 = useColorModeValue('text4', 'text4');
   const handleProcessing = useTxLoader();
   const { stats } = useOvenStats(oven);
+  const { data: userBalance } = useUserBalance();
 
   const getRightElement = useCallback(() => {
     return (
@@ -167,7 +169,7 @@ const Burn: React.FC<IBurnProps> = ({ isOpen, onClose, oven }) => {
                 {getRightElement()}
               </InputGroup>
               <Text color={text4Text4} fontSize="xs" mt={1}>
-                Balance: {stats?.outStandingCtez ?? 0}{' '}
+                Balance: {Math.min(userBalance?.ctez ?? 0, stats?.outStandingCtez ?? 0)}{' '}
                 <Text
                   as="span"
                   cursor="pointer"
