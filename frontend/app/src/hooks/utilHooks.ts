@@ -19,9 +19,7 @@ import { cfmmError } from '../contracts/cfmm';
 import { openTxSubmittedModal } from '../redux/slices/UiSlice';
 import { useCtezBaseStats } from '../api/queries';
 
-type TUseOvenStats = (
-  oven: AllOvenDatum | undefined | null,
-) => {
+type TUseOvenStats = (oven: AllOvenDatum | undefined | null) => {
   stats: null | {
     ovenBalance: number;
     outStandingCtez: number;
@@ -101,66 +99,70 @@ const useOvenStats: TUseOvenStats = (oven) => {
   return { stats };
 };
 
-type TUseOvenSummary = (
-    ovens: AllOvenDatum[] | undefined | null,
-  ) => {
-    stats: null | {
-      totalBalance: number;
-      totalOutstandingCtez: number;
-      totalRemainingMintableCtez: number;
-      totalWithdrawableTez: number;
-    };
+type TUseOvenSummary = (ovens: AllOvenDatum[] | undefined | null) => {
+  stats: null | {
+    totalBalance: number;
+    totalOutstandingCtez: number;
+    totalRemainingMintableCtez: number;
+    totalWithdrawableTez: number;
   };
+};
 
 const useOvenSummary: TUseOvenSummary = (ovens) => {
-    const { data } = useCtezBaseStats();
-    const currentTarget = Number(data?.currentTarget);
-    const currentTargetMintable = Number(data?.originalTarget);
-  
-    const stats = useMemo(() => {
-      if (ovens == null) {
-        return null;
-      }
+  const { data } = useCtezBaseStats();
+  const currentTarget = Number(data?.currentTarget);
+  const currentTargetMintable = Number(data?.originalTarget);
 
-      if (ovens.length === 0) {
-        return { totalBalance: 0, totalOutstandingCtez: 0, totalRemainingMintableCtez: 0, totalWithdrawableTez: 0 };
-      }
+  const stats = useMemo(() => {
+    if (ovens == null) {
+      return null;
+    }
 
-      let totalBalance = 0;
-      let totalOutstandingCtez = 0;
-      let totalRemainingMintableCtez = 0;
-      let totalWithdrawableTez = 0;
+    if (ovens.length === 0) {
+      return {
+        totalBalance: 0,
+        totalOutstandingCtez: 0,
+        totalRemainingMintableCtez: 0,
+        totalWithdrawableTez: 0,
+      };
+    }
 
-      for (const oven of ovens) {
-        const { tezBalance, ctezOutstanding } = (() => {
-            return {
-            tezBalance: oven?.value.tez_balance,
-            ctezOutstanding: oven?.value.ctez_outstanding,
-            };
-        })();
-    
-        const { max, remaining } = currentTargetMintable
-            ? getOvenMaxCtez(
-                formatNumber(tezBalance, 0),
-                formatNumber(ctezOutstanding, 0),
-                currentTargetMintable,
-            )
-            : { max: 0, remaining: 0 };
-    
-        const ovenBalance = formatNumber(tezBalance, -6) ?? 0;
-        const maxMintableCtez = formatNumber(max < 0 ? 0 : max, 0);
+    let totalBalance = 0;
+    let totalOutstandingCtez = 0;
+    let totalRemainingMintableCtez = 0;
+    let totalWithdrawableTez = 0;
 
-        totalBalance += ovenBalance;
-        totalOutstandingCtez += formatNumber(ctezOutstanding, -6) ?? 0;
-        totalRemainingMintableCtez += remaining < 0 ? 0 : remaining;
-        totalWithdrawableTez += ovenBalance * (1 - formatNumber(formatNumber(ctezOutstanding, 0) / maxMintableCtez));
-      }
+    for (const oven of ovens) {
+      const { tezBalance, ctezOutstanding } = (() => {
+        return {
+          tezBalance: oven?.value.tez_balance,
+          ctezOutstanding: oven?.value.ctez_outstanding,
+        };
+      })();
 
-      return { totalBalance, totalOutstandingCtez, totalRemainingMintableCtez, totalWithdrawableTez };
-    }, [currentTarget, currentTargetMintable, ovens]);
-  
-    return { stats };
-  };
+      const { max, remaining } = currentTargetMintable
+        ? getOvenMaxCtez(
+            formatNumber(tezBalance, 0),
+            formatNumber(ctezOutstanding, 0),
+            currentTargetMintable,
+          )
+        : { max: 0, remaining: 0 };
+
+      const ovenBalance = formatNumber(tezBalance, -6) ?? 0;
+      const maxMintableCtez = formatNumber(max < 0 ? 0 : max, 0);
+
+      totalBalance += ovenBalance;
+      totalOutstandingCtez += formatNumber(ctezOutstanding, -6) ?? 0;
+      totalRemainingMintableCtez += remaining < 0 ? 0 : remaining;
+      totalWithdrawableTez +=
+        ovenBalance * (1 - formatNumber(formatNumber(ctezOutstanding, 0) / maxMintableCtez));
+    }
+
+    return { totalBalance, totalOutstandingCtez, totalRemainingMintableCtez, totalWithdrawableTez };
+  }, [currentTarget, currentTargetMintable, ovens]);
+
+  return { stats };
+};
 
 type TUseSortedOvensList = (ovens: AllOvenDatum[] | null) => AllOvenDatum[] | null;
 
@@ -260,9 +262,7 @@ const useTxLoader = (): ((
 
 type TOption = { label: string; value: string };
 
-type TUseBakerSelect = (
-  delegates: Baker[] | undefined,
-) => {
+type TUseBakerSelect = (delegates: Baker[] | undefined) => {
   bakerSelect: TOption | null;
   setBakerSelect: Dispatch<SetStateAction<TOption | null>>;
   options: OptionsOrGroups<TOption, GroupBase<TOption>>;
