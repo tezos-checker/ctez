@@ -2,7 +2,7 @@
   {
     "id": 1,
     "topic": "collateral ratio",
-    "content": "The USD value of available tez collateral divided by the USD value of outstanding ctez"
+    "content": "Ratio between outstanding ctez and max mintable ctez"
   },
   {
     "id": 2,
