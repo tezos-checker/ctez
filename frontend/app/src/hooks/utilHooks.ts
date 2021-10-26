@@ -105,6 +105,34 @@ type TUseSortedOvensList = (ovens: AllOvenDatum[] | null) => AllOvenDatum[] | nu
 
 const useSortedOvensList: TUseSortedOvensList = (ovens) => {
   const sortByOption = useAppSelector((state) => state.oven.sortByOption);
+  const { data } = useCtezBaseStats();
+  const CalculateUtilization = useCallback(
+    (oven: AllOvenDatum) => {
+      const currentTargetMintable = Number(data?.originalTarget);
+      const { tezBalance, ctezOutstanding } = (() => {
+        return {
+          tezBalance: oven?.value.tez_balance,
+          ctezOutstanding: oven?.value.ctez_outstanding,
+        };
+      })();
+      const { max } = currentTargetMintable
+        ? getOvenMaxCtez(
+            formatNumber(tezBalance, 0),
+            formatNumber(ctezOutstanding, 0),
+            currentTargetMintable,
+          )
+        : { max: 0 };
+      const maxMintableCtez = formatNumber(max < 0 ? 0 : max, 0);
+      let collateralUtilization = formatNumber(
+        (formatNumber(oven.value.ctez_outstanding, 0) / maxMintableCtez) * 100,
+      ).toFixed(1);
+      if (collateralUtilization === 'NaN') {
+        collateralUtilization = '0';
+      }
+      return collateralUtilization;
+    },
+    [data],
+  );
 
   return useMemo(() => {
     if (ovens == null) {
@@ -122,6 +150,13 @@ const useSortedOvensList: TUseSortedOvensList = (ovens) => {
         .slice()
         .sort((a, b) =>
           Number(a.value.ctez_outstanding) < Number(b.value.ctez_outstanding) ? 1 : -1,
+        );
+    }
+    if (sortByOption === 'Utilization') {
+      return ovens
+        .slice()
+        .sort((a, b) =>
+          Number(CalculateUtilization(a)) < Number(CalculateUtilization(b)) ? 1 : -1,
         );
     }
 

@@ -1,5 +1,4 @@
 import { NetworkType } from '../interfaces';
-import { getNodeURL } from './settingUtils';
 
 export const APP_NAME = process.env.REACT_APP_APP_NAME || 'CTez';
 export const NETWORK = (process.env.REACT_APP_NETWORK_TYPE || 'florencenet') as NetworkType;
