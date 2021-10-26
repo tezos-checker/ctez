@@ -1,4 +1,4 @@
-import { Flex, useColorModeValue } from '@chakra-ui/react';
+import { Flex } from '@chakra-ui/react';
 import Trade from '../../components/Trade';
 
 const TradePage: React.FC = () => {

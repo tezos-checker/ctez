@@ -25,7 +25,7 @@ const initialState: OvenSliceState = {
     isSuccess: false,
     isError: false,
   },
-  sortByOption: 'value',
+  sortByOption: 'Oven Balance',
   userOvenData: { xtz: 0, ctez: 0, totalOvens: 0 },
 };
 
