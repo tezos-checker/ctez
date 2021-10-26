@@ -31,6 +31,7 @@ import { CTezIcon } from '../icons';
 import { AllOvenDatum } from '../../interfaces';
 import { useOvenStats, useTxLoader } from '../../hooks/utilHooks';
 import { useUserBalance } from '../../api/queries';
+import { useWallet } from '../../wallet/hooks';
 
 interface IBurnProps {
   isOpen: boolean;
@@ -39,6 +40,7 @@ interface IBurnProps {
 }
 
 const Burn: React.FC<IBurnProps> = ({ isOpen, onClose, oven }) => {
+  const [{ pkh: userAddress }] = useWallet();
   const { t } = useTranslation(['common']);
   const toast = useToast();
   const text2 = useColorModeValue('text2', 'darkheading');
@@ -49,7 +51,7 @@ const Burn: React.FC<IBurnProps> = ({ isOpen, onClose, oven }) => {
   const text4Text4 = useColorModeValue('text4', 'text4');
   const handleProcessing = useTxLoader();
   const { stats } = useOvenStats(oven);
-  const { data: userBalance } = useUserBalance();
+  const { data: userBalance } = useUserBalance(userAddress);
 
   const getRightElement = useCallback(() => {
     return (
@@ -174,7 +176,12 @@ const Burn: React.FC<IBurnProps> = ({ isOpen, onClose, oven }) => {
                   as="span"
                   cursor="pointer"
                   color="#e35f5f"
-                  onClick={() => formik.setFieldValue('amount', stats?.outStandingCtez ?? 0)}
+                  onClick={() =>
+                    formik.setFieldValue(
+                      'amount',
+                      Math.min(userBalance?.ctez ?? 0, stats?.outStandingCtez ?? 0),
+                    )
+                  }
                 >
                   (Max)
                 </Text>
