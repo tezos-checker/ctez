@@ -13,14 +13,10 @@ import {
   useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
-import { useState } from 'react';
-
 import { useTranslation } from 'react-i18next';
-
 import { validateAddress } from '@taquito/utils';
 import { number, object, string } from 'yup';
 import { useFormik } from 'formik';
-import { BUTTON_TXT, TButtonText, TOKEN, TToken } from '../../constants/swap';
 import { cTezError, liquidate } from '../../contracts/ctez';
 import Button from '../button/Button';
 import { AllOvenDatum } from '../../interfaces';
@@ -40,10 +36,8 @@ interface ILiquidateProps {
 
 const LiquidateOven: React.FC<ILiquidateProps> = ({ isOpen, onClose, oven }) => {
   const toast = useToast();
-  const [buttonText, setButtonText] = useState<TButtonText>(BUTTON_TXT.ENTER_AMT);
   const text1 = useColorModeValue('text1', 'darkheading');
   const text2 = useColorModeValue('text2', 'darkheading');
-  const text4 = useColorModeValue('text4', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
   const handleProcessing = useTxLoader();
   const [{ pkh: userAddress }] = useWallet();

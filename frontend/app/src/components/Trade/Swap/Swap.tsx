@@ -78,7 +78,7 @@ const Swap: React.FC = () => {
       deadline: Number(deadlineFromStore),
       amount: undefined,
     }),
-    [deadlineFromStore, slippage, userAddress],
+    [deadlineFromStore, slippage],
   );
 
   const maxValue = (): number =>
@@ -282,21 +282,21 @@ const Swap: React.FC = () => {
 
       <Flex justifyContent="space-between">
         <Text fontSize="xs">Rate</Text>
-        <Text color="#4E5D78" fontSize="xs">
+        <Text color={text2} fontSize="xs">
           1 {formType === FORM_TYPE.CTEZ_TEZ ? 'ctez' : 'tez'} = {rate()}{' '}
           {formType === FORM_TYPE.CTEZ_TEZ ? 'tez' : 'ctez'}
         </Text>
       </Flex>
       <Flex justifyContent="space-between">
         <Text fontSize="xs">Min Received</Text>
-        <Text color="#4E5D78" fontSize="xs">
+        <Text color={text2} fontSize="xs">
           {formatNumberStandard(Number(minReceived))}{' '}
           {formType === FORM_TYPE.CTEZ_TEZ ? 'tez' : 'ctez'}
         </Text>
       </Flex>
       <Flex justifyContent="space-between">
         <Text fontSize="xs">Price Impact</Text>
-        <Text color="#4E5D78" fontSize="xs">
+        <Text color={text2} fontSize="xs">
           {formatNumberStandard(Number(priceImpact))} %
         </Text>
       </Flex>

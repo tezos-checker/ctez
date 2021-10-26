@@ -1,4 +1,4 @@
-import { Box, Checkbox, Flex, useColorMode, useColorModeValue, useRadio } from '@chakra-ui/react';
+import { Box, Checkbox, Flex, useColorModeValue, useRadio } from '@chakra-ui/react';
 import { UseRadioProps } from '@chakra-ui/radio/dist/types/use-radio';
 
 const RadioCard: React.FC<UseRadioProps> = (props) => {
