@@ -1,15 +1,14 @@
 import axios from 'axios';
 import { AllOvenDatum, Baker, Block, CTezTzktStorage } from '../interfaces';
 import { CTEZ_ADDRESS, CTEZ_CONTRACT_BIGMAP, TZKT_API, TZKT_PORT } from '../utils/globals';
-import { getTzKtPort, getTzKtURL } from '../utils/settingUtils';
 
 const get = async <T, P>(endpoint: string, queryParams?: P, userAddress?: string): Promise<T> => {
-  let tzktUrl = TZKT_API;
-  let tzktPort = TZKT_PORT;
-  if (userAddress) {
-    tzktUrl = getTzKtURL(userAddress) ?? TZKT_API;
-    tzktPort = getTzKtPort(userAddress) ?? TZKT_PORT;
-  }
+  // let tzktUrl = TZKT_API;
+  // let tzktPort = TZKT_PORT;
+  // if (userAddress) {
+  //   tzktUrl = getTzKtURL(userAddress) ?? TZKT_API;
+  //   tzktPort = getTzKtPort(userAddress) ?? TZKT_PORT;
+  // }
   return (await axios.get(`${TZKT_API}:${TZKT_PORT}/v1/${endpoint}`, { params: queryParams })).data;
 };
 
