@@ -174,7 +174,12 @@ const Burn: React.FC<IBurnProps> = ({ isOpen, onClose, oven }) => {
                   as="span"
                   cursor="pointer"
                   color="#e35f5f"
-                  onClick={() => formik.setFieldValue('amount', stats?.outStandingCtez ?? 0)}
+                  onClick={() =>
+                    formik.setFieldValue(
+                      'amount',
+                      Math.min(userBalance?.ctez ?? 0, stats?.outStandingCtez ?? 0),
+                    )
+                  }
                 >
                   (Max)
                 </Text>
