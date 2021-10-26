@@ -66,7 +66,6 @@ const RemoveLiquidity: React.FC = () => {
   );
 
   const initialValues: any = {
-    to: userAddress ?? '',
     lqtBurned: '',
     deadline: Number(deadlineFromStore),
     slippage: Number(slippage),
@@ -92,7 +91,7 @@ const RemoveLiquidity: React.FC = () => {
         const deadline = addMinutes(deadlineFromStore)(new Date());
         const data: RemoveLiquidityParams = {
           deadline,
-          to: formData.to,
+          to: userAddress,
           lqtBurned: formData.lqtBurned * 1e6,
           minCashWithdrawn: otherValues.cashWithdraw,
           minTokensWithdrawn: otherValues.tokenWithdraw,

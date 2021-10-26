@@ -1,7 +1,6 @@
 import { ValueOf } from './helper';
 
 export interface ConversionFormParams {
-  to: string;
   slippage: number;
   deadline: number;
   amount: number | undefined;

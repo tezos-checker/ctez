@@ -76,7 +76,6 @@ const Swap: React.FC = () => {
 
   const initialValues = useMemo<ConversionFormParams>(
     () => ({
-      to: userAddress ?? '',
       slippage: Number(slippage),
       deadline: Number(deadlineFromStore),
       amount: undefined,
@@ -115,13 +114,13 @@ const Swap: React.FC = () => {
                 amount: formData.amount,
                 deadline,
                 minTokensBought: minReceived,
-                to: formData.to,
+                to: userAddress,
               })
             : await tokenToCash(
                 {
                   deadline,
                   minCashBought: minReceived,
-                  to: formData.to,
+                  to: userAddress,
                   tokensSold: formData.amount,
                 },
                 userAddress,
