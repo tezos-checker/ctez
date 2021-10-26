@@ -30,7 +30,6 @@ import {
 import { CTezIcon, TezIcon } from '../../icons';
 import { cashToToken, cfmmError, tokenToCash } from '../../../contracts/cfmm';
 import { logger } from '../../../utils/logger';
-import { useSetCtezBaseStatsToStore } from '../../../hooks/setApiDataToStore';
 import { useAppSelector } from '../../../redux/store';
 import Button from '../../button/Button';
 import { useTxLoader } from '../../../hooks/utilHooks';
@@ -44,7 +43,6 @@ const Swap: React.FC = () => {
   const { data: balance } = useUserBalance(userAddress);
   const { t } = useTranslation(['common', 'header']);
   const toast = useToast();
-  useSetCtezBaseStatsToStore(userAddress);
   const baseStats = useAppSelector((state) => state.stats?.baseStats);
   const text2 = useColorModeValue('text2', 'darkheading');
   const text4 = useColorModeValue('text4', 'darkheading');

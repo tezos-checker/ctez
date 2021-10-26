@@ -101,9 +101,12 @@ const useOvenStats: TUseOvenStats = (oven) => {
   return { stats };
 };
 
-type TUseSortedOvensList = (ovens: AllOvenDatum[] | null) => AllOvenDatum[] | null;
+type TUseSortedOvensList = (
+  ovens: AllOvenDatum[] | undefined,
+  opt?: { isMyOven: boolean },
+) => AllOvenDatum[] | null;
 
-const useSortedOvensList: TUseSortedOvensList = (ovens) => {
+const useSortedOvensList: TUseSortedOvensList = (ovens, opts) => {
   const sortByOption = useAppSelector((state) => state.oven.sortByOption);
 
   return useMemo(() => {

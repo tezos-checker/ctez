@@ -2,11 +2,6 @@ import { Center, Stack, Text, useMediaQuery } from '@chakra-ui/react';
 import { useParams } from 'react-router-dom';
 import OvenStats from '../../../components/OvenCard/OvenStats';
 import { useWallet } from '../../../wallet/hooks';
-import {
-  useSetAllOvensToStore,
-  useSetCtezBaseStatsToStore,
-  useSetOvenDataToStore,
-} from '../../../hooks/setApiDataToStore';
 import BakerInfo from '../../../components/OvenCard/BakerInfo';
 import DepositorsInfo from '../../../components/OvenCard/DepositorsInfo';
 import CollateralOverview from '../../../components/OvenOperations/CollateralOverview';
@@ -18,9 +13,6 @@ const OvenIdPage: React.FC = () => {
   const [largerScreen] = useMediaQuery(['(min-width: 800px)']);
   const { address } = useParams<{ address: string }>();
   const { oven } = useMyOvensSelector(userAddress, address);
-  useSetCtezBaseStatsToStore(userAddress);
-  useSetOvenDataToStore(userAddress);
-  useSetAllOvensToStore();
 
   if (userAddress == null) {
     return (

@@ -64,9 +64,4 @@ const useSetAllOvensToStore = () => {
   }, [data, isSuccess, isLoading, isError, dispatch]);
 };
 
-export {
-  useSetCtezBaseStatsToStore,
-  useSetOvenDataToStore,
-  useSetExtOvensToStore,
-  useSetAllOvensToStore,
-};
+export { useSetExtOvensToStore };
