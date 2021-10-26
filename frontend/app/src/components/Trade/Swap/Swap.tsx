@@ -12,7 +12,6 @@ import {
 } from '@chakra-ui/react';
 import { MdAdd, MdSwapVert } from 'react-icons/md';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { number, object } from 'yup';
 import { useTranslation } from 'react-i18next';
 import { useFormik } from 'formik';
 import { addMinutes } from 'date-fns/fp';
@@ -47,7 +46,6 @@ const Swap: React.FC = () => {
   useSetCtezBaseStatsToStore(userAddress);
   const baseStats = useAppSelector((state) => state.stats?.baseStats);
   const text2 = useColorModeValue('text2', 'darkheading');
-  const text4 = useColorModeValue('text4', 'darkheading');
   const text4Text4 = useColorModeValue('text4', 'text4');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
   const handleProcessing = useTxLoader();
@@ -76,7 +74,6 @@ const Swap: React.FC = () => {
 
   const initialValues = useMemo<ConversionFormParams>(
     () => ({
-      to: userAddress ?? '',
       slippage: Number(slippage),
       deadline: Number(deadlineFromStore),
       amount: undefined,
@@ -87,7 +84,7 @@ const Swap: React.FC = () => {
   const maxValue = (): number =>
     formType === FORM_TYPE.CTEZ_TEZ ? balance?.ctez || 0.0 : balance?.xtz || 0.0;
 
-  const rate = (): any =>
+  const rate = (): number =>
     formType === FORM_TYPE.CTEZ_TEZ
       ? formatNumberStandard(baseStats?.currentPrice ?? 1)
       : formatNumberStandard(1 / Number(baseStats?.currentPrice ?? 1));
@@ -115,13 +112,13 @@ const Swap: React.FC = () => {
                 amount: formData.amount,
                 deadline,
                 minTokensBought: minReceived,
-                to: formData.to,
+                to: userAddress,
               })
             : await tokenToCash(
                 {
                   deadline,
                   minCashBought: minReceived,
-                  to: formData.to,
+                  to: userAddress,
                   tokensSold: formData.amount,
                 },
                 userAddress,

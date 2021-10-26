@@ -145,7 +145,7 @@ const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
       <form onSubmit={handleSubmit}>
         <ModalContent>
           <ModalHeader color={text1} fontWeight="500">
-            Mint cTez
+            Mint ctez
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
