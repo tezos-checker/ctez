@@ -2,7 +2,7 @@
   {
     "id": 1,
     "topic": "collateral ratio",
-    "content": "Ratio between outstanding ctez and max mintable ctez"
+    "content": "Ratio between total tez collateral and outstanding ctez"
   },
   {
     "id": 2,
