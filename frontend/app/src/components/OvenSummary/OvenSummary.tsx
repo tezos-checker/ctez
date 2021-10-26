@@ -107,7 +107,7 @@ const OvenSummary: React.FC<IOvenCardProps> = (props) => {
         label: 'Withdrawable ',
         value: `${formatNumberStandard(stats?.totalWithdrawableTez)} tez`,
         displayValue: `${formatNumberStandard(stats?.totalWithdrawableTez)} tez`,
-      }
+      },
     ]
       .filter((x): x is { label: string; value: string; displayValue: string } => !!x)
       .map((x, i) => ({ ...x, id: `oven-card-item-${i + 1}` }));
@@ -115,9 +115,9 @@ const OvenSummary: React.FC<IOvenCardProps> = (props) => {
     return (
       <>
         <Box key="summaryTitle" id="summaryTitle">
-            <Text fontWeight="600" fontSize="xl">
-              Oven Summary
-            </Text>
+          <Text fontWeight="600" fontSize="xl">
+            Oven Summary
+          </Text>
         </Box>
         {items.map((item) => (
           <Box key={item.id} id={item.id}>
@@ -147,7 +147,7 @@ const OvenSummary: React.FC<IOvenCardProps> = (props) => {
       minW="340px"
       borderRadius={16}
       backgroundColor={background}
-    > 
+    >
       <Grid sx={cssSxValue.innerGrid}>{renderedItems}</Grid>
     </Flex>
   );
