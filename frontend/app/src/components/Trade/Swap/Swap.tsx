@@ -17,7 +17,7 @@ import { useFormik } from 'formik';
 import { addMinutes } from 'date-fns/fp';
 import * as Yup from 'yup';
 import { useWallet } from '../../../wallet/hooks';
-import { useCfmmStorage, useUserBalance } from '../../../api/queries';
+import { useCfmmStorage, useCtezBaseStats, useUserBalance } from '../../../api/queries';
 import {
   BUTTON_TXT,
   ConversionFormParams,
@@ -42,7 +42,7 @@ const Swap: React.FC = () => {
   const { data: balance } = useUserBalance(userAddress);
   const { t } = useTranslation(['common', 'header']);
   const toast = useToast();
-  const baseStats = useAppSelector((state) => state.stats?.baseStats);
+  const { data: baseStats } = useCtezBaseStats();
   const text2 = useColorModeValue('text2', 'darkheading');
   const text4Text4 = useColorModeValue('text4', 'text4');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
@@ -140,9 +140,9 @@ const Swap: React.FC = () => {
     if (cfmmStorage && values.amount) {
       const { tokenPool, cashPool } = cfmmStorage;
       const invariant = Number(cashPool) * Number(tokenPool);
-      let initialPrice = 0;
+      let initialPrice: number;
       const SwapAmount = values.amount * 1e6;
-      let recievedPrice = 0;
+      let recievedPrice: number;
       if (formType === FORM_TYPE.CTEZ_TEZ) {
         // 1 ctez = 11 tez
         initialPrice = Number(cashPool) / Number(tokenPool);

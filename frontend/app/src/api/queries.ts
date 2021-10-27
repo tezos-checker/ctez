@@ -34,9 +34,16 @@ export const useDelegates = (userAddress?: string) => {
 };
 
 export const useCtezBaseStats = (userAddress?: string) => {
-  return useQuery<BaseStats, AxiosError, BaseStats>(['baseStats'], async () => {
-    return getBaseStats(userAddress);
-  });
+  return useQuery<BaseStats, AxiosError, BaseStats>(
+    ['baseStats'],
+    async () => {
+      return getBaseStats(userAddress);
+    },
+    {
+      refetchInterval: 30_000,
+      staleTime: 3_000,
+    },
+  );
 };
 
 export const useUserBalance = (userAddress?: string) => {
@@ -46,6 +53,10 @@ export const useUserBalance = (userAddress?: string) => {
       if (userAddress) {
         return getUserBalance(userAddress);
       }
+    },
+    {
+      refetchInterval: 30_000,
+      staleTime: 3_000,
     },
   );
 };
