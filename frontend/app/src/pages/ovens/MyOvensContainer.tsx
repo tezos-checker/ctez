@@ -2,6 +2,7 @@ import { Center, Text } from '@chakra-ui/react';
 import React, { useEffect, useMemo } from 'react';
 import SkeletonLayout from '../../components/skeleton';
 import OvenCard from '../../components/OvenCard/OvenCard';
+import OvenSummary from '../../components/OvenSummary/OvenSummary';
 import { useSortedOvensList } from '../../hooks/utilHooks';
 import { useWallet } from '../../wallet/hooks';
 import { useOvenDataByAddresses, useUserOvenData } from '../../api/queries';
@@ -49,6 +50,7 @@ const MyOvensContainer: React.FC = () => {
 
   return (
     <>
+      <OvenSummary ovens={sortedOvens || []} />
       {sortedOvens?.map((oven) => (
         <OvenCard key={oven.value.address} oven={oven} type="MyOvens" />
       ))}
