@@ -6,13 +6,13 @@ import BakerInfo from '../../../components/OvenCard/BakerInfo';
 import DepositorsInfo from '../../../components/OvenCard/DepositorsInfo';
 import CollateralOverview from '../../../components/OvenOperations/CollateralOverview';
 import MintableOverview from '../../../components/OvenOperations/MintableOverview';
-import { useMyOvensSelector } from '../../../hooks/reduxSelectors';
+import { useOvenDatum } from '../../../api/queries';
 
 const OvenIdPage: React.FC = () => {
   const [{ pkh: userAddress }] = useWallet();
   const [largerScreen] = useMediaQuery(['(min-width: 800px)']);
   const { address } = useParams<{ address: string }>();
-  const { oven } = useMyOvensSelector(userAddress, address);
+  const { data: oven } = useOvenDatum(address);
 
   if (userAddress == null) {
     return (

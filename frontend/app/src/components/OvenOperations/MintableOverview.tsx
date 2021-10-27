@@ -20,7 +20,7 @@ import { AllOvenDatum } from '../../interfaces';
 import data from '../../assets/data/info.json';
 import { formatNumberStandard } from '../../utils/numbers';
 
-const MintableOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
+const MintableOverview: React.FC<{ oven: AllOvenDatum | undefined }> = ({ oven }) => {
   const { stats } = useOvenStats(oven);
   const background = useColorModeValue('white', 'cardbgdark');
   const textcolor = useColorModeValue('text2', 'white');

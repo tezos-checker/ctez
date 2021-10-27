@@ -1,12 +1,15 @@
 import { AxiosError } from 'axios';
 import { useQuery } from 'react-query';
+import { UseQueryResult } from 'react-query/types/react/types';
 import { getCfmmStorage } from '../contracts/cfmm';
 import {
   getAllOvens,
   getExternalOvenData,
+  getOven,
   getOvenDelegate,
   getOvens,
   getOvenStorage,
+  getUserOvens,
 } from '../contracts/ctez';
 import {
   AllOvenDatum,
@@ -21,6 +24,8 @@ import {
 import { getBaseStats, getUserLQTData } from './contracts';
 import { getDelegates } from './tzkt';
 import { getUserBalance } from './user';
+
+type TUseQueryReturn<T> = UseQueryResult<T | undefined, AxiosError>;
 
 export const useDelegates = (userAddress?: string) => {
   return useQuery<Baker[], AxiosError, Baker[]>(['delegates'], () => {
@@ -95,6 +100,32 @@ export const useAllOvenData = () => {
     ['allOvenData'],
     () => {
       return getAllOvens();
+    },
+  );
+};
+
+export const useUserOvenData = (userAddress: string | undefined) => {
+  return useQuery<AllOvenDatum[] | undefined, AxiosError, AllOvenDatum[] | undefined>(
+    ['allOvenData', userAddress],
+    () => {
+      if (userAddress) {
+        return getUserOvens(userAddress);
+      }
+
+      // ? Return empty array if userAddress is empty
+      return new Promise<AllOvenDatum[]>(() => []);
+    },
+  );
+};
+
+/**
+ * For fetching a single Oven in Oven Details Page
+ */
+export const useOvenDatum = (ovenAddress: string): TUseQueryReturn<AllOvenDatum> => {
+  return useQuery<AllOvenDatum | undefined, AxiosError, AllOvenDatum | undefined>(
+    ['allOvenData', ovenAddress],
+    () => {
+      return getOven(ovenAddress);
     },
   );
 };

@@ -20,7 +20,7 @@ import SkeletonLayout from '../skeleton';
 import data from '../../assets/data/info.json';
 import CopyAddress from '../CopyAddress/CopyAddress';
 
-const DepositorsInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
+const DepositorsInfo: React.FC<{ oven: AllOvenDatum | undefined }> = ({ oven }) => {
   const [{ pkh: userAddress }] = useWallet();
 
   const { data: ovenStorageData } = useOvenStorage(oven?.value.address);

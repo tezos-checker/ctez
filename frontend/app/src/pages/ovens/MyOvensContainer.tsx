@@ -4,13 +4,12 @@ import SkeletonLayout from '../../components/skeleton';
 import OvenCard from '../../components/OvenCard/OvenCard';
 import { useSortedOvensList } from '../../hooks/utilHooks';
 import { useWallet } from '../../wallet/hooks';
-import { useAllOvenData } from '../../api/queries';
+import { useUserOvenData } from '../../api/queries';
 import { getExternalOvens } from '../../utils/ovenUtils';
 import { CTEZ_ADDRESS } from '../../utils/globals';
 
 const MyOvensContainer: React.FC = () => {
   const [{ pkh: userAddress }] = useWallet();
-  const { data: allOvens, isLoading } = useAllOvenData();
 
   const extOvensAddresses = useMemo(() => {
     if (!userAddress || !CTEZ_ADDRESS) {
@@ -20,18 +19,20 @@ const MyOvensContainer: React.FC = () => {
     return getExternalOvens(userAddress, CTEZ_ADDRESS);
   }, [userAddress]);
 
-  const myOvens = useMemo(() => {
-    if (!userAddress) {
-      return [];
-    }
+  const { data: myOvens } = useUserOvenData(userAddress);
 
-    return [
-      ...(allOvens?.filter((oven) => oven.key.owner === userAddress) ?? []),
-      ...(allOvens
-        ?.filter((oven) => extOvensAddresses.includes(oven.value.address))
-        .map((oven) => ({ ...oven, isImported: true })) ?? []),
-    ];
-  }, [allOvens, extOvensAddresses, userAddress]);
+  // const myOvens = useMemo(() => {
+  //   if (!userAddress) {
+  //     return [];
+  //   }
+  //
+  //   return [
+  //     ...(allOvens?.filter((oven) => oven.key.owner === userAddress) ?? []),
+  //     ...(allOvens
+  //       ?.filter((oven) => extOvensAddresses.includes(oven.value.address))
+  //       .map((oven) => ({ ...oven, isImported: true })) ?? []),
+  //   ];
+  // }, [allOvens, extOvensAddresses, userAddress]);
 
   const sortedOvens = useSortedOvensList(myOvens);
 

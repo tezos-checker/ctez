@@ -29,7 +29,7 @@ import CopyAddress from '../CopyAddress/CopyAddress';
 
 type TOption = { label: string; value: string };
 
-const BakerInfo: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
+const BakerInfo: React.FC<{ oven: AllOvenDatum | undefined }> = ({ oven }) => {
   const { t } = useTranslation(['common']);
   const [{ pkh: userAddress }] = useWallet();
   const { data: delegates } = useDelegates(userAddress);
