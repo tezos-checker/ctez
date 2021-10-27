@@ -131,19 +131,6 @@ export const useOvenDataByAddresses = (ovenAddresses: string[]) => {
   );
 };
 
-/**
- * For fetching a single Oven in Oven Details Page
- * TODO: Remove this API and use the one above
- */
-export const useOvenDatum = (ovenAddress: string): TUseQueryReturn<AllOvenDatum> => {
-  return useQuery<AllOvenDatum | undefined, AxiosError, AllOvenDatum | undefined>(
-    ['allOvenData', ovenAddress],
-    () => {
-      return getOven(ovenAddress);
-    },
-  );
-};
-
 export const useOvenStorage = (ovenAddress?: string) => {
   return useQuery<OvenStorage | undefined, AxiosError, OvenStorage | undefined>(
     ['ovenStorage', ovenAddress],
