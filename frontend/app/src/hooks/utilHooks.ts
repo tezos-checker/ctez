@@ -13,7 +13,7 @@ import { GroupBase, OptionsOrGroups } from 'react-select';
 import { getOvenMaxCtez } from '../utils/ovenUtils';
 import { useAppDispatch, useAppSelector } from '../redux/store';
 import { formatNumber } from '../utils/numbers';
-import { AllOvenDatum, Baker } from '../interfaces';
+import { AllOvenDatum, Baker, BaseStats } from '../interfaces';
 import { logger } from '../utils/logger';
 import { cfmmError } from '../contracts/cfmm';
 import { openTxSubmittedModal } from '../redux/slices/UiSlice';
@@ -32,6 +32,7 @@ type TUseOvenStats = (
     reqTezBalance: number;
     withdrawableTez: number;
   };
+  baseStats: BaseStats | undefined;
 };
 
 const useOvenStats: TUseOvenStats = (oven) => {
@@ -98,18 +99,15 @@ const useOvenStats: TUseOvenStats = (oven) => {
     };
   }, [currentTarget, currentTargetMintable, oven]);
 
-  return { stats };
+  return { stats, baseStats: data };
 };
 
-type TUseSortedOvensList = (
-  ovens: AllOvenDatum[] | undefined,
-  opt?: { isMyOven: boolean },
-) => AllOvenDatum[] | null;
+type TUseSortedOvensList = (ovens: AllOvenDatum[] | undefined) => AllOvenDatum[] | null;
 
-const useSortedOvensList: TUseSortedOvensList = (ovens, opts) => {
+const useSortedOvensList: TUseSortedOvensList = (ovens) => {
   const sortByOption = useAppSelector((state) => state.oven.sortByOption);
   const { data } = useCtezBaseStats();
-  const CalculateUtilization = useCallback(
+  const calculateUtilization = useCallback(
     (oven: AllOvenDatum) => {
       const currentTargetMintable = Number(data?.originalTarget);
       const { tezBalance, ctezOutstanding } = (() => {
@@ -159,12 +157,12 @@ const useSortedOvensList: TUseSortedOvensList = (ovens, opts) => {
       return ovens
         .slice()
         .sort((a, b) =>
-          Number(CalculateUtilization(a)) < Number(CalculateUtilization(b)) ? 1 : -1,
+          Number(calculateUtilization(a)) < Number(calculateUtilization(b)) ? 1 : -1,
         );
     }
 
     return ovens;
-  }, [ovens, sortByOption]);
+  }, [calculateUtilization, ovens, sortByOption]);
 };
 
 const useTxLoader = (): ((
