@@ -13,7 +13,7 @@ import { GroupBase, OptionsOrGroups } from 'react-select';
 import { getOvenMaxCtez } from '../utils/ovenUtils';
 import { useAppDispatch, useAppSelector } from '../redux/store';
 import { formatNumber } from '../utils/numbers';
-import { AllOvenDatum, Baker } from '../interfaces';
+import { AllOvenDatum, Baker, BaseStats } from '../interfaces';
 import { logger } from '../utils/logger';
 import { cfmmError } from '../contracts/cfmm';
 import { openTxSubmittedModal } from '../redux/slices/UiSlice';
@@ -32,6 +32,7 @@ type TUseOvenStats = (
     reqTezBalance: number;
     withdrawableTez: number;
   };
+  baseStats: BaseStats | undefined;
 };
 
 const useOvenStats: TUseOvenStats = (oven) => {
@@ -98,15 +99,81 @@ const useOvenStats: TUseOvenStats = (oven) => {
     };
   }, [currentTarget, currentTargetMintable, oven]);
 
+  return { stats, baseStats: data };
+};
+
+type TUseOvenSummary = (
+  ovens: AllOvenDatum[] | undefined | null,
+) => {
+  stats: null | {
+    totalBalance: number;
+    totalOutstandingCtez: number;
+    totalRemainingMintableCtez: number;
+    totalWithdrawableTez: number;
+  };
+};
+
+const useOvenSummary: TUseOvenSummary = (ovens) => {
+  const { data } = useCtezBaseStats();
+  const currentTargetMintable = Number(data?.originalTarget);
+
+  const stats = useMemo(() => {
+    if (ovens == null) {
+      return null;
+    }
+
+    if (ovens.length === 0) {
+      return {
+        totalBalance: 0,
+        totalOutstandingCtez: 0,
+        totalRemainingMintableCtez: 0,
+        totalWithdrawableTez: 0,
+      };
+    }
+
+    let totalBalance = 0;
+    let totalOutstandingCtez = 0;
+    let totalRemainingMintableCtez = 0;
+    let totalWithdrawableTez = 0;
+
+    ovens.forEach((oven) => {
+      const { tezBalance, ctezOutstanding } = (() => {
+        return {
+          tezBalance: oven?.value.tez_balance,
+          ctezOutstanding: oven?.value.ctez_outstanding,
+        };
+      })();
+
+      const { max, remaining } = currentTargetMintable
+        ? getOvenMaxCtez(
+            formatNumber(tezBalance, 0),
+            formatNumber(ctezOutstanding, 0),
+            currentTargetMintable,
+          )
+        : { max: 0, remaining: 0 };
+
+      const ovenBalance = formatNumber(tezBalance, -6) ?? 0;
+      const maxMintableCtez = formatNumber(max < 0 ? 0 : max, 0);
+
+      totalBalance += ovenBalance;
+      totalOutstandingCtez += formatNumber(ctezOutstanding, -6) ?? 0;
+      totalRemainingMintableCtez += remaining < 0 ? 0 : remaining;
+      totalWithdrawableTez +=
+        ovenBalance * (1 - formatNumber(formatNumber(ctezOutstanding, 0) / maxMintableCtez));
+    });
+
+    return { totalBalance, totalOutstandingCtez, totalRemainingMintableCtez, totalWithdrawableTez };
+  }, [currentTargetMintable, ovens]);
+
   return { stats };
 };
 
-type TUseSortedOvensList = (ovens: AllOvenDatum[] | null) => AllOvenDatum[] | null;
+type TUseSortedOvensList = (ovens: AllOvenDatum[] | undefined) => AllOvenDatum[] | null;
 
 const useSortedOvensList: TUseSortedOvensList = (ovens) => {
   const sortByOption = useAppSelector((state) => state.oven.sortByOption);
   const { data } = useCtezBaseStats();
-  const CalculateUtilization = useCallback(
+  const calculateUtilization = useCallback(
     (oven: AllOvenDatum) => {
       const currentTargetMintable = Number(data?.originalTarget);
       const { tezBalance, ctezOutstanding } = (() => {
@@ -156,12 +223,12 @@ const useSortedOvensList: TUseSortedOvensList = (ovens) => {
       return ovens
         .slice()
         .sort((a, b) =>
-          Number(CalculateUtilization(a)) < Number(CalculateUtilization(b)) ? 1 : -1,
+          Number(calculateUtilization(a)) < Number(calculateUtilization(b)) ? 1 : -1,
         );
     }
 
     return ovens;
-  }, [ovens, sortByOption]);
+  }, [calculateUtilization, ovens, sortByOption]);
 };
 
 const useTxLoader = (): ((
@@ -272,4 +339,4 @@ const useBakerSelect: TUseBakerSelect = (delegates) => {
   return { bakerSelect, setBakerSelect, options, setOptions, handleBakerCreate };
 };
 
-export { useOvenStats, useSortedOvensList, useTxLoader, useBakerSelect };
+export { useOvenStats, useOvenSummary, useSortedOvensList, useTxLoader, useBakerSelect };

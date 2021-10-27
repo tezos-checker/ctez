@@ -24,8 +24,6 @@ import { useWallet } from '../../wallet/hooks';
 import { getBeaconInstance } from '../../wallet';
 import { APP_NAME, NETWORK } from '../../utils/globals';
 import { setWalletProvider } from '../../contracts/client';
-import { OvenSlice } from '../../redux/slices/OvenSlice';
-import { useAppDispatch } from '../../redux/store';
 import { useUserBalance, useUserLqtData } from '../../api/queries';
 import Identicon from '../avatar/Identicon';
 import { formatNumber as formatNumberUtil, formatNumberStandard } from '../../utils/numbers';
@@ -33,7 +31,6 @@ import { ReactComponent as copy } from '../../assets/images/sidebar/content_copy
 
 const SignIn: React.FC = () => {
   const [{ pkh: userAddress, network }, setWallet, disconnectWallet] = useWallet();
-  const dispatch = useAppDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { data: balance } = useUserBalance(userAddress);
   const { data: userLqtData } = useUserLqtData(userAddress);
@@ -53,7 +50,6 @@ const SignIn: React.FC = () => {
   };
 
   const onDisconnectWallet = () => {
-    dispatch(OvenSlice.actions.setUserOvenData({ ctez: 0, xtz: 0, totalOvens: 0 }));
     disconnectWallet();
   };
 

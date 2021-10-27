@@ -20,7 +20,10 @@ import { AllOvenDatum } from '../../interfaces';
 import data from '../../assets/data/info.json';
 import { formatNumberStandard } from '../../utils/numbers';
 
-const MintableOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
+const MintableOverview: React.FC<{ oven: AllOvenDatum | undefined; isImported: boolean }> = ({
+  oven,
+  isImported,
+}) => {
   const { stats } = useOvenStats(oven);
   const background = useColorModeValue('white', 'cardbgdark');
   const textcolor = useColorModeValue('text2', 'white');
@@ -162,7 +165,7 @@ const MintableOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => 
           </Stack>
         </Flex>
 
-        {!oven?.isImported && (
+        {!isImported && (
           <HStack w="100%" justifyContent="space-between" spacing="24px">
             <Button variant="outline" w="95%" onClick={() => setMintOpen(true)}>
               Mint

@@ -21,7 +21,7 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 import { array, number, object, string } from 'yup';
 import { useTranslation } from 'react-i18next';
 import { useFormik } from 'formik';
-import { useDelegates, useUserBalance } from '../../api/queries';
+import { useDelegates, useUserBalance, useUserOvenData } from '../../api/queries';
 import { Depositor } from '../../interfaces';
 import { create, cTezError } from '../../contracts/ctez';
 import { useWallet } from '../../wallet/hooks';
@@ -29,8 +29,6 @@ import { logger } from '../../utils/logger';
 import RadioCard from '../radio/RadioCard';
 import Button from '../button/Button';
 import DepositorsInput from '../input/DepositorsInput';
-import { makeLastOvenIdSelector } from '../../hooks/reduxSelectors';
-import { useAppSelector } from '../../redux/store';
 import { useBakerSelect, useTxLoader } from '../../hooks/utilHooks';
 
 interface ICreateOvenProps {
@@ -69,10 +67,14 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
   const text4Text4 = useColorModeValue('text4', 'text4');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
   const text1 = useColorModeValue('text1', 'darkheading');
-  const selectLastOvenId = useMemo(makeLastOvenIdSelector, []);
+  const { data: userOvens } = useUserOvenData(userAddress);
   const handleProcessing = useTxLoader();
 
-  const lastOvenId = useAppSelector((state) => selectLastOvenId(state, userAddress));
+  const lastOvenId = useMemo(() => {
+    const sortedArray = userOvens?.sort((a, b) => Number(a.key.id) - Number(b.key.id)) ?? [];
+
+    return Number(sortedArray[sortedArray.length - 1]?.key.id ?? 0);
+  }, [userOvens?.length]);
 
   const validationSchema = object().shape({
     delegate: string()
