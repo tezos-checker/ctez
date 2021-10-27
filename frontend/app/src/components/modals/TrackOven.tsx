@@ -40,7 +40,6 @@ const TrackOven: React.FC<ITrackOvenProps> = ({ isOpen, onClose }) => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation(['common']);
   const text2 = useColorModeValue('text2', 'darkheading');
-  const text4 = useColorModeValue('text4', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
   const tabcolor = useColorModeValue('text1', 'darkheading');
 

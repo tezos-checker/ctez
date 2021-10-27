@@ -13,7 +13,7 @@ import { GroupBase, OptionsOrGroups } from 'react-select';
 import { getOvenMaxCtez } from '../utils/ovenUtils';
 import { useAppDispatch, useAppSelector } from '../redux/store';
 import { formatNumber } from '../utils/numbers';
-import { AllOvenDatum, Baker } from '../interfaces';
+import { AllOvenDatum, Baker, BaseStats } from '../interfaces';
 import { logger } from '../utils/logger';
 import { cfmmError } from '../contracts/cfmm';
 import { openTxSubmittedModal } from '../redux/slices/UiSlice';
@@ -30,6 +30,7 @@ type TUseOvenStats = (oven: AllOvenDatum | undefined | null) => {
     reqTezBalance: number;
     withdrawableTez: number;
   };
+  baseStats: BaseStats | undefined;
 };
 
 const useOvenStats: TUseOvenStats = (oven) => {
@@ -96,7 +97,7 @@ const useOvenStats: TUseOvenStats = (oven) => {
     };
   }, [currentTarget, currentTargetMintable, oven]);
 
-  return { stats };
+  return { stats, baseStats: data };
 };
 
 type TUseOvenSummary = (ovens: AllOvenDatum[] | undefined | null) => {
@@ -164,10 +165,38 @@ const useOvenSummary: TUseOvenSummary = (ovens) => {
   return { stats };
 };
 
-type TUseSortedOvensList = (ovens: AllOvenDatum[] | null) => AllOvenDatum[] | null;
+type TUseSortedOvensList = (ovens: AllOvenDatum[] | undefined) => AllOvenDatum[] | null;
 
 const useSortedOvensList: TUseSortedOvensList = (ovens) => {
   const sortByOption = useAppSelector((state) => state.oven.sortByOption);
+  const { data } = useCtezBaseStats();
+  const calculateUtilization = useCallback(
+    (oven: AllOvenDatum) => {
+      const currentTargetMintable = Number(data?.originalTarget);
+      const { tezBalance, ctezOutstanding } = (() => {
+        return {
+          tezBalance: oven?.value.tez_balance,
+          ctezOutstanding: oven?.value.ctez_outstanding,
+        };
+      })();
+      const { max } = currentTargetMintable
+        ? getOvenMaxCtez(
+            formatNumber(tezBalance, 0),
+            formatNumber(ctezOutstanding, 0),
+            currentTargetMintable,
+          )
+        : { max: 0 };
+      const maxMintableCtez = formatNumber(max < 0 ? 0 : max, 0);
+      let collateralUtilization = formatNumber(
+        (formatNumber(oven.value.ctez_outstanding, 0) / maxMintableCtez) * 100,
+      ).toFixed(1);
+      if (collateralUtilization === 'NaN') {
+        collateralUtilization = '0';
+      }
+      return collateralUtilization;
+    },
+    [data],
+  );
 
   return useMemo(() => {
     if (ovens == null) {
@@ -187,9 +216,16 @@ const useSortedOvensList: TUseSortedOvensList = (ovens) => {
           Number(a.value.ctez_outstanding) < Number(b.value.ctez_outstanding) ? 1 : -1,
         );
     }
+    if (sortByOption === 'Utilization') {
+      return ovens
+        .slice()
+        .sort((a, b) =>
+          Number(calculateUtilization(a)) < Number(calculateUtilization(b)) ? 1 : -1,
+        );
+    }
 
     return ovens;
-  }, [ovens, sortByOption]);
+  }, [calculateUtilization, ovens, sortByOption]);
 };
 
 const useTxLoader = (): ((

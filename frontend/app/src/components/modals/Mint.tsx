@@ -22,7 +22,6 @@ import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import { useCallback, useMemo } from 'react';
-import { useAppSelector } from '../../redux/store';
 import { isMonthFromLiquidation } from '../../api/contracts';
 import { IMintRepayForm } from '../../constants/oven-operations';
 import { cTezError, mintOrBurn } from '../../contracts/ctez';
@@ -43,7 +42,7 @@ interface IMintProps {
 const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
   const { t } = useTranslation(['common']);
   const toast = useToast();
-  const { stats } = useOvenStats(oven);
+  const { stats, baseStats } = useOvenStats(oven);
   const text2 = useColorModeValue('text2', 'darkheading');
   const text1 = useColorModeValue('text1', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
@@ -71,26 +70,27 @@ const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
     [oven],
   );
 
-  const currentTarget = useAppSelector((state) => state.stats.baseStats?.originalTarget);
-  const drift = useAppSelector((state) => state.stats.baseStats?.drift);
   const maxValue = (): number => stats?.remainingMintableCtez ?? 0;
-  // const { max, remaining } = currentTarget
-  //   ? getOvenMaxCtez(tez_balance, ctez_outstanding, currentTarget)
-  //   : { max: 0, remaining: 0 };
 
-  // const outStandingCtez = new BigNumber(ctez_outstanding).shiftedBy(-6).toNumber() ?? 0;
-  // const maxMintableCtez = max < 0 ? 0 : max;
-  // const remainingMintableCtez = remaining < 0 ? 0 : remaining;
   const validationSchema = Yup.object().shape({
     amount: Yup.number()
       .min(0.000001)
       .max(maxValue(), `${t('insufficientBalance')}`)
       .test({
         test: (value) => {
-          if (value !== undefined && drift !== undefined && currentTarget !== undefined) {
+          if (
+            value !== undefined &&
+            baseStats?.drift !== undefined &&
+            baseStats?.currentTarget !== undefined
+          ) {
             const newOutstanding = Number(ctez_outstanding) + value * 1e6;
             const tez = Number(tez_balance);
-            const result = isMonthFromLiquidation(newOutstanding, currentTarget, tez, drift);
+            const result = isMonthFromLiquidation(
+              newOutstanding,
+              Number(baseStats?.currentTarget),
+              tez,
+              baseStats?.drift,
+            );
             return !result;
           }
           return false;
@@ -145,7 +145,7 @@ const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
       <form onSubmit={handleSubmit}>
         <ModalContent>
           <ModalHeader color={text1} fontWeight="500">
-            Mint cTez
+            Mint ctez
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>

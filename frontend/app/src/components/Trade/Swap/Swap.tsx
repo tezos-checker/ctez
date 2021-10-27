@@ -12,13 +12,12 @@ import {
 } from '@chakra-ui/react';
 import { MdAdd, MdSwapVert } from 'react-icons/md';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { number, object } from 'yup';
 import { useTranslation } from 'react-i18next';
 import { useFormik } from 'formik';
 import { addMinutes } from 'date-fns/fp';
 import * as Yup from 'yup';
 import { useWallet } from '../../../wallet/hooks';
-import { useCfmmStorage, useUserBalance } from '../../../api/queries';
+import { useCfmmStorage, useCtezBaseStats, useUserBalance } from '../../../api/queries';
 import {
   BUTTON_TXT,
   ConversionFormParams,
@@ -30,7 +29,6 @@ import {
 import { CTezIcon, TezIcon } from '../../icons';
 import { cashToToken, cfmmError, tokenToCash } from '../../../contracts/cfmm';
 import { logger } from '../../../utils/logger';
-import { useSetCtezBaseStatsToStore } from '../../../hooks/setApiDataToStore';
 import { useAppSelector } from '../../../redux/store';
 import Button from '../../button/Button';
 import { useTxLoader } from '../../../hooks/utilHooks';
@@ -44,10 +42,8 @@ const Swap: React.FC = () => {
   const { data: balance } = useUserBalance(userAddress);
   const { t } = useTranslation(['common', 'header']);
   const toast = useToast();
-  useSetCtezBaseStatsToStore(userAddress);
-  const baseStats = useAppSelector((state) => state.stats?.baseStats);
+  const { data: baseStats } = useCtezBaseStats();
   const text2 = useColorModeValue('text2', 'darkheading');
-  const text4 = useColorModeValue('text4', 'darkheading');
   const text4Text4 = useColorModeValue('text4', 'text4');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
   const handleProcessing = useTxLoader();
@@ -76,18 +72,17 @@ const Swap: React.FC = () => {
 
   const initialValues = useMemo<ConversionFormParams>(
     () => ({
-      to: userAddress ?? '',
       slippage: Number(slippage),
       deadline: Number(deadlineFromStore),
       amount: undefined,
     }),
-    [deadlineFromStore, slippage, userAddress],
+    [deadlineFromStore, slippage],
   );
 
   const maxValue = (): number =>
     formType === FORM_TYPE.CTEZ_TEZ ? balance?.ctez || 0.0 : balance?.xtz || 0.0;
 
-  const rate = (): any =>
+  const rate = (): number =>
     formType === FORM_TYPE.CTEZ_TEZ
       ? formatNumberStandard(baseStats?.currentPrice ?? 1)
       : formatNumberStandard(1 / Number(baseStats?.currentPrice ?? 1));
@@ -115,13 +110,13 @@ const Swap: React.FC = () => {
                 amount: formData.amount,
                 deadline,
                 minTokensBought: minReceived,
-                to: formData.to,
+                to: userAddress,
               })
             : await tokenToCash(
                 {
                   deadline,
                   minCashBought: minReceived,
-                  to: formData.to,
+                  to: userAddress,
                   tokensSold: formData.amount,
                 },
                 userAddress,
@@ -145,9 +140,9 @@ const Swap: React.FC = () => {
     if (cfmmStorage && values.amount) {
       const { tokenPool, cashPool } = cfmmStorage;
       const invariant = Number(cashPool) * Number(tokenPool);
-      let initialPrice = 0;
+      let initialPrice: number;
       const SwapAmount = values.amount * 1e6;
-      let recievedPrice = 0;
+      let recievedPrice: number;
       if (formType === FORM_TYPE.CTEZ_TEZ) {
         // 1 ctez = 11 tez
         initialPrice = Number(cashPool) / Number(tokenPool);
@@ -285,21 +280,21 @@ const Swap: React.FC = () => {
 
       <Flex justifyContent="space-between">
         <Text fontSize="xs">Rate</Text>
-        <Text color="#4E5D78" fontSize="xs">
+        <Text color={text2} fontSize="xs">
           1 {formType === FORM_TYPE.CTEZ_TEZ ? 'ctez' : 'tez'} = {rate()}{' '}
           {formType === FORM_TYPE.CTEZ_TEZ ? 'tez' : 'ctez'}
         </Text>
       </Flex>
       <Flex justifyContent="space-between">
         <Text fontSize="xs">Min Received</Text>
-        <Text color="#4E5D78" fontSize="xs">
+        <Text color={text2} fontSize="xs">
           {formatNumberStandard(Number(minReceived))}{' '}
           {formType === FORM_TYPE.CTEZ_TEZ ? 'tez' : 'ctez'}
         </Text>
       </Flex>
       <Flex justifyContent="space-between">
         <Text fontSize="xs">Price Impact</Text>
-        <Text color="#4E5D78" fontSize="xs">
+        <Text color={text2} fontSize="xs">
           {formatNumberStandard(Number(priceImpact))} %
         </Text>
       </Flex>

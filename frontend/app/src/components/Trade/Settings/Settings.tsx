@@ -51,7 +51,6 @@ const Settings: React.FC = () => {
   }, []);
 
   const text2 = useColorModeValue('text2', 'darkheading');
-  const text4 = useColorModeValue('text4', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
   const cardbg = useColorModeValue('bg4', 'darkblue');
 

@@ -44,7 +44,6 @@ const Deposit: React.FC<IDepositProps> = ({ isOpen, onClose, oven }) => {
   const [{ pkh: userAddress }] = useWallet();
   const text1 = useColorModeValue('text1', 'darkheading');
   const text2 = useColorModeValue('text2', 'darkheading');
-  const text4 = useColorModeValue('text4', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
   const handleProcessing = useTxLoader();
   const text4Text4 = useColorModeValue('text4', 'text4');
