@@ -31,7 +31,6 @@ import { TezIcon } from '../icons';
 import { BUTTON_TXT } from '../../constants/swap';
 import { AllOvenDatum } from '../../interfaces';
 import { useOvenStats, useTxLoader } from '../../hooks/utilHooks';
-import { logger } from '../../utils/logger';
 
 interface IWithdrawProps {
   isOpen: boolean;
@@ -42,7 +41,6 @@ interface IWithdrawProps {
 const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose, oven }) => {
   const { t } = useTranslation(['common']);
   const text2 = useColorModeValue('text2', 'darkheading');
-  const text4 = useColorModeValue('text4', 'darkheading');
   const text1 = useColorModeValue('text1', 'darkheading');
   const inputbg = useColorModeValue('darkheading', 'textboxbg');
   const cardbg = useColorModeValue('bg3', 'darkblue');

@@ -7,7 +7,7 @@ interface OvenSliceState {
 
 const initialState: OvenSliceState = {
   extOvens: [],
-  sortByOption: 'value',
+  sortByOption: 'Oven Balance',
 };
 
 export const OvenSlice = createSlice({
