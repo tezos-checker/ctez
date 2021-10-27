@@ -1,5 +1,5 @@
 import { AxiosError } from 'axios';
-import { useQuery } from 'react-query';
+import { useQueries, useQuery } from 'react-query';
 import { UseQueryResult } from 'react-query/types/react/types';
 import { getCfmmStorage } from '../contracts/cfmm';
 import {
@@ -104,7 +104,9 @@ export const useAllOvenData = () => {
   );
 };
 
-export const useUserOvenData = (userAddress: string | undefined) => {
+export const useUserOvenData = (
+  userAddress: string | undefined,
+): TUseQueryReturn<AllOvenDatum[]> => {
   return useQuery<AllOvenDatum[] | undefined, AxiosError, AllOvenDatum[] | undefined>(
     ['allOvenData', userAddress],
     () => {
@@ -118,8 +120,20 @@ export const useUserOvenData = (userAddress: string | undefined) => {
   );
 };
 
+export const useOvenDataByAddresses = (ovenAddresses: string[]) => {
+  return useQueries(
+    ovenAddresses.map((address) => ({
+      queryKey: ['ovenData', address],
+      queryFn: () => {
+        return getOven(address);
+      },
+    })),
+  );
+};
+
 /**
  * For fetching a single Oven in Oven Details Page
+ * TODO: Remove this API and use the one above
  */
 export const useOvenDatum = (ovenAddress: string): TUseQueryReturn<AllOvenDatum> => {
   return useQuery<AllOvenDatum | undefined, AxiosError, AllOvenDatum | undefined>(

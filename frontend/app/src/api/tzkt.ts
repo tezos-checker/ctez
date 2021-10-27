@@ -58,7 +58,7 @@ export const getUserOvensAPI = async (userAddress: string): Promise<AllOvenDatum
   return data;
 };
 
-export const getOvenAPI = async (ovenAddress: string): Promise<AllOvenDatum> => {
+export const getOvenByAddressAPI = async (ovenAddress: string): Promise<AllOvenDatum> => {
   const data = await get<AllOvenDatum[], { 'value.address': string }>(
     `bigmaps/${CTEZ_CONTRACT_BIGMAP}/keys`,
     {

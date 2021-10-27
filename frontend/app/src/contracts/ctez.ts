@@ -20,7 +20,7 @@ import { logger } from '../utils/logger';
 import { getLastOvenId, saveLastOven } from '../utils/ovenUtils';
 import { getTezosInstance } from './client';
 import { executeMethod, initContract } from './utils';
-import { getAllOvensAPI, getOvenAPI, getUserOvensAPI } from '../api/tzkt';
+import { getAllOvensAPI, getOvenByAddressAPI, getUserOvensAPI } from '../api/tzkt';
 
 let cTez: WalletContract;
 
@@ -265,7 +265,7 @@ export const getOven = async (ovenAddress: string): Promise<AllOvenDatum | undef
     if (!cTez && CTEZ_ADDRESS) {
       await initCTez(CTEZ_ADDRESS);
     }
-    const ovenDatum = await getOvenAPI(ovenAddress);
+    const ovenDatum = await getOvenByAddressAPI(ovenAddress);
     return ovenDatum;
   } catch (error) {
     logger.error(error);
