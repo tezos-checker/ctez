@@ -11,10 +11,9 @@ import {
 } from '@chakra-ui/react';
 import { MdAdd } from 'react-icons/md';
 import { addMinutes } from 'date-fns/fp';
-import { validateAddress } from '@taquito/utils';
 import { useTranslation } from 'react-i18next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { number, object, string } from 'yup';
+import { number, object } from 'yup';
 import { useFormik } from 'formik';
 import { RemoveLiquidityParams } from '../../../interfaces';
 import { cfmmError, removeLiquidity } from '../../../contracts/cfmm';
@@ -74,9 +73,6 @@ const RemoveLiquidity: React.FC = () => {
   const maxValue = (): number => formatNumber(userLqtData?.lqt || 0.0);
 
   const validationSchema = object().shape({
-    to: string().test({
-      test: (value: any) => validateAddress(value) === 3,
-    }),
     lqtBurned: number()
       .positive(t('shouldPositive'))
       .required(t('required'))
