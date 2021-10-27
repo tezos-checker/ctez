@@ -19,7 +19,9 @@ import { cfmmError } from '../contracts/cfmm';
 import { openTxSubmittedModal } from '../redux/slices/UiSlice';
 import { useCtezBaseStats } from '../api/queries';
 
-type TUseOvenStats = (oven: AllOvenDatum | undefined | null) => {
+type TUseOvenStats = (
+  oven: AllOvenDatum | undefined | null,
+) => {
   stats: null | {
     ovenBalance: number;
     outStandingCtez: number;
@@ -100,7 +102,9 @@ const useOvenStats: TUseOvenStats = (oven) => {
   return { stats, baseStats: data };
 };
 
-type TUseOvenSummary = (ovens: AllOvenDatum[] | undefined | null) => {
+type TUseOvenSummary = (
+  ovens: AllOvenDatum[] | undefined | null,
+) => {
   stats: null | {
     totalBalance: number;
     totalOutstandingCtez: number;
@@ -111,7 +115,6 @@ type TUseOvenSummary = (ovens: AllOvenDatum[] | undefined | null) => {
 
 const useOvenSummary: TUseOvenSummary = (ovens) => {
   const { data } = useCtezBaseStats();
-  const currentTarget = Number(data?.currentTarget);
   const currentTargetMintable = Number(data?.originalTarget);
 
   const stats = useMemo(() => {
@@ -133,7 +136,7 @@ const useOvenSummary: TUseOvenSummary = (ovens) => {
     let totalRemainingMintableCtez = 0;
     let totalWithdrawableTez = 0;
 
-    for (const oven of ovens) {
+    ovens.forEach((oven) => {
       const { tezBalance, ctezOutstanding } = (() => {
         return {
           tezBalance: oven?.value.tez_balance,
@@ -157,10 +160,10 @@ const useOvenSummary: TUseOvenSummary = (ovens) => {
       totalRemainingMintableCtez += remaining < 0 ? 0 : remaining;
       totalWithdrawableTez +=
         ovenBalance * (1 - formatNumber(formatNumber(ctezOutstanding, 0) / maxMintableCtez));
-    }
+    });
 
     return { totalBalance, totalOutstandingCtez, totalRemainingMintableCtez, totalWithdrawableTez };
-  }, [currentTarget, currentTargetMintable, ovens]);
+  }, [currentTargetMintable, ovens]);
 
   return { stats };
 };
@@ -298,7 +301,9 @@ const useTxLoader = (): ((
 
 type TOption = { label: string; value: string };
 
-type TUseBakerSelect = (delegates: Baker[] | undefined) => {
+type TUseBakerSelect = (
+  delegates: Baker[] | undefined,
+) => {
   bakerSelect: TOption | null;
   setBakerSelect: Dispatch<SetStateAction<TOption | null>>;
   options: OptionsOrGroups<TOption, GroupBase<TOption>>;
