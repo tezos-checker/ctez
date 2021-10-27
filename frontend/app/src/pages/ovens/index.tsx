@@ -18,7 +18,6 @@ import { BsArrowRight, BsThreeDotsVertical } from 'react-icons/bs';
 import { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAppDispatch } from '../../redux/store';
-import { useWallet } from '../../wallet/hooks';
 import { openModal } from '../../redux/slices/UiSlice';
 import { MODAL_NAMES } from '../../constants/modals';
 import Button from '../../components/button/Button';

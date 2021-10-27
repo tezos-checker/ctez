@@ -23,7 +23,9 @@ import { formatNumberStandard } from '../../utils/numbers';
 import { useOvenStorage } from '../../api/queries';
 import { useWallet } from '../../wallet/hooks';
 
-const CollateralOverview: React.FC<{ oven: AllOvenDatum | undefined }> = ({ oven }) => {
+const CollateralOverview: React.FC<{ oven: AllOvenDatum | undefined; isImported: boolean }> = ({
+  oven,
+}) => {
   const [{ pkh: userAddress }] = useWallet();
   const { stats } = useOvenStats(oven);
   const [depositOpen, setDepositOpen] = useState<boolean>(false);
