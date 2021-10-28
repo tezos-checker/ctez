@@ -1,6 +1,6 @@
 import { ProSidebar, SidebarHeader, SidebarContent, Menu, MenuItem } from 'react-pro-sidebar';
 import clsx from 'clsx';
-import { Text, Flex, Box, useColorModeValue, Image } from '@chakra-ui/react';
+import { Text, Flex, Box, Image } from '@chakra-ui/react';
 import React from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -19,6 +19,7 @@ import 'react-pro-sidebar/dist/css/styles.css';
 import { openModal } from '../../redux/slices/UiSlice';
 import { MODAL_NAMES } from '../../constants/modals';
 import { useCtezBaseStats } from '../../api/queries';
+import { useThemeColors } from '../../hooks/utilHooks';
 
 export interface Props {
   handleCollapsed: React.MouseEventHandler;
@@ -37,7 +38,11 @@ export const Sidebar: React.FC<Props> = ({
   const dispatch = useDispatch();
   const { data } = useCtezBaseStats();
 
-  const sideBarBackground = useColorModeValue('sideBarBlue', 'cardbgdark');
+  const [sideBarBackground, sidebarTxt, sidebarTopic] = useThemeColors([
+    'sideBarBg',
+    'sidebarTxt',
+    'sidebarTopic',
+  ]);
 
   const handleCreateOvenClick = () => {
     dispatch(openModal(MODAL_NAMES.CREATE_OVEN));
@@ -47,42 +52,42 @@ export const Sidebar: React.FC<Props> = ({
     return (
       <Flex direction="column">
         <Flex direction="row">
-          <Text color="#CCD2E3" fontSize="xs" cursor="default">
+          <Text color={sidebarTxt} fontSize="xs" cursor="default">
             Current Target
           </Text>
-          <Text marginLeft="auto" color="#CCD2E3" fontSize="xs" cursor="default">
+          <Text marginLeft="auto" color={sidebarTxt} fontSize="xs" cursor="default">
             {data?.currentTarget}
           </Text>
         </Flex>
         <Flex direction="row">
-          <Text color="#CCD2E3" fontSize="xs" cursor="default">
+          <Text color={sidebarTxt} fontSize="xs" cursor="default">
             Current Price
           </Text>
-          <Text marginLeft="auto" color="#CCD2E3" fontSize="xs" cursor="default">
+          <Text marginLeft="auto" color={sidebarTxt} fontSize="xs" cursor="default">
             {data?.currentPrice}
           </Text>
         </Flex>
         <Flex direction="row">
-          <Text color="#CCD2E3" fontSize="xs" cursor="default">
+          <Text color={sidebarTxt} fontSize="xs" cursor="default">
             Premium
           </Text>
-          <Text marginLeft="auto" color="#CCD2E3" fontSize="xs" cursor="default">
+          <Text marginLeft="auto" color={sidebarTxt} fontSize="xs" cursor="default">
             {data?.premium}%
           </Text>
         </Flex>
         <Flex direction="row">
-          <Text color="#CCD2E3" fontSize="xs" cursor="default">
+          <Text color={sidebarTxt} fontSize="xs" cursor="default">
             Current Annual Drift
           </Text>
-          <Text marginLeft="auto" color="#CCD2E3" fontSize="xs" cursor="default">
+          <Text marginLeft="auto" color={sidebarTxt} fontSize="xs" cursor="default">
             {data?.currentAnnualDrift}%
           </Text>
         </Flex>
         <Flex direction="row">
-          <Text color="#CCD2E3" fontSize="xs" cursor="default">
+          <Text color={sidebarTxt} fontSize="xs" cursor="default">
             Annual Drift (Past week)
           </Text>
-          <Text marginLeft="auto" color="#CCD2E3" fontSize="xs" cursor="default">
+          <Text marginLeft="auto" color={sidebarTxt} fontSize="xs" cursor="default">
             {data?.annualDriftPastWeek}%
           </Text>
         </Flex>
@@ -166,7 +171,7 @@ export const Sidebar: React.FC<Props> = ({
                     'no-cursor',
                   )}
                 >
-                  <Text fontSize="sm" color="#51CBFF" cursor="default">
+                  <Text fontSize="sm" color={sidebarTopic} cursor="default">
                     Stats
                   </Text>
                 </MenuItem>
@@ -189,7 +194,7 @@ export const Sidebar: React.FC<Props> = ({
                     'no-cursor',
                   )}
                 >
-                  <Text fontSize="sm" color="#51CBFF">
+                  <Text fontSize="sm" color={sidebarTopic}>
                     Info
                   </Text>
                 </MenuItem>
@@ -211,7 +216,7 @@ export const Sidebar: React.FC<Props> = ({
                     hide: collapsed,
                   })}
                 >
-                  <Text fontSize="sm" color="#51CBFF" cursor="default">
+                  <Text fontSize="sm" color={sidebarTopic} cursor="default">
                     Adopters
                   </Text>
                 </MenuItem>

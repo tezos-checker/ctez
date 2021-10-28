@@ -7,11 +7,11 @@ import {
   ModalCloseButton,
   ModalContent,
   ModalOverlay,
-  useColorModeValue,
 } from '@chakra-ui/react';
 import TxSubmitted from '../../assets/images/icons/tx-submitted.svg';
 import Button from '../button/Button';
 import { NETWORK } from '../../utils/globals';
+import { useThemeColors } from '../../hooks/utilHooks';
 
 interface IInfoModal {
   img?: string;
@@ -21,7 +21,7 @@ interface IInfoModal {
 }
 
 const InfoModal: React.FC<IInfoModal> = (props) => {
-  const text2 = useColorModeValue('text2', 'darkheading');
+  const [text2] = useThemeColors(['text2']);
 
   return (
     <Modal isOpen={props.open} onClose={props.onClose} isCentered>

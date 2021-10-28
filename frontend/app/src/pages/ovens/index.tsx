@@ -5,7 +5,6 @@ import {
   Select,
   Spacer,
   Text,
-  useColorModeValue,
   useMediaQuery,
   MenuItem,
   MenuList,
@@ -24,11 +23,12 @@ import Button from '../../components/button/Button';
 import { setSortBy } from '../../redux/slices/OvenSlice';
 import AllOvensContainer from './AllOvensContainer';
 import MyOvensContainer from './MyOvensContainer';
+import { useThemeColors } from '../../hooks/utilHooks';
 
 const OvensPage: React.FC = () => {
   const location = useLocation();
   const dispatch = useAppDispatch();
-  const background = useColorModeValue('white', 'cardbgdark');
+  const [background, text4] = useThemeColors(['cardbg', 'text4']);
   const [mobileScreen] = useMediaQuery(['(max-width: 600px)']);
 
   const isMyOven = useMemo(() => {
@@ -89,11 +89,11 @@ const OvensPage: React.FC = () => {
   return (
     <Box maxWidth={1200} mx="auto" my={4} p={4}>
       <Flex>
-        <Text color="#B0B7C3" mt={2} mr={1}>
+        <Text color={text4} mt={2} mr={1}>
           Sort By:
         </Text>
         <Select
-          color="#B0B7C3"
+          color={text4}
           w={186}
           backgroundColor={background}
           onChange={(e) => SetSortType(e.target.value)}

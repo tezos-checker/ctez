@@ -1,14 +1,4 @@
-import {
-  Flex,
-  FormControl,
-  FormLabel,
-  Icon,
-  Input,
-  Stack,
-  useColorModeValue,
-  useToast,
-  Text,
-} from '@chakra-ui/react';
+import { Flex, FormControl, FormLabel, Icon, Input, Stack, useToast, Text } from '@chakra-ui/react';
 import { MdAdd } from 'react-icons/md';
 import { addMinutes } from 'date-fns/fp';
 import { useTranslation } from 'react-i18next';
@@ -22,7 +12,7 @@ import { useWallet } from '../../../wallet/hooks';
 import { useCfmmStorage, useUserLqtData } from '../../../api/queries';
 import Button from '../../button/Button';
 import { useAppSelector } from '../../../redux/store';
-import { useTxLoader } from '../../../hooks/utilHooks';
+import { useThemeColors, useTxLoader } from '../../../hooks/utilHooks';
 import { formatNumber, formatNumberStandard } from '../../../utils/numbers';
 import { BUTTON_TXT } from '../../../constants/swap';
 
@@ -35,9 +25,12 @@ const RemoveLiquidity: React.FC = () => {
   const toast = useToast();
   const { data: cfmmStorage } = useCfmmStorage();
   const { t } = useTranslation(['common']);
-  const text2 = useColorModeValue('text2', 'darkheading');
-  const inputbg = useColorModeValue('darkheading', 'textboxbg');
-  const text4Text4 = useColorModeValue('text4', 'text4');
+  const [text2, inputbg, text4, maxColor] = useThemeColors([
+    'text2',
+    'inputbg',
+    'text4',
+    'maxColor',
+  ]);
   const { slippage, deadline: deadlineFromStore } = useAppSelector((state) => state.trade);
   const handleProcessing = useTxLoader();
   const { data: userLqtData } = useUserLqtData(userAddress);
@@ -64,8 +57,8 @@ const RemoveLiquidity: React.FC = () => {
     [cfmmStorage, slippage],
   );
 
-  const initialValues: any = {
-    lqtBurned: '',
+  const initialValues: IRemoveLiquidityForm = {
+    lqtBurned: 0,
     deadline: Number(deadlineFromStore),
     slippage: Number(slippage),
   };
@@ -149,12 +142,12 @@ const RemoveLiquidity: React.FC = () => {
             lang="en-US"
           />
           {typeof userLqtData?.lqt !== 'undefined' && (
-            <Text color={text4Text4} fontSize="xs" mt={1}>
+            <Text color={text4} fontSize="xs" mt={1}>
               Balance: {formatNumberStandard(userLqtData?.lqt / 1e6)}{' '}
               <Text
                 as="span"
                 cursor="pointer"
-                color="#e35f5f"
+                color={maxColor}
                 onClick={() =>
                   formik.setFieldValue('lqtBurned', formatNumberStandard(userLqtData?.lqt / 1e6))
                 }

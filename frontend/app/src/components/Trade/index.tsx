@@ -5,7 +5,6 @@ import {
   TabPanels,
   Tab,
   TabPanel,
-  useColorModeValue,
   Icon,
   useMediaQuery,
 } from '@chakra-ui/react';
@@ -13,10 +12,10 @@ import Swap from './Swap';
 import Liquidity from './Liquidity';
 import { ReactComponent as tune } from '../../assets/images/sidebar/tune_settings.svg';
 import { Settings } from './Settings/Settings';
+import { useThemeColors } from '../../hooks/utilHooks';
 
 const Trade: React.FC = () => {
-  const tabcolor = useColorModeValue('darkgray', 'darkheading');
-  const background = useColorModeValue('white', 'cardbgdark');
+  const [tabcolor, background] = useThemeColors(['tradebg', 'cardbg']);
   const [largerScreen] = useMediaQuery(['(min-width: 900px)']);
 
   return (
@@ -37,7 +36,7 @@ const Trade: React.FC = () => {
           <Tab>Swap</Tab>
           <Tab>Liquidity</Tab>
           <Tab position="relative" left="147">
-            <Icon w={6} h={6} color="#62737F" as={tune} />
+            <Icon w={6} h={6} color="light.tradebg" as={tune} />
           </Tab>
         </TabList>
 

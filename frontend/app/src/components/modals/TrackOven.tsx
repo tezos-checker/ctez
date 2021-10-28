@@ -9,7 +9,6 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
 import { validateContractAddress } from '@taquito/utils';
@@ -24,6 +23,7 @@ import { addExternalOven, getExternalOvens } from '../../utils/ovenUtils';
 import Button from '../button/Button';
 import { setExternalOvens } from '../../redux/slices/OvenSlice';
 import { useAppDispatch } from '../../redux/store';
+import { useThemeColors } from '../../hooks/utilHooks';
 
 interface ITrackOvenProps {
   isOpen: boolean;
@@ -39,11 +39,9 @@ const TrackOven: React.FC<ITrackOvenProps> = ({ isOpen, onClose }) => {
   const toast = useToast();
   const dispatch = useAppDispatch();
   const { t } = useTranslation(['common']);
-  const text2 = useColorModeValue('text2', 'darkheading');
-  const inputbg = useColorModeValue('darkheading', 'textboxbg');
-  const tabcolor = useColorModeValue('text1', 'darkheading');
+  const [text2, inputbg, tabcolor] = useThemeColors(['text2', 'inputbg', 'tabcolor']);
 
-  const initialValues: any = {
+  const initialValues: IAddOvenForm = {
     ovenAddress: '',
   };
 

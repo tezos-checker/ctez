@@ -8,12 +8,11 @@ import {
   Stack,
   Text,
   Tooltip,
-  useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
 import { MdInfo } from 'react-icons/md';
 import { useCallback, useMemo, useState } from 'react';
-import { useOvenStats } from '../../hooks/utilHooks';
+import { useOvenStats, useThemeColors } from '../../hooks/utilHooks';
 import Button from '../button/Button';
 import Deposit from '../modals/Deposit';
 import Withdraw from '../modals/Withdraw';
@@ -30,9 +29,12 @@ const CollateralOverview: React.FC<{ oven: AllOvenDatum | undefined; isImported:
   const { stats } = useOvenStats(oven);
   const [depositOpen, setDepositOpen] = useState<boolean>(false);
   const [withdrawOpen, setWithdrawOpen] = useState<boolean>(false);
-  const background = useColorModeValue('white', 'cardbgdark');
-  const textcolor = useColorModeValue('text2', 'white');
-  const cardbg = useColorModeValue('bg4', 'darkblue');
+  const [background, textcolor, cardbg, text4] = useThemeColors([
+    'cardbg',
+    'textColor',
+    'tooltipbg1',
+    'text4',
+  ]);
   const toast = useToast();
   const { data: ovenStorageData } = useOvenStorage(oven?.value.address);
 
@@ -40,40 +42,40 @@ const CollateralOverview: React.FC<{ oven: AllOvenDatum | undefined; isImported:
     return (
       <div>
         <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
-          <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
+          <Icon fontSize="2xl" color={text4} as={MdInfo} m={1} />
           <Text color="gray.500" fontSize="xs" ml={2}>
             {data.find((item) => item.topic === 'Tez Collateral')?.content}
           </Text>
         </Flex>
       </div>
     );
-  }, [cardbg]);
+  }, [cardbg, text4]);
 
   const showInfoRequiredTez = useMemo(() => {
     return (
       <div>
         <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
-          <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
+          <Icon fontSize="2xl" color={text4} as={MdInfo} m={1} />
           <Text color="gray.500" fontSize="xs" ml={2}>
             {data.find((item) => item.topic === 'required tez collateral')?.content}
           </Text>
         </Flex>
       </div>
     );
-  }, [cardbg]);
+  }, [cardbg, text4]);
 
   const showInfoWithdrawTez = useMemo(() => {
     return (
       <div>
         <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
-          <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
+          <Icon fontSize="2xl" color={text4} as={MdInfo} m={1} />
           <Text color="gray.500" fontSize="xs" ml={2}>
             {data.find((item) => item.topic === 'Withdraw tez')?.content}
           </Text>
         </Flex>
       </div>
     );
-  }, [cardbg]);
+  }, [cardbg, text4]);
 
   const modals = useMemo(() => {
     if (!oven) {
@@ -154,7 +156,7 @@ const CollateralOverview: React.FC<{ oven: AllOvenDatum | undefined; isImported:
               </Text>
             </Skeleton>
 
-            <Text color="#B0B7C3" fontSize="xs">
+            <Text color={text4} fontSize="xs">
               tez collateral
               <Tooltip
                 label={showInfoTez}
@@ -163,7 +165,7 @@ const CollateralOverview: React.FC<{ oven: AllOvenDatum | undefined; isImported:
                 backgroundColor={cardbg}
               >
                 <span>
-                  <Icon opacity="0.3" fontSize="md" color="#B0B7C3" as={MdInfo} m={1} mb={1} />
+                  <Icon opacity="0.3" fontSize="md" color={text4} as={MdInfo} m={1} mb={1} />
                 </span>
               </Tooltip>
             </Text>
@@ -180,7 +182,7 @@ const CollateralOverview: React.FC<{ oven: AllOvenDatum | undefined; isImported:
               </Text>
             </Skeleton>
 
-            <Text color="#B0B7C3" fontSize="xs">
+            <Text color={text4} fontSize="xs">
               Required tez collateral
               <Tooltip
                 label={showInfoRequiredTez}
@@ -189,7 +191,7 @@ const CollateralOverview: React.FC<{ oven: AllOvenDatum | undefined; isImported:
                 backgroundColor={cardbg}
               >
                 <span>
-                  <Icon opacity="0.3" fontSize="md" color="#B0B7C3" as={MdInfo} m={1} mb={1} />
+                  <Icon opacity="0.3" fontSize="md" color={text4} as={MdInfo} m={1} mb={1} />
                 </span>
               </Tooltip>
             </Text>
@@ -206,7 +208,7 @@ const CollateralOverview: React.FC<{ oven: AllOvenDatum | undefined; isImported:
               </Text>
             </Skeleton>
 
-            <Text color="#B0B7C3" fontSize="xs">
+            <Text color={text4} fontSize="xs">
               Withdraw tez
               <Tooltip
                 label={showInfoWithdrawTez}
@@ -215,7 +217,7 @@ const CollateralOverview: React.FC<{ oven: AllOvenDatum | undefined; isImported:
                 backgroundColor={cardbg}
               >
                 <span>
-                  <Icon opacity="0.3" fontSize="md" color="#B0B7C3" as={MdInfo} m={1} mb={1} />
+                  <Icon opacity="0.3" fontSize="md" color={text4} as={MdInfo} m={1} mb={1} />
                 </span>
               </Tooltip>
             </Text>

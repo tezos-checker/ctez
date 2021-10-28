@@ -1,7 +1,8 @@
-import { Box, Flex, Icon, Stack, Text, Tooltip, useColorModeValue } from '@chakra-ui/react';
+import { Box, Flex, Icon, Stack, Text, Tooltip } from '@chakra-ui/react';
 import { useMemo, useState } from 'react';
 import { BsArrowRight } from 'react-icons/bs';
 import { MdInfo } from 'react-icons/md';
+import { useThemeColors } from '../../hooks/utilHooks';
 import { AllOvenDatum } from '../../interfaces';
 import LiquidateOven from '../modals/Liquidate';
 
@@ -13,9 +14,14 @@ interface IProgressPill {
 }
 
 const ProgressPill: React.FC<IProgressPill> = ({ value, oven, type, warning }) => {
-  const progressPillBg = useColorModeValue('white', 'darkblue');
   const [liquidateOven, setliquidateOven] = useState(false);
-  const cardbg = useColorModeValue('bg4', 'darkblue');
+  const [progressPillBg, cardbg, text4, red, orange] = useThemeColors([
+    'progressPillBg',
+    'tooltipbg1',
+    'text4',
+    'red',
+    'orange',
+  ]);
   const SetModalOpen = (isOpen: boolean) => {
     setliquidateOven(isOpen);
   };
@@ -32,14 +38,14 @@ const ProgressPill: React.FC<IProgressPill> = ({ value, oven, type, warning }) =
     return (
       <div>
         <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
-          <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
+          <Icon fontSize="2xl" color={text4} as={MdInfo} m={1} />
           <Text color="gray.500" fontSize="xs" ml={2}>
             Deposit more tez as collateral or burn ctez, to avoid liquidation
           </Text>
         </Flex>
       </div>
     );
-  }, [cardbg]);
+  }, [cardbg, text4]);
 
   return (
     <div>
@@ -64,7 +70,7 @@ const ProgressPill: React.FC<IProgressPill> = ({ value, oven, type, warning }) =
       </Stack>
       {value > 100 && type === 'AllOvens' && (
         <Text
-          color="#CC3936"
+          color={red}
           position="relative"
           top="-22px"
           left="22"
@@ -80,7 +86,7 @@ const ProgressPill: React.FC<IProgressPill> = ({ value, oven, type, warning }) =
       )}
       {type === 'AllOvens' && warning && value < 100 && (
         <Text
-          color="#F6AD55"
+          color={orange}
           position="relative"
           top="-22px"
           left="22"
