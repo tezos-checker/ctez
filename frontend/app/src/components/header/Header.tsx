@@ -1,4 +1,4 @@
-import { Flex, Box, useColorMode, Text, useColorModeValue } from '@chakra-ui/react';
+import { Flex, Box, useColorMode, Text } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { useLocation, matchPath } from 'react-router-dom';
 import { FiMoon, FiSun } from 'react-icons/fi';
@@ -9,6 +9,7 @@ import { ReactComponent as Trade } from '../../assets/images/sidebar/trade.svg';
 import { ReactComponent as Faq } from '../../assets/images/sidebar/faq.svg';
 import Button from '../button/Button';
 import SignIn from '../SignIn/SignIn';
+import { useThemeColors } from '../../hooks/utilHooks';
 
 export interface IHeaderProps {
   handleToggled: ((value: boolean) => void) | undefined;
@@ -22,7 +23,7 @@ interface HeaderIconText {
 
 export const Header: React.FC<IHeaderProps> = ({ handleToggled, toggled }) => {
   const { colorMode, toggleColorMode } = useColorMode();
-  const headerBackground = useColorModeValue('white', 'transparent');
+  const [headerBackground] = useThemeColors(['headerBg']);
   const location = useLocation();
   const [headerIconText, setHeaderIconText] = useState<HeaderIconText>({ text: null, icon: null });
 

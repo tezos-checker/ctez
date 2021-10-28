@@ -11,13 +11,13 @@ import {
   InputRightElement,
   SlideFade,
   Text,
-  useColorModeValue,
   Wrap,
   WrapItem,
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { IoMdCloseCircle } from 'react-icons/io';
 import { MdAdd } from 'react-icons/md';
+import { useThemeColors } from '../../hooks/utilHooks';
 import { trimAddress } from '../../utils/addressUtils';
 
 interface IDepositorItem {
@@ -34,7 +34,7 @@ interface IDepositorsInputProps {
 
 const DepositorsInput: React.FC<IDepositorsInputProps> = (props) => {
   const [depositorInput, setDepositorInput] = useState('');
-  const text2 = useColorModeValue('text2', 'darkheading');
+  const [text2] = useThemeColors(['text2']);
   const [error, setError] = useState<string | null>(null);
 
   // const handleDepositorInput = (ev: React.ChangeEvent<HTMLInputElement>) => {

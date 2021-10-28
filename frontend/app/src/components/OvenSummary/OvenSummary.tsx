@@ -1,15 +1,7 @@
-import {
-  Box,
-  CSSObject,
-  Flex,
-  Grid,
-  Text,
-  useColorModeValue,
-  useMediaQuery,
-} from '@chakra-ui/react';
+import { Box, CSSObject, Flex, Grid, Text, useMediaQuery } from '@chakra-ui/react';
 import React, { useMemo } from 'react';
 import { AllOvenDatum } from '../../interfaces';
-import { useOvenSummary } from '../../hooks/utilHooks';
+import { useOvenSummary, useThemeColors } from '../../hooks/utilHooks';
 import { formatNumberStandard } from '../../utils/numbers';
 
 interface IOvenCardProps {
@@ -17,8 +9,7 @@ interface IOvenCardProps {
 }
 
 const OvenSummary: React.FC<IOvenCardProps> = (props) => {
-  const background = useColorModeValue('white', 'cardbgdark');
-  const textcolor = useColorModeValue('text2', 'white');
+  const [background, textcolor] = useThemeColors(['cardbg', 'textcolor']);
   const { stats } = useOvenSummary(props.ovens);
   const [largerScreen] = useMediaQuery(['(min-width: 800px)']);
 

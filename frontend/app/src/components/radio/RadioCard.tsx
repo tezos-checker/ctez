@@ -1,14 +1,13 @@
-import { Box, Checkbox, Flex, useColorModeValue, useRadio } from '@chakra-ui/react';
+import { Box, Checkbox, Flex, useRadio } from '@chakra-ui/react';
 import { UseRadioProps } from '@chakra-ui/radio/dist/types/use-radio';
+import { useThemeColors } from '../../hooks/utilHooks';
 
 const RadioCard: React.FC<UseRadioProps> = (props) => {
   const { getInputProps, getCheckboxProps } = useRadio(props);
 
   const input = getInputProps();
   const checkbox = getCheckboxProps();
-  const text2 = useColorModeValue('text2', 'darkheading');
-  const inputbg = useColorModeValue('darkheading', 'textboxbg');
-  const bordercolor = useColorModeValue('violet', '');
+  const [text2, inputbg, bordercolor] = useThemeColors(['text2', 'inputbg', 'radioBorder']);
 
   return (
     <Box as="label" w="45%">
@@ -25,7 +24,7 @@ const RadioCard: React.FC<UseRadioProps> = (props) => {
         boxShadow="md"
         _checked={{
           bgGradient: 'linear(90.5deg, #0F62FF 8.62%, #6B5BD2 102.96%)',
-          color: 'white',
+          color: 'light.cardbg',
         }}
         px={5}
         py={3}

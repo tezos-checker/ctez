@@ -14,7 +14,6 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
-  useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
 import { MdInfo } from 'react-icons/md';
@@ -30,7 +29,7 @@ import Button from '../button/Button';
 import { BUTTON_TXT } from '../../constants/swap';
 import { CTezIcon } from '../icons';
 import { AllOvenDatum } from '../../interfaces';
-import { useOvenStats, useTxLoader } from '../../hooks/utilHooks';
+import { useOvenStats, useThemeColors, useTxLoader } from '../../hooks/utilHooks';
 import { formatNumberStandard } from '../../utils/numbers';
 
 interface IMintProps {
@@ -42,12 +41,15 @@ interface IMintProps {
 const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
   const { t } = useTranslation(['common']);
   const toast = useToast();
+  const [cardbg, text2, text1, inputbg, text4, maxColor] = useThemeColors([
+    'tooltipbg',
+    'text2',
+    'text1',
+    'inputbg',
+    'text4',
+    'maxColor',
+  ]);
   const { stats, baseStats } = useOvenStats(oven);
-  const text2 = useColorModeValue('text2', 'darkheading');
-  const text1 = useColorModeValue('text1', 'darkheading');
-  const inputbg = useColorModeValue('darkheading', 'textboxbg');
-  const text4Text4 = useColorModeValue('text4', 'text4');
-  const cardbg = useColorModeValue('bg3', 'darkblue');
   const handleProcessing = useTxLoader();
 
   const getRightElement = useCallback(() => {
@@ -99,8 +101,8 @@ const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
       })
       .required(t('required')),
   });
-  const initialValues: any = {
-    amount: '',
+  const initialValues: IMintRepayForm = {
+    amount: 0,
   };
 
   const handleFormSubmit = async (data: IMintRepayForm) => {
@@ -150,7 +152,7 @@ const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
           <ModalCloseButton />
           <ModalBody>
             <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
-              <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
+              <Icon fontSize="2xl" color={text4} as={MdInfo} m={1} />
               <Text fontSize="xs" ml={2}>
                 If the collateral ratio in a vault is observed at or below the emergency collateral
                 ratio, the vault becomes available for liquidation. This applies until the
@@ -175,12 +177,12 @@ const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
                 />
                 {getRightElement()}
               </InputGroup>
-              <Text color={text4Text4} fontSize="xs" mt={1}>
+              <Text color={text4} fontSize="xs" mt={1}>
                 Balance: {formatNumberStandard(stats?.remainingMintableCtez ?? 0)}{' '}
                 <Text
                   as="span"
                   cursor="pointer"
-                  color="#e35f5f"
+                  color={maxColor}
                   onClick={() =>
                     formik.setFieldValue(
                       'amount',

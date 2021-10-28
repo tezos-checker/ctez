@@ -1,8 +1,9 @@
-import { Box, Grid, SkeletonText, useColorModeValue } from '@chakra-ui/react';
+import { Box, Grid, SkeletonText } from '@chakra-ui/react';
 import { useMemo } from 'react';
+import { useThemeColors } from '../../hooks/utilHooks';
 
 const OvenCardSkeleton: React.FC = () => {
-  const background = useColorModeValue('white', 'cardbgdark');
+  const [background] = useThemeColors(['cardbg']);
   const items = useMemo(() => Array(6).fill(0), []);
 
   return (

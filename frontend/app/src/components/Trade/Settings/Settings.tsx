@@ -8,7 +8,6 @@ import {
   InputGroup,
   InputRightElement,
   Text,
-  useColorModeValue,
   NumberIncrementStepper,
   NumberDecrementStepper,
   Tooltip,
@@ -20,6 +19,7 @@ import { MdInfo } from 'react-icons/md';
 import { useAppDispatch, useAppSelector } from '../../../redux/store';
 import { setSlippage, setDeadline } from '../../../redux/slices/TradeSlice';
 import data from '../../../assets/data/info.json';
+import { useThemeColors } from '../../../hooks/utilHooks';
 
 const Settings: React.FC = () => {
   const { slippage, deadline } = useAppSelector((state) => state.trade);
@@ -49,36 +49,38 @@ const Settings: React.FC = () => {
       </InputRightElement>
     );
   }, []);
-
-  const text2 = useColorModeValue('text2', 'darkheading');
-  const inputbg = useColorModeValue('darkheading', 'textboxbg');
-  const cardbg = useColorModeValue('bg4', 'darkblue');
+  const [text2, inputbg, cardbg, text4] = useThemeColors([
+    'text2',
+    'inputbg',
+    'tooltipbg1',
+    'text4',
+  ]);
 
   const showInfoMaxSlippage = useMemo(() => {
     return (
       <div>
         <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
-          <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
+          <Icon fontSize="2xl" color={text4} as={MdInfo} m={1} />
           <Text color="gray.500" fontSize="xs" ml={2}>
             {data.find((item) => item.topic === 'max slippage')?.content}
           </Text>
         </Flex>
       </div>
     );
-  }, [cardbg]);
+  }, [cardbg, text4]);
 
   const showInfoTimeout = useMemo(() => {
     return (
       <div>
         <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
-          <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
+          <Icon fontSize="2xl" color={text4} as={MdInfo} m={1} />
           <Text color="gray.500" fontSize="xs" ml={2}>
             {data.find((item) => item.topic === 'timeout')?.content}
           </Text>
         </Flex>
       </div>
     );
-  }, [cardbg]);
+  }, [cardbg, text4]);
 
   return (
     <form autoComplete="off" onBlur={setLocalValuesToStore}>
@@ -95,7 +97,7 @@ const Settings: React.FC = () => {
             backgroundColor={cardbg}
           >
             <span>
-              <Icon opacity="0.3" fontSize="md" color="#B0B7C3" as={MdInfo} m={1} mb={1} />
+              <Icon opacity="0.3" fontSize="md" color={text4} as={MdInfo} m={1} mb={1} />
             </span>
           </Tooltip>
         </FormLabel>
@@ -125,7 +127,7 @@ const Settings: React.FC = () => {
             backgroundColor={cardbg}
           >
             <span>
-              <Icon opacity="0.3" fontSize="md" color="#B0B7C3" as={MdInfo} m={1} mb={1} />
+              <Icon opacity="0.3" fontSize="md" color={text4} as={MdInfo} m={1} mb={1} />
             </span>
           </Tooltip>
         </FormLabel>

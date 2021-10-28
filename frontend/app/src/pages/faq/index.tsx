@@ -8,15 +8,19 @@ import {
   Divider,
   Stack,
   Text,
-  useColorModeValue,
   useMediaQuery,
 } from '@chakra-ui/react';
 import data from '../../components/data/faq.json';
+import { useThemeColors } from '../../hooks/utilHooks';
 
 const FaqPage: React.FC = () => {
   const [largerScreen] = useMediaQuery(['(min-width: 800px)']);
-  const background = useColorModeValue('white', 'cardbgdark');
-  const text2 = useColorModeValue('text2', 'darkheading');
+  const [background, text2, text4, divider] = useThemeColors([
+    'cardbg',
+    'text2',
+    'text4',
+    'divider',
+  ]);
 
   const faq1 = data.faq1.map((item) => {
     return (
@@ -30,10 +34,10 @@ const FaqPage: React.FC = () => {
               <AccordionIcon />
             </AccordionButton>
           </h2>
-          <AccordionPanel fontWeight="500" color="#B0B7C3" pb={2}>
+          <AccordionPanel fontWeight="500" color={text4} pb={2}>
             {item.answer}
           </AccordionPanel>
-          <Divider color="#F1F1F1" />
+          <Divider color={divider} />
         </AccordionItem>
       </Accordion>
     );
@@ -51,10 +55,10 @@ const FaqPage: React.FC = () => {
               <AccordionIcon />
             </AccordionButton>
           </h2>
-          <AccordionPanel fontWeight="500" color="#B0B7C3" pb={2}>
+          <AccordionPanel fontWeight="500" color={text4} pb={2}>
             {item.answer}
           </AccordionPanel>
-          <Divider color="#F1F1F1" />
+          <Divider color={divider} />
         </AccordionItem>
       </Accordion>
     );

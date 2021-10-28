@@ -8,7 +8,7 @@ import {
   useState,
 } from 'react';
 import { TransactionWalletOperation, WalletOperation } from '@taquito/taquito';
-import { Flex, Spinner, useToast } from '@chakra-ui/react';
+import { Flex, Spinner, useColorMode, useToast } from '@chakra-ui/react';
 import { GroupBase, OptionsOrGroups } from 'react-select';
 import { getOvenMaxCtez } from '../utils/ovenUtils';
 import { useAppDispatch, useAppSelector } from '../redux/store';
@@ -339,4 +339,16 @@ const useBakerSelect: TUseBakerSelect = (delegates) => {
   return { bakerSelect, setBakerSelect, options, setOptions, handleBakerCreate };
 };
 
-export { useOvenStats, useOvenSummary, useSortedOvensList, useTxLoader, useBakerSelect };
+const useThemeColors = (colors: string[]) => {
+  const theme = useColorMode();
+  return colors.map((x) => `${theme.colorMode}.${x}`);
+};
+
+export {
+  useOvenStats,
+  useOvenSummary,
+  useSortedOvensList,
+  useTxLoader,
+  useBakerSelect,
+  useThemeColors,
+};

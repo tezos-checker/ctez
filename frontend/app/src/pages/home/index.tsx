@@ -1,14 +1,15 @@
-import { Flex, HStack, Stack, Text, useColorModeValue, useMediaQuery } from '@chakra-ui/react';
+import { Flex, HStack, Stack, Text, useMediaQuery } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
 import Button from '../../components/button/Button';
 import Trade from '../../components/Trade';
 import { MODAL_NAMES } from '../../constants/modals';
 import { BUTTON_TXT } from '../../constants/swap';
+import { useThemeColors } from '../../hooks/utilHooks';
 import { openModal } from '../../redux/slices/UiSlice';
 import { useAppDispatch } from '../../redux/store';
 
 const HomePage: React.FC = () => {
-  const textcolor = useColorModeValue('darkgray', 'white');
+  const [textcolor] = useThemeColors(['homeTxt']);
   const [largerScreen] = useMediaQuery(['(min-width: 900px)']);
   const dispatch = useAppDispatch();
 
