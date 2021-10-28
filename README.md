@@ -1,10 +1,5 @@
 # ctez
-Ctez contract and frontend
-
-## IMPORTANT
-
-**The code within is currently unverified, unaudited, and untested.
-You are absolutely mad if you try to use it for anything serious.**
+Ctez contracts and frontend
 
 ## Introduction
 
@@ -48,4 +43,4 @@ The drift is a mechanism that automatically discovers a competitive rate at whic
 
 ## Why it's useful
 
-ctez can be used directly in smart-contracts that would normally pool tez together without the thorny question of "who's baking".Given that there's almost no real movement in this pair, it doesn't need a whole lot of liquidity to function effectively, just a tad enough that the rate read from the contract isn't too noisy, hence the lack of baking shouldn't be a huge hindrance.
+ctez can be used directly in smart-contracts that would normally pool tez together without the thorny question of "who's baking". Given that there's almost no real movement in this pair, it doesn't need a whole lot of liquidity to function effectively, just a tad enough that the rate read from the contract isn't too noisy, hence the lack of baking shouldn't be a huge hindrance.
