@@ -11,7 +11,6 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
-  useColorModeValue,
   useRadioGroup,
   useToast,
 } from '@chakra-ui/react';
@@ -31,7 +30,7 @@ import Button from '../button/Button';
 import DepositorsInput from '../input/DepositorsInput';
 import { makeLastOvenIdSelector } from '../../hooks/reduxSelectors';
 import { useAppSelector } from '../../redux/store';
-import { useBakerSelect, useTxLoader } from '../../hooks/utilHooks';
+import { useBakerSelect, useThemeColors, useTxLoader } from '../../hooks/utilHooks';
 
 interface ICreateOvenProps {
   isOpen: boolean;
@@ -65,10 +64,13 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
   const { t } = useTranslation(['common']);
   const options = ['Whitelist', 'Everyone'];
   const { data: balance } = useUserBalance(userAddress);
-  const text2 = useColorModeValue('text2', 'darkheading');
-  const text4Text4 = useColorModeValue('text4', 'text4');
-  const inputbg = useColorModeValue('darkheading', 'textboxbg');
-  const text1 = useColorModeValue('text1', 'darkheading');
+  const [text1, text2, inputbg, text4Text4, maxColor] = useThemeColors([
+    'text1',
+    'text2',
+    'inputbg',
+    'text4',
+    'maxColor',
+  ]);
   const selectLastOvenId = useMemo(makeLastOvenIdSelector, []);
   const handleProcessing = useTxLoader();
 
@@ -245,7 +247,7 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
                 <Text
                   as="span"
                   cursor="pointer"
-                  color="#e35f5f"
+                  color={maxColor}
                   onClick={() => formik.setFieldValue('amount', balance?.xtz)}
                 >
                   (Max)

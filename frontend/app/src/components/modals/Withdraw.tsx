@@ -14,7 +14,6 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
-  useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
 import { useCallback, useMemo } from 'react';
@@ -30,7 +29,7 @@ import Button from '../button/Button';
 import { TezIcon } from '../icons';
 import { BUTTON_TXT } from '../../constants/swap';
 import { AllOvenDatum } from '../../interfaces';
-import { useOvenStats, useTxLoader } from '../../hooks/utilHooks';
+import { useOvenStats, useThemeColors, useTxLoader } from '../../hooks/utilHooks';
 
 interface IWithdrawProps {
   isOpen: boolean;
@@ -40,17 +39,20 @@ interface IWithdrawProps {
 
 const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose, oven }) => {
   const { t } = useTranslation(['common']);
-  const text2 = useColorModeValue('text2', 'darkheading');
-  const text1 = useColorModeValue('text1', 'darkheading');
-  const inputbg = useColorModeValue('darkheading', 'textboxbg');
-  const cardbg = useColorModeValue('bg3', 'darkblue');
   const [{ pkh: userAddress }] = useWallet();
   const toast = useToast();
-  const text4Text4 = useColorModeValue('text4', 'text4');
+  const [cardbg, text2, text1, inputbg, text4Text4, maxColor] = useThemeColors([
+    'tooltipbg',
+    'text2',
+    'text1',
+    'inputbg',
+    'text4',
+    'maxColor',
+  ]);
   const { stats } = useOvenStats(oven);
   const handleProcessing = useTxLoader();
-  const initialValues: any = {
-    amount: '',
+  const initialValues: IWithdrawForm = {
+    amount: 0,
     to: userAddress ?? '',
   };
 
@@ -130,7 +132,7 @@ const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose, oven }) => {
           <ModalCloseButton />
           <ModalBody>
             <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
-              <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
+              <Icon fontSize="2xl" color={text4Text4} as={MdInfo} m={1} />
               <Text color="gray.500" fontSize="xs" ml={2}>
                 If the collateral ratio in a vault is observed at or below the emergency collateral
                 ratio, the vault becomes available for liquidation.
@@ -174,7 +176,7 @@ const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose, oven }) => {
                 <Text
                   as="span"
                   cursor="pointer"
-                  color="#e35f5f"
+                  color={maxColor}
                   onClick={() =>
                     formik.setFieldValue('amount', Math.abs(stats?.withdrawableTez ?? 0).toFixed(6))
                   }

@@ -94,7 +94,7 @@ const SignIn: React.FC = () => {
                 ml={2}
                 w={3}
                 h={3}
-                color="#62737F"
+                color="light.tradebg"
                 _hover={{ cursor: 'pointer' }}
                 as={copy}
               />

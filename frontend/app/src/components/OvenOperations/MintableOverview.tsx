@@ -8,11 +8,10 @@ import {
   Stack,
   Text,
   Tooltip,
-  useColorModeValue,
 } from '@chakra-ui/react';
 import { MdInfo } from 'react-icons/md';
 import { useMemo, useState } from 'react';
-import { useOvenStats } from '../../hooks/utilHooks';
+import { useOvenStats, useThemeColors } from '../../hooks/utilHooks';
 import Button from '../button/Button';
 import Burn from '../modals/Burn';
 import Mint from '../modals/Mint';
@@ -22,48 +21,51 @@ import { formatNumberStandard } from '../../utils/numbers';
 
 const MintableOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
   const { stats } = useOvenStats(oven);
-  const background = useColorModeValue('white', 'cardbgdark');
-  const textcolor = useColorModeValue('text2', 'white');
   const [mintOpen, setMintOpen] = useState<boolean>(false);
   const [burnOpen, setBurnOpen] = useState<boolean>(false);
-  const cardbg = useColorModeValue('bg4', 'darkblue');
+  const [background, textcolor, cardbg, text4Text4] = useThemeColors([
+    'cardbg',
+    'textColor',
+    'tooltipbg1',
+    'text4',
+  ]);
 
   const showInfoOutstanding = useMemo(() => {
     return (
       <div>
         <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
-          <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
+          <Icon fontSize="2xl" color={text4Text4} as={MdInfo} m={1} />
           <Text color="gray.500" fontSize="xs" ml={2}>
             {data.find((item) => item.topic === 'outstanding')?.content}
           </Text>
         </Flex>
       </div>
     );
-  }, [cardbg]);
+  }, [cardbg, text4Text4]);
   const showInfoMaxMintable = useMemo(() => {
     return (
       <div>
         <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
-          <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
+          <Icon fontSize="2xl" color={text4Text4} as={MdInfo} m={1} />
           <Text color="gray.500" fontSize="xs" ml={2}>
             {data.find((item) => item.topic === 'mintable')?.content}
           </Text>
         </Flex>
       </div>
     );
-  }, [cardbg]);
+  }, [cardbg, text4Text4]);
   const showInfoRemainingMintable = useMemo(() => {
     return (
       <div>
         <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
-          <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
+          <Icon fontSize="2xl" color={text4Text4} as={MdInfo} m={1} />
           <Text color="gray.500" fontSize="xs" ml={2}>
             {data.find((item) => item.topic === 'remaining mintable')?.content}
           </Text>
         </Flex>
       </div>
     );
-  }, [cardbg]);
+  }, [cardbg, text4Text4]);
 
   const modals = useMemo(() => {
     if (!oven) {
@@ -94,7 +96,7 @@ const MintableOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => 
               </Text>
             </Skeleton>
 
-            <Text color="#B0B7C3" fontSize="xs">
+            <Text color={text4Text4} fontSize="xs">
               Outstanding
               <Tooltip
                 label={showInfoOutstanding}
@@ -103,7 +105,7 @@ const MintableOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => 
                 backgroundColor={cardbg}
               >
                 <span>
-                  <Icon opacity="0.3" fontSize="md" color="#B0B7C3" as={MdInfo} m={1} mb={1} />
+                  <Icon opacity="0.3" fontSize="md" color={text4Text4} as={MdInfo} m={1} mb={1} />
                 </span>
               </Tooltip>
             </Text>
@@ -120,7 +122,7 @@ const MintableOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => 
               </Text>
             </Skeleton>
 
-            <Text color="#B0B7C3" fontSize="xs">
+            <Text color={text4Text4} fontSize="xs">
               Maximum Mintable
               <Tooltip
                 label={showInfoMaxMintable}
@@ -129,7 +131,7 @@ const MintableOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => 
                 backgroundColor={cardbg}
               >
                 <span>
-                  <Icon opacity="0.3" fontSize="md" color="#B0B7C3" as={MdInfo} m={1} mb={1} />
+                  <Icon opacity="0.3" fontSize="md" color={text4Text4} as={MdInfo} m={1} mb={1} />
                 </span>
               </Tooltip>
             </Text>
@@ -146,7 +148,7 @@ const MintableOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => 
               </Text>
             </Skeleton>
 
-            <Text color="#B0B7C3" fontSize="xs">
+            <Text color={text4Text4} fontSize="xs">
               Remaining Mintable
               <Tooltip
                 label={showInfoRemainingMintable}
@@ -155,7 +157,7 @@ const MintableOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => 
                 backgroundColor={cardbg}
               >
                 <span>
-                  <Icon opacity="0.3" fontSize="md" color="#B0B7C3" as={MdInfo} m={1} mb={1} />
+                  <Icon opacity="0.3" fontSize="md" color={text4Text4} as={MdInfo} m={1} mb={1} />
                 </span>
               </Tooltip>
             </Text>

@@ -7,7 +7,6 @@ import {
   InputGroup,
   InputRightElement,
   Text,
-  useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
 import { MdAdd, MdSwapVert } from 'react-icons/md';
@@ -32,7 +31,7 @@ import { logger } from '../../../utils/logger';
 import { useSetCtezBaseStatsToStore } from '../../../hooks/setApiDataToStore';
 import { useAppSelector } from '../../../redux/store';
 import Button from '../../button/Button';
-import { useTxLoader } from '../../../hooks/utilHooks';
+import { useThemeColors, useTxLoader } from '../../../hooks/utilHooks';
 import { formatNumberStandard } from '../../../utils/numbers';
 
 const Swap: React.FC = () => {
@@ -45,9 +44,12 @@ const Swap: React.FC = () => {
   const toast = useToast();
   useSetCtezBaseStatsToStore(userAddress);
   const baseStats = useAppSelector((state) => state.stats?.baseStats);
-  const text2 = useColorModeValue('text2', 'darkheading');
-  const text4Text4 = useColorModeValue('text4', 'text4');
-  const inputbg = useColorModeValue('darkheading', 'textboxbg');
+  const [text2, inputbg, text4Text4, maxColor] = useThemeColors([
+    'text2',
+    'inputbg',
+    'text4',
+    'maxColor',
+  ]);
   const handleProcessing = useTxLoader();
 
   const { slippage, deadline: deadlineFromStore } = useAppSelector((state) => state.trade);
@@ -220,7 +222,7 @@ const Swap: React.FC = () => {
           <Text
             as="span"
             cursor="pointer"
-            color="#e35f5f"
+            color={maxColor}
             onClick={() =>
               formik.setFieldValue(
                 'amount',

@@ -10,7 +10,6 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
 import { useTranslation } from 'react-i18next';
@@ -20,7 +19,7 @@ import { useFormik } from 'formik';
 import { cTezError, liquidate } from '../../contracts/ctez';
 import Button from '../button/Button';
 import { AllOvenDatum } from '../../interfaces';
-import { useTxLoader } from '../../hooks/utilHooks';
+import { useThemeColors, useTxLoader } from '../../hooks/utilHooks';
 import { useWallet } from '../../wallet/hooks';
 
 interface LiquidateForm {
@@ -36,16 +35,14 @@ interface ILiquidateProps {
 
 const LiquidateOven: React.FC<ILiquidateProps> = ({ isOpen, onClose, oven }) => {
   const toast = useToast();
-  const text1 = useColorModeValue('text1', 'darkheading');
-  const text2 = useColorModeValue('text2', 'darkheading');
-  const inputbg = useColorModeValue('darkheading', 'textboxbg');
+  const [text1, text2, inputbg] = useThemeColors(['text1', 'text2', 'inputbg']);
   const handleProcessing = useTxLoader();
   const [{ pkh: userAddress }] = useWallet();
 
   const { t } = useTranslation(['common']);
-  const initialValues: any = {
+  const initialValues: LiquidateForm = {
     ovenOwner: oven?.key.owner ?? '',
-    amount: '',
+    amount: 0,
     to: userAddress ?? '',
   };
 

@@ -1,12 +1,13 @@
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import { Box, Flex, useColorModeValue } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
 import React, { useState, Suspense } from 'react';
 import { routes } from './routes';
 import { Sidebar } from '../components/sidebar/Sidebar';
 import { Header } from '../components/header/Header';
+import { useThemeColors } from '../hooks/utilHooks';
 
 export const AppRouter: React.FC = () => {
-  const backgroundColor = useColorModeValue('gray.100', '#0A194E');
+  const [backgroundColor] = useThemeColors(['routerBg']);
   const [toggled, setToggled] = useState(false);
   const [collapsed, setCollapsed] = useState(true);
 

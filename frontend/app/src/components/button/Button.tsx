@@ -1,16 +1,11 @@
 import React, { MouseEventHandler, useMemo } from 'react';
-import {
-  Button as ChakraButton,
-  useColorMode,
-  Box,
-  useColorModeValue,
-  CSSObject,
-} from '@chakra-ui/react';
+import { Button as ChakraButton, useColorMode, Box, CSSObject } from '@chakra-ui/react';
 import { ButtonProps } from '@chakra-ui/button';
 import { useWallet } from '../../wallet/hooks';
 import { getBeaconInstance } from '../../wallet';
 import { APP_NAME, NETWORK } from '../../utils/globals';
 import { setWalletProvider } from '../../contracts/client';
+import { useThemeColors } from '../../hooks/utilHooks';
 
 export interface IButtonProps extends ButtonProps {
   outerSx?: CSSObject;
@@ -21,7 +16,7 @@ export interface IButtonProps extends ButtonProps {
 const Button: React.FC<IButtonProps> = (props) => {
   const [{ pkh: userAddress }, setWallet] = useWallet();
   const { colorMode } = useColorMode();
-  const background = useColorModeValue('white', 'cardbgdark');
+  const [background] = useThemeColors(['cardbg']);
 
   const content = useMemo(() => {
     if (props.walletGuard && !userAddress) {

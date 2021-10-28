@@ -1,14 +1,4 @@
-import {
-  Flex,
-  FormControl,
-  FormLabel,
-  Icon,
-  Input,
-  Stack,
-  Text,
-  useColorModeValue,
-  useToast,
-} from '@chakra-ui/react';
+import { Flex, FormControl, FormLabel, Icon, Input, Stack, Text, useToast } from '@chakra-ui/react';
 import { MdAdd } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -25,7 +15,7 @@ import { logger } from '../../../utils/logger';
 import { BUTTON_TXT } from '../../../constants/swap';
 import Button from '../../button/Button';
 import { useAppSelector } from '../../../redux/store';
-import { useTxLoader } from '../../../hooks/utilHooks';
+import { useThemeColors, useTxLoader } from '../../../hooks/utilHooks';
 import { formatNumberStandard } from '../../../utils/numbers';
 
 const AddLiquidity: React.FC = () => {
@@ -35,9 +25,12 @@ const AddLiquidity: React.FC = () => {
   const { data: balance } = useUserBalance(userAddress);
   const { t } = useTranslation(['common']);
   const toast = useToast();
-  const text2 = useColorModeValue('text2', 'darkheading');
-  const text4Text4 = useColorModeValue('text4', 'text4');
-  const inputbg = useColorModeValue('darkheading', 'textboxbg');
+  const [text2, inputbg, text4Text4, maxColor] = useThemeColors([
+    'text2',
+    'inputbg',
+    'text4',
+    'maxColor',
+  ]);
   const { slippage, deadline: deadlineFromStore } = useAppSelector((state) => state.trade);
   const handleProcessing = useTxLoader();
 
@@ -62,7 +55,7 @@ const AddLiquidity: React.FC = () => {
     [cfmmStorage, slippage],
   );
 
-  const initialValues: any = {
+  const initialValues: IAddLiquidityForm = {
     slippage: Number(slippage),
     deadline: Number(deadlineFromStore),
     amount: undefined,
@@ -166,7 +159,7 @@ const AddLiquidity: React.FC = () => {
               <Text
                 as="span"
                 cursor="pointer"
-                color="#e35f5f"
+                color={maxColor}
                 onClick={() => formik.setFieldValue('amount', formatNumberStandard(balance?.xtz))}
               >
                 (Max)

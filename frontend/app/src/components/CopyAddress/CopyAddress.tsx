@@ -1,6 +1,7 @@
 import React, { MouseEvent as ReactMouseEvent } from 'react';
-import { Text, Flex, Box, useToast, useColorModeValue } from '@chakra-ui/react';
+import { Text, Flex, Box, useToast } from '@chakra-ui/react';
 import { MdContentCopy } from 'react-icons/md';
+import { useThemeColors } from '../../hooks/utilHooks';
 
 export interface Props {
   address: string;
@@ -10,7 +11,7 @@ export interface Props {
 
 const CopyAddress: React.FC<Props> = ({ children, address, placement, spaced }) => {
   const toast = useToast();
-  const cardbg = useColorModeValue('white', 'cardbgdark');
+  const [cardbg] = useThemeColors(['cardbg']);
 
   function onClickCopy(e: ReactMouseEvent<SVGElement, MouseEvent>) {
     e.stopPropagation();
