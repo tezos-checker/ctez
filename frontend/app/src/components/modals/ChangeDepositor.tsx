@@ -123,12 +123,6 @@ const ChangeDepositor: React.FC<IChangeDepositorProps> = (props) => {
           userDenyList,
         );
         handleProcessing(result);
-        if (result) {
-          toast({
-            description: t('txSubmitted'),
-            status: 'success',
-          });
-        }
       } catch (error) {
         logger.error(error);
         const errorText = cTezError[error?.data?.[1].with.int as number] || t('txFailed');

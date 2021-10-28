@@ -100,12 +100,6 @@ const Burn: React.FC<IBurnProps> = ({ isOpen, onClose, oven }) => {
         const amount = -data.amount;
         const result = await mintOrBurn(Number(oven.key.id), amount);
         handleProcessing(result);
-        if (result) {
-          toast({
-            description: t('txSubmitted'),
-            status: 'success',
-          });
-        }
       } catch (error) {
         logger.warn(error);
         const errorText = cTezError[error.data[1].with.int as number] || t('txFailed');
