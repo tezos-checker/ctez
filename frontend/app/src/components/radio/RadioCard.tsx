@@ -24,7 +24,7 @@ const RadioCard: React.FC<UseRadioProps> = (props) => {
         boxShadow="md"
         _checked={{
           bgGradient: 'linear(90.5deg, #0F62FF 8.62%, #6B5BD2 102.96%)',
-          color: 'white',
+          color: 'light.cardbg',
         }}
         px={5}
         py={3}
