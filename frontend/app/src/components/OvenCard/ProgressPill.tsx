@@ -15,7 +15,7 @@ interface IProgressPill {
 
 const ProgressPill: React.FC<IProgressPill> = ({ value, oven, type, warning }) => {
   const [liquidateOven, setliquidateOven] = useState(false);
-  const [progressPillBg, cardbg, text4Text4, red, orange] = useThemeColors([
+  const [progressPillBg, cardbg, text4, red, orange] = useThemeColors([
     'progressPillBg',
     'tooltipbg1',
     'text4',
@@ -38,14 +38,14 @@ const ProgressPill: React.FC<IProgressPill> = ({ value, oven, type, warning }) =
     return (
       <div>
         <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
-          <Icon fontSize="2xl" color={text4Text4} as={MdInfo} m={1} />
+          <Icon fontSize="2xl" color={text4} as={MdInfo} m={1} />
           <Text color="gray.500" fontSize="xs" ml={2}>
             Deposit more tez as collateral or burn ctez, to avoid liquidation
           </Text>
         </Flex>
       </div>
     );
-  }, [cardbg, text4Text4]);
+  }, [cardbg, text4]);
 
   return (
     <div>

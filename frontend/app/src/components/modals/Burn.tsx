@@ -42,7 +42,7 @@ const Burn: React.FC<IBurnProps> = ({ isOpen, onClose, oven }) => {
   const [{ pkh: userAddress }] = useWallet();
   const { t } = useTranslation(['common']);
   const toast = useToast();
-  const [cardbg, text2, text1, inputbg, text4Text4, maxColor] = useThemeColors([
+  const [cardbg, text2, text1, inputbg, text4, maxColor] = useThemeColors([
     'tooltipbg',
     'text2',
     'text1',
@@ -141,7 +141,7 @@ const Burn: React.FC<IBurnProps> = ({ isOpen, onClose, oven }) => {
           <ModalCloseButton />
           <ModalBody>
             <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
-              <Icon fontSize="2xl" color={text4Text4} as={MdInfo} m={1} />
+              <Icon fontSize="2xl" color={text4} as={MdInfo} m={1} />
               <Text fontSize="xs" ml={2}>
                 If the collateral ratio in a vault is observed at or below the emergency collateral
                 ratio, the vault becomes available for liquidation.
@@ -165,7 +165,7 @@ const Burn: React.FC<IBurnProps> = ({ isOpen, onClose, oven }) => {
                 />
                 {getRightElement()}
               </InputGroup>
-              <Text color={text4Text4} fontSize="xs" mt={1}>
+              <Text color={text4} fontSize="xs" mt={1}>
                 Balance: {Math.min(userBalance?.ctez ?? 0, stats?.outStandingCtez ?? 0)}{' '}
                 <Text
                   as="span"

@@ -63,7 +63,7 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
   const options = ['Whitelist', 'Everyone'];
   const { data: balance } = useUserBalance(userAddress);
   const { data: userOvens } = useUserOvenData(userAddress);
-  const [text1, text2, inputbg, text4Text4, maxColor] = useThemeColors([
+  const [text1, text2, inputbg, text4, maxColor] = useThemeColors([
     'text1',
     'text2',
     'inputbg',
@@ -238,7 +238,7 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
                 value={values.amount}
                 onChange={handleChange}
               />
-              <Text color={text4Text4} fontSize="xs" mt={1}>
+              <Text color={text4} fontSize="xs" mt={1}>
                 Balance: {balance?.xtz}{' '}
                 <Text
                   as="span"

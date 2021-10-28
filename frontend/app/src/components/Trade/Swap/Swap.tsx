@@ -42,7 +42,7 @@ const Swap: React.FC = () => {
   const { t } = useTranslation(['common', 'header']);
   const toast = useToast();
   const { data: baseStats } = useCtezBaseStats();
-  const [text2, inputbg, text4Text4, maxColor] = useThemeColors([
+  const [text2, inputbg, text4, maxColor] = useThemeColors([
     'text2',
     'inputbg',
     'text4',
@@ -212,7 +212,7 @@ const Swap: React.FC = () => {
           />
           {getRightElement(formType === FORM_TYPE.CTEZ_TEZ ? TOKEN.CTez : TOKEN.Tez)}
         </InputGroup>
-        <Text color={text4Text4} fontSize="xs" mt={1}>
+        <Text color={text4} fontSize="xs" mt={1}>
           Balance:{' '}
           {formType === FORM_TYPE.CTEZ_TEZ
             ? formatNumberStandard(balance?.ctez)
@@ -272,7 +272,7 @@ const Swap: React.FC = () => {
           />
           {getRightElement(formType === FORM_TYPE.CTEZ_TEZ ? TOKEN.Tez : TOKEN.CTez)}
         </InputGroup>
-        <Text color={text4Text4} fontSize="xs" mt={1}>
+        <Text color={text4} fontSize="xs" mt={1}>
           Balance:{' '}
           {formType === FORM_TYPE.CTEZ_TEZ
             ? formatNumberStandard(balance?.xtz)

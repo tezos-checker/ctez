@@ -21,7 +21,7 @@ const DepositorsInfo: React.FC<{ oven: AllOvenDatum | undefined; isImported: boo
   const { data: ovenStorageData } = useOvenStorage(oven?.value.address);
   const { data: baker } = useOvenDelegate(oven?.value.address);
   const [edit, setEdit] = useState(false);
-  const [background, textcolor, cardbg, text4Text4] = useThemeColors([
+  const [background, textcolor, cardbg, text4] = useThemeColors([
     'cardbg',
     'textColor',
     'tooltipbg1',
@@ -32,14 +32,14 @@ const DepositorsInfo: React.FC<{ oven: AllOvenDatum | undefined; isImported: boo
     return (
       <div>
         <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
-          <Icon fontSize="2xl" color={text4Text4} as={MdInfo} m={1} />
+          <Icon fontSize="2xl" color={text4} as={MdInfo} m={1} />
           <Text color="gray.500" fontSize="xs" ml={2}>
             {data.find((item) => item.topic === 'Authorized Depositors')?.content}
           </Text>
         </Flex>
       </div>
     );
-  }, [cardbg, text4Text4]);
+  }, [cardbg, text4]);
 
   const { depositors, canAnyoneDeposit, isLoading } = useMemo(() => {
     if (!oven || !ovenStorageData || !userAddress) {
@@ -100,7 +100,7 @@ const DepositorsInfo: React.FC<{ oven: AllOvenDatum | undefined; isImported: boo
           Authorized Depositors
           <Tooltip label={showInfo} placement="right" borderRadius={14} backgroundColor={cardbg}>
             <span>
-              <Icon opacity="0.3" fontSize="lg" color={text4Text4} as={MdInfo} m={1} mb={1} />
+              <Icon opacity="0.3" fontSize="lg" color={text4} as={MdInfo} m={1} mb={1} />
             </span>
           </Tooltip>
         </Text>

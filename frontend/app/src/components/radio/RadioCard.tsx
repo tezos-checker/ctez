@@ -1,4 +1,4 @@
-import { Box, Checkbox, Flex, useColorModeValue, useRadio } from '@chakra-ui/react';
+import { Box, Checkbox, Flex, useRadio } from '@chakra-ui/react';
 import { UseRadioProps } from '@chakra-ui/radio/dist/types/use-radio';
 import { useThemeColors } from '../../hooks/utilHooks';
 

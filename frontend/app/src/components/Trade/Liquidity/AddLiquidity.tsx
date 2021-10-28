@@ -25,7 +25,7 @@ const AddLiquidity: React.FC = () => {
   const { data: balance } = useUserBalance(userAddress);
   const { t } = useTranslation(['common']);
   const toast = useToast();
-  const [text2, inputbg, text4Text4, maxColor] = useThemeColors([
+  const [text2, inputbg, text4, maxColor] = useThemeColors([
     'text2',
     'inputbg',
     'text4',
@@ -154,7 +154,7 @@ const AddLiquidity: React.FC = () => {
               type="number"
               lang="en-US"
             />
-            <Text color={text4Text4} fontSize="xs" mt={1}>
+            <Text color={text4} fontSize="xs" mt={1}>
               Balance: {formatNumberStandard(balance?.xtz)}{' '}
               <Text
                 as="span"
@@ -182,7 +182,7 @@ const AddLiquidity: React.FC = () => {
               type="number"
               mt={-2}
             />
-            <Text color={text4Text4} fontSize="xs" mb={0}>
+            <Text color={text4} fontSize="xs" mb={0}>
               Balance: {formatNumberStandard(balance?.ctez)}
             </Text>
           </FormControl>

@@ -19,10 +19,10 @@ import CopyAddress from '../CopyAddress/CopyAddress';
 
 const OvenStats: React.FC<{ oven: AllOvenDatum | undefined; isImported: boolean }> = ({ oven }) => {
   const { stats } = useOvenStats(oven);
-  const [background, textcolor, text4color, cardbg, text4Text4] = useThemeColors([
+  const [background, textcolor, text3, cardbg, text4] = useThemeColors([
     'cardbg',
     'textColor',
-    'text4color',
+    'text3',
     'tooltipbg1',
     'text4',
   ]);
@@ -31,38 +31,38 @@ const OvenStats: React.FC<{ oven: AllOvenDatum | undefined; isImported: boolean 
     return (
       <div>
         <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
-          <Icon fontSize="2xl" color={text4Text4} as={MdInfo} m={1} />
+          <Icon fontSize="2xl" color={text4} as={MdInfo} m={1} />
           <Text color="gray.500" fontSize="xs" ml={2}>
             {data.find((item) => item.topic === 'oven address')?.content}
           </Text>
         </Flex>
       </div>
     );
-  }, [cardbg, text4Text4]);
+  }, [cardbg, text4]);
   const showInfoCollateralRatio = useMemo(() => {
     return (
       <div>
         <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
-          <Icon fontSize="2xl" color={text4Text4} as={MdInfo} m={1} />
+          <Icon fontSize="2xl" color={text4} as={MdInfo} m={1} />
           <Text color="gray.500" fontSize="xs" ml={2}>
             {data.find((item) => item.topic === 'collateral ratio')?.content}
           </Text>
         </Flex>
       </div>
     );
-  }, [cardbg, text4Text4]);
+  }, [cardbg, text4]);
   const showInfoCollateralUtilization = useMemo(() => {
     return (
       <div>
         <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
-          <Icon fontSize="2xl" color={text4Text4} as={MdInfo} m={1} />
+          <Icon fontSize="2xl" color={text4} as={MdInfo} m={1} />
           <Text color="gray.500" fontSize="xs" ml={2}>
             {data.find((item) => item.topic === 'Collateral Utilization')?.content}
           </Text>
         </Flex>
       </div>
     );
-  }, [cardbg, text4Text4]);
+  }, [cardbg, text4]);
 
   return (
     <Stack p={8} spacing={4} backgroundColor={background} borderRadius={16}>
@@ -71,7 +71,7 @@ const OvenStats: React.FC<{ oven: AllOvenDatum | undefined; isImported: boolean 
           Oven Stats
           <Tooltip label={showInfo} placement="right" borderRadius={14} backgroundColor={cardbg}>
             <span>
-              <Icon opacity="0.3" fontSize="lg" color={text4Text4} as={MdInfo} m={1} mb={1} />
+              <Icon opacity="0.3" fontSize="lg" color={text4} as={MdInfo} m={1} mb={1} />
             </span>
           </Tooltip>
         </Text>
@@ -83,7 +83,7 @@ const OvenStats: React.FC<{ oven: AllOvenDatum | undefined; isImported: boolean 
             {oven?.value.address == null ? (
               <SkeletonText noOfLines={1} w="300px" />
             ) : (
-              <Text color={text4color} as="span" fontSize="sm">
+              <Text color={text3} as="span" fontSize="sm">
                 <CopyAddress address={oven?.value.address}>{oven?.value.address}</CopyAddress>
               </Text>
             )}
@@ -103,7 +103,7 @@ const OvenStats: React.FC<{ oven: AllOvenDatum | undefined; isImported: boolean 
             </Text>
           )}
 
-          <Text color={text4color} fontSize="xs">
+          <Text color={text3} fontSize="xs">
             Collateral ratio
             <Tooltip
               label={showInfoCollateralRatio}
@@ -112,7 +112,7 @@ const OvenStats: React.FC<{ oven: AllOvenDatum | undefined; isImported: boolean 
               backgroundColor={cardbg}
             >
               <span>
-                <Icon opacity="0.3" fontSize="md" color={text4Text4} as={MdInfo} m={1} mb={1} />
+                <Icon opacity="0.3" fontSize="md" color={text4} as={MdInfo} m={1} mb={1} />
               </span>
             </Tooltip>
           </Text>
@@ -131,7 +131,7 @@ const OvenStats: React.FC<{ oven: AllOvenDatum | undefined; isImported: boolean 
               warning={null}
             />
           </Skeleton>
-          <Text color={text4color} fontSize="xs">
+          <Text color={text3} fontSize="xs">
             Collateral utilization
             <Tooltip
               label={showInfoCollateralUtilization}
@@ -140,7 +140,7 @@ const OvenStats: React.FC<{ oven: AllOvenDatum | undefined; isImported: boolean 
               backgroundColor={cardbg}
             >
               <span>
-                <Icon opacity="0.3" fontSize="md" color={text4Text4} as={MdInfo} m={1} mb={1} />
+                <Icon opacity="0.3" fontSize="md" color={text4} as={MdInfo} m={1} mb={1} />
               </span>
             </Tooltip>
           </Text>

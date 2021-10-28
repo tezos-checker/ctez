@@ -28,7 +28,7 @@ interface IOvenCardProps {
 }
 
 const OvenCard: React.FC<IOvenCardProps> = (props) => {
-  const [background, textcolor, imported, text4Text4] = useThemeColors([
+  const [background, textcolor, imported, text4] = useThemeColors([
     'cardbg',
     'textColor',
     'imported',
@@ -179,7 +179,7 @@ const OvenCard: React.FC<IOvenCardProps> = (props) => {
                 {item.value}
               </Text>
             )}
-            <Text fontWeight="500" color={text4Text4} fontSize="xs">
+            <Text fontWeight="500" color={text4} fontSize="xs">
               {item.label}
             </Text>
           </Box>
@@ -191,7 +191,7 @@ const OvenCard: React.FC<IOvenCardProps> = (props) => {
             oven={props.oven}
             warning={result}
           />
-          <Text color={text4Text4} fontSize="xs">
+          <Text color={text4} fontSize="xs">
             Collateral Utilization
           </Text>
         </Box>

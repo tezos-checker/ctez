@@ -1,4 +1,4 @@
-import { Flex, Box, useColorMode, Text, useColorModeValue } from '@chakra-ui/react';
+import { Flex, Box, useColorMode, Text } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { useLocation, matchPath } from 'react-router-dom';
 import { FiMoon, FiSun } from 'react-icons/fi';

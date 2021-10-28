@@ -25,7 +25,7 @@ const RemoveLiquidity: React.FC = () => {
   const toast = useToast();
   const { data: cfmmStorage } = useCfmmStorage();
   const { t } = useTranslation(['common']);
-  const [text2, inputbg, text4Text4, maxColor] = useThemeColors([
+  const [text2, inputbg, text4, maxColor] = useThemeColors([
     'text2',
     'inputbg',
     'text4',
@@ -142,7 +142,7 @@ const RemoveLiquidity: React.FC = () => {
             lang="en-US"
           />
           {typeof userLqtData?.lqt !== 'undefined' && (
-            <Text color={text4Text4} fontSize="xs" mt={1}>
+            <Text color={text4} fontSize="xs" mt={1}>
               Balance: {formatNumberStandard(userLqtData?.lqt / 1e6)}{' '}
               <Text
                 as="span"

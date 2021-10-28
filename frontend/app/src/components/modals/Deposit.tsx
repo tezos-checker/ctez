@@ -42,7 +42,7 @@ const Deposit: React.FC<IDepositProps> = ({ isOpen, onClose, oven }) => {
   const toast = useToast();
   const [{ pkh: userAddress }] = useWallet();
   const handleProcessing = useTxLoader();
-  const [text2, text1, inputbg, text4Text4, maxColor] = useThemeColors([
+  const [text2, text1, inputbg, text4, maxColor] = useThemeColors([
     'text2',
     'text1',
     'inputbg',
@@ -137,7 +137,7 @@ const Deposit: React.FC<IDepositProps> = ({ isOpen, onClose, oven }) => {
                 {getRightElement()}
               </InputGroup>
               {typeof balance !== 'undefined' && (
-                <Text color={text4Text4} fontSize="xs" mt={1}>
+                <Text color={text4} fontSize="xs" mt={1}>
                   Balance: {formatNumber(balance.xtz, 0)}{' '}
                   <Text
                     as="span"

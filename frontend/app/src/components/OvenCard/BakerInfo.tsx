@@ -33,7 +33,7 @@ const BakerInfo: React.FC<{ oven: AllOvenDatum | undefined; isImported: boolean 
   const [loading, setLoading] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [edit, setEdit] = useState(false);
-  const [background, textcolor, cardbg, text4Text4] = useThemeColors([
+  const [background, textcolor, cardbg, text4] = useThemeColors([
     'cardbg',
     'textColor',
     'tooltipbg1',
@@ -45,14 +45,14 @@ const BakerInfo: React.FC<{ oven: AllOvenDatum | undefined; isImported: boolean 
     return (
       <div>
         <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
-          <Icon fontSize="2xl" color={text4Text4} as={MdInfo} m={1} />
+          <Icon fontSize="2xl" color={text4} as={MdInfo} m={1} />
           <Text color="gray.500" fontSize="xs" ml={2}>
             {data.find((item) => item.topic === 'baker')?.content}
           </Text>
         </Flex>
       </div>
     );
-  }, [cardbg, text4Text4]);
+  }, [cardbg, text4]);
 
   const handleConfirm = useCallback(async () => {
     setLoading(true);
@@ -189,7 +189,7 @@ const BakerInfo: React.FC<{ oven: AllOvenDatum | undefined; isImported: boolean 
         Baker
         <Tooltip label={showInfo} placement="right" borderRadius={14} backgroundColor={cardbg}>
           <span>
-            <Icon opacity="0.3" fontSize="lg" color={text4Text4} as={MdInfo} m={1} mb={1} />
+            <Icon opacity="0.3" fontSize="lg" color={text4} as={MdInfo} m={1} mb={1} />
           </span>
         </Tooltip>
       </Text>
