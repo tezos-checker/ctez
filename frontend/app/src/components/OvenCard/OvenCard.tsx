@@ -7,7 +7,6 @@ import {
   TagLabel,
   TagLeftIcon,
   Text,
-  useColorModeValue,
   useMediaQuery,
 } from '@chakra-ui/react';
 import React, { useMemo } from 'react';
@@ -15,7 +14,7 @@ import { Link } from 'react-router-dom';
 import { HiDownload } from 'react-icons/hi';
 import { AllOvenDatum } from '../../interfaces';
 import ProgressPill from './ProgressPill';
-import { useOvenStats } from '../../hooks/utilHooks';
+import { useOvenStats, useThemeColors } from '../../hooks/utilHooks';
 import CopyAddress from '../CopyAddress/CopyAddress';
 import { useCtezBaseStats } from '../../api/queries';
 import { isMonthFromLiquidation } from '../../api/contracts';
@@ -29,9 +28,12 @@ interface IOvenCardProps {
 }
 
 const OvenCard: React.FC<IOvenCardProps> = (props) => {
-  const background = useColorModeValue('white', 'cardbgdark');
-  const textcolor = useColorModeValue('text2', 'white');
-  const imported = useColorModeValue('blue', 'white');
+  const [background, textcolor, imported, text4] = useThemeColors([
+    'cardbg',
+    'textColor',
+    'imported',
+    'text4',
+  ]);
   const { stats } = useOvenStats(props.oven);
   const { data } = useCtezBaseStats();
   const [largerScreen] = useMediaQuery(['(min-width: 800px)']);
@@ -177,7 +179,7 @@ const OvenCard: React.FC<IOvenCardProps> = (props) => {
                 {item.value}
               </Text>
             )}
-            <Text fontWeight="500" color="#B0B7C3" fontSize="xs">
+            <Text fontWeight="500" color={text4} fontSize="xs">
               {item.label}
             </Text>
           </Box>
@@ -189,7 +191,7 @@ const OvenCard: React.FC<IOvenCardProps> = (props) => {
             oven={props.oven}
             warning={result}
           />
-          <Text color="#B0B7C3" fontSize="xs">
+          <Text color={text4} fontSize="xs">
             Collateral Utilization
           </Text>
         </Box>

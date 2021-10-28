@@ -11,7 +11,6 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
-  useColorModeValue,
   useRadioGroup,
   useToast,
 } from '@chakra-ui/react';
@@ -29,7 +28,7 @@ import { logger } from '../../utils/logger';
 import RadioCard from '../radio/RadioCard';
 import Button from '../button/Button';
 import DepositorsInput from '../input/DepositorsInput';
-import { useBakerSelect, useTxLoader } from '../../hooks/utilHooks';
+import { useBakerSelect, useTxLoader, useThemeColors } from '../../hooks/utilHooks';
 
 interface ICreateOvenProps {
   isOpen: boolean;
@@ -63,11 +62,14 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
   const { t } = useTranslation(['common']);
   const options = ['Whitelist', 'Everyone'];
   const { data: balance } = useUserBalance(userAddress);
-  const text2 = useColorModeValue('text2', 'darkheading');
-  const text4Text4 = useColorModeValue('text4', 'text4');
-  const inputbg = useColorModeValue('darkheading', 'textboxbg');
-  const text1 = useColorModeValue('text1', 'darkheading');
   const { data: userOvens } = useUserOvenData(userAddress);
+  const [text1, text2, inputbg, text4, maxColor] = useThemeColors([
+    'text1',
+    'text2',
+    'inputbg',
+    'text4',
+    'maxColor',
+  ]);
   const handleProcessing = useTxLoader();
 
   const lastOvenId = useMemo(() => {
@@ -154,14 +156,8 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
           depositors,
           data.amount,
         );
-        if (result) {
-          toast({
-            description: t('txSubmitted'),
-            status: 'success',
-          });
-          onClose();
-        }
         handleProcessing(result);
+        onClose();
       } catch (error) {
         logger.error(error);
         const errorText = cTezError[error?.data?.[1].with.int as number] || t('txFailed');
@@ -242,12 +238,12 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
                 value={values.amount}
                 onChange={handleChange}
               />
-              <Text color={text4Text4} fontSize="xs" mt={1}>
+              <Text color={text4} fontSize="xs" mt={1}>
                 Balance: {balance?.xtz}{' '}
                 <Text
                   as="span"
                   cursor="pointer"
-                  color="#e35f5f"
+                  color={maxColor}
                   onClick={() => formik.setFieldValue('amount', balance?.xtz)}
                 >
                   (Max)

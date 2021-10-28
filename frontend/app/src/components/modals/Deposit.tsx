@@ -11,7 +11,6 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
-  useColorModeValue,
   useToast,
 } from '@chakra-ui/react';
 import { useCallback, useMemo } from 'react';
@@ -28,7 +27,7 @@ import { logger } from '../../utils/logger';
 import Button from '../button/Button';
 import { TezIcon } from '../icons';
 import { AllOvenDatum } from '../../interfaces';
-import { useTxLoader } from '../../hooks/utilHooks';
+import { useThemeColors, useTxLoader } from '../../hooks/utilHooks';
 import { useWallet } from '../../wallet/hooks';
 import { useUserBalance } from '../../api/queries';
 import { formatNumber } from '../../utils/numbers';
@@ -42,11 +41,14 @@ interface IDepositProps {
 const Deposit: React.FC<IDepositProps> = ({ isOpen, onClose, oven }) => {
   const toast = useToast();
   const [{ pkh: userAddress }] = useWallet();
-  const text1 = useColorModeValue('text1', 'darkheading');
-  const text2 = useColorModeValue('text2', 'darkheading');
-  const inputbg = useColorModeValue('darkheading', 'textboxbg');
   const handleProcessing = useTxLoader();
-  const text4Text4 = useColorModeValue('text4', 'text4');
+  const [text2, text1, inputbg, text4, maxColor] = useThemeColors([
+    'text2',
+    'text1',
+    'inputbg',
+    'text4',
+    'maxColor',
+  ]);
   const { data: balance } = useUserBalance(userAddress);
 
   const getRightElement = useCallback(() => {
@@ -61,8 +63,8 @@ const Deposit: React.FC<IDepositProps> = ({ isOpen, onClose, oven }) => {
   }, [text2]);
 
   const { t } = useTranslation(['common']);
-  const initialValues: any = {
-    amount: '',
+  const initialValues: IDepositForm = {
+    amount: 0,
   };
 
   const maxValue = (): number => balance?.xtz || 0.0;
@@ -79,12 +81,6 @@ const Deposit: React.FC<IDepositProps> = ({ isOpen, onClose, oven }) => {
       try {
         const result = await deposit(oven.value.address, data.amount);
         handleProcessing(result);
-        if (result) {
-          toast({
-            description: t('txSubmitted'),
-            status: 'success',
-          });
-        }
       } catch (error) {
         logger.error(error);
         const errorText = cTezError[error.data[1].with.int as number] || t('txFailed');
@@ -141,12 +137,12 @@ const Deposit: React.FC<IDepositProps> = ({ isOpen, onClose, oven }) => {
                 {getRightElement()}
               </InputGroup>
               {typeof balance !== 'undefined' && (
-                <Text color={text4Text4} fontSize="xs" mt={1}>
+                <Text color={text4} fontSize="xs" mt={1}>
                   Balance: {formatNumber(balance.xtz, 0)}{' '}
                   <Text
                     as="span"
                     cursor="pointer"
-                    color="#e35f5f"
+                    color={maxColor}
                     onClick={() => formik.setFieldValue('amount', formatNumber(balance.xtz, 0))}
                   >
                     (Max)

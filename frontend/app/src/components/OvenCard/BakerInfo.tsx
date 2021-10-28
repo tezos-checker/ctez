@@ -1,15 +1,4 @@
-import {
-  Box,
-  Divider,
-  Flex,
-  Icon,
-  Spacer,
-  Stack,
-  Text,
-  Tooltip,
-  useColorModeValue,
-  useToast,
-} from '@chakra-ui/react';
+import { Box, Divider, Flex, Icon, Spacer, Stack, Text, Tooltip, useToast } from '@chakra-ui/react';
 import CreatableSelect from 'react-select/creatable';
 import { MdInfo } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
@@ -24,7 +13,7 @@ import Identicon from '../avatar/Identicon';
 import { AllOvenDatum } from '../../interfaces';
 import SkeletonLayout from '../skeleton';
 import data from '../../assets/data/info.json';
-import { useBakerSelect, useTxLoader } from '../../hooks/utilHooks';
+import { useBakerSelect, useThemeColors, useTxLoader } from '../../hooks/utilHooks';
 import CopyAddress from '../CopyAddress/CopyAddress';
 
 type TOption = { label: string; value: string };
@@ -39,30 +28,31 @@ const BakerInfo: React.FC<{ oven: AllOvenDatum | undefined; isImported: boolean 
   const { data: baker, refetch: refetchBaker } = useOvenDelegate(oven?.value.address);
 
   const toast = useToast();
-
-  const background = useColorModeValue('white', 'cardbgdark');
-  const textcolor = useColorModeValue('text2', 'white');
-
   const { bakerSelect, setBakerSelect, options, handleBakerCreate } = useBakerSelect(delegates);
 
   const [loading, setLoading] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [edit, setEdit] = useState(false);
-  const cardbg = useColorModeValue('bg4', 'darkblue');
+  const [background, textcolor, cardbg, text4] = useThemeColors([
+    'cardbg',
+    'textColor',
+    'tooltipbg1',
+    'text4',
+  ]);
   const handleProcessing = useTxLoader();
 
   const showInfo = useMemo(() => {
     return (
       <div>
         <Flex mr={-2} ml={-2} p={2} borderRadius={14} backgroundColor={cardbg}>
-          <Icon fontSize="2xl" color="#B0B7C3" as={MdInfo} m={1} />
+          <Icon fontSize="2xl" color={text4} as={MdInfo} m={1} />
           <Text color="gray.500" fontSize="xs" ml={2}>
             {data.find((item) => item.topic === 'baker')?.content}
           </Text>
         </Flex>
       </div>
     );
-  }, [cardbg]);
+  }, [cardbg, text4]);
 
   const handleConfirm = useCallback(async () => {
     setLoading(true);
@@ -199,7 +189,7 @@ const BakerInfo: React.FC<{ oven: AllOvenDatum | undefined; isImported: boolean 
         Baker
         <Tooltip label={showInfo} placement="right" borderRadius={14} backgroundColor={cardbg}>
           <span>
-            <Icon opacity="0.3" fontSize="lg" color="#B0B7C3" as={MdInfo} m={1} mb={1} />
+            <Icon opacity="0.3" fontSize="lg" color={text4} as={MdInfo} m={1} mb={1} />
           </span>
         </Tooltip>
       </Text>

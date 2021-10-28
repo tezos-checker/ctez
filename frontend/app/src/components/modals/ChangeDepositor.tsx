@@ -11,7 +11,6 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  useColorModeValue,
   useRadioGroup,
   useToast,
 } from '@chakra-ui/react';
@@ -25,7 +24,7 @@ import { trimAddress } from '../../utils/addressUtils';
 import { useWallet } from '../../wallet/hooks';
 import { addRemoveDepositorList, cTezError, enableDisableAnyDepositor } from '../../contracts/ctez';
 import { logger } from '../../utils/logger';
-import { useTxLoader } from '../../hooks/utilHooks';
+import { useThemeColors, useTxLoader } from '../../hooks/utilHooks';
 
 interface IChangeDepositorProps {
   canAnyoneDeposit: boolean;
@@ -45,7 +44,7 @@ const ChangeDepositor: React.FC<IChangeDepositorProps> = (props) => {
   const [{ pkh: userAddress }] = useWallet();
   const toast = useToast();
   const { t } = useTranslation(['common']);
-  const text2 = useColorModeValue('text2', 'darkheading');
+  const [text2] = useThemeColors(['text2']);
   const options = useMemo(() => ['Whitelist', 'Everyone'], []);
   const [depType, setDepType] = useState(options[0]);
   const [depositors, setDepositors] = useState<IDepositorItem[]>([]);
@@ -124,12 +123,6 @@ const ChangeDepositor: React.FC<IChangeDepositorProps> = (props) => {
           userDenyList,
         );
         handleProcessing(result);
-        if (result) {
-          toast({
-            description: t('txSubmitted'),
-            status: 'success',
-          });
-        }
       } catch (error) {
         logger.error(error);
         const errorText = cTezError[error?.data?.[1].with.int as number] || t('txFailed');
