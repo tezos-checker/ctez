@@ -1,26 +1,25 @@
 import { Center, Stack, Text, useMediaQuery } from '@chakra-ui/react';
 import { useParams } from 'react-router-dom';
+import { useMemo } from 'react';
 import OvenStats from '../../../components/OvenCard/OvenStats';
 import { useWallet } from '../../../wallet/hooks';
-import {
-  useSetAllOvensToStore,
-  useSetCtezBaseStatsToStore,
-  useSetOvenDataToStore,
-} from '../../../hooks/setApiDataToStore';
 import BakerInfo from '../../../components/OvenCard/BakerInfo';
 import DepositorsInfo from '../../../components/OvenCard/DepositorsInfo';
 import CollateralOverview from '../../../components/OvenOperations/CollateralOverview';
 import MintableOverview from '../../../components/OvenOperations/MintableOverview';
-import { useMyOvensSelector } from '../../../hooks/reduxSelectors';
+import { useOvenDataByAddresses } from '../../../api/queries';
+import { AllOvenDatum } from '../../../interfaces';
 
 const OvenIdPage: React.FC = () => {
   const [{ pkh: userAddress }] = useWallet();
   const [largerScreen] = useMediaQuery(['(min-width: 800px)']);
   const { address } = useParams<{ address: string }>();
-  const { oven } = useMyOvensSelector(userAddress, address);
-  useSetCtezBaseStatsToStore(userAddress);
-  useSetOvenDataToStore(userAddress);
-  useSetAllOvensToStore();
+  const [queryResult] = useOvenDataByAddresses([address]);
+
+  // ? for type casting
+  const oven = useMemo(() => queryResult.data as AllOvenDatum | undefined, [queryResult]);
+
+  const isImported = useMemo(() => oven?.key.owner !== userAddress, [oven?.key.owner, userAddress]);
 
   if (userAddress == null) {
     return (
@@ -41,17 +40,17 @@ const OvenIdPage: React.FC = () => {
       spacing={4}
     >
       <Stack direction="column" w={largerScreen ? '50%' : '100%'} spacing={4}>
-        <OvenStats oven={oven} />
+        <OvenStats oven={oven} isImported={isImported} />
 
-        <BakerInfo oven={oven} />
+        <BakerInfo oven={oven} isImported={isImported} />
 
-        <DepositorsInfo oven={oven} />
+        <DepositorsInfo oven={oven} isImported={isImported} />
       </Stack>
 
       <Stack direction="column" w={largerScreen ? '50%' : '100%'} spacing={4}>
-        <CollateralOverview oven={oven} />
+        <CollateralOverview oven={oven} isImported={isImported} />
 
-        <MintableOverview oven={oven} />
+        <MintableOverview oven={oven} isImported={isImported} />
       </Stack>
     </Stack>
   );

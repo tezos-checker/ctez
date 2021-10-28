@@ -1,13 +1,11 @@
 import React from 'react';
-import { useSetAllOvensToStore } from '../../hooks/setApiDataToStore';
-import { useAppSelector } from '../../redux/store';
 import SkeletonLayout from '../../components/skeleton';
 import OvenCard from '../../components/OvenCard/OvenCard';
 import { useSortedOvensList } from '../../hooks/utilHooks';
+import { useAllOvenData } from '../../api/queries';
 
 const AllOvensContainer: React.FC = () => {
-  useSetAllOvensToStore();
-  const { data, isLoading } = useAppSelector((state) => state.oven.allOvens);
+  const { data, isLoading } = useAllOvenData();
   const sortedOvens = useSortedOvensList(data);
 
   return (

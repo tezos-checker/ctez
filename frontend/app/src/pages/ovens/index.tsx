@@ -17,10 +17,8 @@ import { BsArrowRight, BsThreeDotsVertical } from 'react-icons/bs';
 import { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAppDispatch } from '../../redux/store';
-import { useWallet } from '../../wallet/hooks';
 import { openModal } from '../../redux/slices/UiSlice';
 import { MODAL_NAMES } from '../../constants/modals';
-import { useSetCtezBaseStatsToStore } from '../../hooks/setApiDataToStore';
 import Button from '../../components/button/Button';
 import { setSortBy } from '../../redux/slices/OvenSlice';
 import AllOvensContainer from './AllOvensContainer';
@@ -32,9 +30,6 @@ const OvensPage: React.FC = () => {
   const dispatch = useAppDispatch();
   const [background, text4] = useThemeColors(['cardbg', 'text4']);
   const [mobileScreen] = useMediaQuery(['(max-width: 600px)']);
-
-  const [{ pkh: userAddress }] = useWallet();
-  useSetCtezBaseStatsToStore(userAddress);
 
   const isMyOven = useMemo(() => {
     return location.pathname === '/myovens' || location.pathname === '/myovens/';
@@ -116,7 +111,7 @@ const OvensPage: React.FC = () => {
       <Box d="table" w="100%" mt={16}>
         {!isMyOven && <AllOvensContainer />}
 
-        {isMyOven && <MyOvensContainer userAddress={userAddress} />}
+        {isMyOven && <MyOvensContainer />}
       </Box>
     </Box>
   );

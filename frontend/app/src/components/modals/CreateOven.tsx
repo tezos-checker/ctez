@@ -20,7 +20,7 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 import { array, number, object, string } from 'yup';
 import { useTranslation } from 'react-i18next';
 import { useFormik } from 'formik';
-import { useDelegates, useUserBalance } from '../../api/queries';
+import { useDelegates, useUserBalance, useUserOvenData } from '../../api/queries';
 import { Depositor } from '../../interfaces';
 import { create, cTezError } from '../../contracts/ctez';
 import { useWallet } from '../../wallet/hooks';
@@ -28,9 +28,7 @@ import { logger } from '../../utils/logger';
 import RadioCard from '../radio/RadioCard';
 import Button from '../button/Button';
 import DepositorsInput from '../input/DepositorsInput';
-import { makeLastOvenIdSelector } from '../../hooks/reduxSelectors';
-import { useAppSelector } from '../../redux/store';
-import { useBakerSelect, useThemeColors, useTxLoader } from '../../hooks/utilHooks';
+import { useBakerSelect, useTxLoader, useThemeColors } from '../../hooks/utilHooks';
 
 interface ICreateOvenProps {
   isOpen: boolean;
@@ -64,6 +62,7 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
   const { t } = useTranslation(['common']);
   const options = ['Whitelist', 'Everyone'];
   const { data: balance } = useUserBalance(userAddress);
+  const { data: userOvens } = useUserOvenData(userAddress);
   const [text1, text2, inputbg, text4Text4, maxColor] = useThemeColors([
     'text1',
     'text2',
@@ -71,10 +70,13 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
     'text4',
     'maxColor',
   ]);
-  const selectLastOvenId = useMemo(makeLastOvenIdSelector, []);
   const handleProcessing = useTxLoader();
 
-  const lastOvenId = useAppSelector((state) => selectLastOvenId(state, userAddress));
+  const lastOvenId = useMemo(() => {
+    const sortedArray = userOvens?.sort((a, b) => Number(a.key.id) - Number(b.key.id)) ?? [];
+
+    return Number(sortedArray[sortedArray.length - 1]?.key.id ?? 0);
+  }, [userOvens?.length]);
 
   const validationSchema = object().shape({
     delegate: string()

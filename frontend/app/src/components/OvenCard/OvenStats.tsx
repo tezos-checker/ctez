@@ -17,7 +17,7 @@ import { AllOvenDatum } from '../../interfaces';
 import data from '../../assets/data/info.json';
 import CopyAddress from '../CopyAddress/CopyAddress';
 
-const OvenStats: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
+const OvenStats: React.FC<{ oven: AllOvenDatum | undefined; isImported: boolean }> = ({ oven }) => {
   const { stats } = useOvenStats(oven);
   const [background, textcolor, text4color, cardbg, text4Text4] = useThemeColors([
     'cardbg',

@@ -22,7 +22,9 @@ import { formatNumberStandard } from '../../utils/numbers';
 import { useOvenStorage } from '../../api/queries';
 import { useWallet } from '../../wallet/hooks';
 
-const CollateralOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) => {
+const CollateralOverview: React.FC<{ oven: AllOvenDatum | undefined; isImported: boolean }> = ({
+  oven,
+}) => {
   const [{ pkh: userAddress }] = useWallet();
   const { stats } = useOvenStats(oven);
   const [depositOpen, setDepositOpen] = useState<boolean>(false);
@@ -135,7 +137,7 @@ const CollateralOverview: React.FC<{ oven: AllOvenDatum | null }> = ({ oven }) =
           : 'Excessive tez withdrawal',
       });
     }
-  }, [oven?.key.owner, stats?.collateralUtilization, stats?.ovenBalance, toast, userAddress]);
+  }, [oven?.key.owner, stats?.withdrawableTez, toast, userAddress]);
 
   return (
     <>

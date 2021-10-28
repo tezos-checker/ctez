@@ -4,7 +4,7 @@ import { getCfmmStorage, getLQTContractStorage } from '../contracts/cfmm';
 import { getCtezStorage } from '../contracts/ctez';
 import { BaseStats, CTezTzktStorage, OvenBalance, UserLQTData } from '../interfaces';
 import { CONTRACT_DEPLOYMENT_DATE } from '../utils/globals';
-import { getCTezTzktStorage, getLastBlockOfTheDay, getUserOvenData } from './tzkt';
+import { getCTezTzktStorage, getLastBlockOfTheDay, getUserOvensAPI } from './tzkt';
 
 export const getPrevCTezStorage = async (
   days = 7,
@@ -43,7 +43,7 @@ export const getBaseStats = async (userAddress?: string): Promise<BaseStats> => 
 };
 
 export const getUserTezCtezData = async (userAddress: string): Promise<OvenBalance> => {
-  const userOvenData = await getUserOvenData(userAddress);
+  const userOvenData = await getUserOvensAPI(userAddress);
   try {
     return userOvenData.reduce(
       (acc, cur) => ({

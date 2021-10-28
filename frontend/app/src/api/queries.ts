@@ -1,12 +1,15 @@
 import { AxiosError } from 'axios';
-import { useQuery } from 'react-query';
+import { useQueries, useQuery } from 'react-query';
+import { UseQueryResult } from 'react-query/types/react/types';
 import { getCfmmStorage } from '../contracts/cfmm';
 import {
   getAllOvens,
   getExternalOvenData,
+  getOven,
   getOvenDelegate,
   getOvens,
   getOvenStorage,
+  getUserOvens,
 } from '../contracts/ctez';
 import {
   AllOvenDatum,
@@ -22,6 +25,8 @@ import { getBaseStats, getUserLQTData } from './contracts';
 import { getDelegates } from './tzkt';
 import { getUserBalance } from './user';
 
+type TUseQueryReturn<T> = UseQueryResult<T | undefined, AxiosError>;
+
 export const useDelegates = (userAddress?: string) => {
   return useQuery<Baker[], AxiosError, Baker[]>(['delegates'], () => {
     return getDelegates(userAddress);
@@ -29,9 +34,16 @@ export const useDelegates = (userAddress?: string) => {
 };
 
 export const useCtezBaseStats = (userAddress?: string) => {
-  return useQuery<BaseStats, AxiosError, BaseStats>(['baseStats'], async () => {
-    return getBaseStats(userAddress);
-  });
+  return useQuery<BaseStats, AxiosError, BaseStats>(
+    ['baseStats'],
+    async () => {
+      return getBaseStats(userAddress);
+    },
+    {
+      refetchInterval: 30_000,
+      staleTime: 3_000,
+    },
+  );
 };
 
 export const useUserBalance = (userAddress?: string) => {
@@ -41,6 +53,10 @@ export const useUserBalance = (userAddress?: string) => {
       if (userAddress) {
         return getUserBalance(userAddress);
       }
+    },
+    {
+      refetchInterval: 30_000,
+      staleTime: 3_000,
     },
   );
 };
@@ -96,6 +112,33 @@ export const useAllOvenData = () => {
     () => {
       return getAllOvens();
     },
+  );
+};
+
+export const useUserOvenData = (
+  userAddress: string | undefined,
+): TUseQueryReturn<AllOvenDatum[]> => {
+  return useQuery<AllOvenDatum[] | undefined, AxiosError, AllOvenDatum[] | undefined>(
+    ['allOvenData', userAddress],
+    () => {
+      if (userAddress) {
+        return getUserOvens(userAddress);
+      }
+
+      // ? Return empty array if userAddress is empty
+      return new Promise<AllOvenDatum[]>(() => []);
+    },
+  );
+};
+
+export const useOvenDataByAddresses = (ovenAddresses: string[]) => {
+  return useQueries(
+    ovenAddresses.map((address) => ({
+      queryKey: ['ovenData', address],
+      queryFn: () => {
+        return getOven(address);
+      },
+    })),
   );
 };
 
