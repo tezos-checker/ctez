@@ -202,7 +202,7 @@ const Swap: React.FC = () => {
           <Input
             name="amount"
             id="amount"
-            type="number"
+            type="text"
             placeholder="0.0"
             color={text2}
             bg={inputbg}

@@ -151,7 +151,7 @@ const AddLiquidity: React.FC = () => {
               bg={inputbg}
               value={values.amount}
               onChange={handleChange}
-              type="number"
+              type="text"
               lang="en-US"
             />
             <Text color={text4} fontSize="xs" mt={1}>
@@ -179,7 +179,7 @@ const AddLiquidity: React.FC = () => {
               border={0}
               color={text2}
               placeholder="0.0"
-              type="number"
+              type="text"
               mt={-2}
             />
             <Text color={text4} fontSize="xs" mb={0}>

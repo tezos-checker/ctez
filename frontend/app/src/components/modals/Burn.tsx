@@ -153,7 +153,7 @@ const Burn: React.FC<IBurnProps> = ({ isOpen, onClose, oven }) => {
               </FormLabel>
               <InputGroup>
                 <Input
-                  type="number"
+                  type="text"
                   name="amount"
                   id="amount"
                   color={text2}
