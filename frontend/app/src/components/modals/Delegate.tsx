@@ -62,7 +62,7 @@ const Delegate: React.FC<IDelegateProps> = (props) => {
     <Modal isOpen={props.isOpen} onClose={props.onClose} isCentered>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader fontWeight="500">Change Baker</ModalHeader>
+        <ModalHeader fontWeight="500">{t('changeBaker')}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <Select
@@ -81,11 +81,11 @@ const Delegate: React.FC<IDelegateProps> = (props) => {
         </ModalBody>
         <ModalFooter>
           <Button variant="outline" onClick={props.onClose}>
-            Cancel
+            {t('cancel')}
           </Button>
           <Box w={2} />
           <Button onClick={handleConfirm} isLoading={loading}>
-            Confirm
+            {t('confirm')}
           </Button>
         </ModalFooter>
       </ModalContent>

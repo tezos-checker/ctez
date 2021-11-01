@@ -166,7 +166,7 @@ const Swap: React.FC = () => {
         formType === FORM_TYPE.TEZ_CTEZ ? [tokenPool, cashPool] : [cashPool, tokenPool];
       const tokWithoutSlippage =
         (cashSold * 997 * aPool.toNumber()) / (bPool.toNumber() * 1000 + cashSold * 997) / 1e6;
-      setMinBuyValue(Number(tokWithoutSlippage.toFixed(6)));
+      setMinBuyValue(formatNumberStandard(tokWithoutSlippage.toFixed(6)));
       const minRece = tokWithoutSlippage - (tokWithoutSlippage * slippage) / 100;
       setMinReceived(minRece);
     } else {
@@ -267,7 +267,7 @@ const Swap: React.FC = () => {
             bg={inputbg}
             value={formatNumberStandard(minBuyValue || '')}
             placeholder="0.0"
-            type="number"
+            type="text"
             lang="en-US"
           />
           {getRightElement(formType === FORM_TYPE.CTEZ_TEZ ? TOKEN.Tez : TOKEN.CTez)}

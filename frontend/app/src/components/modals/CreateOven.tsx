@@ -29,6 +29,7 @@ import RadioCard from '../radio/RadioCard';
 import Button from '../button/Button';
 import DepositorsInput from '../input/DepositorsInput';
 import { useBakerSelect, useTxLoader, useThemeColors } from '../../hooks/utilHooks';
+import { formatNumberStandard } from '../../utils/numbers';
 
 interface ICreateOvenProps {
   isOpen: boolean;
@@ -198,7 +199,7 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
       <form onSubmit={handleSubmit}>
         <ModalContent>
           <ModalHeader fontWeight="500" color={text1}>
-            Create an Oven
+            {t('createanOven')}
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -226,7 +227,7 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
             </FormControl>
             <FormControl w="100%" mb={2}>
               <FormLabel color={text2} fontWeight="500" fontSize="xs">
-                Initial Deposit
+                {t('initialDeposit')}
               </FormLabel>
               <Input
                 type="text"
@@ -235,7 +236,7 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
                 lang="en-US"
                 color={text2}
                 bg={inputbg}
-                value={values.amount}
+                value={formatNumberStandard(values.amount)}
                 onChange={handleChange}
               />
               <Text color={text4} fontSize="xs" mt={1}>
@@ -253,7 +254,7 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
 
             <FormControl w="100%" mb={2}>
               <FormLabel color={text2} fontWeight="500" fontSize="xs">
-                Who can Deposit?
+                {t('depositorOp')}
               </FormLabel>
               <Flex {...group} w="100%" justifyContent="space-between">
                 {options.map((value) => {
@@ -276,7 +277,7 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
 
           <ModalFooter>
             <Button w="100%" type="submit">
-              Create Oven
+              {t('createoven')}
             </Button>
           </ModalFooter>
         </ModalContent>

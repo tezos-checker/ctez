@@ -10,6 +10,7 @@ import {
   useMediaQuery,
 } from '@chakra-ui/react';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { HiDownload } from 'react-icons/hi';
 import { AllOvenDatum } from '../../interfaces';
@@ -34,6 +35,7 @@ const OvenCard: React.FC<IOvenCardProps> = (props) => {
     'imported',
     'text4',
   ]);
+  const { t } = useTranslation(['common']);
   const { stats } = useOvenStats(props.oven);
   const { data } = useCtezBaseStats();
   const [largerScreen] = useMediaQuery(['(min-width: 800px)']);
@@ -141,24 +143,24 @@ const OvenCard: React.FC<IOvenCardProps> = (props) => {
 
     const items = [
       props.type === 'MyOvens' && firstItem(),
-      { label: 'Oven address', value: address, displayValue: trimAddress(address) },
+      { label: t('ovenAddress'), value: address, displayValue: trimAddress(address) },
       props.type === 'AllOvens' && {
-        label: 'Owner',
+        label: t('owner'),
         value: owner,
         displayValue: trimAddress(owner),
       },
       {
-        label: 'Oven Balance',
+        label: t('ovenBalance'),
         value: `${formatNumberStandard(stats?.ovenBalance)} tez`,
         displayValue: `${formatNumberStandard(stats?.ovenBalance)} tez`,
       },
       {
-        label: 'Outstanding ',
+        label: t('outstanding'),
         value: `${formatNumberStandard(stats?.outStandingCtez)} ctez`,
         displayValue: `${formatNumberStandard(stats?.outStandingCtez)} ctez`,
       },
       {
-        label: 'Mintable ',
+        label: t('mintable'),
         value: `${formatNumberStandard(stats?.maxMintableCtez)} ctez`,
         displayValue: `${formatNumberStandard(stats?.maxMintableCtez)} ctez`,
       },
@@ -192,7 +194,7 @@ const OvenCard: React.FC<IOvenCardProps> = (props) => {
             warning={result}
           />
           <Text color={text4} fontSize="xs">
-            Collateral Utilization
+            {t('collateralUtilization')}
           </Text>
         </Box>
       </>

@@ -30,6 +30,7 @@ import { TezIcon } from '../icons';
 import { BUTTON_TXT } from '../../constants/swap';
 import { AllOvenDatum } from '../../interfaces';
 import { useOvenStats, useThemeColors, useTxLoader } from '../../hooks/utilHooks';
+import { formatNumberStandard } from '../../utils/numbers';
 
 interface IWithdrawProps {
   isOpen: boolean;
@@ -121,7 +122,7 @@ const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose, oven }) => {
       <form onSubmit={handleSubmit}>
         <ModalContent>
           <ModalHeader color={text1} fontWeight="500">
-            Withdraw Tezos
+            {t('withdrawTezos')}
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -134,7 +135,7 @@ const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose, oven }) => {
             </Flex>
             <FormControl id="to-input-amount" mt={2} mb={6} w="100%">
               <FormLabel color={text2} fontSize="xs">
-                To
+                {t('to')}
               </FormLabel>
               <Input
                 readOnly
@@ -149,7 +150,7 @@ const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose, oven }) => {
             </FormControl>
             <FormControl id="to-input-amount" mt={2} mb={6} w="100%">
               <FormLabel color={text2} fontSize="xs">
-                Amount
+                {t('amount')}
               </FormLabel>
               <InputGroup>
                 <Input
@@ -159,7 +160,7 @@ const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose, oven }) => {
                   color={text2}
                   bg={inputbg}
                   lang="en-US"
-                  value={values.amount}
+                  value={formatNumberStandard(values.amount)}
                   onChange={handleChange}
                   placeholder="0.0"
                 />
