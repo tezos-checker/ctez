@@ -149,7 +149,7 @@ const AddLiquidity: React.FC = () => {
               placeholder="0.0"
               color={text2}
               bg={inputbg}
-              value={values.amount}
+              value={formatNumberStandard(values.amount)}
               onChange={handleChange}
               type="text"
               lang="en-US"
@@ -174,13 +174,14 @@ const AddLiquidity: React.FC = () => {
               ctez to deposit(approx)
             </FormLabel>
             <Input
-              value={values.ctezAmount}
+              value={formatNumberStandard(values.ctezAmount)}
               readOnly
               border={0}
               color={text2}
               placeholder="0.0"
               type="text"
               mt={-2}
+              lang="en-US"
             />
             <Text color={text4} fontSize="xs" mb={0}>
               Balance: {formatNumberStandard(balance?.ctez)}
