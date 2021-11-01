@@ -1,5 +1,6 @@
 import { Divider, Flex, Icon, Stack, Tag, Text, Tooltip } from '@chakra-ui/react';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { MdEdit, MdInfo } from 'react-icons/md';
 import { useOvenDelegate, useOvenStorage } from '../../api/queries';
 import { useWallet } from '../../wallet/hooks';
@@ -17,7 +18,7 @@ const DepositorsInfo: React.FC<{ oven: AllOvenDatum | undefined; isImported: boo
   isImported,
 }) => {
   const [{ pkh: userAddress }] = useWallet();
-
+  const { t } = useTranslation(['common']);
   const { data: ovenStorageData } = useOvenStorage(oven?.value.address);
   const { data: baker } = useOvenDelegate(oven?.value.address);
   const [edit, setEdit] = useState(false);
@@ -75,7 +76,7 @@ const DepositorsInfo: React.FC<{ oven: AllOvenDatum | undefined; isImported: boo
     }
 
     if (canAnyoneDeposit) {
-      return <Text>Currently Anyone can deposit</Text>;
+      return <Text>{t('everyoneAllowed')}</Text>;
     }
 
     return depositors.map((dep) => (
@@ -97,7 +98,7 @@ const DepositorsInfo: React.FC<{ oven: AllOvenDatum | undefined; isImported: boo
     <>
       <Stack p={8} spacing={4} borderRadius={16} backgroundColor={background}>
         <Text color={textcolor} fontWeight="600">
-          Authorized Depositors
+          {t('allowedDepositors')}
           <Tooltip label={showInfo} placement="right" borderRadius={14} backgroundColor={cardbg}>
             <span>
               <Icon opacity="0.3" fontSize="lg" color={text4} as={MdInfo} m={1} mb={1} />
@@ -111,7 +112,7 @@ const DepositorsInfo: React.FC<{ oven: AllOvenDatum | undefined; isImported: boo
 
         {!isImported && (
           <Button w="100%" variant="outline" leftIcon={<MdEdit />} onClick={() => setEdit(true)}>
-            Edit Depositors
+            {t('editDepositors')}
           </Button>
         )}
       </Stack>

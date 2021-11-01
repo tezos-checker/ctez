@@ -98,13 +98,13 @@ const TrackOven: React.FC<ITrackOvenProps> = ({ isOpen, onClose }) => {
       <ModalContent>
         <form onSubmit={handleSubmit}>
           <ModalHeader fontWeight="500" color={tabcolor}>
-            Track an Oven
+            {t('trackanOven')}
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <FormControl id="track-oven" w="100%">
               <FormLabel color={text2} fontWeight="500" fontSize="xs">
-                Oven Address
+                {t('ovenAddress')}
               </FormLabel>
               <Input
                 name="ovenAddress"
@@ -119,7 +119,7 @@ const TrackOven: React.FC<ITrackOvenProps> = ({ isOpen, onClose }) => {
 
           <ModalFooter py={6}>
             <Button w="100%" type="submit" isLoading={formik.isSubmitting}>
-              Track Oven
+              {t('trackOven')}
             </Button>
           </ModalFooter>
         </form>

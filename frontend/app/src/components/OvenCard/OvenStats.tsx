@@ -10,6 +10,7 @@ import {
   Tooltip,
 } from '@chakra-ui/react';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { MdInfo } from 'react-icons/md';
 import { useOvenStats, useThemeColors } from '../../hooks/utilHooks';
 import ProgressPill from './ProgressPill';
@@ -19,6 +20,7 @@ import CopyAddress from '../CopyAddress/CopyAddress';
 
 const OvenStats: React.FC<{ oven: AllOvenDatum | undefined; isImported: boolean }> = ({ oven }) => {
   const { stats } = useOvenStats(oven);
+  const { t } = useTranslation(['common']);
   const [background, textcolor, text3, cardbg, text4] = useThemeColors([
     'cardbg',
     'textColor',
@@ -68,7 +70,7 @@ const OvenStats: React.FC<{ oven: AllOvenDatum | undefined; isImported: boolean 
     <Stack p={8} spacing={4} backgroundColor={background} borderRadius={16}>
       <div>
         <Text color={textcolor} fontWeight="600">
-          Oven Stats
+          {t('ovenStats')}
           <Tooltip label={showInfo} placement="right" borderRadius={14} backgroundColor={cardbg}>
             <span>
               <Icon opacity="0.3" fontSize="lg" color={text4} as={MdInfo} m={1} mb={1} />
@@ -77,7 +79,7 @@ const OvenStats: React.FC<{ oven: AllOvenDatum | undefined; isImported: boolean 
         </Text>
         <Flex mt={2}>
           <Text fontSize="sm" mr={1} fontWeight="500">
-            Oven Address:
+            {t('ovenAddress')}:
           </Text>
           <Text color="light.text2" fontSize="xs">
             {oven?.value.address == null ? (
@@ -104,7 +106,7 @@ const OvenStats: React.FC<{ oven: AllOvenDatum | undefined; isImported: boolean 
           )}
 
           <Text color={text3} fontSize="xs">
-            Collateral ratio
+            {t('collateralratio')}
             <Tooltip
               label={showInfoCollateralRatio}
               placement="right"
@@ -132,7 +134,7 @@ const OvenStats: React.FC<{ oven: AllOvenDatum | undefined; isImported: boolean 
             />
           </Skeleton>
           <Text color={text3} fontSize="xs">
-            Collateral utilization
+            {t('collateralUtilization')}
             <Tooltip
               label={showInfoCollateralUtilization}
               placement="right"

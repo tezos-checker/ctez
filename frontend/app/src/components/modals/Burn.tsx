@@ -31,6 +31,7 @@ import { AllOvenDatum } from '../../interfaces';
 import { useOvenStats, useThemeColors, useTxLoader } from '../../hooks/utilHooks';
 import { useUserBalance } from '../../api/queries';
 import { useWallet } from '../../wallet/hooks';
+import { formatNumberStandard } from '../../utils/numbers';
 
 interface IBurnProps {
   isOpen: boolean;
@@ -136,7 +137,7 @@ const Burn: React.FC<IBurnProps> = ({ isOpen, onClose, oven }) => {
       <form onSubmit={handleSubmit}>
         <ModalContent>
           <ModalHeader color={text1} fontWeight="500">
-            Burn ctez
+            {t('burnctez')}
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -149,17 +150,17 @@ const Burn: React.FC<IBurnProps> = ({ isOpen, onClose, oven }) => {
             </Flex>
             <FormControl id="to-input-amount" mt={2} mb={6} w="100%">
               <FormLabel fontWeight="500" color={text2} fontSize="xs">
-                Amount
+                {t('amount')}
               </FormLabel>
               <InputGroup>
                 <Input
-                  type="number"
+                  type="text"
                   name="amount"
                   id="amount"
                   color={text2}
                   bg={inputbg}
                   lang="en-US"
-                  value={values.amount}
+                  value={formatNumberStandard(values.amount)}
                   onChange={handleChange}
                   placeholder="0.0"
                 />

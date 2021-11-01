@@ -3,15 +3,19 @@ import {
   CSSObject,
   Flex,
   Grid,
+  Icon,
+  Spacer,
   Tag,
   TagLabel,
   TagLeftIcon,
   Text,
   useMediaQuery,
 } from '@chakra-ui/react';
-import React, { useMemo } from 'react';
+import React, { MouseEventHandler, useMemo, MouseEvent as ReactMouseEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { HiDownload } from 'react-icons/hi';
+import { MdDelete } from 'react-icons/md';
 import { AllOvenDatum } from '../../interfaces';
 import ProgressPill from './ProgressPill';
 import { useOvenStats, useThemeColors } from '../../hooks/utilHooks';
@@ -21,6 +25,8 @@ import { isMonthFromLiquidation } from '../../api/contracts';
 import SkeletonLayout from '../skeleton';
 import { trimAddress } from '../../utils/addressUtils';
 import { formatNumberStandard } from '../../utils/numbers';
+import { useAppDispatch } from '../../redux/store';
+import { setRemoveOven } from '../../redux/slices/OvenSlice';
 
 interface IOvenCardProps {
   type: 'AllOvens' | 'MyOvens';
@@ -34,9 +40,17 @@ const OvenCard: React.FC<IOvenCardProps> = (props) => {
     'imported',
     'text4',
   ]);
+  const { t } = useTranslation(['common']);
   const { stats } = useOvenStats(props.oven);
   const { data } = useCtezBaseStats();
+  const dispatch = useAppDispatch();
+
   const [largerScreen] = useMediaQuery(['(min-width: 800px)']);
+  const removeTrackedOven = (address: string, e: ReactMouseEvent<SVGElement, MouseEvent>) => {
+    e.stopPropagation();
+    e.preventDefault();
+    dispatch(setRemoveOven(address));
+  };
 
   const result = useMemo(
     () =>
@@ -114,6 +128,23 @@ const OvenCard: React.FC<IOvenCardProps> = (props) => {
     };
   }, [largerScreen]);
 
+  const removeIcon = useMemo(() => {
+    return (
+      <Icon
+        as={MdDelete}
+        color={textcolor}
+        fontSize="lg"
+        onClick={
+          ((e) =>
+            removeTrackedOven(
+              props.oven.value.address,
+              e,
+            ) as unknown) as MouseEventHandler<SVGElement>
+        }
+      />
+    );
+  }, []);
+
   const renderedItems = useMemo(() => {
     const { address, owner, id } = (() => {
       return {
@@ -141,24 +172,24 @@ const OvenCard: React.FC<IOvenCardProps> = (props) => {
 
     const items = [
       props.type === 'MyOvens' && firstItem(),
-      { label: 'Oven address', value: address, displayValue: trimAddress(address) },
+      { label: t('ovenAddress'), value: address, displayValue: trimAddress(address) },
       props.type === 'AllOvens' && {
-        label: 'Owner',
+        label: t('owner'),
         value: owner,
         displayValue: trimAddress(owner),
       },
       {
-        label: 'Oven Balance',
+        label: t('ovenBalance'),
         value: `${formatNumberStandard(stats?.ovenBalance)} tez`,
         displayValue: `${formatNumberStandard(stats?.ovenBalance)} tez`,
       },
       {
-        label: 'Outstanding ',
+        label: t('outstanding'),
         value: `${formatNumberStandard(stats?.outStandingCtez)} ctez`,
         displayValue: `${formatNumberStandard(stats?.outStandingCtez)} ctez`,
       },
       {
-        label: 'Mintable ',
+        label: t('mintable'),
         value: `${formatNumberStandard(stats?.maxMintableCtez)} ctez`,
         displayValue: `${formatNumberStandard(stats?.maxMintableCtez)} ctez`,
       },
@@ -192,7 +223,7 @@ const OvenCard: React.FC<IOvenCardProps> = (props) => {
             warning={result}
           />
           <Text color={text4} fontSize="xs">
-            Collateral Utilization
+            {t('collateralUtilization')}
           </Text>
         </Box>
       </>
@@ -209,33 +240,40 @@ const OvenCard: React.FC<IOvenCardProps> = (props) => {
   ]);
 
   const content = (
-    <Flex
-      direction="column"
-      sx={cssSxValue.outerFlex}
-      minW="340px"
-      borderRadius={16}
-      backgroundColor={background}
-      _hover={
-        props.type === 'MyOvens'
-          ? { boxShadow: '0 23px 66px 4px rgba(176, 183, 195, 0.25)', cursor: 'pointer' }
-          : {}
-      }
-    >
-      {props.oven.isImported && (
-        <Tag
-          variant="outline"
-          color={imported}
-          borderColor={imported}
-          mb={2}
-          w="100px"
-          borderRadius="24px"
-        >
-          <TagLeftIcon boxSize="12px" as={HiDownload} />
-          <TagLabel>Imported</TagLabel>
-        </Tag>
-      )}
-      <Grid sx={cssSxValue.innerGrid}>{renderedItems}</Grid>
-    </Flex>
+    <div>
+      <Flex
+        direction="column"
+        sx={cssSxValue.outerFlex}
+        minW="340px"
+        borderRadius={16}
+        backgroundColor={background}
+        _hover={
+          props.type === 'MyOvens'
+            ? { boxShadow: '0 23px 66px 4px rgba(176, 183, 195, 0.25)', cursor: 'pointer' }
+            : {}
+        }
+      >
+        {props.oven.isImported && (
+          <Flex>
+            <Tag
+              variant="outline"
+              color={imported}
+              borderColor={imported}
+              mb={2}
+              w="100px"
+              borderRadius="24px"
+            >
+              <TagLeftIcon boxSize="12px" as={HiDownload} />
+              <TagLabel>Imported</TagLabel>
+            </Tag>
+            <Spacer />
+            {removeIcon}
+          </Flex>
+        )}
+
+        <Grid sx={cssSxValue.innerGrid}>{renderedItems}</Grid>
+      </Flex>
+    </div>
   );
 
   if (stats?.collateralUtilization === 'Infinity') {

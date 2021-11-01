@@ -1,5 +1,6 @@
 import { Box, Flex, Icon, Stack, Text, Tooltip } from '@chakra-ui/react';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { BsArrowRight } from 'react-icons/bs';
 import { MdInfo } from 'react-icons/md';
 import { useThemeColors } from '../../hooks/utilHooks';
@@ -14,6 +15,7 @@ interface IProgressPill {
 }
 
 const ProgressPill: React.FC<IProgressPill> = ({ value, oven, type, warning }) => {
+  const { t } = useTranslation(['common']);
   const [liquidateOven, setliquidateOven] = useState(false);
   const [progressPillBg, cardbg, text4, red, orange] = useThemeColors([
     'progressPillBg',
@@ -80,7 +82,7 @@ const ProgressPill: React.FC<IProgressPill> = ({ value, oven, type, warning }) =
           onClick={(e) => SetModalOpen(true)}
           _hover={{ cursor: 'pointer' }}
         >
-          Liquidate oven
+          {t('liquidateOven')}
           <Icon ml={1} as={BsArrowRight} />
         </Text>
       )}
@@ -96,7 +98,7 @@ const ProgressPill: React.FC<IProgressPill> = ({ value, oven, type, warning }) =
           _hover={{ cursor: 'pointer' }}
         >
           <Tooltip label={showInfo} placement="right" borderRadius={14} backgroundColor={cardbg}>
-            Action Required *
+            {t('actionRequired')}
           </Tooltip>
         </Text>
       )}

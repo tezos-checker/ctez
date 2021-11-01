@@ -8,6 +8,7 @@ import {
   ModalContent,
   ModalOverlay,
 } from '@chakra-ui/react';
+import { useTranslation } from 'react-i18next';
 import TxSubmitted from '../../assets/images/icons/tx-submitted.svg';
 import Button from '../button/Button';
 import { NETWORK } from '../../utils/globals';
@@ -22,6 +23,7 @@ interface IInfoModal {
 
 const InfoModal: React.FC<IInfoModal> = (props) => {
   const [text2] = useThemeColors(['text2']);
+  const { t } = useTranslation(['common']);
 
   return (
     <Modal isOpen={props.open} onClose={props.onClose} isCentered>
@@ -33,7 +35,7 @@ const InfoModal: React.FC<IInfoModal> = (props) => {
             <Image width="82px" height="82px" src={TxSubmitted} mb={6} mt={8} />
 
             <Heading color={text2} fontSize="lg" textAlign="center" mb={2}>
-              Transaction Submitted
+              {t('txSubmitted')}
             </Heading>
 
             <Button
@@ -45,7 +47,7 @@ const InfoModal: React.FC<IInfoModal> = (props) => {
                   : () => window.open(`https://${NETWORK}.tzkt.io/${props.opHash}`, '_blank')
               }
             >
-              View On Tezos
+              {t('viewOnTezos')}
             </Button>
           </Flex>
         </ModalBody>

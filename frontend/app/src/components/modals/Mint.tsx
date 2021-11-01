@@ -147,7 +147,7 @@ const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
       <form onSubmit={handleSubmit}>
         <ModalContent>
           <ModalHeader color={text1} fontWeight="500">
-            Mint ctez
+            {t('mintctez')}
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -161,18 +161,18 @@ const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
             </Flex>
             <FormControl id="to-input-amount" mt={2} mb={6} w="100%">
               <FormLabel fontWeight="500" color={text2} fontSize="xs">
-                Amount
+                {t('amount')}
               </FormLabel>
               <InputGroup>
                 <Input
-                  type="number"
+                  type="text"
                   name="amount"
                   id="amount"
                   color={text2}
                   bg={inputbg}
                   lang="en-US"
                   placeholder="0.0"
-                  value={values.amount}
+                  value={formatNumberStandard(values.amount)}
                   onChange={handleChange}
                 />
                 {getRightElement()}

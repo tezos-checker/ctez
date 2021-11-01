@@ -133,12 +133,12 @@ const RemoveLiquidity: React.FC = () => {
           <Input
             name="lqtBurned"
             id="lqtBurned"
-            value={values.lqtBurned}
+            value={formatNumberStandard(values.lqtBurned)}
             color={text2}
             bg={inputbg}
             onChange={handleChange}
             placeholder="0.0"
-            type="number"
+            type="text"
             lang="en-US"
           />
           {typeof userLqtData?.lqt !== 'undefined' && (
@@ -167,7 +167,7 @@ const RemoveLiquidity: React.FC = () => {
               readOnly
               border={0}
               placeholder="0.0"
-              type="number"
+              type="text"
               color={text2}
               lang="en-US"
               value={otherValues.cashWithdraw}
@@ -183,7 +183,7 @@ const RemoveLiquidity: React.FC = () => {
               readOnly
               border={0}
               placeholder="0.0"
-              type="number"
+              type="text"
               color={text2}
               lang="en-US"
               value={otherValues.tokenWithdraw}
