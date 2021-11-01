@@ -124,7 +124,7 @@ const Deposit: React.FC<IDepositProps> = ({ isOpen, onClose, oven }) => {
             <FormControl id="to-input-amount" mt={2} mb={6} w="100%">
               <InputGroup>
                 <Input
-                  type="number"
+                  type="text"
                   name="amount"
                   id="amount"
                   lang="en-US"

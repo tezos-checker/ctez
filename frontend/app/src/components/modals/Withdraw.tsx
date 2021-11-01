@@ -153,7 +153,7 @@ const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose, oven }) => {
               </FormLabel>
               <InputGroup>
                 <Input
-                  type="number"
+                  type="text"
                   name="amount"
                   id="amount"
                   color={text2}

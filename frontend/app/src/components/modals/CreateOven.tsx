@@ -229,7 +229,7 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
                 Initial Deposit
               </FormLabel>
               <Input
-                type="number"
+                type="text"
                 name="amount"
                 id="amount"
                 lang="en-US"

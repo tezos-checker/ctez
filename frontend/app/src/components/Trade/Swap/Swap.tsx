@@ -202,11 +202,11 @@ const Swap: React.FC = () => {
           <Input
             name="amount"
             id="amount"
-            type="number"
+            type="text"
             placeholder="0.0"
             color={text2}
             bg={inputbg}
-            value={values.amount}
+            value={formatNumberStandard(values.amount)}
             onChange={handleChange}
             lang="en-US"
           />
@@ -265,7 +265,7 @@ const Swap: React.FC = () => {
             isReadOnly
             color={text2}
             bg={inputbg}
-            value={minBuyValue || ''}
+            value={formatNumberStandard(minBuyValue || '')}
             placeholder="0.0"
             type="number"
             lang="en-US"
