@@ -151,7 +151,7 @@ const ChangeDepositor: React.FC<IChangeDepositorProps> = (props) => {
         <ModalBody>
           <FormControl w="100%" mb={4}>
             <FormLabel color={text2} fontWeight="500" fontSize="xs">
-              Who can Deposit?
+              {t('depositorOp')}
             </FormLabel>
 
             <Flex {...group} w="100%" justifyContent="space-between">
@@ -172,7 +172,7 @@ const ChangeDepositor: React.FC<IChangeDepositorProps> = (props) => {
         </ModalBody>
         <ModalFooter>
           <Button variant="outline" onClick={props.onClose}>
-            Cancel
+            {t('cancel')}
           </Button>
           <Box w={2} />
           <Button onClick={handleConfirm}>Confirm</Button>

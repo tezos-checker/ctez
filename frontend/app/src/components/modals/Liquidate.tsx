@@ -21,6 +21,7 @@ import Button from '../button/Button';
 import { AllOvenDatum } from '../../interfaces';
 import { useThemeColors, useTxLoader } from '../../hooks/utilHooks';
 import { useWallet } from '../../wallet/hooks';
+import { formatNumberStandard } from '../../utils/numbers';
 
 interface LiquidateForm {
   ovenOwner: string;
@@ -88,13 +89,13 @@ const LiquidateOven: React.FC<ILiquidateProps> = ({ isOpen, onClose, oven }) => 
       <form onSubmit={handleSubmit}>
         <ModalContent>
           <ModalHeader color={text1} fontWeight="500">
-            Liquidate Oven
+            {t('liquidateOven')}
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <FormControl mt={2} mb={6} w="100%">
               <FormLabel color={text2} fontSize="xs">
-                Oven Owner
+                {t('ovenOwner')}
               </FormLabel>
               <Input
                 readOnly
@@ -107,7 +108,7 @@ const LiquidateOven: React.FC<ILiquidateProps> = ({ isOpen, onClose, oven }) => 
             </FormControl>
             <FormControl mt={2} mb={6} w="100%">
               <FormLabel color={text2} fontSize="xs">
-                To
+                {t('to')}
               </FormLabel>
               <InputGroup>
                 <Input
@@ -123,7 +124,7 @@ const LiquidateOven: React.FC<ILiquidateProps> = ({ isOpen, onClose, oven }) => 
             </FormControl>
             <FormControl mt={2} mb={6} w="100%">
               <FormLabel color={text2} fontSize="xs">
-                Amount
+                {t('amount')}
               </FormLabel>
               <InputGroup>
                 <Input
@@ -132,7 +133,7 @@ const LiquidateOven: React.FC<ILiquidateProps> = ({ isOpen, onClose, oven }) => 
                   color={text2}
                   bg={inputbg}
                   lang="en-US"
-                  value={values.amount}
+                  value={formatNumberStandard(values.amount)}
                   onChange={handleChange}
                 />
               </InputGroup>
@@ -140,7 +141,7 @@ const LiquidateOven: React.FC<ILiquidateProps> = ({ isOpen, onClose, oven }) => 
           </ModalBody>
           <ModalFooter>
             <Button w="100%" variant="outline" type="submit">
-              Submit
+              {t('submit')}
             </Button>
           </ModalFooter>
         </ModalContent>

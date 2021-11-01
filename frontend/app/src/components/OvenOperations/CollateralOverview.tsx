@@ -12,6 +12,7 @@ import {
 } from '@chakra-ui/react';
 import { MdInfo } from 'react-icons/md';
 import { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useOvenStats, useThemeColors } from '../../hooks/utilHooks';
 import Button from '../button/Button';
 import Deposit from '../modals/Deposit';
@@ -29,6 +30,7 @@ const CollateralOverview: React.FC<{ oven: AllOvenDatum | undefined; isImported:
   const { stats } = useOvenStats(oven);
   const [depositOpen, setDepositOpen] = useState<boolean>(false);
   const [withdrawOpen, setWithdrawOpen] = useState<boolean>(false);
+  const { t } = useTranslation(['common']);
   const [background, textcolor, cardbg, text4] = useThemeColors([
     'cardbg',
     'textColor',
@@ -143,7 +145,7 @@ const CollateralOverview: React.FC<{ oven: AllOvenDatum | undefined; isImported:
     <>
       <Stack p={8} spacing={4} backgroundColor={background} borderRadius={16}>
         <Text color={textcolor} fontWeight="700">
-          Collateral Overview
+          {t('collateralOverview')}
         </Text>
 
         <Divider />
@@ -157,7 +159,7 @@ const CollateralOverview: React.FC<{ oven: AllOvenDatum | undefined; isImported:
             </Skeleton>
 
             <Text color={text4} fontSize="xs">
-              tez collateral
+              {t('tezcollateral')}
               <Tooltip
                 label={showInfoTez}
                 placement="right"
@@ -183,7 +185,7 @@ const CollateralOverview: React.FC<{ oven: AllOvenDatum | undefined; isImported:
             </Skeleton>
 
             <Text color={text4} fontSize="xs">
-              Required tez collateral
+              {t('requiredtezcollateral')}
               <Tooltip
                 label={showInfoRequiredTez}
                 placement="right"
@@ -209,7 +211,7 @@ const CollateralOverview: React.FC<{ oven: AllOvenDatum | undefined; isImported:
             </Skeleton>
 
             <Text color={text4} fontSize="xs">
-              Withdraw tez
+              {t('withdrawtez')}
               <Tooltip
                 label={showInfoWithdrawTez}
                 placement="right"
@@ -226,11 +228,11 @@ const CollateralOverview: React.FC<{ oven: AllOvenDatum | undefined; isImported:
 
         <HStack w="100%" justifyContent="space-between" spacing="24px">
           <Button variant="outline" w="95%" onClick={handleDepositClick}>
-            Deposit
+            {t('deposit')}
           </Button>
 
           <Button variant="outline" w="100%" onClick={handleWithdrawClick}>
-            Withdraw
+            {t('withdraw')}
           </Button>
         </HStack>
       </Stack>
