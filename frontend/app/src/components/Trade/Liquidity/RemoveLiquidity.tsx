@@ -133,7 +133,7 @@ const RemoveLiquidity: React.FC = () => {
           <Input
             name="lqtBurned"
             id="lqtBurned"
-            value={values.lqtBurned}
+            value={formatNumberStandard(values.lqtBurned)}
             color={text2}
             bg={inputbg}
             onChange={handleChange}

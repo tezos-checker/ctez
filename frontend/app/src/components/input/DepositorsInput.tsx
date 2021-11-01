@@ -15,6 +15,7 @@ import {
   WrapItem,
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { IoMdCloseCircle } from 'react-icons/io';
 import { MdAdd } from 'react-icons/md';
 import { useThemeColors } from '../../hooks/utilHooks';
@@ -36,6 +37,7 @@ const DepositorsInput: React.FC<IDepositorsInputProps> = (props) => {
   const [depositorInput, setDepositorInput] = useState('');
   const [text2] = useThemeColors(['text2']);
   const [error, setError] = useState<string | null>(null);
+  const { t } = useTranslation(['common']);
 
   // const handleDepositorInput = (ev: React.ChangeEvent<HTMLInputElement>) => {
   //   const { value } = ev.target;
@@ -86,7 +88,7 @@ const DepositorsInput: React.FC<IDepositorsInputProps> = (props) => {
     <Box {...props.outerBoxProps}>
       <FormControl isInvalid={error != null}>
         <FormLabel color={text2} fontSize="xs" fontWeight="500">
-          Authorized Depositors
+          {t('allowedDepositors')}
         </FormLabel>
 
         <Wrap mb={2}>

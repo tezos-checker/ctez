@@ -267,7 +267,7 @@ const Swap: React.FC = () => {
             bg={inputbg}
             value={formatNumberStandard(minBuyValue || '')}
             placeholder="0.0"
-            type="number"
+            type="text"
             lang="en-US"
           />
           {getRightElement(formType === FORM_TYPE.CTEZ_TEZ ? TOKEN.Tez : TOKEN.CTez)}

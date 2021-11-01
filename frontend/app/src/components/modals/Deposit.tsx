@@ -30,7 +30,7 @@ import { AllOvenDatum } from '../../interfaces';
 import { useThemeColors, useTxLoader } from '../../hooks/utilHooks';
 import { useWallet } from '../../wallet/hooks';
 import { useUserBalance } from '../../api/queries';
-import { formatNumber } from '../../utils/numbers';
+import { formatNumber, formatNumberStandard } from '../../utils/numbers';
 
 interface IDepositProps {
   isOpen: boolean;
@@ -117,7 +117,7 @@ const Deposit: React.FC<IDepositProps> = ({ isOpen, onClose, oven }) => {
       <form onSubmit={handleSubmit}>
         <ModalContent>
           <ModalHeader color={text1} fontWeight="500">
-            Deposit Tezos
+            {t('depositTezos')}
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -130,7 +130,7 @@ const Deposit: React.FC<IDepositProps> = ({ isOpen, onClose, oven }) => {
                   lang="en-US"
                   color={text2}
                   bg={inputbg}
-                  value={values.amount}
+                  value={formatNumberStandard(values.amount)}
                   onChange={handleChange}
                   placeholder="0.0"
                 />
