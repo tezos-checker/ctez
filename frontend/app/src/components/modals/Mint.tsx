@@ -30,7 +30,7 @@ import { BUTTON_TXT } from '../../constants/swap';
 import { CTezIcon } from '../icons';
 import { AllOvenDatum } from '../../interfaces';
 import { useOvenStats, useThemeColors, useTxLoader } from '../../hooks/utilHooks';
-import { formatNumberStandard } from '../../utils/numbers';
+import { formatNumberStandard, inputFormatNumberStandard } from '../../utils/numbers';
 
 interface IMintProps {
   isOpen: boolean;
@@ -172,7 +172,7 @@ const Mint: React.FC<IMintProps> = ({ isOpen, onClose, oven }) => {
                   bg={inputbg}
                   lang="en-US"
                   placeholder="0.0"
-                  value={formatNumberStandard(values.amount)}
+                  value={inputFormatNumberStandard(values.amount)}
                   onChange={handleChange}
                 />
                 {getRightElement()}

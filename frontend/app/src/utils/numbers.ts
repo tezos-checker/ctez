@@ -14,3 +14,14 @@ export const formatNumberStandard = (value: number | string | null | undefined) 
     Number(value).toLocaleString('en-US', { maximumFractionDigits: 6, useGrouping: false }),
   );
 };
+
+export const inputFormatNumberStandard = (value: number | string | null | undefined) => {
+  if (value == null || Number.isNaN(Number(value))) {
+    return 0;
+  }
+  if (typeof value === 'string') {
+    value = value.replace(/^0+/, '');
+  }
+
+  return value.toLocaleString('en-US', { maximumFractionDigits: 6, useGrouping: false });
+};

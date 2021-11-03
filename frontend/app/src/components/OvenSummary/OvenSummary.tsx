@@ -9,7 +9,7 @@ interface IOvenCardProps {
 }
 
 const OvenSummary: React.FC<IOvenCardProps> = (props) => {
-  const [background, textcolor] = useThemeColors(['cardbg', 'textcolor']);
+  const [background, textcolor] = useThemeColors(['cardbg', 'textColor']);
   const { stats } = useOvenSummary(props.ovens);
   const [largerScreen] = useMediaQuery(['(min-width: 800px)']);
 
@@ -23,7 +23,7 @@ const OvenSummary: React.FC<IOvenCardProps> = (props) => {
           px: 10,
         },
         innerGrid: {
-          gridTemplateColumns: 'repeat(5, 3fr) 4fr',
+          gridTemplateColumns: 'repeat(4, 5fr) 4fr',
         },
       };
     }
@@ -86,13 +86,13 @@ const OvenSummary: React.FC<IOvenCardProps> = (props) => {
       },
       {
         label: 'Outstanding ',
-        value: `${formatNumberStandard(stats?.totalOutstandingCtez)} ctez`,
-        displayValue: `${formatNumberStandard(stats?.totalOutstandingCtez)} ctez`,
+        value: `${formatNumberStandard(stats?.totalOutstandingCtez.toFixed(2))} ctez`,
+        displayValue: `${formatNumberStandard(stats?.totalOutstandingCtez.toFixed(2))} ctez`,
       },
       {
         label: 'Mintable ',
-        value: `${formatNumberStandard(stats?.totalRemainingMintableCtez)} ctez`,
-        displayValue: `${formatNumberStandard(stats?.totalRemainingMintableCtez)} ctez`,
+        value: `${formatNumberStandard(stats?.totalRemainingMintableCtez.toFixed(2))} ctez`,
+        displayValue: `${formatNumberStandard(stats?.totalRemainingMintableCtez.toFixed(2))} ctez`,
       },
       {
         label: 'Withdrawable ',
@@ -106,7 +106,7 @@ const OvenSummary: React.FC<IOvenCardProps> = (props) => {
     return (
       <>
         <Box key="summaryTitle" id="summaryTitle">
-          <Text fontWeight="600" fontSize="xl">
+          <Text fontWeight="600" color={textcolor} fontSize="xl" mt={1}>
             Oven Summary
           </Text>
         </Box>

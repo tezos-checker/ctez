@@ -29,7 +29,7 @@ import RadioCard from '../radio/RadioCard';
 import Button from '../button/Button';
 import DepositorsInput from '../input/DepositorsInput';
 import { useBakerSelect, useTxLoader, useThemeColors } from '../../hooks/utilHooks';
-import { formatNumberStandard } from '../../utils/numbers';
+import { inputFormatNumberStandard } from '../../utils/numbers';
 
 interface ICreateOvenProps {
   isOpen: boolean;
@@ -236,7 +236,7 @@ const CreateOven: React.FC<ICreateOvenProps> = ({ isOpen, onClose }) => {
                 lang="en-US"
                 color={text2}
                 bg={inputbg}
-                value={formatNumberStandard(values.amount)}
+                value={inputFormatNumberStandard(values.amount)}
                 onChange={handleChange}
               />
               <Text color={text4} fontSize="xs" mt={1}>
