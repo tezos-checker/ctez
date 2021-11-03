@@ -13,7 +13,11 @@ import { useCfmmStorage, useUserLqtData } from '../../../api/queries';
 import Button from '../../button/Button';
 import { useAppSelector } from '../../../redux/store';
 import { useThemeColors, useTxLoader } from '../../../hooks/utilHooks';
-import { formatNumber, formatNumberStandard } from '../../../utils/numbers';
+import {
+  formatNumber,
+  formatNumberStandard,
+  inputFormatNumberStandard,
+} from '../../../utils/numbers';
 import { BUTTON_TXT } from '../../../constants/swap';
 
 const RemoveLiquidity: React.FC = () => {
@@ -49,8 +53,8 @@ const RemoveLiquidity: React.FC = () => {
         const tokenWithdraw =
           ((lqtBurned * 1e6 * tokenPool.toNumber()) / lqtTotal.toNumber()) * (1 - slippage * 0.01);
         setOtherValues({
-          cashWithdraw: formatNumberStandard(cashWithdraw / 1e6),
-          tokenWithdraw: formatNumberStandard(tokenWithdraw / 1e6),
+          cashWithdraw: Number(formatNumberStandard(cashWithdraw / 1e6)),
+          tokenWithdraw: Number(formatNumberStandard(tokenWithdraw / 1e6)),
         });
       }
     },
@@ -133,7 +137,7 @@ const RemoveLiquidity: React.FC = () => {
           <Input
             name="lqtBurned"
             id="lqtBurned"
-            value={formatNumberStandard(values.lqtBurned)}
+            value={inputFormatNumberStandard(values.lqtBurned)}
             color={text2}
             bg={inputbg}
             onChange={handleChange}

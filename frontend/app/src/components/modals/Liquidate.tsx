@@ -21,7 +21,7 @@ import Button from '../button/Button';
 import { AllOvenDatum } from '../../interfaces';
 import { useThemeColors, useTxLoader } from '../../hooks/utilHooks';
 import { useWallet } from '../../wallet/hooks';
-import { formatNumberStandard } from '../../utils/numbers';
+import { inputFormatNumberStandard } from '../../utils/numbers';
 
 interface LiquidateForm {
   ovenOwner: string;
@@ -133,7 +133,7 @@ const LiquidateOven: React.FC<ILiquidateProps> = ({ isOpen, onClose, oven }) => 
                   color={text2}
                   bg={inputbg}
                   lang="en-US"
-                  value={formatNumberStandard(values.amount)}
+                  value={inputFormatNumberStandard(values.amount)}
                   onChange={handleChange}
                 />
               </InputGroup>

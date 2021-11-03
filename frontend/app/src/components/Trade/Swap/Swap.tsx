@@ -31,7 +31,7 @@ import { logger } from '../../../utils/logger';
 import { useAppSelector } from '../../../redux/store';
 import Button from '../../button/Button';
 import { useThemeColors, useTxLoader } from '../../../hooks/utilHooks';
-import { formatNumberStandard } from '../../../utils/numbers';
+import { formatNumberStandard, inputFormatNumberStandard } from '../../../utils/numbers';
 
 const Swap: React.FC = () => {
   const [{ pkh: userAddress }] = useWallet();
@@ -206,7 +206,7 @@ const Swap: React.FC = () => {
             placeholder="0.0"
             color={text2}
             bg={inputbg}
-            value={formatNumberStandard(values.amount)}
+            value={inputFormatNumberStandard(values.amount)}
             onChange={handleChange}
             lang="en-US"
           />

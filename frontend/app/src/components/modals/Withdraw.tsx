@@ -30,7 +30,7 @@ import { TezIcon } from '../icons';
 import { BUTTON_TXT } from '../../constants/swap';
 import { AllOvenDatum } from '../../interfaces';
 import { useOvenStats, useThemeColors, useTxLoader } from '../../hooks/utilHooks';
-import { formatNumberStandard } from '../../utils/numbers';
+import { inputFormatNumberStandard } from '../../utils/numbers';
 
 interface IWithdrawProps {
   isOpen: boolean;
@@ -160,7 +160,7 @@ const Withdraw: React.FC<IWithdrawProps> = ({ isOpen, onClose, oven }) => {
                   color={text2}
                   bg={inputbg}
                   lang="en-US"
-                  value={formatNumberStandard(values.amount)}
+                  value={inputFormatNumberStandard(values.amount)}
                   onChange={handleChange}
                   placeholder="0.0"
                 />
