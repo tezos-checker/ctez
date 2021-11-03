@@ -53,8 +53,8 @@ const RemoveLiquidity: React.FC = () => {
         const tokenWithdraw =
           ((lqtBurned * 1e6 * tokenPool.toNumber()) / lqtTotal.toNumber()) * (1 - slippage * 0.01);
         setOtherValues({
-          cashWithdraw: Number(formatNumberStandard(cashWithdraw / 1e6)),
-          tokenWithdraw: Number(formatNumberStandard(tokenWithdraw / 1e6)),
+          cashWithdraw: formatNumberStandard(cashWithdraw / 1e6),
+          tokenWithdraw: formatNumberStandard(tokenWithdraw / 1e6),
         });
       }
     },
