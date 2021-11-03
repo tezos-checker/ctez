@@ -5,11 +5,17 @@ import SkeletonLayout from '../../components/skeleton';
 import OvenCard from '../../components/OvenCard/OvenCard';
 import { useSortedOvensList } from '../../hooks/utilHooks';
 import { useAllOvenData } from '../../api/queries';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { setClear, setSearchValue } from '../../redux/slices/OvenSlice';
+import OvenSummary from '../../components/OvenSummary/OvenSummary';
 
 const AllOvensContainer: React.FC = () => {
   const { data, isLoading } = useAllOvenData();
+  const dispatch = useAppDispatch();
   const sortedOvens = useSortedOvensList(data);
   const [currentPageOvens, setCurrentPageOvens] = useState(sortedOvens);
+  const searchText = useAppSelector((state) => state.oven.searchValue);
+
   const baseStyles: ButtonProps = {
     w: 7,
     fontSize: 'sm',
@@ -36,13 +42,27 @@ const AllOvensContainer: React.FC = () => {
   const handlePageChange = (nextPage: number) => {
     setCurrentPage(nextPage);
   };
+  useEffect(() => {
+    if (searchText == null) {
+      dispatch(setSearchValue(''));
+      dispatch(setClear(false));
+    }
+  }, [dispatch, searchText]);
 
   useEffect(() => {
     const indexOfLastOven = currentPage * pageSize;
     const indexOfFirstOven = indexOfLastOven - pageSize;
     const currentTodos = sortedOvens && sortedOvens.slice(indexOfFirstOven, indexOfLastOven);
     setCurrentPageOvens(currentTodos);
-  }, [currentPage, pageSize, offset, sortedOvens]);
+  }, [currentPage, pageSize, offset, sortedOvens, searchText]);
+
+  useEffect(() => {
+    if (searchText) {
+      console.log('searchText', searchText);
+      const searchResults = sortedOvens?.filter((oven) => oven.key.owner === searchText);
+      searchResults && setCurrentPageOvens(searchResults);
+    }
+  }, [searchText]);
 
   const modals = useMemo(() => {
     return (
@@ -69,6 +89,7 @@ const AllOvensContainer: React.FC = () => {
 
   return (
     <>
+      <OvenSummary ovens={data || []} />
       {isLoading ? (
         <SkeletonLayout count={10} component="OvenCard" />
       ) : (

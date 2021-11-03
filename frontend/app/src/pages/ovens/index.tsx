@@ -11,16 +11,18 @@ import {
   IconButton,
   MenuButton,
   Menu,
+  Input,
+  Button as ChakraButton,
 } from '@chakra-ui/react';
 import { MdAdd } from 'react-icons/md';
 import { BsArrowRight, BsThreeDotsVertical } from 'react-icons/bs';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAppDispatch } from '../../redux/store';
 import { openModal } from '../../redux/slices/UiSlice';
 import { MODAL_NAMES } from '../../constants/modals';
 import Button from '../../components/button/Button';
-import { setSortBy } from '../../redux/slices/OvenSlice';
+import { setClear, setSearchValue, setSortBy } from '../../redux/slices/OvenSlice';
 import AllOvensContainer from './AllOvensContainer';
 import MyOvensContainer from './MyOvensContainer';
 import { useThemeColors } from '../../hooks/utilHooks';
@@ -28,8 +30,9 @@ import { useThemeColors } from '../../hooks/utilHooks';
 const OvensPage: React.FC = () => {
   const location = useLocation();
   const dispatch = useAppDispatch();
-  const [background, text4] = useThemeColors(['cardbg', 'text4']);
+  const [background, text4, textcolor] = useThemeColors(['cardbg', 'text4', 'textColor']);
   const [mobileScreen] = useMediaQuery(['(max-width: 600px)']);
+  const [searchtext, setSearchtext] = useState('');
 
   const isMyOven = useMemo(() => {
     return location.pathname === '/myovens' || location.pathname === '/myovens/';
@@ -37,6 +40,21 @@ const OvensPage: React.FC = () => {
 
   const SetSortType = (value: string) => {
     dispatch(setSortBy(value));
+  };
+
+  const SetSearchValue = (value: string) => {
+    setSearchtext(value);
+    dispatch(setSearchValue(value));
+    if (value == null) {
+      dispatch(setSearchValue(''));
+    }
+  };
+  const SetClearValue = (value: boolean) => {
+    dispatch(setClear(value));
+    if (value) {
+      setSearchtext('');
+      dispatch(setSearchValue(''));
+    }
   };
 
   const toolBarButtons = useMemo(() => {
@@ -102,7 +120,28 @@ const OvensPage: React.FC = () => {
           <option value="Outstanding">Outstanding</option>
           <option value="Utilization">Utilization</option>
         </Select>
-
+        {!isMyOven && (
+          <div>
+            <Input
+              type="text"
+              name="searchvalue"
+              id="searchvalue"
+              color={text4}
+              value={searchtext}
+              bg={background}
+              lang="en-US"
+              w="200px"
+              ml={5}
+              placeholder="Search Oven Owner"
+              onChange={(e) => SetSearchValue(e.target.value)}
+            />
+            {searchtext && (
+              <ChakraButton color={textcolor} variant="ghost" onClick={(e) => SetClearValue(true)}>
+                clear
+              </ChakraButton>
+            )}
+          </div>
+        )}
         <Spacer />
 
         {toolBarButtons}
