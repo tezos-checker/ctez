@@ -30,7 +30,7 @@ import { AllOvenDatum } from '../../interfaces';
 import { useThemeColors, useTxLoader } from '../../hooks/utilHooks';
 import { useWallet } from '../../wallet/hooks';
 import { useUserBalance } from '../../api/queries';
-import { formatNumber, formatNumberStandard } from '../../utils/numbers';
+import { formatNumber, inputFormatNumberStandard } from '../../utils/numbers';
 
 interface IDepositProps {
   isOpen: boolean;
@@ -127,10 +127,9 @@ const Deposit: React.FC<IDepositProps> = ({ isOpen, onClose, oven }) => {
                   type="text"
                   name="amount"
                   id="amount"
-                  lang="en-US"
                   color={text2}
                   bg={inputbg}
-                  value={formatNumberStandard(values.amount)}
+                  value={inputFormatNumberStandard(values.amount)}
                   onChange={handleChange}
                   placeholder="0.0"
                 />
