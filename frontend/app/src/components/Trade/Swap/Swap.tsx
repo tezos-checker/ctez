@@ -148,13 +148,13 @@ const Swap: React.FC = () => {
       if (formType === FORM_TYPE.CTEZ_TEZ) {
         // 1 ctez = 11 tez
         initialPrice = Number(cashPool) / Number(tokenPool);
-        const newTokenPool = Number(tokenPool) + SwapAmount * 0.997;
+        const newTokenPool = Number(tokenPool) + SwapAmount * 0.9995;
         const newCashPool = invariant / newTokenPool;
         const difference = Number(cashPool) - newCashPool;
         recievedPrice = difference / SwapAmount;
       } else {
         initialPrice = Number(tokenPool) / Number(cashPool);
-        const newCashPool = Number(cashPool) + SwapAmount * 0.997;
+        const newCashPool = Number(cashPool) + SwapAmount * 0.9995;
         const newTokenPool = invariant / newCashPool;
         const difference = Number(tokenPool) - newTokenPool;
         recievedPrice = difference / SwapAmount;
@@ -165,7 +165,7 @@ const Swap: React.FC = () => {
       const [aPool, bPool] =
         formType === FORM_TYPE.TEZ_CTEZ ? [tokenPool, cashPool] : [cashPool, tokenPool];
       const tokWithoutSlippage =
-        (cashSold * 997 * aPool.toNumber()) / (bPool.toNumber() * 1000 + cashSold * 997) / 1e6;
+        (cashSold * 9995 * aPool.toNumber()) / (bPool.toNumber() * 10000 + cashSold * 9995) / 1e6;
       setMinBuyValue(formatNumberStandard(tokWithoutSlippage.toFixed(6)));
       const minRece = tokWithoutSlippage - (tokWithoutSlippage * slippage) / 100;
       setMinReceived(minRece);
