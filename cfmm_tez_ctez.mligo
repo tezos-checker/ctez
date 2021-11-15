@@ -64,6 +64,8 @@ type tez_to_token =
 (* A target t such that t / 2^48 is the target price from the ctez contract *)
 type ctez_target = nat
 
+(* Marginal price, as a pair containing the numerator and the denominator *)
+type get_marginal_price = (nat * nat) contract
 
 type entrypoint =
 | AddLiquidity    of add_liquidity
@@ -73,6 +75,7 @@ type entrypoint =
 | CashToTez     of cash_to_tez
 | TezToToken    of tez_to_token
 | SetLqtAddress   of address
+| GetMarginalPrice of get_marginal_price
 
 
 (* =============================================================================
@@ -465,6 +468,11 @@ let update_consumer (operations, storage : result) : result =
         ((Tezos.transaction (marginal_price storage.tezPool storage.cashPool storage.target) 0mutez consumer) :: operations,
         {storage with lastOracleUpdate = Tezos.now})
 
+let get_marginal_price (param : get_marginal_price) (storage : storage) : result =
+    let price = marginal_price storage.tezPool storage.cashPool storage.target in
+    let op = Tezos.transaction price 0mutez param in
+    ([op], storage)
+
 (* =============================================================================
  * Main
  * ============================================================================= *)
@@ -488,3 +496,5 @@ let main ((entrypoint, storage) : entrypoint * storage) : result =
         (tez_to_token param storage)
     | SetLqtAddress param ->
         set_lqt_address param storage
+    | GetMarginalPrice param ->
+        get_marginal_price param storage
