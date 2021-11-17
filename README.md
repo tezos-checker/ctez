@@ -38,6 +38,12 @@ Each time the CFMM pushes its rate to the ctez contract, the drift, and the targ
 
 If the price of ctez implied by the CFMM is below the target, the drift is *raised* by  `max(1024 * (target / price - 1)^2, 1) * 2^(-48)` times the number of seconds since the last adjustment. If it is below, it is *lowered* by that amount. This corresponds roughly to a maximum adjustment of the annualized drift of one percentage point for every fractional day since the last adjustment. The adjustment saturates when the discrepancy exceeds one 32ndth. Note that, by a small miracle, `ln(1.01) / year / day ~ 1.027 * 2^(-48) / second^2` which we use to simplify the computation in the implementation.
 
+### Curve
+
+If `x` is the quantity of tez, and `y` the quantity of ctez, and `t` the target (in tez per ctez), then CFMM uses the constant formula `x y (x^2 / t  + t y^2) = k`. The marginal price is given by `(x^3 + 3 t^2 x y^2) / (t^2 y^3 + 3 x^2 y)`. The price is equal to the target when `y = x / t` and, on that point, the second and third derivative of the curve vanish, meaning there is more liquidity there.
+
+The target is fed to the CFMM by the ctez contract.
+
 ## Rationale
 
 If the price of ctez remains below its target, the drift will keep increasing and at some point, under a quadratically compounding rate vaults are forced into liquidation which may cause ctez to be bid up to claim the tez in the vaults.
