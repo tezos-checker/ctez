@@ -40,7 +40,8 @@ If the price of ctez implied by the CFMM is below the target, the drift is *rais
 
 ### Curve
 
-If `x` is the quantity of tez, and `y` the quantity of ctez, and `t` the target (in tez per ctez), then CFMM uses the constant formula `x y (x^2 / t  + t y^2) = k`. The marginal price is given by `(x^3 + 3 t^2 x y^2) / (t^2 y^3 + 3 x^2 y)`. The price is equal to the target when `y = x / t` and, on that point, the second and third derivative of the curve vanish, meaning there is more liquidity there.
+If `x` is the quantity of tez, and `y` the quantity of ctez, and `t` the target (in tez per ctez), then CFMM uses the constant formula `(x + y)^8 - (x - y)^8 = k`. The price is equal to the target when `y = x / t` and, on that point, all derivatives from the 2nd to the 7th vanish, meaning there is more liquidity there.
+To give an example, if `t = 1`, `x = 100` and `y = 100`, and a user adds `dx = 63` to the pool, they receive `dy = 62.4`, that is less than `1%` slippage for taking nearly two thirds of the `y` pool!
 
 The target is fed to the CFMM by the ctez contract.
 

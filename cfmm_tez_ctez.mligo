@@ -1,4 +1,5 @@
 #include "errors.mligo"
+#include "newton.mligo"
 
 (* Check attic/cfmm_tez_ctez.old.preprocessed.mligo to compare with the old version of ctez *)
 
@@ -170,36 +171,6 @@ let tez_transfer (to_ : address) (tez_amount : nat) : operation=
       | Some c -> c in
       Tezos.transaction () (natural_to_mutez tez_amount) to_contract
 
-(* A function to transfer assets while maintaining a constant* isoutility.
-   * ... or slightly increasing due to loss of precision or incomplete convergence *)
-
-let rec newton_dx_to_dy_rec (xp, xp2, x3y_plus_y3x, y, dy_approx, rounds : nat * nat * nat * nat * nat * int) : nat =
-    if rounds <= 0 then
-        dy_approx
-    else
-        let yp = y - dy_approx in
-        let yp2 = abs (yp * yp) in
-        (* Newton descent formula *)
-        (* num is always positive, even without abs which is only there for casting to nat *)
-        let num = abs (xp * yp * (xp2 + yp2) - x3y_plus_y3x) in
-        let denom  = xp * (xp2 + 3n * yp2) in
-        let adjust = num / denom in
-        let new_dy_approx = dy_approx + adjust in
-        newton_dx_to_dy_rec (xp, xp2, x3y_plus_y3x, y, new_dy_approx, rounds - 1)
-    (*
-        if denom = 0, then either:
-        1. xp = 0 => x + dx = 0, which we don't allow, or
-        2. xp = 0 and yp = 0 => a = 0 and (b = 0 or yp = 0), which implies
-           that the price target is 0.
-     *)
-
-let rec newton_dx_to_dy (x, y, dx, rounds : nat * nat * nat * int) : nat =
-    let xp = x + dx in
-    let xp2 = xp * xp in
-    let x3y_plus_y3x = x * y * (x * x + y * y) in
-    newton_dx_to_dy_rec (xp, xp2, x3y_plus_y3x, y, 0n, rounds)
-
-
 // A function that outputs dy (diff_cash) given x, y, and dx
 let trade_dtez_for_dcash (tez : nat) (cash : nat) (dtez : nat) (target : nat) (rounds : int) : nat =
     let x = Bitwise.shift_left tez 48n in
@@ -225,12 +196,15 @@ let trade_dcash_for_dtez (tez : nat) (cash : nat) (dcash : nat) (target : nat) (
     else
         dtez_approx
 
+
+// Marginal price of cash in tez
 let marginal_price (tez : nat) (cash : nat) (target : nat) : (nat * nat) =
     let x = cash * target in
     let y = Bitwise.shift_left tez 48n in
     let x2 = x * x in
     let y2 = y * y in
-    (tez * (3n * x2 + y2), cash * (3n * y2 + x2))
+    let (num, den) = margin x y in (* how many tez do I get for my cash *)
+    (Bitwise.shift_left num 48n, den * target)
 
 (* =============================================================================
  * Entrypoint Functions
