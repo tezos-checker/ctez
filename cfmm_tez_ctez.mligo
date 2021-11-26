@@ -201,8 +201,6 @@ let trade_dcash_for_dtez (tez : nat) (cash : nat) (dcash : nat) (target : nat) (
 let marginal_price (tez : nat) (cash : nat) (target : nat) : (nat * nat) =
     let x = cash * target in
     let y = Bitwise.shift_left tez 48n in
-    let x2 = x * x in
-    let y2 = y * y in
     let (num, den) = margin x y in (* how many tez do I get for my cash *)
     (Bitwise.shift_left num 48n, den * target)
 

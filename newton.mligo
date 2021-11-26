@@ -43,4 +43,4 @@ let margin (x: nat) (y: nat) : nat * nat =
     let minus_4 = minus_2 * minus_2 in
     let minus_7 = minus_4 * minus_2 * minus in
     (* plus_7 - minus_7 is always positive because it's 2 y ( 7 (x^6 + 5 x^4 y^2 + 3 x^2 y^4) + y^6) ) *)
-    (abs (plus_7 - minus_7), abs (plus_7 + minus_7) ) (* that's (du/dx) / (du/dy) , or how many y I get for one x *)
+    (abs (plus_7 - minus_7), abs (plus_7 + minus_7)) (* that's (du/dx) / (du/dy) , or how many y I get for one x *)
