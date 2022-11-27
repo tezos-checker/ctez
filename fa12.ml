@@ -150,17 +150,6 @@ let getTotalSupply (param : getTotalSupply) (storage : storage) : operation list
   [Tezos.transaction total 0mutez param.callback]
 
 
-[@view] getBalanceOption (owner, s : address * storage) : nat option =
-  Big_map.find_opt param.owner storage.tokens
-
-[@view] getBalance (owner, s : address * storage) : nat  =
-  Big_map.find_opt param.owner storage.tokens
-    match Big_map.find_opt param.owner storage.tokens with
-    | Some value -> value
-    | None -> 0n
-
-[@view] getTotalSupply ((),s : unit * storage) : nat =
-  storage.total_supply
 
 let main (param, storage : parameter * storage) : result =
   begin

@@ -62,8 +62,8 @@ type tez_to_token =
   }
 
 
-(* A target t such that t / 2^48 is the target price from the ctez contract *)
-type ctez_target = nat
+(* A target t such that t / 2^48 is the target price from the ctez contract, and the number of newly minted ctez *)
+type ctez_target = nat * nat
 
 (* Marginal price, as a pair containing the numerator and the denominator *)
 type get_marginal_price = (nat * nat) contract
@@ -123,8 +123,9 @@ type mintOrBurn =
  * ============================================================================= *)
 
 [@inline] let null_address = ("tz1Ke2h7sDdakHJQh8WX4Z372du1KChsksyU" : address)
-[@inline] let const_fee = 9995n (* 0.05% fee *)
+[@inline] let const_fee = 9999n (* 0.01% fee *)
 [@inline] let const_fee_denom = 10000n
+
 
 (* =============================================================================
  * Functions
@@ -204,8 +205,17 @@ let marginal_price (tez : nat) (cash : nat) (target : nat) : (nat * nat) =
     let (num, den) = margin x y in (* how many tez do I get for my cash *)
     (Bitwise.shift_left num 48n, den * target)
 
+(* ========
+ * Views
+ *)
+
+ [@view] let cashPool ((), s : unit * storage) : nat = s.cashPool
+ [@view] let tezPool ((), s : unit * storage) : nat = s.tezPool
+ [@view] let storage ((), s: unit * storage) : storage = s
+
+
 (* =============================================================================
- * Entrypoint Functions
+ * Entrypoint Functions·
  * ============================================================================= *)
 
 (* We assume the contract is originated with at least one liquidity
@@ -291,12 +301,12 @@ let remove_liquidity (param : remove_liquidity) (storage : storage) : result =
         end
     end
 
-let ctez_target (param : ctez_target) (storage : storage) =
+let ctez_target ((target, minted): ctez_target) (storage : storage) =
     if Tezos.sender <> storage.ctez_address then
         (failwith error_CALLER_MUST_BE_CTEZ : result)
     else
-        let updated_target = param in
-        let storage = {storage with target = updated_target} in
+        let updated_target = target in
+        let storage = {storage with target = updated_target ; cashPool = storage.cashPool + minted} in
         (([] : operation list), storage)
 
 
@@ -433,11 +443,10 @@ let update_consumer (operations, storage : result) : result =
     if storage.lastOracleUpdate = Tezos.now
         then (operations, storage)
     else
-        let consumer = match (Tezos.get_contract_opt storage.consumerEntrypoint : ((nat * nat) contract) option) with
-// TODO : when ligo is fixed let consumer = match (Tezos.get_entrypoint_opt "cfmm_price" storage.consumerEntrypoint : ((nat * nat) contract) option) with
-        | None -> (failwith error_CANNOT_GET_CFMM_PRICE_ENTRYPOINT_FROM_CONSUMER : (nat * nat) contract)
+        let consumer = match (Tezos.get_contract_opt storage.consumerEntrypoint : (((nat * nat) * nat) contract) option) with
+        | None -> (failwith error_CANNOT_GET_CFMM_PRICE_ENTRYPOINT_FROM_CONSUMER : ((nat * nat) * nat) contract)
         | Some c -> c in
-        ((Tezos.transaction (marginal_price storage.tezPool storage.cashPool storage.target) 0mutez consumer) :: operations,
+        ((Tezos.transaction ((marginal_price storage.tezPool storage.cashPool storage.target), storage.cashPool) 0mutez consumer) :: operations,
         {storage with lastOracleUpdate = Tezos.now})
 
 let get_marginal_price (param : get_marginal_price) (storage : storage) : result =

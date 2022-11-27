@@ -25,20 +25,22 @@ type parameter =
   | Liquidate of liquidate
   | Register_deposit of register_deposit
   | Mint_or_burn of mint_or_burn
-  | Cfmm_price of nat * nat
+  | Cfmm_info of nat * nat * nat
   | Set_addresses of set_addresses
   | Get_target of nat contract
 
-type oven = {tez_balance : tez ; ctez_outstanding : nat ; address : address}
+type oven = {tez_balance : tez ; ctez_outstanding : nat ; address : address ; fee_index : nat}
 
 type storage = {
   ovens : (oven_handle, oven) big_map ;
   target : nat ;
   drift : int ;
-  last_drift_update : timestamp ;
+  last_update : timestamp ;
   ctez_fa12_address : address ; (* address of the fa12 contract managing the ctez token *)
   cfmm_address : address ; (* address of the cfmm providing the price feed *)
+  fee_index : nat ;
 }
+
 type result = (operation list) * storage
 
 (* Errors *)
@@ -66,9 +68,11 @@ type result = (operation list) * storage
 let get_oven (handle : oven_handle) (s : storage) : oven =
   match Big_map.find_opt handle s.ovens with
   | None -> (failwith error_OVEN_DOESNT_EXIST : oven)
-  | Some o -> o
+  | Some oven -> (* Adjust the amount of outstanding ctez in the oven, record the fee index at that time. *)
+    let ctez_outstanding = abs((- oven.ctez_outstanding * oven.fee_index) / s.fee_index) in
+    {oven with fee_index = fee_index ; ctez_outstanding = ctez_outstanding}
 
-let is_under_collateralized (oven : oven) (target : nat): bool =
+let is_under_collateralized (oven : oven) (target : nat) (fee_index : nat): bool =
   (15n * oven.tez_balance) < (Bitwise.shift_right (oven.ctez_outstanding * target) 44n) * 1mutez
 
 let get_oven_withdraw (oven_address : address) : (tez * (unit contract)) contract =
@@ -87,8 +91,11 @@ let get_ctez_mint_or_burn (fa12_address : address) : (int * address) contract =
   | Some c -> c
 
 
-(* Entrypoint Functions *)
+(* Views *)
+[@view] let get_fee_index ((), s: unit * storage) : nat = s.fee_index
+[@view] let get_target ((), s : unit * storage) : nat = s.target
 
+(* Entrypoint Functions *)
 let create (s : storage) (create : create) : result =
   let handle = { id = create.id ; owner = Tezos.sender } in
   if Big_map.mem handle s.ovens then
@@ -96,7 +103,7 @@ let create (s : storage) (create : create) : result =
   else
     let (origination_op, oven_address) : operation * address =
     create_oven create.delegate Tezos.amount { admin = Tezos.self_address ; handle = handle ; depositors = create.depositors } in
-    let oven = {tez_balance = Tezos.amount ; ctez_outstanding = 0n ; address = oven_address}  in
+    let oven = {tez_balance = Tezos.amount ; ctez_outstanding = 0n ; address = oven_address ; fee_index = s.fee_index}  in
     let ovens = Big_map.update handle (Some oven) s.ovens in
     ([origination_op], {s with ovens = ovens})
 
@@ -174,11 +181,13 @@ let mint_or_burn (s : storage) (p : mint_or_burn) : result =
 let get_target (storage : storage) (callback : nat contract) : result =
   ([Tezos.transaction storage.target 0mutez callback], storage)
 
-let cfmm_price (storage : storage) (price_numerator : nat) (price_denominator : nat) : result =
+
+let cfmm_info (storage : storage) (price_numerator : nat) (price_denominator : nat)  (cash_pool : nat): result =
   if Tezos.sender <> storage.cfmm_address then
     (failwith error_CALLER_MUST_BE_CFMM : result)
   else
-    let delta = abs (Tezos.now - storage.last_drift_update) in
+    (* get the new target *)
+    let delta = abs (Tezos.now - storage.last_update) in
     let target = storage.target in
     let d_target = Bitwise.shift_right (target * (abs storage.drift) * delta) 48n in
     (* We assume that `target - d_target < 0` never happens for economic reasons.
@@ -199,29 +208,51 @@ let cfmm_price (storage : storage) (price_numerator : nat) (price_denominator : 
       let p2 = price * price  in
       if x > p2 then delta else x * delta / p2 in
 
+    (* set new drift *)
     let drift =
     if target_less_price > 0 then
       storage.drift + d_drift
     else
       storage.drift - d_drift in
 
-    let cfmm_address = storage.cfmm_address in
-    let txndata_ctez_target = target in
-    let entrypoint_ctez_target =
-        (match (Tezos.get_entrypoint_opt "%ctezTarget" cfmm_address : nat contract option) with
-        | None -> (failwith error_INVALID_CTEZ_TARGET_ENTRYPOINT : nat contract)
-        | Some c -> c ) in
-    let op_ctez_target = Tezos.transaction txndata_ctez_target 0tez entrypoint_ctez_target in
 
-    ([op_ctez_target], {storage with drift = drift ; last_drift_update = Tezos.now ; target = target})
+    (* Compute what the liquidity fee shoud be, based on the ratio of total outstanding ctez to ctez in cfmm *)
+    let outstanding = (
+      match (Tezos.call_view "total_supply" () storage.fa12_address) with
+      | None -> (failwith unit : nat)
+      | Some n-> n
+    ) in
+    (* fee_r is given as a multiple of 2^(-48)... note that 2^(-27) Np / s ~ 0.98 cNp / year, so roughly a max of 1% / year *)
+    let fee_r = if 16n * cashPool < outstanding then 2097152n else if 8n * cashPool > outstanding then 2097152n else
+    (Bitwise.shift_left (outstanding - 8 * cashPool) 22) / (outstanding) in
+
+    let new_fee_index = storage.fee_index + Bitwise.shift_right (delta * storage.fee_index * fee_r) 48 in
+    (* Compute how many ctez have implicitly been minted since the last update *)
+    (* We round this down while we round the ctez owed up. This leads, over time, to slightly overestimating the outstanding ctez, which is conservative. *)
+    let minted = outstanding * (abs (new_fee_index - storage.fee_index)) / storage.fee_index in
+
+    (* Create the operation to explicitly mint the ctez in the FA12 contract, and credit it to the CFMM *)
+    let ctez_mint_or_burn = get_ctez_mint_or_burn storage.ctez_fa12_address in
+    let op_mint_ctez = Tezos.transaction (minted, storage.cfmm_address) 0mutez ctez_mint_or_burn in
+    (* update the cfmm with a new target and mention its cashPool increase *)
+
+    let cfmm_address = storage.cfmm_address in
+    let entrypoint_ctez_target =
+        (match (Tezos.get_entrypoint_opt "%ctezTarget" cfmm_address : (nat * nat) contract option) with
+        | None -> (failwith error_INVALID_CTEZ_TARGET_ENTRYPOINT : (nat * nat) contract)
+        | Some c -> c ) in
+    let op_ctez_target = Tezos.transaction (target, minted) 0tez entrypoint_ctez_target in
+    ([op_mint_ctez, op_ctez_target], {storage with drift = drift ; last_update = Tezos.now ; target = target; fee_index = new_fee_index})
 
 let main (p, s : parameter * storage) : result =
+  (* start by updating the fee index *)
+  let s = update_liquidity_fee_index s in
   match p with
   | Withdraw w -> (withdraw s w : result)
   | Register_deposit r -> (register_deposit s r : result)
   | Create d -> (create s d : result)
   | Liquidate l -> (liquidate s l : result)
   | Mint_or_burn xs -> (mint_or_burn s xs : result)
-  | Cfmm_price (x,y) -> (cfmm_price s x y : result)
+  | Cfmm_info ((x,y),z) -> (cfmm_info s x y z : result)
   | Set_addresses xs -> (set_addresses s xs : result)
   | Get_target t -> (get_target s t : result)
