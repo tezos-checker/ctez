@@ -71,7 +71,7 @@ let get_oven (handle : oven_handle) (s : storage) : oven =
   match Big_map.find_opt handle s.ovens with
   | None -> (failwith error_OVEN_DOESNT_EXIST : oven)
   | Some oven -> (* Adjust the amount of outstanding ctez in the oven, record the fee index at that time. *)
-    let ctez_outstanding = abs((- oven.ctez_outstanding * oven.fee_index) / s.fee_index) in
+    let ctez_outstanding = abs((- oven.ctez_outstanding * s.fee_index) / oven.fee_index) in
     {oven with fee_index = s.fee_index ; ctez_outstanding = ctez_outstanding}
 
 let is_under_collateralized (oven : oven) (target : nat) : bool =
@@ -228,9 +228,9 @@ let cfmm_info (storage : storage) (price_numerator : nat) (price_denominator : n
       | None -> (failwith unit : nat)
       | Some n-> n
     ) in
-    (* fee_r is given as a multiple of 2^(-48)... note that 2^(-27) Np / s ~ 0.98 cNp / year, so roughly a max of 1% / year *)
-    let fee_r = if 16n * cash_pool < outstanding then 2097152n else if 8n * cash_pool > outstanding then 2097152n else
-    (Bitwise.shift_left (abs (outstanding - 8n * cash_pool)) 22n) / (outstanding) in
+    (* fee_r is given as a multiple of 2^(-48)... note that 2^(-32) Np / s ~ 0.73 cNp / year, so roughly a max of 0.73% / year *)
+    let fee_r = if 16n * cash_pool < outstanding then 65536n else if 8n * cash_pool > outstanding then 0n else
+    (Bitwise.shift_left (abs (outstanding - 8n * cash_pool)) 17n) / (outstanding) in
 
     let new_fee_index = storage.fee_index + Bitwise.shift_right (delta * storage.fee_index * fee_r) 48n in
     (* Compute how many ctez have implicitly been minted since the last update *)
