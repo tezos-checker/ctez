@@ -1,0 +1,4 @@
+- check for bugs
+- ensure last price of block is used or perhaps VWAP
+- negative fees when restoring AMM towards target
+- ensure drift is updated based on the price before the last update, not the last update
