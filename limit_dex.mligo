@@ -41,8 +41,10 @@ type tez_to_ctez =
 [@layout:comb]
 {
     [@annot:to] to_: address ; (* address that will own the ctez *)
+    refund : address ; (* address to refund extra tez to *)
     deadline : timestamp ; (* deadline for the transaction *)
-    minCtezBought : nat ; (* minimum amount of ctez to buy *)    
+    ctezBought : nat ; (* amount of ctez to buy *)
+    maxTezSold : tez ; (* maximum amount of tez to sell *)
 }
 
 type ctez_to_tez = 
@@ -51,6 +53,7 @@ type ctez_to_tez =
     [@annot:to] to_: address ; (* address that will own the tez *)
     deadline : timestamp ; (* deadline for the transaction *)
     minTezBought : nat ; (* minimum amount of tez to buy *)    
+    ctezSold : nat ; (* amount of ctez to sell *)
 }
 
 type withdraw_for_tez_liquidity = 
@@ -193,3 +196,46 @@ let remove_ctez_liquidity (param : remove_ctez_liquidity) (s : storage) : storag
   ({s with sell_ctez = sell_ctez}, [receive_ctez; receive_subsidy; receive_tez])
 
 
+let newton_step (q : int) (t : int) (_Q : int) (dq : int): int =
+ (*
+    (3 dq⁴ + 6 dq² (q - Q)² + 8 dq³ (-q + Q) + 80 Q³ t) / (4 ((dq - q)³ + 3 (dq - q)² Q + 3 (dq - q) Q² + 21 Q³))
+    todo, check that implementation below is correct
+ *)    
+    let q_m_Q = q - _Q in
+    let dq_m_q = dq - q in
+    let dq_m_q_sq = dq_m_q * dq_m_q in
+    let dq_m_q_cu = dq_m_q_sq * dq_m_q in
+    let _Q_sq = _Q * _Q in
+    let _Q_cu = _Q_sq * _Q in
+      
+    let num = 3 * dq * dq * dq * dq + 6 * dq * dq * q_m_Q * q_m_Q + 8 * dq * dq * dq * (-q_m_Q) + 80 * _Q_cu * t in
+    let denom = 4 * (dq_m_q_cu + 3 * dq_m_q_sq * _Q + 3 * dq_m_q * _Q_sq + 21 * _Q_cu) in
+      
+    num / denom
+
+let invert (q : int) (t : int) (_Q : int) : int =
+    (* note that the price is generally very nearly linear, after all the worth marginal price is 1.05, so Newton
+    converges stupidly fast *)
+    let dq = newton_step q t _Q t in 
+    let dq = newton_step q t _Q dq in
+    let dq = newton_step q t _Q dq in
+    dq
+
+
+
+[@entry]
+let tez_to_ctez (param : tez_to_ctez) (s : storage) : storage * operation list = 
+  let () = assert_with_error (Tezos.get_now () <= param.deadline) "deadline has passed" in
+  let tez_
+ (* The amount of tez that will be bought is calculated by integrating a polynomial which is a function of the fraction u purchased over q
+  * the polynomial, representing the marginal price is given as (21 - 3 * u + 3 u^2 - u^3) / 20 
+  * again, u is the quantity of ctez purchased over q which represents this characteristic quantity of ctez in the ctez half dex.&&
+  * the integral of this polynomial between u = 0 and u = x / q (where x will be ctez_to_sell) is is given as
+  *  (21 * u - 3 * u^2 / 2 + u^3 - u^4 / 4) / 20
+  * or (cts(cts(cts^2-3q^2)+42  q^3))/(40q^4) *) 
+  let cts = ctez_to_sell in let q = s.q in
+  let q2 = q * q in 
+  let d_tez = (cts * (cts * (cts * cts - 3 * q2) + 42 * q * q2)) / (40 * q2 * q2) in    
+    
+  
+ 
