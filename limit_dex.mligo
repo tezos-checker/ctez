@@ -238,4 +238,4 @@ let tez_to_ctez (param : tez_to_ctez) (s : storage) : storage * operation list =
   let d_tez = (cts * (cts * (cts * cts - 3 * q2) + 42 * q * q2)) / (40 * q2 * q2) in    
     
   
- 
+(* withdraw: you can withdraw x so long as x + owed < lpt * total_proceeds / total_lpt, after which owed := owed + x *)
