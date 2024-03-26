@@ -41,10 +41,8 @@ type tez_to_ctez =
 [@layout:comb]
 {
     [@annot:to] to_: address ; (* address that will own the ctez *)
-    refund : address ; (* address to refund extra tez to *)
     deadline : timestamp ; (* deadline for the transaction *)
-    ctezBought : nat ; (* amount of ctez to buy *)
-    maxTezSold : tez ; (* maximum amount of tez to sell *)
+    minCtezBought : nat ; (* minimum amount of ctez to buy *)
 }
 
 type ctez_to_tez = 
@@ -62,7 +60,7 @@ type withdraw_for_tez_liquidity =
     [@annot:to] to_: address ; (* address to withdraw to *)
 }
 
-type withdraw_for_ctez_liquidity = 
+type withdraw_for_ctez_half_dex = 
 [@layout:comb]
 {
     [@annot:to] to_: address ; (* address to withdraw to, note that here you receive both ctez and tez 
@@ -88,17 +86,41 @@ type half_dex =
     total_subsidy : nat ; (* total amount accumulated from subsidy *)
 }
 
+
+type fa12_transfer =
+  [@layout:comb]
+  { [@annot:from] address_from : address;
+    [@annot:to] address_to : address;
+    value : nat }
+
 type storage = 
 [@layout:comb]
 {
     sell_ctez : half_dex ;
     sell_tez  : half_dex ;
     target : nat ; (* target / 2^48 is the target price of ctez in tez *) (* todo, logic for update *)
-    q : nat ; (* Q is the desired quantity of ctez in the ctez half dex,
+    _Q : nat ; (* Q is the desired quantity of ctez in the ctez half dex,
      floor(Q * target) is the desired quantity of tez in the tez half dex *)
-     liquidity_dex_address : address ; (* address of the liquidity dex *)
-      ctez_token_contract : address ; (* address of the ctez token contract *)
+    liquidity_dex_address : address ; (* address of the liquidity dex *)
+    ctez_token_contract : address ; (* address of the ctez token contract *)
+    ctez_contract : address ; (* address of the ctez contract *)
+    last_update : nat;
 }
+
+// retrieve _Q and target
+
+
+
+let update_ctez_contract_if_needed (s : storage) : operation list * storage = 
+  let curr_level = Tezos.get_level () in
+  if s.last_update <> curr_level then
+    let ctez_contract = (Tezos.get_entrypoint "%dex_update" s.ctez_contract : (nat * nat) contract) in
+    let operation = Tezos.transaction (s.sell_ctez.total_liquidity, s.sell_tez.total_liquidity) 0mutez ctez_contract in
+    let target , _Q = Option.value_with_error "dex_info entrypoint must exist" (Tezos.call_view "%dex_info" () s.ctez_contract) in
+    ([operation], {s with last_update = curr_level; target = target; _Q = _Q})
+  else
+    ([], s)
+
 
 [@inline]
 let ceildiv (numerator : nat) (denominator : nat) : nat = abs ((- numerator) / (int denominator))
@@ -142,7 +164,7 @@ let add_ctez_liquidity (param : add_ctez_liquidity) (s : storage) : storage * op
       total_liquidity = s.sell_ctez.total_liquidity + param.ctezDeposited ;
       } in
 
-  let receive_ctez = Tezos.transaction (param.owner, (s.liquidity_dex_address, params.ctezDeposited)) 0mutez s.ctez_token_contract in
+  let receive_ctez = Tezos.transaction (param.owner, (s.liquidity_dex_address, param.ctezDeposited)) 0mutez s.ctez_token_contract in
   ({s with sell_ctez = half_dex}, [receive_ctez])
     
 [@entry]
@@ -196,12 +218,25 @@ let remove_ctez_liquidity (param : remove_ctez_liquidity) (s : storage) : storag
   ({s with sell_ctez = sell_ctez}, [receive_ctez; receive_subsidy; receive_tez])
 
 
-let newton_step (q : int) (t : int) (_Q : int) (dq : int): int =
+let min (x : nat) (y : nat) : nat = if x < y then x else y
+
+let clamp_nat (x : int) : nat = 
+    match is_nat x with
+    | None -> 0n
+    | Some x -> x
+
+let newton_step (q : nat) (t : nat) (_Q : nat) (dq : nat): int =
  (*
     (3 dq⁴ + 6 dq² (q - Q)² + 8 dq³ (-q + Q) + 80 Q³ t) / (4 ((dq - q)³ + 3 (dq - q)² Q + 3 (dq - q) Q² + 21 Q³))
     todo, check that implementation below is correct
+    TODO: optimize the computation of [q - _Q] and other constants 
+          (A dq^2 +B)/(C + dq(D+dq(4dq-E)))
  *)    
+    // ensures that dq < q
+    let dq = min dq q in
+    // assert q < _Q (due to clamp at [invert])
     let q_m_Q = q - _Q in
+
     let dq_m_q = dq - q in
     let dq_m_q_sq = dq_m_q * dq_m_q in
     let dq_m_q_cu = dq_m_q_sq * dq_m_q in
@@ -213,29 +248,94 @@ let newton_step (q : int) (t : int) (_Q : int) (dq : int): int =
       
     num / denom
 
-let invert (q : int) (t : int) (_Q : int) : int =
+let invert (q : nat) (t : nat) (_Q : nat) : nat =
+    (* q is the current amount,
+       t is the amount you want to trade
+       _Q is the target amount 
+     *)
     (* note that the price is generally very nearly linear, after all the worth marginal price is 1.05, so Newton
-    converges stupidly fast *)
-    let dq = newton_step q t _Q t in 
-    let dq = newton_step q t _Q dq in
-    let dq = newton_step q t _Q dq in
-    dq
+       converges stupidly fast *)
+    let q = min q _Q in
+    let dq = clamp_nat (newton_step q t _Q t) in 
+    let dq = clamp_nat (newton_step q t _Q dq) in
+    let dq = clamp_nat (newton_step q t _Q dq) in
+    let result = dq - dq / 1_000_000_000 - 1 in
+    match is_nat result with
+    | None -> failwith "trade size too small"
+    | Some x -> x
 
 
+let append t1 t2 = List.fold_right (fun (x, tl) -> x :: tl) t1 t2
 
 [@entry]
-let tez_to_ctez (param : tez_to_ctez) (s : storage) : storage * operation list = 
+let tez_to_ctez (param : tez_to_ctez) (s : storage) : operation list * storage = 
+  let update_ops, s = update_ctez_contract_if_needed s in
+
   let () = assert_with_error (Tezos.get_now () <= param.deadline) "deadline has passed" in
-  let tez_
  (* The amount of tez that will be bought is calculated by integrating a polynomial which is a function of the fraction u purchased over q
   * the polynomial, representing the marginal price is given as (21 - 3 * u + 3 u^2 - u^3) / 20 
   * again, u is the quantity of ctez purchased over q which represents this characteristic quantity of ctez in the ctez half dex.&&
   * the integral of this polynomial between u = 0 and u = x / q (where x will be ctez_to_sell) is is given as
   *  (21 * u - 3 * u^2 / 2 + u^3 - u^4 / 4) / 20
   * or (cts(cts(cts^2-3q^2)+42  q^3))/(40q^4) *) 
-  let cts = ctez_to_sell in let q = s.q in
-  let q2 = q * q in 
-  let d_tez = (cts * (cts * (cts * cts - 3 * q2) + 42 * q * q2)) / (40 * q2 * q2) in    
+//   let cts = ctez_to_sell in let q = s.q in
+//   let q2 = q * q in 
+//   let d_tez = (cts * (cts * (cts * cts - 3 * q2) + 42 * q * q2)) / (40 * q2 * q2) in    
+   
+    let t = Bitwise.shift_left (Tezos.get_amount () / 1mutez) 48n / s.target in 
+    let ctez_to_sell = invert s.sell_ctez.total_liquidity t s._Q  in
+    let () = assert_with_error (ctez_to_sell >= param.minCtezBought) "insufficient ctez would be bought" in
+    let () = assert_with_error (ctez_to_sell <= s.sell_ctez.total_liquidity) "insufficient ctez in the dex" in
+    // Update dex
+    let half_dex = s.sell_ctez in
+    let half_dex: half_dex = { half_dex with total_liquidity = clamp_nat (half_dex.total_liquidity - ctez_to_sell); total_proceeds = half_dex.total_proceeds + (Tezos.get_amount () / 1mutez) } in
+    // Transfer ctez to the buyer
+    let fa_contract = (Tezos.get_entrypoint "%transfer" s.ctez_token_contract : fa12_transfer contract) in
+    let receive_ctez = Tezos.transaction { address_from = s.liquidity_dex_address; address_to = param.to_; value = ctez_to_sell } 0mutez fa_contract in
+    // Deal with subsidy later
+    (append update_ops [receive_ctez], {s with sell_ctez = half_dex})
+
+
+let implicit_transfer (to_ : address) (amt : tez) : operation = 
+    let contract = (Tezos.get_entrypoint "%default" to_ : unit contract) in
+    Tezos.transaction () amt contract
+
+let ctez_transfer (s : storage) (to_ : address) (value: nat) : operation = 
+    let fa_contract = (Tezos.get_entrypoint "%transfer" s.ctez_token_contract : fa12_transfer contract) in
+    let receive_ctez = Tezos.transaction { address_from = s.liquidity_dex_address; address_to = to_; value } 0mutez fa_contract in
+    receive_ctez
+
+
+[@entry]
+let withdraw_for_ctez_half_dex (param : withdraw_for_ctez_half_dex) (s: storage) : operation list * storage = 
+    // withdraw: you can withdraw x so long as x + owed < lpt * total_proceeds / total_lpt, after which owed := owed + x 
+    //  So, my thoughts on withdrawing:
+    // you can withdraw x, so long as x + owe < lpt * total_proceeds / total_lpt
+    // owe := owe + x
+    // 2:57 PM
+    // owe never decreases, it's basically a tally of everything you've ever withdrawn
+    // 2:57 PM
+    // so when you add liquidity, it's like you added all those proceeds, and then withdrew lpt * total_proceeds / total_lpt
+    // 
+    // TL;DR: proceeds = tez + total owed; proceeds doesn't increase
     
-  
-(* withdraw: you can withdraw x so long as x + owed < lpt * total_proceeds / total_lpt, after which owed := owed + x *)
+    let owner = Tezos.get_sender () in
+    let half_dex = s.sell_ctez in
+    let liquidity_owner = Option.value_with_error  "no liquidity owner" (Big_map.find_opt owner half_dex.liquidity_owners) in
+    let share_of_proceeds = liquidity_owner.lpt * half_dex.total_proceeds / half_dex.total_lpt in
+    // proceeds in tez
+    let amount_proceeds_withdrawn = clamp_nat (share_of_proceeds - liquidity_owner.owed) in
+    let share_of_subsidy = liquidity_owner.lpt * half_dex.total_subsidy / half_dex.total_lpt in
+    // subsidy in ctez
+    let amount_subsidy_withdrawn = clamp_nat (share_of_subsidy - liquidity_owner.subsidy_owed) in
+    // liquidity owner owes the full share of proceeds
+    let liquidity_owner = { liquidity_owner with owed = share_of_proceeds; subsidy_owed = share_of_subsidy } in
+    // update half dex
+    let half_dex = { half_dex with liquidity_owners = Big_map.update owner (Some liquidity_owner) half_dex.liquidity_owners } in
+    // do transfers
+    let receive_proceeds = implicit_transfer param.to_ (amount_proceeds_withdrawn * 1mutez) in
+    let receive_subsidy = ctez_transfer s param.to_ amount_subsidy_withdrawn in
+    ([receive_proceeds; receive_subsidy], {s with sell_ctez = half_dex})
+
+
+
