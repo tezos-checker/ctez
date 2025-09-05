@@ -33,12 +33,8 @@ module.exports = {
   },
   rules: {
     'linebreak-style': 'off',
-    'prettier/prettier': [
-      'error',
-      {
-        endOfLine: 'auto',
-      },
-    ],
+    'prettier/prettier': 'off',
+    'react/destructuring-assignment': 'off',
     'import/no-extraneous-dependencies': 'off',
     'react/jsx-props-no-spreading': 'off',
     'react/prop-types': 'off',
@@ -47,6 +43,8 @@ module.exports = {
     'import/prefer-default-export': 'off',
     'no-param-reassign': 'off',
     'import/no-cycle': 'warn',
+    'no-shadow': 'off',
+    '@typescript-eslint/no-shadow': 'error',
     '@typescript-eslint/no-unused-expressions': [
       'off',
       {
@@ -61,6 +59,8 @@ module.exports = {
     'no-nested-ternary': 'warn',
     'no-unneeded-ternary': 'warn',
     '@typescript-eslint/naming-convention': 'warn',
-    'no-bitwise': 'off',
+    'react/default-props-match-prop-types': ['error', { allowRequiredDefaults: true }],
+    'react/prop-types': 'off',
+    'react/require-default-props': 'off',
   },
 };

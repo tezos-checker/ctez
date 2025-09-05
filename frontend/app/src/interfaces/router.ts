@@ -1,7 +1,8 @@
 export interface BaseRoute {
-  path: string;
-  component: React.ComponentClass<any, any> | React.FunctionComponent<any>;
+  path: string | string[];
   props?: unknown;
+  Component?: React.ReactNode;
+  exact?: boolean;
 }
 
 export interface ComponentRoute extends BaseRoute {

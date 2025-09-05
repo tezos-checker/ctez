@@ -1,0 +1,235 @@
+{ parameter
+    (or (pair %transfer (address %from) (address %to) (nat %value))
+        (or (pair %approve (address %spender) (nat %value))
+            (or (pair %mintOrBurn (int %quantity) (address %target))
+                (or (pair %getAllowance
+                       (pair %request (address %owner) (address %spender))
+                       (contract %callback nat))
+                    (or (pair %getBalance (address %owner) (contract %callback nat))
+                        (pair %getTotalSupply (unit %request) (contract %callback nat))))))) ;
+  storage
+    (pair (big_map %ledger address (pair (nat %amount) (map %allowances address nat)))
+          (address %admin)
+          (nat %total_supply)
+          (big_map %metadata string bytes)) ;
+  code { UNPAIR ;
+         PUSH string "DontSendTez" ;
+         PUSH mutez 0 ;
+         AMOUNT ;
+         COMPARE ;
+         EQ ;
+         IF { DROP } { FAILWITH } ;
+         IF_LEFT
+           { UNPAIR 3 ;
+             DUP 4 ;
+             CAR ;
+             SENDER ;
+             DUP 2 ;
+             DUP 4 ;
+             GET ;
+             IF_NONE { EMPTY_MAP address nat ; PUSH nat 0 ; PAIR } {} ;
+             DUP 3 ;
+             DUP 6 ;
+             GET ;
+             IF_NONE { EMPTY_MAP address nat ; PUSH nat 0 ; PAIR } {} ;
+             DUP 5 ;
+             SENDER ;
+             COMPARE ;
+             EQ ;
+             IF { DIG 2 ; DROP ; SWAP }
+                { DUP 7 ;
+                  DUP 3 ;
+                  CDR ;
+                  DUP 5 ;
+                  GET ;
+                  IF_NONE { PUSH nat 0 } {} ;
+                  SUB ;
+                  ISNAT ;
+                  IF_NONE { PUSH string "NotEnoughAllowance" ; FAILWITH } {} ;
+                  DUP 3 ;
+                  DIG 3 ;
+                  CDR ;
+                  PUSH nat 0 ;
+                  DUP 4 ;
+                  COMPARE ;
+                  EQ ;
+                  IF { DIG 2 ; DROP ; NONE nat } { DIG 2 ; SOME } ;
+                  DIG 4 ;
+                  UPDATE ;
+                  UPDATE 2 } ;
+             DUP ;
+             DUP 7 ;
+             DIG 2 ;
+             CAR ;
+             SUB ;
+             ISNAT ;
+             IF_NONE { PUSH string "NotEnoughBalance" ; FAILWITH } {} ;
+             UPDATE 1 ;
+             DUP 2 ;
+             DIG 6 ;
+             DIG 3 ;
+             CAR ;
+             ADD ;
+             UPDATE 1 ;
+             DIG 5 ;
+             DIG 3 ;
+             DIG 3 ;
+             SOME ;
+             DIG 4 ;
+             UPDATE ;
+             DIG 2 ;
+             SOME ;
+             DIG 3 ;
+             UPDATE ;
+             UPDATE 1 ;
+             NIL operation }
+           { IF_LEFT
+               { UNPAIR ;
+                 DUP 3 ;
+                 CAR ;
+                 SENDER ;
+                 DUP 2 ;
+                 DUP 2 ;
+                 GET ;
+                 IF_NONE { EMPTY_MAP address nat ; PUSH nat 0 ; PAIR } {} ;
+                 PUSH nat 0 ;
+                 DUP 6 ;
+                 COMPARE ;
+                 EQ ;
+                 PUSH nat 0 ;
+                 DUP 3 ;
+                 CDR ;
+                 DUP 7 ;
+                 GET ;
+                 IF_NONE { PUSH nat 0 } {} ;
+                 COMPARE ;
+                 EQ ;
+                 OR ;
+                 IF {} { PUSH string "UnsafeAllowanceChange" ; FAILWITH } ;
+                 DIG 5 ;
+                 DIG 3 ;
+                 DUP 3 ;
+                 DIG 3 ;
+                 CDR ;
+                 PUSH nat 0 ;
+                 DUP 8 ;
+                 COMPARE ;
+                 EQ ;
+                 IF { DIG 6 ; DROP ; NONE nat } { DIG 6 ; SOME } ;
+                 DIG 6 ;
+                 UPDATE ;
+                 UPDATE 2 ;
+                 SOME ;
+                 DIG 3 ;
+                 UPDATE ;
+                 UPDATE 1 ;
+                 NIL operation }
+               { IF_LEFT
+                   { UNPAIR ;
+                     PUSH string "OnlyAdmin" ;
+                     DUP 4 ;
+                     GET 3 ;
+                     SENDER ;
+                     COMPARE ;
+                     EQ ;
+                     IF { DROP } { FAILWITH } ;
+                     DUP 3 ;
+                     CAR ;
+                     DUP ;
+                     DUP 4 ;
+                     GET ;
+                     IF_NONE { EMPTY_MAP address nat ; PUSH nat 0 ; PAIR } {} ;
+                     DUP ;
+                     DUP 4 ;
+                     DIG 2 ;
+                     CAR ;
+                     ADD ;
+                     ISNAT ;
+                     IF_NONE { PUSH string "CannotBurnMoreThanTheTargetsBalance" ; FAILWITH } {} ;
+                     UPDATE 1 ;
+                     DIG 2 ;
+                     DUP 5 ;
+                     GET 5 ;
+                     ADD ;
+                     ISNAT ;
+                     IF_NONE { PUSH string "CannotBurnMoreThanTheTotalSupply" ; FAILWITH } {} ;
+                     DIG 4 ;
+                     DIG 3 ;
+                     DIG 3 ;
+                     SOME ;
+                     DIG 4 ;
+                     UPDATE ;
+                     UPDATE 1 ;
+                     SWAP ;
+                     UPDATE 5 ;
+                     NIL operation }
+                   { IF_LEFT
+                       { DUP 2 ;
+                         SWAP ;
+                         UNPAIR ;
+                         NIL operation ;
+                         DIG 2 ;
+                         PUSH mutez 0 ;
+                         DIG 5 ;
+                         CAR ;
+                         DUP 5 ;
+                         CAR ;
+                         GET ;
+                         IF_NONE { EMPTY_MAP address nat ; PUSH nat 0 ; PAIR } {} ;
+                         CDR ;
+                         DIG 4 ;
+                         CDR ;
+                         GET ;
+                         IF_NONE { PUSH nat 0 } {} ;
+                         TRANSFER_TOKENS }
+                       { IF_LEFT
+                           { DUP 2 ;
+                             SWAP ;
+                             UNPAIR ;
+                             NIL operation ;
+                             DIG 2 ;
+                             PUSH mutez 0 ;
+                             DIG 5 ;
+                             CAR ;
+                             DIG 4 ;
+                             GET ;
+                             IF_NONE { EMPTY_MAP address nat ; PUSH nat 0 ; PAIR } {} ;
+                             CAR ;
+                             TRANSFER_TOKENS }
+                           { DUP 2 ;
+                             SWAP ;
+                             CDR ;
+                             NIL operation ;
+                             SWAP ;
+                             PUSH mutez 0 ;
+                             DIG 4 ;
+                             GET 5 ;
+                             TRANSFER_TOKENS } } ;
+                     CONS } } } ;
+         PAIR } ;
+  view "viewAllowance"
+       (pair (address %owner) (address %spender))
+       nat
+       { UNPAIR ;
+         UNPAIR ;
+         DIG 2 ;
+         CAR ;
+         SWAP ;
+         GET ;
+         IF_NONE { EMPTY_MAP address nat ; PUSH nat 0 ; PAIR } {} ;
+         CDR ;
+         SWAP ;
+         GET ;
+         IF_NONE { PUSH nat 0 } {} } ;
+  view "viewBalance"
+       address
+       nat
+       { UNPAIR ;
+         SWAP ;
+         CAR ;
+         SWAP ;
+         GET ;
+         IF_NONE { EMPTY_MAP address nat ; PUSH nat 0 ; PAIR } {} ;
+         CAR } ;
+  view "viewTotalSupply" unit nat { CDR ; GET 5 } }
+

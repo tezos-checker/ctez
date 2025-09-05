@@ -1,29 +1,24 @@
 import React, { Suspense, useEffect, useState } from 'react';
 import { HelmetProvider } from 'react-helmet-async';
-import { LocalizationProvider } from '@material-ui/pickers';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import { ToastProvider, DefaultToastContainer } from 'react-toast-notifications';
-import DateFnsUtils from '@material-ui/pickers/adapter/date-fns';
+import { ChakraProvider } from '@chakra-ui/react';
 import { WalletProvider } from './wallet/walletContext';
 import { WalletInterface } from './interfaces';
 import { initTezos, setWalletProvider } from './contracts/client';
-import { APP_NAME, NETWORK, RPC_URL, RPC_PORT, CTEZ_ADDRESS, CFMM_ADDRESS } from './utils/globals';
+import { APP_NAME, NETWORK, RPC_URL, RPC_PORT, CTEZ_ADDRESS } from './utils/globals';
 import { getBeaconInstance, isWalletConnected } from './wallet';
 import { AppRouter } from './router';
 import { initCTez } from './contracts/ctez';
-import { initCfmm } from './contracts/cfmm';
 import { logger } from './utils/logger';
 import { getNodePort, getNodeURL } from './utils/settingUtils';
+import ModalContainer from './components/modals/ModalContainer';
+import theme from './theme/theme';
+import ErrorBoundary from './components/ErrorBoundary';
+import { initCfmm } from './v1/contracts/cfmm';
+import { CFMM_ADDRESS } from './v1/utils/globals';
+import { AppReloadProvider } from './components/AppReloadProvider';
 
 const queryClient = new QueryClient();
-
-/**
- * Hack to show errors above drawer
- */
-const AppToastContainer: React.FC = (props: any) => {
-  const newProps = { ...props, style: { zIndex: 9999 } };
-  return <DefaultToastContainer {...newProps} />;
-};
 
 const App: React.FC = () => {
   const [wallet, setWallet] = useState<Partial<WalletInterface>>({});
@@ -46,7 +41,7 @@ const App: React.FC = () => {
         await checkWalletConnection();
         CTEZ_ADDRESS && (await initCTez(CTEZ_ADDRESS));
         CFMM_ADDRESS && (await initCfmm(CFMM_ADDRESS));
-      } catch (error) {
+      } catch (error: any) {
         logger.error(error);
       }
     };
@@ -55,20 +50,20 @@ const App: React.FC = () => {
 
   return (
     <Suspense fallback="Loading...">
-      <HelmetProvider>
-        <QueryClientProvider client={queryClient}>
-          <LocalizationProvider dateAdapter={DateFnsUtils}>
+      <AppReloadProvider>
+        <HelmetProvider>
+          <QueryClientProvider client={queryClient}>
             <WalletProvider value={{ wallet, setWallet }}>
-              <ToastProvider
-                placement="bottom-right"
-                components={{ ToastContainer: AppToastContainer }}
-              >
-                <AppRouter />
-              </ToastProvider>
+              <ChakraProvider theme={theme}>
+                <ErrorBoundary>
+                  <AppRouter />
+                  <ModalContainer />
+                </ErrorBoundary>
+              </ChakraProvider>
             </WalletProvider>
-          </LocalizationProvider>
-        </QueryClientProvider>
-      </HelmetProvider>
+          </QueryClientProvider>
+        </HelmetProvider>
+      </AppReloadProvider>
     </Suspense>
   );
 };

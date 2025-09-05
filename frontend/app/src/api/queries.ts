@@ -1,11 +1,22 @@
 import { AxiosError } from 'axios';
-import { useQuery } from 'react-query';
-import { getCfmmStorage } from '../contracts/cfmm';
-import { getExternalOvenData, getOvenDelegate, getOvens, getOvenStorage } from '../contracts/ctez';
+import { useQueries, useQuery } from 'react-query';
+import { UseQueryResult } from 'react-query/types/react/types';
 import {
+  getActualCtezStorage,
+  getAllOvens,
+  getCtezStorage,
+  getExternalOvenData,
+  getOven,
+  getOvenDelegate,
+  getOvens,
+  getOvenStorage,
+  getUserOvens,
+} from '../contracts/ctez';
+import {
+  AllOvenDatum,
   Baker,
   BaseStats,
-  CfmmStorage,
+  CTezStorage,
   Oven,
   OvenStorage,
   UserBalance,
@@ -15,6 +26,8 @@ import { getBaseStats, getUserLQTData } from './contracts';
 import { getDelegates } from './tzkt';
 import { getUserBalance } from './user';
 
+type TUseQueryReturn<T> = UseQueryResult<T | undefined, AxiosError>;
+
 export const useDelegates = (userAddress?: string) => {
   return useQuery<Baker[], AxiosError, Baker[]>(['delegates'], () => {
     return getDelegates(userAddress);
@@ -22,9 +35,16 @@ export const useDelegates = (userAddress?: string) => {
 };
 
 export const useCtezBaseStats = (userAddress?: string) => {
-  return useQuery<BaseStats, AxiosError, BaseStats>(['baseStats'], async () => {
-    return getBaseStats(userAddress);
-  });
+  return useQuery<BaseStats, AxiosError, BaseStats>(
+    ['baseStats'],
+    async () => {
+      return getBaseStats();
+    },
+    {
+      refetchInterval: 30_000,
+      staleTime: 3_000,
+    },
+  );
 };
 
 export const useUserBalance = (userAddress?: string) => {
@@ -35,13 +55,32 @@ export const useUserBalance = (userAddress?: string) => {
         return getUserBalance(userAddress);
       }
     },
+    {
+      refetchInterval: 30_000,
+      staleTime: 3_000,
+    },
   );
 };
-export const useCfmmStorage = () => {
-  return useQuery<CfmmStorage, AxiosError, CfmmStorage>(
-    ['cfmmStorage'],
+
+
+export const useCtezStorage = () => {
+  return useQuery<CTezStorage, AxiosError, CTezStorage>(
+    ['ctezStorage'],
     async () => {
-      return getCfmmStorage();
+      return getCtezStorage();
+    },
+    {
+      refetchInterval: 30000,
+      staleTime: 3000,
+    },
+  );
+};
+
+export const useActualCtezStorage = () => {
+  return useQuery<CTezStorage, AxiosError, CTezStorage>(
+    ['actualCtezStorage'],
+    async () => {
+      return getActualCtezStorage();
     },
     {
       refetchInterval: 30000,
@@ -77,9 +116,45 @@ export const useOvenData = (userAddress?: string, externalOvens: string[] = []) 
       return [];
     },
     {
-      refetchInterval: 30000,
-      staleTime: 3000,
+      refetchInterval: 30_000,
+      staleTime: 3_000,
     },
+  );
+};
+
+export const useAllOvenData = () => {
+  return useQuery<AllOvenDatum[] | undefined, AxiosError, AllOvenDatum[] | undefined>(
+    ['allOvenData'],
+    () => {
+      return getAllOvens();
+    },
+  );
+};
+
+export const useUserOvenData = (
+  userAddress: string | undefined,
+): TUseQueryReturn<AllOvenDatum[]> => {
+  return useQuery<AllOvenDatum[] | undefined, AxiosError, AllOvenDatum[] | undefined>(
+    ['allOvenData', userAddress],
+    () => {
+      if (userAddress) {
+        return getUserOvens(userAddress);
+      }
+
+      // ? Return empty array if userAddress is empty
+      return new Promise<AllOvenDatum[]>(() => []);
+    },
+  );
+};
+
+export const useOvenDataByAddresses = (ovenAddresses: string[]) => {
+  return useQueries(
+    ovenAddresses.map((address) => ({
+      queryKey: ['ovenData', address],
+      queryFn: () => {
+        return getOven(address);
+      },
+    })),
   );
 };
 

@@ -1,0 +1,77 @@
+{
+    "add_ctez_liquidity_with_subsidies": {
+        "consumed_gas": 6814,
+        "consumed_mutez": 21556,
+        "paid_storage_size_diff": 82
+    },
+    "add_ctez_liquidity_without_subsidies": {
+        "consumed_gas": 5804,
+        "consumed_mutez": 20955,
+        "paid_storage_size_diff": 80
+    },
+    "add_tez_liquidity_with_subsidies": {
+        "consumed_gas": 4575,
+        "consumed_mutez": 21329,
+        "paid_storage_size_diff": 82
+    },
+    "add_tez_liquidity_without_subsidies": {
+        "consumed_gas": 3564,
+        "consumed_mutez": 20728,
+        "paid_storage_size_diff": 80
+    },
+    "collect_from_ctez_liquidity": {
+        "consumed_gas": 6017,
+        "consumed_mutez": 8194,
+        "paid_storage_size_diff": 29
+    },
+    "collect_from_tez_liquidity": {
+        "consumed_gas": 8167,
+        "consumed_mutez": 10158,
+        "paid_storage_size_diff": 36
+    },
+    "create_oven": {
+        "consumed_gas": 4210,
+        "consumed_mutez": 384604,
+        "paid_storage_size_diff": 1278
+    },
+    "ctez_to_tez": {
+        "consumed_gas": 5233,
+        "consumed_mutez": 77143,
+        "paid_storage_size_diff": 48
+    },
+    "liquidate_oven": {
+        "consumed_gas": 8093,
+        "consumed_mutez": 19699,
+        "paid_storage_size_diff": 74
+    },
+    "mint_or_burn": {
+        "consumed_gas": 5108,
+        "consumed_mutez": 19303,
+        "paid_storage_size_diff": 74
+    },
+    "oven_deposit": {
+        "consumed_gas": 6848,
+        "consumed_mutez": 1202,
+        "paid_storage_size_diff": 1
+    },
+    "remove_ctez_liquidity": {
+        "consumed_gas": 9187,
+        "consumed_mutez": 1300,
+        "paid_storage_size_diff": 0
+    },
+    "remove_tez_liquidity": {
+        "consumed_gas": 9216,
+        "consumed_mutez": 1302,
+        "paid_storage_size_diff": 0
+    },
+    "tez_to_ctez": {
+        "consumed_gas": 5142,
+        "consumed_mutez": 21632,
+        "paid_storage_size_diff": 83
+    },
+    "withdraw_from_oven": {
+        "consumed_gas": 5766,
+        "consumed_mutez": 923,
+        "paid_storage_size_diff": 0
+    }
+}

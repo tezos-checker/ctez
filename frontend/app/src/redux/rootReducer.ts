@@ -1,12 +1,12 @@
 import { combineReducers } from '@reduxjs/toolkit';
-import { OvenSlice } from './slices/OvenSlice';
-import { StatsSlice } from './slices/StatsSlice';
+import OvenSlice from './slices/OvenSlice';
+import UiSlice from './slices/UiSlice';
+import TradeSlice from './slices/TradeSlice';
 
 const rootReducer = combineReducers({
-  oven: OvenSlice.reducer,
-  stats: StatsSlice.reducer,
+  oven: OvenSlice,
+  ui: UiSlice,
+  trade: TradeSlice,
 });
-
-export type RootState = ReturnType<typeof rootReducer>;
 
 export default rootReducer;

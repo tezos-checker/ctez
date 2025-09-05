@@ -1,0 +1,35 @@
+name: 'Execute every entrypoint'
+on:
+  schedule:
+  - cron: "0 */3 * * *"
+  workflow_dispatch:
+  
+jobs:
+  execute_every_entrypoint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10' 
+      - name: Install poetry
+        uses: abatilo/actions-poetry@v2
+      - name: Setup a local virtual environment (if no poetry.toml file)
+        run: |
+          poetry config virtualenvs.create true --local
+          poetry config virtualenvs.in-project true --local
+      - uses: actions/cache@v3
+        name: Define a cache for the virtual environment based on the dependencies lock file
+        with:
+          path: ./.venv
+          key: venv-${{ hashFiles('poetry.lock') }}
+      - name: Use correct python version
+        run: poetry env use 3.10
+      - name: Install the project dependencies
+        run: poetry install
+      - name: Run the automated tests
+        run: poetry run execute_every_entrypoint --ctez-address KT1UA7PpRfiTdidWvxxByXPSyYJmcGy3zD4t --delegate tz1RuHDSj9P7mNNhfKxsyLGRDahTX5QD1DdP
+        env:
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          RPC_URL: ${{ secrets.RPC_URL }}

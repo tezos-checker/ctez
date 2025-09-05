@@ -56,7 +56,7 @@ Let's motivate that important "if". Why do we assume that the peg can be eventua
 To give some concrete numbers, suppose the target starts at 1.0, that the drift starts at 0% per year, and that a premium of at last -3.125% (a discount) persists continuously for a very long time. After one day, the drift will be about 1% per year, after two days, it will be about 2% per year. How does this look for the target over the course of one year?
 
 It looks like this.
-![](https://i.imgur.com/bms5TZo.png)
+![](https://i.imgur.com/3G3h2PC.png)
 
 After one month, the target would be about `1.012`, after 2 months `1.05`, after 3 months, `1.12`, after 6 months, `1.56`, after a year, `5.85`.
 
@@ -78,6 +78,6 @@ A simple rule for oven owners or ctez holders is to pick the drift they are comf
 
 The exact formula for the change of the drift is detailed in the github repo for ctez but, overall, when the premium or discount is large (more than 1/32 or 3.125%), then the drift can change by as much as 1%/year every day. When it's in the middle, if follows a quadratic formula. The graph looks like this.
 
-![](https://i.imgur.com/LhDAEuL.png)
+![](https://i.imgur.com/B3wgwdE.png)
 
 Where the y axis represents (approximately) how many percentage points per year are added or removed to the drift on a daily basis, and the y axis represents the premium. As we can see, when the premium or discount is small, the drift changes very little. The drift adjustment for a premium or discount of 0.5% is about 40 times smaller than the drift adjustment for a premium or discount of 3.125%.

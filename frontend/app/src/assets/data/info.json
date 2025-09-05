@@ -1,0 +1,67 @@
+[
+  {
+    "id": 1,
+    "topic": "collateral ratio",
+    "content": "Ratio between total tez collateral and outstanding ctez"
+  },
+  {
+    "id": 2,
+    "topic": "baker",
+    "content": "A Tezos node pooling tez delegated to them to sign and publish blocks on the Tezos blockchain"
+  },
+  {
+    "id": 3,
+    "topic": "Authorized Depositors",
+    "content": "A Tezos address that is granted access to deposit tez"
+  },
+  {
+    "id": 4,
+    "topic": "Tez Collateral",
+    "content": "The amount of tez that has been deposited in an oven to collateralize the ctez position"
+  },
+  {
+    "id": 5,
+    "topic": "required tez collateral",
+    "content": "The amount of tez required in an oven for the oven to be fully collateralized"
+  },
+  {
+    "id": 6,
+    "topic": "Withdraw tez",
+    "content": "Ability to withdraw tez from your oven, either directly or by redeeming your ctez"
+  },
+  {
+    "id": 7,
+    "topic": "Collateral Utilization",
+    "content": "% of collateral currently used to back outstanding ctez"
+  },
+  {
+    "id": 8,
+    "topic": "mintable",
+    "content": "Maximum amount of ctez that can be minted from the oven"
+  },
+  {
+    "id": 9,
+    "topic": "oven address",
+    "content": "Smart contract that governing the oven"
+  },
+  {
+    "id": 10,
+    "topic": "outstanding",
+    "content": "Amount of ctez minted from the oven"
+  },
+  {
+    "id": 11,
+    "topic": "max slippage",
+    "content": "% of price slippage tolerated for your swap"
+  },
+  {
+    "id": 12,
+    "topic": "timeout",
+    "content": "Max time before transaction is cancelled if not validated"
+  },
+  {
+    "id": 13,
+    "topic": "remaining mintable",
+    "content": "Remaining amount of ctez that can be minted from this Oven. (Max mintable ctez - Outstanding ctez in the oven)"
+  }
+]

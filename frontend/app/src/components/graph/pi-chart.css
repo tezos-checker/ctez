@@ -1,0 +1,5 @@
+.pie-chart .recharts-pie,
+.pie-chart .recharts-recharts-pie,
+.pie-chart .recharts-pie-sector {
+    outline: none;
+}

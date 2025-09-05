@@ -2,10 +2,10 @@ import { MichelsonMap } from '@taquito/taquito';
 import BigNumber from 'bignumber.js';
 
 export interface Oven {
-  ovenId: BigNumber;
+  ovenId: string | number;
   address: string;
-  ctez_outstanding: BigNumber;
-  tez_balance: BigNumber;
+  ctez_outstanding: string | number;
+  tez_balance: string | number;
   baker: string | null;
   isExternal?: boolean;
   isImported?: boolean;
@@ -31,7 +31,7 @@ export enum Depositor {
   whitelist = 'whitelist',
 }
 
-export type depositors = string[] | { any: symbol };
+export type depositors = any;
 
 export type DepositorStatus = 'denyEveryone' | 'allowEveryone' | 'whitelist';
 
@@ -46,13 +46,36 @@ export interface OvenStorage {
   depositors: depositors;
 }
 
+export interface CTezContext {
+  ctez_fa12_address: string;
+  drift: BigNumber;
+  target: BigNumber;
+  _Q: BigNumber;
+}
+
+export interface LiquidityOwner {
+  liquidity_shares : BigNumber;
+  proceeds_owed : BigNumber;
+  subsidy_owed : BigNumber;
+}
+
+export interface HalfDex {
+  fee_index: BigNumber;
+  liquidity_owners: MichelsonMap<string, LiquidityOwner>;
+  total_liquidity_shares: BigNumber
+  self_reserves: BigNumber;
+  proceeds_debts: BigNumber;
+  proceeds_reserves: BigNumber
+  subsidy_debts: BigNumber;
+  subsidy_reserves: BigNumber;
+}
+
 export interface CTezStorage {
   ovens: MichelsonMap<oven_handle, OvenStorage>;
-  target: BigNumber;
-  drift: BigNumber;
-  last_drift_update: Date;
-  ctez_fa12_address: string;
-  cfmm_address: string;
+  context: CTezContext;
+  last_update: Date;
+  sell_ctez: HalfDex;
+  sell_tez: HalfDex;
 }
 
 export interface CTezTzktStorage {
@@ -62,4 +85,27 @@ export interface CTezTzktStorage {
   cfmm_address: string;
   ctez_fa12_address: string;
   last_drift_update: string;
+}
+
+export interface AllOvenDatum {
+  id: string;
+  active: boolean;
+  hash: string;
+  key: {
+    id: string;
+    owner: string;
+  };
+  value: {
+    address: string;
+    tez_balance: string;
+    ctez_outstanding: string;
+    fee_index: string;
+  };
+  firstLevel: number;
+  lastLevel: number;
+  updates: number;
+  /**
+   * Added in frontend
+   */
+  isImported?: boolean;
 }

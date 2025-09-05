@@ -19,7 +19,7 @@ const connectBeacon = async (
   try {
     await wallet.requestPermissions({ network: { type: network } });
     return true;
-  } catch (error) {
+  } catch (error : any) {
     logger.error(error);
   }
   return false;
@@ -58,7 +58,7 @@ export const getBeaconInstance = async (
       network,
       pkh: connect ? await wallet.getPKH() : undefined,
     };
-  } catch (error) {
+  } catch (error : any) {
     logger.error(error);
   }
 };

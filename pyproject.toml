@@ -1,0 +1,40 @@
+[tool.poetry]
+name = "ctez2"
+version = "0.1.0"
+description = ""
+authors = ["Maxim Kucherov <maxima-net@bk.ru>"]
+readme = "README.md"
+packages = [
+    { include = "tests" },
+]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.12"
+python-dotenv = "^1.0.1"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2.1"
+pytezos = "^3.11.3"
+requests = "<2.32.0"
+parameterized = "^0.9.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+deploy = "scripts.deploy:deploy"
+create_oven = "scripts.ctez:create_oven"
+deposit = "scripts.ctez:deposit"
+withdraw = "scripts.ctez:withdraw"
+mint_or_burn = "scripts.ctez:mint_or_burn"
+liquidate = "scripts.ctez:liquidate"
+add_ctez_liquidity = "scripts.ctez:add_ctez_liquidity"
+add_tez_liquidity = "scripts.ctez:add_tez_liquidity"
+collect_from_ctez_liquidity = "scripts.ctez:collect_from_ctez_liquidity"
+collect_from_tez_liquidity = "scripts.ctez:collect_from_tez_liquidity"
+remove_ctez_liquidity = "scripts.ctez:remove_ctez_liquidity"
+remove_tez_liquidity = "scripts.ctez:remove_tez_liquidity"
+ctez_to_tez = "scripts.ctez:ctez_to_tez"
+tez_to_ctez = "scripts.ctez:tez_to_ctez"
+execute_every_entrypoint = "scripts.ctez:execute_every_entrypoint"

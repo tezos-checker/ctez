@@ -1,35 +1,43 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { UserOvenStats } from '../../interfaces';
-import { OvenSerializable } from '../../interfaces/ctez';
 
 interface OvenSliceState {
-  oven: OvenSerializable | null;
-  showActions: boolean;
-  userOvenData: UserOvenStats;
+  extOvens: string[];
+  sortByOption: string | null;
+  removeOven: string | null;
+  searchValue: string | null;
+  clear: boolean;
 }
 
 const initialState: OvenSliceState = {
-  oven: null,
-  showActions: false,
-  userOvenData: { xtz: 0, ctez: 0, totalOvens: 0 },
+  extOvens: [],
+  sortByOption: 'Oven Balance',
+  removeOven: '',
+  searchValue: '',
+  clear: false,
 };
 
 export const OvenSlice = createSlice({
   name: 'oven',
   initialState,
   reducers: {
-    toggleActions: (state, action: PayloadAction<boolean>) => {
-      state.showActions = action.payload;
+    setExternalOvens: (state, action: PayloadAction<string[]>) => {
+      state.extOvens = action.payload;
     },
-    setOven: (state, action: PayloadAction<OvenSerializable>) => {
-      state.oven = action.payload;
+    setSortBy: (state, action: PayloadAction<string>) => {
+      state.sortByOption = action.payload;
     },
-    clearOven: (state) => {
-      state.oven = null;
-      state.showActions = false;
+    setRemoveOven: (state, action: PayloadAction<string>) => {
+      state.removeOven = action.payload;
     },
-    setUserOvenData: (state: OvenSliceState, action: PayloadAction<UserOvenStats>) => {
-      state.userOvenData = action.payload;
+    setSearchValue: (state, action: PayloadAction<string>) => {
+      state.searchValue = action.payload;
+    },
+    setClear: (state, action: PayloadAction<boolean>) => {
+      state.clear = action.payload;
     },
   },
 });
+
+export const { setExternalOvens, setSortBy, setRemoveOven, setSearchValue, setClear } =
+  OvenSlice.actions;
+export default OvenSlice.reducer;

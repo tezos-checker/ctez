@@ -1,0 +1,96 @@
+{ parameter
+    (or (nat %on_get_total_supply)
+        (or (unit %call_get_total_supply)
+            (or (nat %on_get_balance)
+                (or (address %call_get_balance)
+                    (or (nat %on_get_allowance)
+                        (or (pair %call_get_allowance (address %owner) (address %spender)) (unit %reset))))))) ;
+  storage
+    (pair (bool %send_tez)
+          (address %fa12_address)
+          (option %last_callback (pair string nat))) ;
+  code { LAMBDA
+           (pair (pair string nat) bool address (option (pair string nat)))
+           (pair bool address (option (pair string nat)))
+           { UNPAIR ;
+             DUP 2 ;
+             GET 4 ;
+             IF_NONE { PUSH bool True } { DROP ; PUSH bool False } ;
+             IF {} { PUSH string "ONLY_ONE_CALLBACK_CALL_EXPECTED" ; FAILWITH } ;
+             SOME ;
+             UPDATE 4 } ;
+         SWAP ;
+         UNPAIR ;
+         IF_LEFT
+           { PUSH string "on_get_total_supply" ; PAIR ; PAIR ; EXEC ; NIL operation }
+           { IF_LEFT
+               { DIG 2 ;
+                 DROP 2 ;
+                 SELF_ADDRESS ;
+                 CONTRACT %on_get_total_supply nat ;
+                 IF_NONE { PUSH string "bad address for get_entrypoint" ; FAILWITH } {} ;
+                 DUP 2 ;
+                 GET 3 ;
+                 CONTRACT %getTotalSupply (pair (unit %request) (contract %callback nat)) ;
+                 IF_NONE { PUSH string "bad address for get_entrypoint" ; FAILWITH } {} ;
+                 DUP 3 ;
+                 NIL operation ;
+                 DIG 2 ;
+                 DIG 4 ;
+                 CAR ;
+                 IF { PUSH mutez 1 } { PUSH mutez 0 } ;
+                 DIG 4 ;
+                 UNIT ;
+                 PAIR ;
+                 TRANSFER_TOKENS ;
+                 CONS }
+               { IF_LEFT
+                   { PUSH string "on_get_balance" ; PAIR ; PAIR ; EXEC ; NIL operation }
+                   { IF_LEFT
+                       { DIG 2 ;
+                         DROP ;
+                         SELF_ADDRESS ;
+                         CONTRACT %on_get_balance nat ;
+                         IF_NONE { PUSH string "bad address for get_entrypoint" ; FAILWITH } {} ;
+                         DUP 3 ;
+                         GET 3 ;
+                         CONTRACT %getBalance (pair (address %owner) (contract %callback nat)) ;
+                         IF_NONE { PUSH string "bad address for get_entrypoint" ; FAILWITH } {} ;
+                         DUP 4 ;
+                         NIL operation ;
+                         DIG 2 ;
+                         DIG 5 ;
+                         CAR ;
+                         IF { PUSH mutez 1 } { PUSH mutez 0 } ;
+                         DIG 4 ;
+                         DIG 5 ;
+                         PAIR ;
+                         TRANSFER_TOKENS ;
+                         CONS }
+                       { IF_LEFT
+                           { PUSH string "on_get_allowance" ; PAIR ; PAIR ; EXEC ; NIL operation }
+                           { DIG 2 ;
+                             DROP ;
+                             IF_LEFT
+                               { SELF_ADDRESS ;
+                                 CONTRACT %on_get_allowance nat ;
+                                 IF_NONE { PUSH string "bad address for get_entrypoint" ; FAILWITH } {} ;
+                                 DUP 3 ;
+                                 GET 3 ;
+                                 CONTRACT %getAllowance
+                                   (pair (pair %request (address %owner) (address %spender)) (contract %callback nat)) ;
+                                 IF_NONE { PUSH string "bad address for get_entrypoint" ; FAILWITH } {} ;
+                                 DUP 4 ;
+                                 NIL operation ;
+                                 DIG 2 ;
+                                 DIG 5 ;
+                                 CAR ;
+                                 IF { PUSH mutez 1 } { PUSH mutez 0 } ;
+                                 DIG 4 ;
+                                 DIG 5 ;
+                                 PAIR ;
+                                 TRANSFER_TOKENS ;
+                                 CONS }
+                               { DROP ; NONE (pair string nat) ; UPDATE 4 ; NIL operation } } } } } } ;
+         PAIR } }
+

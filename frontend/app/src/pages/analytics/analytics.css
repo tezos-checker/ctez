@@ -1,0 +1,120 @@
+.gradientcolortext{
+    background: linear-gradient(90.5deg, #0F62FF 8.62%, #6B5BD2 102.96%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    width: max-content;
+}
+.section-container{
+   padding-top: 30px;
+}
+.textContainer{
+    display: flex;
+    flex-direction: row;
+    gap:4px;
+    align-items: center;
+    font-size: 12px;
+}
+.textContainer .circleIcon{
+    height: 8px;
+    width: 8px;
+    border-radius: 50%;
+}
+.btnactive{
+    text-decoration: none;
+    border: 1px solid #0F62FF;
+   background-color: #F8F9FF; 
+}
+.dark .btnactive{
+    background-color: #3A4776;
+}
+.pagignationIcon{
+    background-color: transparent;
+    justify-content: center;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+}
+.pageNavigation-center-btn li >button{
+   border-radius: 50%;
+   border-radius: 50%;
+    width: 31px;
+    height: 31px;
+    font-weight: 500;
+    font-size: 12px;
+    /* background: #F8F9FF; */
+}
+.pageNavigation-center-btn {
+    display: flex;
+    flex-direction: row;
+    gap:10px;
+}
+.addresslinktd{
+    display: flex;
+    gap:8px;
+    justify-content: left;
+    align-items: center;
+}
+.addresslinktd2{
+    display: flex;
+    gap:8px;
+    justify-content: right;
+    align-items: center;
+}
+.addresslinktd2:hover{
+    /* text-decoration: underline; */
+    cursor: pointer;
+}
+.addresslinktdIcon{
+    width: 14px;
+    height: 14px;
+}
+.alingright{
+    text-align: right;
+    z-index: 99999;
+}
+.tableFirstCell{
+    padding-left: 0px;
+}
+.bigFontSize{
+    font-size: 32px;
+    line-height: 29px;
+}
+.hoverPointer:hover{
+    cursor: pointer;
+}
+a.hoverPointer:visited, a.hoverPointer:active  {
+    fill: inherit;
+}
+.custom-tooltip{ 
+    width: 130px;
+    height: 52px;
+    background: #FEFDFF;
+    border: 1px solid #B0B7C3;
+    border-radius: 4px;
+    font-size: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: left;
+    text-align: left;
+    padding: 12px;
+    padding-right: 0px;
+    color: #0D0714;
+
+}
+.dark.custom-tooltip{
+
+}
+.dark .pageNavigation-center-btn li >button[aria-current="true"]{
+    background: #3A4776;
+}
+.pageNavigation-center-btn li >button[aria-current="true"]{
+    background: #F8F9FF;
+}  
+.dark .recharts-sector{
+    stroke: transparent;
+}
+
+::-webkit-scrollbar {
+    height: 8px;
+}
